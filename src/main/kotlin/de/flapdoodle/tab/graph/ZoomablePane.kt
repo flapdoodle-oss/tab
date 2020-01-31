@@ -27,7 +27,7 @@ class ZoomablePane : Fragment("My View") {
       outputClip.height = newValue.height
     }
 
-    style {
+    style(append = true) {
       borderColor += box(
           top = Color.RED,
           right = Color.DARKGREEN,
