@@ -12,17 +12,24 @@ import tornadofx.*
 class ZoomablePane : Fragment("My View") {
   private val scale = SimpleDoubleProperty(1.0)
 
-  override val root = pane {
-    prefWidth =100.0
+  val content = pane {
+    prefWidth = 100.0
     prefHeight = 100.0
 
     scaleXProperty().bind(scale)
     scaleYProperty().bind(scale)
-  }.apply {
+  }
+
+  override val root = pane {
+    children += content
+
     val outputClip = Rectangle()
     clip = outputClip
 
     layoutBoundsProperty().addListener { ov: ObservableValue<out Bounds>?, oldValue: Bounds?, newValue: Bounds ->
+      println("clip: $newValue")
+      outputClip.x = newValue.minX
+      outputClip.y = newValue.minY
       outputClip.width = newValue.width
       outputClip.height = newValue.height
     }
@@ -38,5 +45,7 @@ class ZoomablePane : Fragment("My View") {
       borderWidth += box(0.5.px)
     }
 
+    Zoomable.enableZoom(this, scale)
+    Zoomable.enableDrag(this,content)
   }
 }

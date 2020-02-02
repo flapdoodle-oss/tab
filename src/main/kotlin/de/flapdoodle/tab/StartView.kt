@@ -37,9 +37,9 @@ class StartView : View("My View") {
     }
 
     (1..10).forEach {
-      val x = ThreadLocalRandom.current().nextInt(0,100)
-      val y = ThreadLocalRandom.current().nextInt(0,100)
-      zoomablePane.root.apply {
+      val x = ThreadLocalRandom.current().nextInt(-100,100)
+      val y = ThreadLocalRandom.current().nextInt(-100,100)
+      zoomablePane.content.apply {
         rectangle(x = x, y = y) {
           style {
             fill = Color.YELLOW
