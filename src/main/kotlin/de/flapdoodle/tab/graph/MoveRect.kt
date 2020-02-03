@@ -15,6 +15,7 @@ object MoveRect {
     var state: State = State.NotEntered
 
     root.addEventFilter(MouseEvent.MOUSE_ENTERED_TARGET) { event ->
+      println("> enter ${event.target}")
 //      println("enter target ${event.target}")
       val target = event.target
       if (target is Rectangle) {
@@ -74,6 +75,7 @@ object MoveRect {
     }
 
     root.addEventFilter(MouseEvent.MOUSE_EXITED_TARGET) { event ->
+      println("> exit ${event.target}")
       state = state.let {
         println("exit target: current state: $it")
         if (it is State.Entered) {

@@ -1,5 +1,8 @@
 package de.flapdoodle.tab.graph
 
+import de.flapdoodle.tab.graph.events.MouseDragListener
+import de.flapdoodle.tab.graph.events.MouseDragListenerLookup
+import de.flapdoodle.tab.graph.events.MouseEvents
 import javafx.beans.property.SimpleDoubleProperty
 import javafx.beans.value.ObservableValue
 import javafx.event.EventHandler
@@ -46,6 +49,16 @@ class ZoomablePane : Fragment("My View") {
 
     Zoomable.enableZoom(this, scale)
     Zoomable.enableDrag(this,content)
-    MoveRect.enableMoveRect(this, scale)
+
+    val lookup = MouseDragListenerLookup.forType<Rectangle> {
+      val start = javafx.geometry.Point2D(it.x, it.y)
+      MouseDragListener { x,y, target ->
+        println("move to $x,$y")
+        it.x = start.x + x
+        it.y = start.y + y
+      }
+    }
+
+    MouseEvents.addEventDelegate(this, scale, lookup)
   }
 }
