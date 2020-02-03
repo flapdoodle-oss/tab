@@ -32,18 +32,18 @@ object Zoomable {
   }
 
   fun enableDrag(root: Node, content: Node) {
-    val doDrag: AtomicReference<ScaledPoints?> = AtomicReference<ScaledPoints?>()
+    val doDrag: AtomicReference<MappedPoints?> = AtomicReference<MappedPoints?>()
 
     root.setOnMousePressed(EventHandler { click: MouseEvent ->
       if (doDrag.get() == null) {
-        doDrag.set(ScaledPoints(click.x, click.y, content.getLayoutX(), content.getLayoutY()))
+        doDrag.set(MappedPoints(click.x, click.y, content.getLayoutX(), content.getLayoutY()))
         println(" -> " + doDrag.get())
       }
       click.consume()
     })
 
     root.setOnMouseDragged(EventHandler { drag: MouseEvent ->
-      val start: ScaledPoints? = doDrag.get()
+      val start: MappedPoints? = doDrag.get()
       if (start != null) {
         val newLocal: Point2D = start.scaledLocalCoord(Point2D(drag.x, drag.y), 1.0)
         println("drag to $newLocal")

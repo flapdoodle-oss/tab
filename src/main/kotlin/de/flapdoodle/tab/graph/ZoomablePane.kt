@@ -2,7 +2,9 @@ package de.flapdoodle.tab.graph
 
 import javafx.beans.property.SimpleDoubleProperty
 import javafx.beans.value.ObservableValue
+import javafx.event.EventHandler
 import javafx.geometry.Bounds
+import javafx.scene.input.MouseEvent
 import javafx.scene.layout.Border
 import javafx.scene.layout.BorderStroke
 import javafx.scene.paint.Color
@@ -44,5 +46,6 @@ class ZoomablePane : Fragment("My View") {
 
     Zoomable.enableZoom(this, scale)
     Zoomable.enableDrag(this,content)
+    MoveRect.enableMoveRect(this)
   }
 }

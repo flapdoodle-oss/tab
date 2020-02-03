@@ -2,7 +2,7 @@ package de.flapdoodle.tab.graph
 
 import javafx.geometry.Point2D
 
-data class ScaledPoints(
+data class MappedPoints(
     private val screenCoord: Point2D,
     private val localCoord: Point2D
 ) {
@@ -16,6 +16,6 @@ data class ScaledPoints(
   }
 
   override fun toString(): String {
-    return ("ScaledPoints(" + screenCoord.x + "," + screenCoord.y + ")->(" + localCoord.x + ","        + localCoord.y + ")")
+    return ("MappedPoints(" + screenCoord.x + "," + screenCoord.y + ")->(" + localCoord.x + ","        + localCoord.y + ")")
   }
 }
