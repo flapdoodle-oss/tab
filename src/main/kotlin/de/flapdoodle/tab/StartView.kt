@@ -1,5 +1,6 @@
 package de.flapdoodle.tab
 
+import de.flapdoodle.tab.graph.SampleNode
 import de.flapdoodle.tab.graph.ZoomablePane
 import javafx.scene.layout.Background
 import javafx.scene.layout.BackgroundFill
@@ -48,6 +49,10 @@ class StartView : View("My View") {
           }
         }
       }
+    }
+
+    zoomablePane.content.apply {
+      children += SampleNode().root
     }
   }
 }
