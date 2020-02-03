@@ -27,9 +27,6 @@ class ZoomablePane : Fragment("My View") {
     clip = outputClip
 
     layoutBoundsProperty().addListener { ov: ObservableValue<out Bounds>?, oldValue: Bounds?, newValue: Bounds ->
-      println("clip: $newValue")
-      outputClip.x = newValue.minX
-      outputClip.y = newValue.minY
       outputClip.width = newValue.width
       outputClip.height = newValue.height
     }
