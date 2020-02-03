@@ -46,6 +46,6 @@ class ZoomablePane : Fragment("My View") {
 
     Zoomable.enableZoom(this, scale)
     Zoomable.enableDrag(this,content)
-    MoveRect.enableMoveRect(this)
+    MoveRect.enableMoveRect(this, scale)
   }
 }
