@@ -52,8 +52,22 @@ class ZoomablePane : Fragment("My View") {
 
     val lookup = MouseDragListenerLookup.forType<Rectangle> {
       val start = javafx.geometry.Point2D(it.x, it.y)
-      MouseDragListener { x,y, target ->
-        println("move to $x,$y")
+      it.apply {
+        style {
+          fill = Color.RED
+        }
+      }
+      MouseDragListener(done = {
+        it.apply {
+          style {
+            fill = Color.YELLOW
+          }
+        }
+      }) { x,y, target ->
+        //println("move to $x,$y ($target)")
+        if (target != it) {
+          println("connect to $target?")
+        }
         it.x = start.x + x
         it.y = start.y + y
       }

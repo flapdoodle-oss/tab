@@ -12,7 +12,6 @@ import javafx.scene.input.MouseEvent
 object MouseEvents {
 
   fun addEventDelegate(root: Node, scale: DoubleProperty, listenerLookup: MouseDragListenerLookup) {
-//    var state: State = State.NotEntered
     var mouseState: MouseState = MouseState.Hoover
     var nodeState: NodeState = NodeState.NotEntered
 
@@ -21,98 +20,65 @@ object MouseEvents {
       //      println("enter target ${event.target}")
       nodeState = nodeState.change { state: NodeState.NotEntered ->
         event.consume()
+
         state.enter(event.target)
       }
-//
-//      val listener = listenerLookup.listenerFor(event.target)
-//
-//      if (listener != null) {
-//        state = state.let {
-//          println("enter target: current state: $it")
-//          if (it is State.NotEntered) {
-//            event.consume()
-//            it.enter(listener)
-//          } else it
-//        }
-//      }
     }
 
     root.addEventFilter(MouseEvent.MOUSE_PRESSED) { click ->
-      nodeState.matches {state: NodeState.Entered ->
+      nodeState.matches { state: NodeState.Entered ->
         val listener = listenerLookup.listenerFor(state.eventTarget)
-        if (listener!=null) {
+        if (listener != null) {
           mouseState = mouseState.change { it: MouseState.Hoover ->
             click.consume()
+
             it.startMoving(listener, Point2D(click.x, click.y))
           }
         }
       }
-
-//      state = state.let {
-//        println("mouse clicked: current state: $it")
-//        if (it is State.Entered) {
-//          click.consume()
-//
-//          it.startMoving(ScaledPoints(click.x, click.y))
-//        } else it
-//      }
     }
 
     root.addEventFilter(MouseEvent.MOUSE_DRAGGED) { drag ->
-      mouseState.matches {state: MouseState.Moving ->
+      mouseState.matches { state: MouseState.Moving ->
         drag.consume()
+        val target = nodeState.matches(NodeState.Entered::eventTarget)
 
         val newLocal: Point2D = state.start.scaledChange(Point2D(drag.x, drag.y), scale.value)
-        state.listener.drag(newLocal.x, newLocal.y, drag.target)
+        state.listener.drag(newLocal.x, newLocal.y, target)
       }
-
-//      state.let {
-//        println("mouse dragged: current state: $it")
-//        if (it is State.StartMoving) {
-//          drag.consume()
-//
-//          println("still moving")
-//          val newLocal: Point2D = it.points.scaledCoord(Point2D(drag.x, drag.y), scale.value)
-//          println("drag to $newLocal")
-//          it.listener.drag(newLocal.x, newLocal.y)
-//        }
-//      }
-
     }
     root.addEventFilter(MouseEvent.MOUSE_RELEASED) { release ->
-      mouseState = mouseState.changeState<MouseState.Moving> { it.stopMoving() }
-//      state = state.let {
-//        println("mouse released: current state: $it")
-//        if (it is State.StartMoving) {
-//          release.consume()
-//
-//          it.stopMoving()
-//        } else it
-//      }
+      mouseState = mouseState.changeState<MouseState.Moving> {
+        release.consume()
+
+        it.listener.done()
+        it.stopMoving()
+      }
     }
 
     root.addEventFilter(MouseEvent.MOUSE_EXITED_TARGET) { event ->
-      nodeState = nodeState.change { state: NodeState.Entered -> state.leave() }
+      nodeState = nodeState.change { state: NodeState.Entered ->
+        event.consume()
 
-//      state = state.let {
-//        println("exit target: current state: $it")
-//        if (it is State.Entered) {
-//          event.consume()
-//
-//          it.leave()
-//        } else it
-//      }
+        state.leave()
+      }
     }
 
   }
 
   sealed class NodeState {
     object NotEntered : NodeState() {
-      fun enter(eventTarget: EventTarget) = Entered(eventTarget)
+      fun enter(eventTarget: EventTarget): Entered {
+        println("> enter $eventTarget")
+        return Entered(eventTarget)
+      }
     }
 
     data class Entered(val eventTarget: EventTarget) : NodeState() {
-      fun leave() = NotEntered
+      fun leave(): NotEntered {
+        println("> leave $eventTarget")
+        return NotEntered
+      }
     }
   }
 
@@ -135,32 +101,4 @@ object MouseEvents {
       fun stopMoving() = Hoover
     }
   }
-
-//  sealed class State {
-//    object NotEntered : State() {
-//      fun enter(listener: MouseDragListener): Entered {
-//        println("enter -> $listener")
-//        return Entered(listener)
-//      }
-//    }
-//
-//    data class Entered(val listener: MouseDragListener) : State() {
-//      fun startMoving(points: ScaledPoints): State {
-//        println("start moving -> $listener")
-//        return StartMoving(listener, points)
-//      }
-//
-//      fun leave(): State {
-//        println("leave -> $listener")
-//        return NotEntered
-//      }
-//    }
-//
-//    data class StartMoving(val listener: MouseDragListener, val points: ScaledPoints) : State() {
-//      fun stopMoving(): State {
-//        println("stopped moving -> $listener")
-//        return Entered(listener)
-//      }
-//    }
-//  }
 }
