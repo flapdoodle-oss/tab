@@ -17,7 +17,13 @@ object MouseEvents {
 
 
     root.addEventFilter(MouseEvent.MOUSE_ENTERED_TARGET) { event ->
-      //      println("enter target ${event.target}")
+      debug("enter -> node: $nodeState -> ${event.target}")
+
+      nodeState = nodeState.change { state: NodeState.Entered ->
+        event.consume()
+
+        state.enter(event.target)
+      }
       nodeState = nodeState.change { state: NodeState.NotEntered ->
         event.consume()
 
@@ -26,8 +32,10 @@ object MouseEvents {
     }
 
     root.addEventFilter(MouseEvent.MOUSE_PRESSED) { click ->
+      debug("mouse pressed -> node: $nodeState, mouse: $mouseState")
+
       nodeState.matches { state: NodeState.Entered ->
-        val listener = listenerLookup.listenerFor(state.eventTarget)
+        val listener = listenerLookup.listenerFor(state.eventTarget())
         if (listener != null) {
           mouseState = mouseState.change { it: MouseState.Hoover ->
             click.consume()
@@ -39,6 +47,8 @@ object MouseEvents {
     }
 
     root.addEventFilter(MouseEvent.MOUSE_DRAGGED) { drag ->
+      debug("mouse dragged -> node: $nodeState, mouse: $mouseState")
+
       mouseState.matches { state: MouseState.Moving ->
         drag.consume()
         val target = nodeState.matches(NodeState.Entered::eventTarget)
@@ -47,7 +57,10 @@ object MouseEvents {
         state.listener.drag(newLocal.x, newLocal.y, target)
       }
     }
+
     root.addEventFilter(MouseEvent.MOUSE_RELEASED) { release ->
+      debug("mouse released -> node: $nodeState, mouse: $mouseState")
+
       mouseState = mouseState.changeState<MouseState.Moving> {
         release.consume()
 
@@ -57,28 +70,47 @@ object MouseEvents {
     }
 
     root.addEventFilter(MouseEvent.MOUSE_EXITED_TARGET) { event ->
+      debug("exit -> node: $nodeState -> ${event.target}")
+
       nodeState = nodeState.change { state: NodeState.Entered ->
         event.consume()
 
-        state.leave()
+        state.leave(event.target)
       }
     }
 
+  }
+
+  private fun debug(msg: String) {
+    //println(msg)
   }
 
   sealed class NodeState {
     object NotEntered : NodeState() {
       fun enter(eventTarget: EventTarget): Entered {
         println("> enter $eventTarget")
-        return Entered(eventTarget)
+        return Entered(listOf(eventTarget))
       }
     }
 
-    data class Entered(val eventTarget: EventTarget) : NodeState() {
-      fun leave(): NotEntered {
-        println("> leave $eventTarget")
-        return NotEntered
+    data class Entered(val eventTargets: List<EventTarget>) : NodeState() {
+      fun enter(eventTarget: EventTarget): Entered {
+        println(">> enter $eventTarget")
+        require(!eventTargets.contains(eventTarget)) { "already entered into $eventTarget" }
+        return Entered(eventTargets + eventTarget)
       }
+
+      fun leave(eventTarget: EventTarget): NodeState {
+        println("> leave $eventTarget")
+        require(eventTargets.contains(eventTarget)) { "target not found $eventTarget" }
+        val targets = eventTargets - eventTarget
+        return if (targets.isEmpty())
+          NotEntered
+        else
+          Entered(targets)
+      }
+
+      fun eventTarget() = eventTargets.last()
     }
   }
 

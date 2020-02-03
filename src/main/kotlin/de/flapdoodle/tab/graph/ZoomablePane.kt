@@ -64,7 +64,6 @@ class ZoomablePane : Fragment("My View") {
           }
         }
       }) { x,y, target ->
-        //println("move to $x,$y ($target)")
         if (target != it) {
           println("connect to $target?")
         }
