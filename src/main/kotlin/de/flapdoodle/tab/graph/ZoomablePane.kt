@@ -3,9 +3,12 @@ package de.flapdoodle.tab.graph
 import de.flapdoodle.tab.graph.events.MouseDragListener
 import de.flapdoodle.tab.graph.events.MouseDragListenerLookup
 import de.flapdoodle.tab.graph.events.MouseEvents
+import de.flapdoodle.tab.graph.events2.MouseEventHandler
+import de.flapdoodle.tab.graph.events2.MouseEventHandlerResolver
 import javafx.beans.property.SimpleDoubleProperty
 import javafx.beans.value.ObservableValue
 import javafx.event.EventHandler
+import javafx.event.EventTarget
 import javafx.geometry.Bounds
 import javafx.scene.input.MouseEvent
 import javafx.scene.layout.Border
@@ -72,6 +75,28 @@ class ZoomablePane : Fragment("My View") {
       }
     }
 
-    MouseEvents.addEventDelegate(this, scale, lookup)
+    if (false) {
+      MouseEvents.addEventDelegate(this, scale, lookup)
+    }
+
+    val lookup2 = MouseEventHandlerResolver.forType<Rectangle> { it ->
+      it.apply {
+        style {
+          fill = Color.RED
+        }
+      }
+      object : MouseEventHandler {
+        override fun onExit(eventTarget: EventTarget): MouseEventHandler? {
+          it.apply {
+            style {
+              fill = Color.YELLOW
+            }
+          }
+          return null
+        }
+      }
+    }
+
+    de.flapdoodle.tab.graph.events2.MouseEvents.addEventDelegate(this,scale,lookup2)
   }
 }
