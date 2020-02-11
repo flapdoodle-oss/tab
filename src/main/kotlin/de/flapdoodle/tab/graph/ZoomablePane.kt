@@ -5,6 +5,7 @@ import de.flapdoodle.tab.graph.events.MouseDragListenerLookup
 import de.flapdoodle.tab.graph.events.MouseEvents
 import de.flapdoodle.tab.graph.events2.MouseEventHandler
 import de.flapdoodle.tab.graph.events2.MouseEventHandlerResolver
+import de.flapdoodle.tab.graph.events3.GraphNode
 import javafx.beans.property.SimpleDoubleProperty
 import javafx.beans.value.ObservableValue
 import javafx.event.EventHandler
@@ -51,7 +52,7 @@ class ZoomablePane : Fragment("My View") {
     }
 
     Zoomable.enableZoom(this, scale)
-    Zoomable.enableDrag(this,content)
+    Zoomable.enableDrag(this, content)
 
     val lookup = MouseDragListenerLookup.forType<Rectangle> {
       val start = javafx.geometry.Point2D(it.x, it.y)
@@ -66,7 +67,7 @@ class ZoomablePane : Fragment("My View") {
             fill = Color.YELLOW
           }
         }
-      }) { x,y, target ->
+      }) { x, y, target ->
         if (target != it) {
           println("connect to $target?")
         }
@@ -97,6 +98,12 @@ class ZoomablePane : Fragment("My View") {
       }
     }
 
-    de.flapdoodle.tab.graph.events2.MouseEvents.addEventDelegate(this,scale,lookup2)
+    if (false) {
+      de.flapdoodle.tab.graph.events2.MouseEvents.addEventDelegate(this, scale, lookup2)
+    }
+
+    subscribe<GraphNode.EnterNodeEvent> { event ->
+      println("entered: ${event.parent}")
+    }
   }
 }

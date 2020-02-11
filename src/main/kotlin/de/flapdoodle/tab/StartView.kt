@@ -2,6 +2,7 @@ package de.flapdoodle.tab
 
 import de.flapdoodle.tab.graph.SampleNode
 import de.flapdoodle.tab.graph.ZoomablePane
+import de.flapdoodle.tab.graph.events3.GraphNode
 import javafx.scene.layout.Background
 import javafx.scene.layout.BackgroundFill
 import javafx.scene.paint.Color
@@ -51,8 +52,17 @@ class StartView : View("My View") {
       }
     }
 
-    zoomablePane.content.apply {
-      children += SampleNode().root
+    (1..5).forEach {
+      val x = ThreadLocalRandom.current().nextInt(0,200)
+      val y = ThreadLocalRandom.current().nextInt(0,200)
+
+      zoomablePane.content += GraphNode(x,y)
     }
+
+//    zoomablePane.content.apply {
+//      children += SampleNode().root
+//    }
+
+    zoomablePane.content += SampleNode()
   }
 }
