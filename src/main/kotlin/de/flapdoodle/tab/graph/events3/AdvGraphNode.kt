@@ -3,43 +3,78 @@ package de.flapdoodle.tab.graph.events3
 import javafx.geometry.Point2D
 import javafx.scene.Parent
 import javafx.scene.paint.Color
+import javafx.scene.shape.Rectangle
 import tornadofx.*
 
 class AdvGraphNode(
     private val x: Double = 0.0,
     private val y: Double = 0.0
 ) : Fragment() {
-  override val root = group {
-    relocate(x.toDouble(), y.toDouble())
 
-    borderpane {
-      style {
-        fill = Color.PURPLE
+  private val rect = Rectangle().apply {
+    style {
+      fill = Color.YELLOW
+      width = 30.0
+      height = 30.0
+    }
+  }
+
+  private val content = borderpane {
+    relocate(x, y)
+
+    style {
+      fill = Color.PURPLE
+    }
+
+    center = rect
+
+    top = button {
+      text = "Woohoo"
+    }
+
+    bottom = markedGroup(Move(this@AdvGraphNode)) {
+      rectangle {
+        style {
+          fill = Color.RED
+          width = 8.0
+          height = 8.0
+        }
       }
+    }
 
-      center = button {
-        text = "Woohoo"
-      }
-
-      bottom = markedGroup(Move(this@AdvGraphNode)) {
-        rectangle {
-          style {
-            fill = Color.RED
-            width = 8.0
-            height = 8.0
-          }
+    right = markedGroup(Resize(this@AdvGraphNode)) {
+      rectangle {
+        style {
+          fill = Color.GREEN
+          width = 8.0
+          height = 8.0
         }
       }
     }
   }
 
+
+  override val root = group {
+    this += content
+  }
+
   fun position(): Point2D {
-    return Point2D(root.layoutX, root.layoutY)
+    return Point2D(content.layoutX, content.layoutY)
   }
 
   fun moveTo(x: Double, y: Double) {
-    root.relocate(x, y)
+    content.relocate(x, y)
   }
 
-  data class Move(val parent: AdvGraphNode): IsMarker
+  fun size(): Point2D {
+    return Point2D(rect.width, rect.height)
+  }
+
+  fun resizeTo(width: Double, height: Double) {
+    rect.width = width
+    rect.height = height
+  }
+
+  data class Move(val parent: AdvGraphNode) : IsMarker
+  data class Resize(val parent: AdvGraphNode) : IsMarker
 }
