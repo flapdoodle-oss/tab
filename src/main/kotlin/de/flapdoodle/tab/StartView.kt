@@ -54,8 +54,8 @@ class StartView : View("My View") {
     }
 
     (1..5).forEach {
-      val x = ThreadLocalRandom.current().nextInt(0,200)
-      val y = ThreadLocalRandom.current().nextInt(0,200)
+      val x = ThreadLocalRandom.current().nextDouble(0.0,200.0)
+      val y = ThreadLocalRandom.current().nextDouble(0.0,200.0)
 
       zoomablePane.content += AdvGraphNode(x,y)
     }

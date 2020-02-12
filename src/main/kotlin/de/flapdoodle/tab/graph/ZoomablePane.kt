@@ -8,11 +8,14 @@ import de.flapdoodle.tab.graph.events2.MouseEventHandlerResolver
 import de.flapdoodle.tab.graph.events3.AdvGraphNode
 import de.flapdoodle.tab.graph.events3.GraphNode
 import de.flapdoodle.tab.graph.events3.HasMarker
+import de.flapdoodle.tab.graph.events3.IsMarker
+import de.flapdoodle.tab.graph.events3.MappedMouseEvent
 import javafx.beans.property.SimpleDoubleProperty
 import javafx.beans.value.ObservableValue
 import javafx.event.EventHandler
 import javafx.event.EventTarget
 import javafx.geometry.Bounds
+import javafx.geometry.Point2D
 import javafx.scene.input.MouseEvent
 import javafx.scene.layout.Border
 import javafx.scene.layout.BorderStroke
@@ -104,10 +107,29 @@ class ZoomablePane : Fragment("My View") {
       de.flapdoodle.tab.graph.events2.MouseEvents.addEventDelegate(this, scale, lookup2)
     }
 
-    val resolver = de.flapdoodle.tab.graph.events3.MouseEventHandlerResolver.forType<AdvGraphNode.Move> {
-      de.flapdoodle.tab.graph.events3.MouseEventHandler { event, marker->
-        println("entered $marker")
-        null
+    val resolver = de.flapdoodle.tab.graph.events3.MouseEventHandlerResolver.forType<AdvGraphNode.Move> { moveMarker ->
+      object : de.flapdoodle.tab.graph.events3.MouseEventHandler {
+        var dragStarted: Point2D? = null
+        var exited: Boolean = false
+
+        override fun onEvent(mouseEvent: MappedMouseEvent, marker: IsMarker?): de.flapdoodle.tab.graph.events3.MouseEventHandler? {
+          println("$mouseEvent -> $marker")
+          when (mouseEvent) {
+            is MappedMouseEvent.Click -> dragStarted = moveMarker.parent.position()
+            is MappedMouseEvent.Drag -> dragStarted?.let { it + mouseEvent.delta }?.apply {
+              println("should move ${moveMarker.parent} by ${mouseEvent.delta}")
+              moveMarker.parent.moveTo(this.x, this.y)
+            }
+            is MappedMouseEvent.Release -> dragStarted = null
+            is MappedMouseEvent.Exit -> exited = exited || marker == moveMarker
+          }
+
+          return if (exited && dragStarted==null) {
+            println("exit $moveMarker because no drag in progress")
+            null
+          } else
+            this
+        }
       }
     }
     HasMarker.addEventDelegate(this,scale, resolver)
