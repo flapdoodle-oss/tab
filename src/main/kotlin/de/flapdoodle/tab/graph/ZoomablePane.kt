@@ -5,7 +5,9 @@ import de.flapdoodle.tab.graph.events.MouseDragListenerLookup
 import de.flapdoodle.tab.graph.events.MouseEvents
 import de.flapdoodle.tab.graph.events2.MouseEventHandler
 import de.flapdoodle.tab.graph.events2.MouseEventHandlerResolver
+import de.flapdoodle.tab.graph.events3.AdvGraphNode
 import de.flapdoodle.tab.graph.events3.GraphNode
+import de.flapdoodle.tab.graph.events3.HasMarker
 import javafx.beans.property.SimpleDoubleProperty
 import javafx.beans.value.ObservableValue
 import javafx.event.EventHandler
@@ -101,6 +103,14 @@ class ZoomablePane : Fragment("My View") {
     if (false) {
       de.flapdoodle.tab.graph.events2.MouseEvents.addEventDelegate(this, scale, lookup2)
     }
+
+    val resolver = de.flapdoodle.tab.graph.events3.MouseEventHandlerResolver.forType<AdvGraphNode.Move> {
+      de.flapdoodle.tab.graph.events3.MouseEventHandler { event, marker->
+        println("entered $marker")
+        null
+      }
+    }
+    HasMarker.addEventDelegate(this,scale, resolver)
 
     subscribe<GraphNode.EnterNodeEvent> { event ->
       println("entered: ${event.parent}")
