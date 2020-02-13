@@ -4,6 +4,7 @@ import de.flapdoodle.tab.graph.SampleNode
 import de.flapdoodle.tab.graph.ZoomablePane
 import de.flapdoodle.tab.graph.events3.AdvGraphNode
 import de.flapdoodle.tab.graph.events3.GraphNode
+import de.flapdoodle.tab.graph.nodes.AbstractGraphNode
 import javafx.scene.layout.Background
 import javafx.scene.layout.BackgroundFill
 import javafx.scene.paint.Color
@@ -58,6 +59,17 @@ class StartView : View("My View") {
       val y = ThreadLocalRandom.current().nextDouble(0.0,200.0)
 
       zoomablePane.content += AdvGraphNode(x,y)
+    }
+
+    (1..5).forEach {
+      val x = ThreadLocalRandom.current().nextDouble(200.0,400.0)
+      val y = ThreadLocalRandom.current().nextDouble(200.0,400.0)
+
+      val node = object : AbstractGraphNode(x, y) {
+
+      }
+      node.title = "Node($it)"
+      zoomablePane.content += node
     }
 
 //    zoomablePane.content.apply {

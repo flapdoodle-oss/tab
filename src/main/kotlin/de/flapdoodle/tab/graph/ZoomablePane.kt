@@ -7,6 +7,9 @@ import de.flapdoodle.tab.graph.events.IsMarker
 import de.flapdoodle.tab.graph.events.MappedMouseEvent
 import de.flapdoodle.tab.graph.events.MouseEventHandler
 import de.flapdoodle.tab.graph.events.MouseEventHandlerResolver
+import de.flapdoodle.tab.graph.nodes.AbstractGraphNode
+import de.flapdoodle.tab.graph.nodes.GraphNodeMoveHandler
+import de.flapdoodle.tab.graph.nodes.GraphNodeResizeHandler
 import javafx.beans.property.SimpleDoubleProperty
 import javafx.beans.value.ObservableValue
 import javafx.geometry.Bounds
@@ -99,7 +102,8 @@ class ZoomablePane : Fragment("My View") {
             this
         }
       }
-    })
+    }).andThen(GraphNodeMoveHandler.resolver)
+        .andThen(GraphNodeResizeHandler.resolver)
 
     HasMarker.addEventDelegate(this, scale, resolver)
 
