@@ -19,39 +19,40 @@ class AdvGraphNode(
     }
   }
 
-  private val content = borderpane {
-    relocate(x, y)
+  private val content =
+      borderpane {
+        relocate(x, y)
 
-    style {
-      fill = Color.PURPLE
-    }
-
-    center = rect
-
-    top = button {
-      text = "Woohoo"
-    }
-
-    bottom = markedGroup(Move(this@AdvGraphNode)) {
-      rectangle {
         style {
-          fill = Color.RED
-          width = 8.0
-          height = 8.0
+          fill = Color.PURPLE
+        }
+
+        center = rect
+
+        top = button {
+          text = "Woohoo"
+        }
+
+        bottom = markedGroup(Move(this@AdvGraphNode)) {
+          rectangle {
+            style {
+              fill = Color.RED
+              width = 8.0
+              height = 8.0
+            }
+          }
+        }
+
+        right = markedGroup(Resize(this@AdvGraphNode)) {
+          rectangle {
+            style {
+              fill = Color.GREEN
+              width = 8.0
+              height = 8.0
+            }
+          }
         }
       }
-    }
-
-    right = markedGroup(Resize(this@AdvGraphNode)) {
-      rectangle {
-        style {
-          fill = Color.GREEN
-          width = 8.0
-          height = 8.0
-        }
-      }
-    }
-  }
 
 
   override val root = group {
@@ -67,12 +68,11 @@ class AdvGraphNode(
   }
 
   fun size(): Point2D {
-    return Point2D(rect.width, rect.height)
+    return Point2D(content.width, content.height)
   }
 
   fun resizeTo(width: Double, height: Double) {
-    rect.width = width
-    rect.height = height
+    content.setPrefSize(width, height)
   }
 
   data class Move(val parent: AdvGraphNode) : IsMarker
