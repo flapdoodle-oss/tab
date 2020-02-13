@@ -29,37 +29,37 @@ class StartView : View("My View") {
     primaryStage.width = 800.0
     primaryStage.height = 640.0
 
-    zoomablePane.root += group {
-      rectangle {
-        style {
-          fill = Color.RED
-          width = 10.0
-          height = 20.0
-        }
-      }
+//    zoomablePane.root += group {
+//      rectangle {
+//        style {
+//          fill = Color.RED
+//          width = 10.0
+//          height = 20.0
+//        }
+//      }
+//
+//    }
 
-    }
-
-    (1..10).forEach {
-      val x = ThreadLocalRandom.current().nextInt(-100,100)
-      val y = ThreadLocalRandom.current().nextInt(-100,100)
-      zoomablePane.content.apply {
-        rectangle(x = x, y = y) {
-          style {
-            fill = Color.YELLOW
-            width = 10.0
-            height = 20.0
-          }
-        }
-      }
-    }
-
-    (1..5).forEach {
-      val x = ThreadLocalRandom.current().nextDouble(0.0,200.0)
-      val y = ThreadLocalRandom.current().nextDouble(0.0,200.0)
-
-      zoomablePane.content += AdvGraphNode(x,y)
-    }
+//    (1..10).forEach {
+//      val x = ThreadLocalRandom.current().nextInt(-100,100)
+//      val y = ThreadLocalRandom.current().nextInt(-100,100)
+//      zoomablePane.content.apply {
+//        rectangle(x = x, y = y) {
+//          style {
+//            fill = Color.YELLOW
+//            width = 10.0
+//            height = 20.0
+//          }
+//        }
+//      }
+//    }
+//
+//    (1..5).forEach {
+//      val x = ThreadLocalRandom.current().nextDouble(0.0,200.0)
+//      val y = ThreadLocalRandom.current().nextDouble(0.0,200.0)
+//
+//      zoomablePane.content += AdvGraphNode(x,y)
+//    }
 
     (1..5).forEach {
       val x = ThreadLocalRandom.current().nextDouble(200.0,400.0)

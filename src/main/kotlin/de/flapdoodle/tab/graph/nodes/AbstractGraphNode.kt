@@ -51,7 +51,6 @@ abstract class AbstractGraphNode(
     relocate(x,y)
 
     style(append = true) {
-      fill = Color.WHITE
       backgroundColor += Color.WHITE
       borderColor += box(
           top = Color.RED,
