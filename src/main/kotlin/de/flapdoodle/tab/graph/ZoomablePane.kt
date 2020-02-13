@@ -2,11 +2,11 @@ package de.flapdoodle.tab.graph
 
 import de.flapdoodle.tab.graph.events3.AdvGraphNode
 import de.flapdoodle.tab.graph.events3.GraphNode
-import de.flapdoodle.tab.graph.events3.HasMarker
-import de.flapdoodle.tab.graph.events3.IsMarker
-import de.flapdoodle.tab.graph.events3.MappedMouseEvent
-import de.flapdoodle.tab.graph.events3.MouseEventHandler
-import de.flapdoodle.tab.graph.events3.MouseEventHandlerResolver
+import de.flapdoodle.tab.graph.events.HasMarker
+import de.flapdoodle.tab.graph.events.IsMarker
+import de.flapdoodle.tab.graph.events.MappedMouseEvent
+import de.flapdoodle.tab.graph.events.MouseEventHandler
+import de.flapdoodle.tab.graph.events.MouseEventHandlerResolver
 import javafx.beans.property.SimpleDoubleProperty
 import javafx.beans.value.ObservableValue
 import javafx.geometry.Bounds

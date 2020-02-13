@@ -1,7 +1,6 @@
-package de.flapdoodle.tab.graph.events3
+package de.flapdoodle.tab.graph.events
 
 import de.flapdoodle.tab.annotations.KotlinCompilerFix_SAM_Helper
-import javafx.scene.input.MouseEvent
 
 interface MouseEventHandler {
   fun onEvent(mouseEvent: MappedMouseEvent, marker: IsMarker?): MouseEventHandler?

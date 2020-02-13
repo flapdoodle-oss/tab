@@ -1,4 +1,4 @@
-package de.flapdoodle.tab.graph.events3
+package de.flapdoodle.tab.graph.events
 
 import javafx.geometry.Point2D
 

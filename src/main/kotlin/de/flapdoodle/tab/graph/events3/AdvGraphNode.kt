@@ -1,7 +1,7 @@
 package de.flapdoodle.tab.graph.events3
 
+import de.flapdoodle.tab.graph.events.IsMarker
 import javafx.geometry.Point2D
-import javafx.scene.Parent
 import javafx.scene.paint.Color
 import javafx.scene.shape.Rectangle
 import tornadofx.*

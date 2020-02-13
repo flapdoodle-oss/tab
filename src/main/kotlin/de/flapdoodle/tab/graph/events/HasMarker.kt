@@ -1,9 +1,6 @@
-package de.flapdoodle.tab.graph.events3
+package de.flapdoodle.tab.graph.events
 
-import de.flapdoodle.tab.extensions.change
-import de.flapdoodle.tab.extensions.matches
 import de.flapdoodle.tab.extensions.scaledChange
-import de.flapdoodle.tab.graph.events.MouseEvents
 import javafx.beans.property.DoubleProperty
 import javafx.geometry.Point2D
 import javafx.scene.Node

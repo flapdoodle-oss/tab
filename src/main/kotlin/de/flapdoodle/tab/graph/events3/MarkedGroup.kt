@@ -1,5 +1,7 @@
 package de.flapdoodle.tab.graph.events3
 
+import de.flapdoodle.tab.graph.events.HasMarker
+import de.flapdoodle.tab.graph.events.IsMarker
 import javafx.event.EventTarget
 import javafx.scene.Group
 import javafx.scene.Node
