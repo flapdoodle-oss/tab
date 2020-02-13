@@ -2,13 +2,10 @@ package de.flapdoodle.tab
 
 import de.flapdoodle.tab.graph.SampleNode
 import de.flapdoodle.tab.graph.ZoomablePane
-import de.flapdoodle.tab.graph.events3.AdvGraphNode
-import de.flapdoodle.tab.graph.events3.GraphNode
 import de.flapdoodle.tab.graph.nodes.AbstractGraphNode
 import javafx.scene.layout.Background
 import javafx.scene.layout.BackgroundFill
 import javafx.scene.paint.Color
-import javafx.scene.paint.Paint
 import tornadofx.*
 import java.util.concurrent.ThreadLocalRandom
 

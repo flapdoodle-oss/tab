@@ -1,19 +1,11 @@
 package de.flapdoodle.tab.graph
 
-import de.flapdoodle.tab.graph.events3.AdvGraphNode
-import de.flapdoodle.tab.graph.events3.GraphNode
 import de.flapdoodle.tab.graph.events.HasMarker
-import de.flapdoodle.tab.graph.events.IsMarker
-import de.flapdoodle.tab.graph.events.MappedMouseEvent
-import de.flapdoodle.tab.graph.events.MouseEventHandler
-import de.flapdoodle.tab.graph.events.MouseEventHandlerResolver
-import de.flapdoodle.tab.graph.nodes.AbstractGraphNode
 import de.flapdoodle.tab.graph.nodes.GraphNodeMoveHandler
 import de.flapdoodle.tab.graph.nodes.GraphNodeResizeHandler
 import javafx.beans.property.SimpleDoubleProperty
 import javafx.beans.value.ObservableValue
 import javafx.geometry.Bounds
-import javafx.geometry.Point2D
 import javafx.scene.paint.Color
 import javafx.scene.shape.Rectangle
 import tornadofx.*
@@ -54,61 +46,9 @@ class ZoomablePane : Fragment("My View") {
     Zoomable.enableZoom(this, scale)
     Zoomable.enableDrag(this, content)
 
-    val resolver = MouseEventHandlerResolver.forType<AdvGraphNode.Move> { moveMarker ->
-      object : MouseEventHandler {
-        var dragStarted: Point2D? = null
-        var exited: Boolean = false
-
-        override fun onEvent(mouseEvent: MappedMouseEvent, marker: IsMarker?): MouseEventHandler? {
-          println("$mouseEvent -> $marker")
-          when (mouseEvent) {
-            is MappedMouseEvent.Click -> dragStarted = moveMarker.parent.position()
-            is MappedMouseEvent.Drag -> dragStarted?.let { it + mouseEvent.delta }?.apply {
-              println("should move ${moveMarker.parent} by ${mouseEvent.delta}")
-              moveMarker.parent.moveTo(this.x, this.y)
-            }
-            is MappedMouseEvent.Release -> dragStarted = null
-            is MappedMouseEvent.Exit -> exited = exited || marker == moveMarker
-          }
-
-          return if (exited && dragStarted == null) {
-            println("exit $moveMarker because no drag in progress")
-            null
-          } else
-            this
-        }
-      }
-    }.andThen(MouseEventHandlerResolver.forType<AdvGraphNode.Resize> { resizeMarker ->
-      object : MouseEventHandler {
-        var dragStarted: Point2D? = null
-        var exited: Boolean = false
-
-        override fun onEvent(mouseEvent: MappedMouseEvent, marker: IsMarker?): MouseEventHandler? {
-          println("$mouseEvent -> $marker")
-          when (mouseEvent) {
-            is MappedMouseEvent.Click -> dragStarted = resizeMarker.parent.size()
-            is MappedMouseEvent.Drag -> dragStarted?.let { it + mouseEvent.delta }?.apply {
-              println("should move ${resizeMarker.parent} by ${mouseEvent.delta}")
-              resizeMarker.parent.resizeTo(this.x, this.y)
-            }
-            is MappedMouseEvent.Release -> dragStarted = null
-            is MappedMouseEvent.Exit -> exited = exited || marker == resizeMarker
-          }
-
-          return if (exited && dragStarted == null) {
-            println("exit $resizeMarker because no drag in progress")
-            null
-          } else
-            this
-        }
-      }
-    }).andThen(GraphNodeMoveHandler.resolver)
+    val resolver = GraphNodeMoveHandler.resolver
         .andThen(GraphNodeResizeHandler.resolver)
 
     HasMarker.addEventDelegate(this, scale, resolver)
-
-    subscribe<GraphNode.EnterNodeEvent> { event ->
-      println("entered: ${event.parent}")
-    }
   }
 }
