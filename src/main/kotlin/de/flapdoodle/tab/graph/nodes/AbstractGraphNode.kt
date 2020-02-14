@@ -2,15 +2,10 @@ package de.flapdoodle.tab.graph.nodes
 
 import de.flapdoodle.tab.graph.events.IsMarker
 import de.flapdoodle.tab.graph.events.markedGroup
-import javafx.beans.property.SimpleStringProperty
 import javafx.geometry.Point2D
 import javafx.geometry.Pos
 import javafx.scene.Node
-import javafx.scene.layout.Background
-import javafx.scene.layout.BackgroundFill
-import javafx.scene.layout.Priority
 import javafx.scene.paint.Color
-import javafx.scene.paint.Paint
 import tornadofx.*
 
 abstract class AbstractGraphNode(

@@ -134,6 +134,15 @@
                     </execution>
                 </executions>
             </plugin>
+
+            <plugin>
+                <groupId>org.openjfx</groupId>
+                <artifactId>javafx-maven-plugin</artifactId>
+                <version>0.0.4</version>
+                <configuration>
+                    <mainClass>de.flapdoodle.tab.Tab</mainClass>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 
