@@ -1,5 +1,6 @@
 package de.flapdoodle.tab.graph.nodes
 
+import de.flapdoodle.tab.graph.events.HasMarkerProperty
 import de.flapdoodle.tab.graph.events.IsMarker
 import de.flapdoodle.tab.graph.events.markedGroup
 import javafx.geometry.Point2D
@@ -8,31 +9,21 @@ import javafx.scene.Node
 import javafx.scene.paint.Color
 import tornadofx.*
 
-abstract class AbstractGraphNode(
-    private val x: Double = 0.0,
-    private val y: Double = 0.0
-) : Fragment() {
+abstract class AbstractGraphNode() : Fragment() {
 
-  abstract internal fun content(): Node
+  internal abstract fun content(): Node
 
-  private val header = markedGroup(Move(this)) {
-    hbox {
-      useMaxWidth = true
+  private val header = hbox {
+    HasMarkerProperty.setMarker(this, Move(this@AbstractGraphNode))
+    useMaxWidth = true
 
-      label {
-        textProperty().bind(this@AbstractGraphNode.titleProperty)
-      }
+    label {
+      textProperty().bind(this@AbstractGraphNode.titleProperty)
     }
   }
 
   private val footer = hbox {
     alignment = Pos.BOTTOM_RIGHT
-
-//    label {
-//      text = "..."
-//      useMaxWidth = true
-//      hgrow = Priority.ALWAYS
-//    }
 
     markedGroup(Resize(this@AbstractGraphNode)) {
       rectangle {
@@ -46,7 +37,6 @@ abstract class AbstractGraphNode(
   }
 
   private val window = borderpane {
-    relocate(x, y)
     autosize()
 
     style(append = true) {

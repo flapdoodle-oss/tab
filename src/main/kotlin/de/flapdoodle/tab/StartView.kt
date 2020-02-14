@@ -3,6 +3,7 @@ package de.flapdoodle.tab
 import de.flapdoodle.tab.graph.SampleNode
 import de.flapdoodle.tab.graph.ZoomablePane
 import de.flapdoodle.tab.graph.nodes.AbstractGraphNode
+import de.flapdoodle.tab.graph.nodes.DummyNode
 import javafx.scene.Node
 import javafx.scene.layout.Background
 import javafx.scene.layout.BackgroundFill
@@ -63,7 +64,7 @@ class StartView : View("My View") {
       val x = ThreadLocalRandom.current().nextDouble(200.0,400.0)
       val y = ThreadLocalRandom.current().nextDouble(200.0,400.0)
 
-      val node = object : AbstractGraphNode(x, y) {
+      val node = object : AbstractGraphNode() {
         override fun content() =  group {
           rectangle {
             style {
@@ -74,7 +75,18 @@ class StartView : View("My View") {
           }
         }
       }
+      node.moveTo(x,y)
       node.title = "Node($it)"
+      zoomablePane.content += node
+    }
+
+    (1..5).forEach {
+      val x = ThreadLocalRandom.current().nextDouble(200.0, 400.0)
+      val y = ThreadLocalRandom.current().nextDouble(200.0, 400.0)
+
+      val node = DummyNode()
+      node.moveTo(x,y)
+      node.title = "Dummy($it)"
       zoomablePane.content += node
     }
 

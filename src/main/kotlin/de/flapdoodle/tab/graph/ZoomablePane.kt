@@ -1,6 +1,6 @@
 package de.flapdoodle.tab.graph
 
-import de.flapdoodle.tab.graph.events.HasMarker
+import de.flapdoodle.tab.graph.events.Marker
 import de.flapdoodle.tab.graph.nodes.GraphNodeMoveHandler
 import de.flapdoodle.tab.graph.nodes.GraphNodeResizeHandler
 import javafx.beans.property.SimpleDoubleProperty
@@ -49,6 +49,6 @@ class ZoomablePane : Fragment("My View") {
     val resolver = GraphNodeMoveHandler.resolver
         .andThen(GraphNodeResizeHandler.resolver)
 
-    HasMarker.addEventDelegate(this, scale, resolver)
+    Marker.addEventDelegate(this, scale, resolver)
   }
 }
