@@ -3,6 +3,7 @@ package de.flapdoodle.tab
 import de.flapdoodle.tab.graph.SampleNode
 import de.flapdoodle.tab.graph.ZoomablePane
 import de.flapdoodle.tab.graph.nodes.AbstractGraphNode
+import javafx.scene.Node
 import javafx.scene.layout.Background
 import javafx.scene.layout.BackgroundFill
 import javafx.scene.paint.Color
@@ -63,7 +64,15 @@ class StartView : View("My View") {
       val y = ThreadLocalRandom.current().nextDouble(200.0,400.0)
 
       val node = object : AbstractGraphNode(x, y) {
-
+        override fun content() =  group {
+          rectangle {
+            style {
+              fill = Color.BLUE
+              width = 20.0
+              height =20.0
+            }
+          }
+        }
       }
       node.title = "Node($it)"
       zoomablePane.content += node

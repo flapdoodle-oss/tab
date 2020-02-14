@@ -5,6 +5,7 @@ import de.flapdoodle.tab.graph.events.markedGroup
 import javafx.beans.property.SimpleStringProperty
 import javafx.geometry.Point2D
 import javafx.geometry.Pos
+import javafx.scene.Node
 import javafx.scene.layout.Background
 import javafx.scene.layout.BackgroundFill
 import javafx.scene.layout.Priority
@@ -16,6 +17,8 @@ abstract class AbstractGraphNode(
     private val x: Double = 0.0,
     private val y: Double = 0.0
 ) : Fragment() {
+
+  abstract internal fun content(): Node
 
   private val header = markedGroup(Move(this)) {
     hbox {
@@ -48,10 +51,13 @@ abstract class AbstractGraphNode(
   }
 
   private val window = borderpane {
-    relocate(x,y)
+    relocate(x, y)
+    autosize()
 
     style(append = true) {
       backgroundColor += Color.WHITE
+      backgroundRadius += box(5.0.px)
+
       borderColor += box(
           top = Color.RED,
           right = Color.DARKGREEN,
@@ -63,15 +69,11 @@ abstract class AbstractGraphNode(
       borderRadius += box(5.0.px)
     }
 
-    top = header
-    center = rectangle {
-      style {
-        width = 30.0
-        height = 30.0
-        fill = Color.BLUE
-      }
+    center = borderpane {
+      top = header
+      center = content()
+      bottom = footer
     }
-    bottom = footer
   }
 
   override val root = group {
