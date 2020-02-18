@@ -10,7 +10,7 @@ import javafx.scene.Node
 import javafx.scene.paint.Color
 import tornadofx.*
 
-abstract class AbstractGraphNode() : Fragment() {
+abstract class AbstractGraphNode : Fragment() {
 
   internal abstract fun content(): Node
 
