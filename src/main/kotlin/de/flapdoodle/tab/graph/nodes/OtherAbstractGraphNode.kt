@@ -8,23 +8,23 @@ import javafx.scene.Node
 import javafx.scene.paint.Color
 import tornadofx.*
 
-abstract class AbstractGraphNode() : Fragment(), Moveable, Resizeable {
-
-  internal abstract fun content(): Node
+abstract class OtherAbstractGraphNode<T : Node>(
+    contentFactory: NodeFactory<T>
+) : Fragment(), Moveable, Resizeable {
 
   private val header = hbox {
-    marker = Move(this@AbstractGraphNode)
+    marker = Move(this@OtherAbstractGraphNode)
     useMaxWidth = true
 
     label {
-      textProperty().bind(this@AbstractGraphNode.titleProperty)
+      textProperty().bind(this@OtherAbstractGraphNode.titleProperty)
     }
   }
 
   private val footer = hbox {
     alignment = Pos.BOTTOM_RIGHT
 
-    markedGroup(Resize(this@AbstractGraphNode)) {
+    markedGroup(Resize(this@OtherAbstractGraphNode)) {
       rectangle {
         style {
           fill = Color.GREEN
@@ -55,7 +55,7 @@ abstract class AbstractGraphNode() : Fragment(), Moveable, Resizeable {
 
     center = borderpane {
       top = header
-      center = content()
+      center = contentFactory.newInstance()
       bottom = footer
     }
   }

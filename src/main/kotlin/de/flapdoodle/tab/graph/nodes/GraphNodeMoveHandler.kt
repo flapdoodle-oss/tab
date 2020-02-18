@@ -8,7 +8,7 @@ import javafx.geometry.Point2D
 import tornadofx.*
 
 class GraphNodeMoveHandler(
-    private val moveMarker: AbstractGraphNode.Move
+    private val moveMarker: Move
 ) : MouseEventHandler{
   var dragStarted: Point2D? = null
   var exited: Boolean = false

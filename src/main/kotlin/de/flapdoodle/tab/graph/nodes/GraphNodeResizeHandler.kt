@@ -8,7 +8,7 @@ import javafx.geometry.Point2D
 import tornadofx.*
 
 class GraphNodeResizeHandler(
-    private val resizeMarker: AbstractGraphNode.Resize
+    private val resizeMarker: Resize
 ) : MouseEventHandler {
   var dragStarted: Point2D? = null
   var exited: Boolean = false
