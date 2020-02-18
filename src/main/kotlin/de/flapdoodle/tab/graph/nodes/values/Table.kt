@@ -6,7 +6,7 @@ import javafx.scene.Parent
 import javafx.scene.control.TableView
 import tornadofx.*
 
-class Table : Fragment(), NodeFactory<TableView<Dummy>> {
+class Table : Fragment(), () -> TableView<Dummy> {
   val list = listOf(
       Dummy("Klaus", 17),
       Dummy(null, 19),
@@ -19,7 +19,7 @@ class Table : Fragment(), NodeFactory<TableView<Dummy>> {
     column("age", Dummy::ageProperty).makeEditable()
   }
 
-  override fun newInstance(): TableView<Dummy> {
+  override fun invoke(): TableView<Dummy> {
     return TableView<Dummy>().apply {
       this.items = list
 

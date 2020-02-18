@@ -8,9 +8,9 @@ import javafx.scene.Node
 import javafx.scene.paint.Color
 import tornadofx.*
 
-abstract class AbstractGraphNode() : Fragment(), Moveable, Resizeable {
-
-  internal abstract fun content(): Node
+abstract class AbstractGraphNode<T : Node>(
+    contentFactory: () -> T
+) : Fragment(), Moveable, Resizeable {
 
   private val header = hbox {
     marker = Move(this@AbstractGraphNode)
@@ -55,7 +55,7 @@ abstract class AbstractGraphNode() : Fragment(), Moveable, Resizeable {
 
     center = borderpane {
       top = header
-      center = content()
+      center = contentFactory()
       bottom = footer
     }
   }

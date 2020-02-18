@@ -2,10 +2,10 @@ package de.flapdoodle.tab
 
 import de.flapdoodle.tab.graph.SampleNode
 import de.flapdoodle.tab.graph.ZoomablePane
-import de.flapdoodle.tab.graph.nodes.AbstractGraphNode
 import de.flapdoodle.tab.graph.nodes.DummyNode
+import de.flapdoodle.tab.graph.nodes.AbstractGraphNode
 import de.flapdoodle.tab.graph.nodes.values.ValuesNode
-import javafx.scene.Node
+import javafx.scene.Group
 import javafx.scene.layout.Background
 import javafx.scene.layout.BackgroundFill
 import javafx.scene.paint.Color
@@ -65,8 +65,8 @@ class StartView : View("My View") {
       val x = ThreadLocalRandom.current().nextDouble(200.0,400.0)
       val y = ThreadLocalRandom.current().nextDouble(200.0,400.0)
 
-      val node = object : AbstractGraphNode() {
-        override fun content() =  group {
+      val node = object : AbstractGraphNode<Group>({
+        Group().apply {
           rectangle {
             style {
               fill = Color.BLUE
@@ -75,7 +75,8 @@ class StartView : View("My View") {
             }
           }
         }
-      }
+      }){}
+
       node.moveTo(x,y)
       node.title = "Node($it)"
       zoomablePane.content += node
