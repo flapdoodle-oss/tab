@@ -3,6 +3,7 @@ package de.flapdoodle.tab.graph.nodes
 import de.flapdoodle.tab.graph.events.HasMarkerProperty
 import de.flapdoodle.tab.graph.events.IsMarker
 import de.flapdoodle.tab.graph.events.markedGroup
+import de.flapdoodle.tab.graph.events.marker
 import javafx.geometry.Point2D
 import javafx.geometry.Pos
 import javafx.scene.Node
@@ -14,7 +15,7 @@ abstract class AbstractGraphNode() : Fragment() {
   internal abstract fun content(): Node
 
   private val header = hbox {
-    HasMarkerProperty.setMarker(this, Move(this@AbstractGraphNode))
+    marker = Move(this@AbstractGraphNode)
     useMaxWidth = true
 
     label {

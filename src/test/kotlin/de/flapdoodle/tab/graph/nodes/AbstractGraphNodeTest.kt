@@ -11,6 +11,7 @@ internal class AbstractGraphNodeTest {
 
     // this should be wrong..
     assertEquals(listOf(null,"Bar"), testee.all)
+    assertEquals(listOf("Foo","Bar"), testee.other)
   }
 
   abstract class BaseClass {
@@ -18,6 +19,8 @@ internal class AbstractGraphNodeTest {
     abstract fun bar(): String
 
     val all = listOf(foo,bar())
+    val other: List<String>
+      get() = listOf(foo,bar())
   }
 
   class Derived : BaseClass() {
