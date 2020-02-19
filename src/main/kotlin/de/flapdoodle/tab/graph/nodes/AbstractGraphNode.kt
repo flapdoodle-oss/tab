@@ -5,6 +5,8 @@ import de.flapdoodle.tab.graph.events.marker
 import javafx.geometry.Point2D
 import javafx.geometry.Pos
 import javafx.scene.Node
+import javafx.scene.effect.DropShadow
+import javafx.scene.effect.Reflection
 import javafx.scene.paint.Color
 import tornadofx.*
 
@@ -62,6 +64,16 @@ abstract class AbstractGraphNode<T : Node>(
 
   override val root = group {
     this += window
+    effect = DropShadow().apply {
+      offsetX = 3.0
+      offsetY = 3.0
+      radius = 10.0
+      color = Color.GRAY
+    }
+
+//    effect = Reflection().apply {
+//
+//    }
   }
 
   override fun position(): Point2D {
@@ -79,4 +91,6 @@ abstract class AbstractGraphNode<T : Node>(
   override fun resizeTo(width: Double, height: Double) {
     window.setPrefSize(width, height)
   }
+
+
 }
