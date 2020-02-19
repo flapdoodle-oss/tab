@@ -8,6 +8,7 @@ import javafx.scene.control.TableView
 import javafx.scene.layout.Priority
 import javafx.scene.layout.VBox
 import tornadofx.*
+import tornadofx.adapters.toTornadoFXFeatures
 
 class Table : () -> VBox {
   val list = listOf(
@@ -21,8 +22,12 @@ class Table : () -> VBox {
       val table = tableview(list) {
         isEditable = true
         vgrow = Priority.ALWAYS
-        column("name", Dummy::nameProperty).makeEditable()
-        column("age", Dummy::ageProperty).makeEditable()
+        column("name", Dummy::nameProperty) {
+          isReorderable = false
+        }.makeEditable()
+        column("age", Dummy::ageProperty) {
+          isReorderable = false
+        }.makeEditable()
       }
 
 
