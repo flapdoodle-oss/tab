@@ -9,8 +9,11 @@ import javafx.beans.property.ReadOnlyObjectWrapper
 import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.value.ObservableObjectValue
 import javafx.scene.control.TableColumn
+import javafx.scene.control.TextField
 import javafx.scene.control.cell.TextFieldTableCell
+import javafx.scene.layout.Priority
 import javafx.scene.layout.VBox
+import javafx.scene.paint.Color
 import javafx.util.Callback
 import javafx.util.StringConverter
 import javafx.util.converter.BigDecimalStringConverter
@@ -49,6 +52,7 @@ class TableNode(
         }
       }
     }
+    ret.isReorderable = false
     ret.makeEditable(columnId.type)
     return ret
   }
@@ -57,7 +61,20 @@ class TableNode(
     return VBox().apply {
       val table = tableview(rows) {
         isEditable = true
+        vgrow = Priority.ALWAYS
         columns.syncFrom(columnList) { tableColumn(it) }
+      }
+      hbox {
+        children.syncFrom(table.columns) {
+          TextField().apply {
+            require(it != null) { "column is null" }
+            text = it.text
+            prefWidthProperty().bind(it.widthProperty())
+          }
+        }
+//        textfield("foo") {
+//          prefWidthProperty().bind(table.columns.get(0).widthProperty())
+//        }
       }
     }
   }
