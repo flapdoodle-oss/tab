@@ -26,7 +26,7 @@ data class Table(private val columns: List<Column<out Any>> = emptyList()) {
   }
 
   fun rows(): List<Row> {
-    return (0..size()).mapIndexed { idx, row ->
+    return (0 until size()).mapIndexed { idx, row ->
       Row(idx, columns.map { it.id to it[row] }.toMap())
     }
   }

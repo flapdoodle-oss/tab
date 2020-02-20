@@ -102,7 +102,9 @@ object ObservableLists {
         ret.add(list[it])
       }
       (0 until ret.size).forEach {
-        ret[it] = list[it]
+        if (ret[it] != list[it]) {
+          ret[it] = list[it]
+        }
       }
     }
 
