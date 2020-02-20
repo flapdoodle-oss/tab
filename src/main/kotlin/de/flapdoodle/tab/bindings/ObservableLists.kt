@@ -55,9 +55,13 @@ object ObservableLists {
           (change.from until change.to).forEach {
             dst[it] = map(src[it])
           }
+        } else if (change.wasReplaced()) {
+          (change.from until change.to).forEach {
+            dst[it] = map(src[it])
+          }
         } else {
           if (change.wasRemoved()) {
-            require(!change.wasAdded()) { "change was added is not expected here" }
+            require(!change.wasAdded()) { "change was added is not expected here: $change" }
             debug { "-> ${change.from} : ${change.to}" }
             dst.remove(change.from, change.to + 1)
           }

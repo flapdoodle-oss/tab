@@ -1,5 +1,7 @@
 package de.flapdoodle.tab
 
+import de.flapdoodle.tab.data.Column
+import de.flapdoodle.tab.data.ColumnId
 import de.flapdoodle.tab.data.Table
 import de.flapdoodle.tab.graph.SampleNode
 import de.flapdoodle.tab.graph.ZoomablePane
@@ -105,12 +107,17 @@ class StartView : View("My View") {
       zoomablePane.content += node
     }
 
-    (1..1).forEach {
+    val tableProperty = SimpleObjectProperty(Table()
+        .add(Column(ColumnId(String::class,"name"))
+            .set(3,"Klaus"))
+        .add(Column(ColumnId(Int::class,"age"))
+            .set(7,99)))
+
+    (1..2).forEach {
       val x = ThreadLocalRandom.current().nextDouble(0.0, 400.0)
       val y = ThreadLocalRandom.current().nextDouble(0.0, 400.0)
 
-      val table = Table()
-      val node = NewValuesNode(SimpleObjectProperty(table))
+      val node = NewValuesNode(tableProperty)
       node.moveTo(x,y)
       node.title = "New Value($it)"
       zoomablePane.content += node
