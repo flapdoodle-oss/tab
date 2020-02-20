@@ -1,6 +1,8 @@
 package de.flapdoodle.tab.graph.nodes.values
 
+import de.flapdoodle.tab.data.Table
 import de.flapdoodle.tab.graph.nodes.NodeFactory
+import javafx.beans.property.ObjectProperty
 import javafx.event.EventTarget
 import javafx.scene.Parent
 import javafx.scene.control.ContextMenu
@@ -12,7 +14,7 @@ import javafx.scene.layout.VBox
 import tornadofx.*
 import tornadofx.adapters.toTornadoFXFeatures
 
-class Table : () -> VBox {
+class DummyTableNode() : () -> VBox {
   val list = listOf(
       Dummy("Klaus", 17),
       Dummy(null, 19),

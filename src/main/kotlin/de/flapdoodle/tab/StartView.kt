@@ -1,10 +1,13 @@
 package de.flapdoodle.tab
 
+import de.flapdoodle.tab.data.Table
 import de.flapdoodle.tab.graph.SampleNode
 import de.flapdoodle.tab.graph.ZoomablePane
 import de.flapdoodle.tab.graph.nodes.DummyNode
 import de.flapdoodle.tab.graph.nodes.AbstractGraphNode
+import de.flapdoodle.tab.graph.nodes.values.NewValuesNode
 import de.flapdoodle.tab.graph.nodes.values.ValuesNode
+import javafx.beans.property.SimpleObjectProperty
 import javafx.scene.Group
 import javafx.scene.layout.Background
 import javafx.scene.layout.BackgroundFill
@@ -102,6 +105,16 @@ class StartView : View("My View") {
       zoomablePane.content += node
     }
 
+    (1..1).forEach {
+      val x = ThreadLocalRandom.current().nextDouble(0.0, 400.0)
+      val y = ThreadLocalRandom.current().nextDouble(0.0, 400.0)
+
+      val table = Table()
+      val node = NewValuesNode(SimpleObjectProperty(table))
+      node.moveTo(x,y)
+      node.title = "New Value($it)"
+      zoomablePane.content += node
+    }
 //    zoomablePane.content.apply {
 //      children += SampleNode().root
 //    }
