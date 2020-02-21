@@ -108,9 +108,9 @@ class StartView : View("My View") {
     }
 
     val tableProperty = SimpleObjectProperty(Table()
-        .add(Column(ColumnId(String::class,"name"))
+        .add(Column.named<String>("name")
             .set(3,"Klaus"))
-        .add(Column(ColumnId(Int::class,"age"))
+        .add(Column.named<Int>("age")
             .set(7,99)))
 
     (1..2).forEach {

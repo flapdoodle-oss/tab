@@ -2,7 +2,17 @@ package de.flapdoodle.tab.data
 
 import kotlin.reflect.KClass
 
-data class Column<T : Any>(val id: ColumnId<T>, private val rows: Map<Int, T> = emptyMap()) {
+data class Column<T : Any>(
+    val id: ColumnId<T>,
+    val name: String,
+    private val rows: Map<Int, T> = emptyMap()
+) {
+
+  companion object {
+    inline fun <reified T: Any> named(name: String): Column<T> {
+      return Column(ColumnId.create(), name)
+    }
+  }
 
   fun size(): Int {
     return rows.keys.max()?.let { it + 1 } ?: 0

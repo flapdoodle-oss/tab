@@ -1,13 +1,12 @@
-package de.flapdoodle.tab.data
+package de.flapdoodle.tab.types
 
-import de.flapdoodle.tab.types.Id
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.reflect.KClass
 
-data class ColumnId<T: Any>(
+data class Id<T : Any> constructor(
     val type: KClass<T>,
-    val id: Int = nextIdFor(type)
+    val id: Int
 ) {
   companion object {
     private val idGeneratorMap = ConcurrentHashMap<KClass<out Any>, AtomicInteger>()
@@ -16,11 +15,11 @@ data class ColumnId<T: Any>(
       return idGeneratorMap.getOrPut(type, { AtomicInteger() }).incrementAndGet()
     }
 
-    fun <T : Any> create(type: KClass<T>): ColumnId<T> {
-      return ColumnId(type, nextIdFor(type))
+    fun <T : Any> create(type: KClass<T>): Id<T> {
+      return Id(type, nextIdFor(type))
     }
 
-    inline fun <reified T : Any> create(): ColumnId<T> {
+    inline fun <reified T : Any> create(): Id<T> {
       return create(T::class)
     }
   }

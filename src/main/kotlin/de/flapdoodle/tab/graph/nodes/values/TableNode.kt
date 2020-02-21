@@ -2,6 +2,7 @@ package de.flapdoodle.tab.graph.nodes.values
 
 import de.flapdoodle.tab.bindings.mapToList
 import de.flapdoodle.tab.bindings.syncFrom
+import de.flapdoodle.tab.data.Column
 import de.flapdoodle.tab.data.ColumnId
 import de.flapdoodle.tab.data.Table
 import javafx.beans.property.ObjectProperty
@@ -40,20 +41,20 @@ class TableNode(
 ) : () -> VBox {
 
   val rows = table.mapToList(Table::rows)
-  val columnList = table.mapToList(Table::columnIds)
+  val columnList = table.mapToList(Table::columns)
 
-  private fun <T : Any> tableColumn(columnId: ColumnId<T>?): TableColumn<Table.Row, T> {
-    val ret = TableColumn<Table.Row, T>(columnId!!.name)
+  private fun <T : Any> tableColumn(column: Column<T>?): TableColumn<Table.Row, T> {
+    val ret = TableColumn<Table.Row, T>(column!!.name)
     ret.cellValueFactory = Callback {
       val row = it.value
-      SimpleObjectProperty(row[columnId]).apply {
+      SimpleObjectProperty(row[column.id]).apply {
         onChange {
-          table.value = table.value.change(columnId, row.index, it)
+          table.value = table.value.change(column.id, row.index, it)
         }
       }
     }
     ret.isReorderable = false
-    ret.makeEditable(columnId.type)
+    ret.makeEditable(column.id.type)
     return ret
   }
 

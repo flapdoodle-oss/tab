@@ -1,12 +1,16 @@
 package de.flapdoodle.tab.data
 
-data class Table(private val columns: List<Column<out Any>> = emptyList()) {
+import de.flapdoodle.tab.types.Id
+
+data class Table(
+    val id: Id<Table> = Id.create(),
+    val columns: List<Column<out Any>> = emptyList()
+) {
   fun size() = columns.map { it.size() }.max() ?: 0
 
   fun columnIds() = columns.map { it.id }
 
   fun add(column: Column<*>): Table {
-    require(!columns.any { it.id == column.id }) { "column with id ${column.id} already set" }
     return copy(columns = columns + column)
   }
 
@@ -31,7 +35,7 @@ data class Table(private val columns: List<Column<out Any>> = emptyList()) {
     }
   }
 
-  data class Row(val index: Int, private val map: Map<ColumnId<*>, Any?>) {
+  data class Row(val index: Int, private val map: Map<ColumnId<out Any>, Any?>) {
     operator fun <T : Any> get(id: ColumnId<T>): T? {
       @Suppress("UNCHECKED_CAST")
       return map[id] as T?
