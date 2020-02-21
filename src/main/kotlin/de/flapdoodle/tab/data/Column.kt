@@ -1,7 +1,5 @@
 package de.flapdoodle.tab.data
 
-import kotlin.reflect.KClass
-
 data class Column<T : Any>(
     val id: ColumnId<T>,
     val name: String,

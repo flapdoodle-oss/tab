@@ -8,8 +8,6 @@ data class Table(
 ) {
   fun size() = columns.map { it.size() }.max() ?: 0
 
-  fun columnIds() = columns.map { it.id }
-
   fun add(column: Column<*>): Table {
     return copy(columns = columns + column)
   }

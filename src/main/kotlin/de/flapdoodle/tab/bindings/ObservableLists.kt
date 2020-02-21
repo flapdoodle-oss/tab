@@ -6,7 +6,7 @@ import javafx.collections.ListChangeListener
 import javafx.collections.ObservableList
 import tornadofx.*
 
-fun <S: Any, D: Any> ObservableValue<S>.mapToList(map: (S) -> List<D?>): ObservableLists.MappedObservableList<D> {
+fun <S: Any, D: Any> ObservableValue<S>.mapToList(map: (S) -> List<D?>): RegisteredObservableList<D> {
   return ObservableLists.mapToList(this, map)
 }
 
@@ -85,13 +85,13 @@ object ObservableLists {
     }
   }
 
-  fun <S : Any, D : Any> map(src: ObservableList<S>, map: (S?) -> D?): MappedObservableList<D> {
+  fun <S : Any, D : Any> map(src: ObservableList<S>, map: (S?) -> D?): RegisteredObservableList<D> {
     val ret = FXCollections.observableArrayList<D>()
     val registration = addMappedSync(src, ret, map)
-    return MappedObservableList(ret, registration)
+    return RegisteredObservableList(ret, registration)
   }
 
-  fun <S : Any, D : Any> mapToList(src: ObservableValue<S>, map: (S) -> List<D?>): MappedObservableList<D> {
+  fun <S : Any, D : Any> mapToList(src: ObservableValue<S>, map: (S) -> List<D?>): RegisteredObservableList<D> {
     val ret = FXCollections.observableArrayList<D>()
     val changeListener = javafx.beans.value.ChangeListener<S> { _, _, newValue: S? ->
       val list = if (newValue != null) map(newValue) else emptyList()
@@ -112,11 +112,7 @@ object ObservableLists {
 
     src.addListener(changeListener)
     val registration = Registration { src.removeListener(changeListener) }
-    return MappedObservableList(ret, registration)
+    return RegisteredObservableList(ret, registration)
   }
 
-  class MappedObservableList<T : Any>(
-      wrapped: ObservableList<T>,
-      private val registration: Registration
-  ) : ObservableList<T> by wrapped
 }

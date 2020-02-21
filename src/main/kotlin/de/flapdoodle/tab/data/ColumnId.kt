@@ -1,6 +1,5 @@
 package de.flapdoodle.tab.data
 
-import de.flapdoodle.tab.types.Id
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.reflect.KClass

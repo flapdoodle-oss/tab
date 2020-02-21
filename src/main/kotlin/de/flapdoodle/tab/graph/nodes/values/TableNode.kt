@@ -9,6 +9,8 @@ import javafx.beans.property.ObjectProperty
 import javafx.beans.property.ReadOnlyObjectWrapper
 import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.value.ObservableObjectValue
+import javafx.beans.value.ObservableValue
+import javafx.beans.value.WritableObjectValue
 import javafx.scene.control.TableColumn
 import javafx.scene.control.TextField
 import javafx.scene.control.cell.TextFieldTableCell
@@ -36,9 +38,11 @@ import java.time.LocalDateTime
 import java.time.LocalTime
 import kotlin.reflect.KClass
 
-class TableNode(
-    private val table: ObjectProperty<Table>
-) : () -> VBox {
+class TableNode<W>(
+    private val table: W
+) : () -> VBox
+    where W : ObservableValue<Table>,
+          W : WritableObjectValue<Table> {
 
   val rows = table.mapToList(Table::rows)
   val columnList = table.mapToList(Table::columns)
@@ -49,7 +53,7 @@ class TableNode(
       val row = it.value
       SimpleObjectProperty(row[column.id]).apply {
         onChange {
-          table.value = table.value.change(column.id, row.index, it)
+          table.set(table.get().change(column.id, row.index, it))
         }
       }
     }
