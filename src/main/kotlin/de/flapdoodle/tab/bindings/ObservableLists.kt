@@ -1,87 +1,45 @@
 package de.flapdoodle.tab.bindings
 
+import de.flapdoodle.tab.fx.SingleThreadMutex
+import javafx.beans.value.ChangeListener
 import javafx.beans.value.ObservableValue
+import javafx.beans.value.WeakChangeListener
 import javafx.collections.FXCollections
 import javafx.collections.ListChangeListener
 import javafx.collections.ObservableList
-import tornadofx.*
+import javafx.collections.WeakListChangeListener
 
-fun <S: Any, D: Any> ObservableValue<S>.mapToList(map: (S) -> List<D?>): RegisteredObservableList<D> {
+fun <S : Any, D : Any> ObservableValue<S>.mapToList(map: (S) -> List<D?>): RegisteredObservableList<D> {
   return ObservableLists.mapToList(this, map)
 }
 
-fun <S: Any, D: Any> ObservableList<D>.syncFrom(src: ObservableList<S>, map: (S?) -> D?): Registration {
+fun <S : Any, D : Any> ObservableList<D>.syncFrom(src: ObservableList<S>, map: (S?) -> D?): Registration {
   return ObservableLists.addMappedSync(src, this, map)
 }
 
 object ObservableLists {
 
-  private fun debug(msg: () -> String) {
-    if (false) println(msg())
-  }
-
-  private fun permutationToSwap(from: Int, to: Int, newIndex: (Int) -> Int, swapAction: (Int, Int) -> Unit) {
-    debug { "---------------------" }
-    (from until to).forEach {
-      debug { "move $it -> ${newIndex(it)}" }
-    }
-    val firstToSwap = (from until to).find { newIndex(it) != it }
-    debug { "firstToSwap: $firstToSwap" }
-    val swapsNeeded = (from until to).count { newIndex(it) != it } - 1
-    debug { "loops: $swapsNeeded" }
-    if (firstToSwap != null) {
-
-      var start = firstToSwap!!
-      val src = start
-
-      (0 until swapsNeeded).forEach {
-        val dst = newIndex(start)
-        require(dst != start) { "$dst == $start" }
-        debug { "$start ($src) -> $dst" }
-        swapAction(src, dst)
-        start = dst
-      }
-    }
-    debug { "---------------------" }
-  }
-
   fun <S : Any, D : Any> addMappedSync(src: ObservableList<S>, dst: ObservableList<D>, map: (S?) -> D?): Registration {
-    val changeListener = ListChangeListener<S> { change ->
-      while (change.next()) {
-        debug { "change: $change" }
-        if (change.wasPermutated()) {
-          permutationToSwap(change.from, change.to, change::getPermutation) { a, b -> dst.swap(a, b) }
-        } else if (change.wasUpdated()) {
-          (change.from until change.to).forEach {
-            dst[it] = map(src[it])
-          }
-        } else if (change.wasReplaced()) {
-          (change.from until change.to).forEach {
-            dst[it] = map(src[it])
-          }
-        } else {
-          if (change.wasRemoved()) {
-            require(!change.wasAdded()) { "change was added is not expected here: $change" }
-            debug { "-> ${change.from} : ${change.to}" }
-            dst.remove(change.from, change.to + 1)
-          }
-          if (change.wasAdded()) {
-            (change.from until change.to).forEach {
-              dst.add(it, map(src[it]))
-            }
-          }
-        }
+    val mutex = SingleThreadMutex()
 
-      }
+    val wrappedSrcChangeListener = ListChangeListeners.executeIn(mutex, MappingListChangeListener(dst, map))
+    val srcChangeListener = wrappedSrcChangeListener.wrap(::WeakListChangeListener)
+
+    val dstChangeListener = ListChangeListeners.failOnModification<D> { "$dst is synced" }
+        .tryExecuteIn(mutex)
+        .keepReference(wrappedSrcChangeListener)
+
+    src.addListener(srcChangeListener)
+    dst.addListener(dstChangeListener)
+
+    mutex.execute {
+      dst.clear()
+      src.forEach { dst.add(map(it)) }
     }
-
-    dst.clear()
-    src.forEach { dst.add(map(it)) }
-
-    src.addListener(changeListener)
 
     return Registration {
-      src.removeListener(changeListener)
+      src.removeListener(srcChangeListener)
+      dst.removeListener(dstChangeListener)
     }
   }
 
@@ -92,27 +50,42 @@ object ObservableLists {
   }
 
   fun <S : Any, D : Any> mapToList(src: ObservableValue<S>, map: (S) -> List<D?>): RegisteredObservableList<D> {
-    val ret = FXCollections.observableArrayList<D>()
-    val changeListener = javafx.beans.value.ChangeListener<S> { _, _, newValue: S? ->
-      val list = if (newValue != null) map(newValue) else emptyList()
-      if (list.size < ret.size) {
-        ret.remove(list.size, ret.size)
-      }
-      (ret.size until list.size).forEach {
-        ret.add(list[it])
-      }
-      (0 until ret.size).forEach {
-        if (ret[it] != list[it]) {
-          ret[it] = list[it]
-        }
+    val mutex = SingleThreadMutex()
+
+    val dst = FXCollections.observableArrayList<D>()
+
+    val wrappedChangeListener = ToListChangeListener(dst, map).executeIn(mutex)
+    val srcChangeListener = wrappedChangeListener.wrap(::WeakChangeListener)
+
+    val dstChangeListener = ListChangeListeners.failOnModification<D> { "$dst is synced" }
+        .tryExecuteIn(mutex)
+        .keepReference(wrappedChangeListener)
+
+    src.addListener(srcChangeListener)
+    dst.addListener(dstChangeListener)
+
+    mutex.execute {
+      val s = src.value
+      if (s!=null) {
+        dst.addAll(map(s))
       }
     }
 
-    ret.addAll(map(src.value))
-
-    src.addListener(changeListener)
-    val registration = Registration { src.removeListener(changeListener) }
-    return RegisteredObservableList(ret, registration)
+    val registration = Registration {
+      src.removeListener(wrappedChangeListener)
+      dst.removeListener(dstChangeListener)
+    }
+    return RegisteredObservableList(dst, registration)
   }
 
+  private fun <D : Any, S : Any> changeProtectionListener(keepReference: ChangeListener<S>, mutex: SingleThreadMutex, dst: ObservableList<D>?, src: ObservableValue<S>): ListChangeListener<D> {
+    return object : ListChangeListener<D> {
+      private val keepReference = keepReference
+      override fun onChanged(it: ListChangeListener.Change<out D>) {
+        mutex.tryExecute {
+          throw IllegalArgumentException("$dst is synced with $src")
+        }
+      }
+    }
+  }
 }

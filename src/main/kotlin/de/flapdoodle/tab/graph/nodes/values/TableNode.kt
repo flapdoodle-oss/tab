@@ -1,5 +1,6 @@
 package de.flapdoodle.tab.graph.nodes.values
 
+import de.flapdoodle.tab.bindings.WritableObservableValue
 import de.flapdoodle.tab.bindings.mapToList
 import de.flapdoodle.tab.bindings.syncFrom
 import de.flapdoodle.tab.data.Column
@@ -38,11 +39,9 @@ import java.time.LocalDateTime
 import java.time.LocalTime
 import kotlin.reflect.KClass
 
-class TableNode<W>(
-    private val table: W
-) : () -> VBox
-    where W : ObservableValue<Table>,
-          W : WritableObjectValue<Table> {
+class TableNode(
+    private val table: WritableObservableValue<Table, *>
+) : () -> VBox {
 
   val rows = table.mapToList(Table::rows)
   val columnList = table.mapToList(Table::columns)
