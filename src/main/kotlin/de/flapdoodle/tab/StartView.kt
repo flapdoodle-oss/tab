@@ -69,65 +69,67 @@ class StartView : View("My View") {
 //      zoomablePane.content += AdvGraphNode(x,y)
 //    }
 
-    (1..5).forEach {
-      val x = ThreadLocalRandom.current().nextDouble(200.0,400.0)
-      val y = ThreadLocalRandom.current().nextDouble(200.0,400.0)
+    if (false) {
+      (1..5).forEach {
+        val x = ThreadLocalRandom.current().nextDouble(200.0, 400.0)
+        val y = ThreadLocalRandom.current().nextDouble(200.0, 400.0)
 
-      val node = object : AbstractGraphNode<Group>({
-        Group().apply {
-          rectangle {
-            style {
-              fill = Color.BLUE
-              width = 20.0
-              height =20.0
+        val node = object : AbstractGraphNode<Group>({
+          Group().apply {
+            rectangle {
+              style {
+                fill = Color.BLUE
+                width = 20.0
+                height = 20.0
+              }
             }
           }
-        }
-      }){}
+        }) {}
 
-      node.moveTo(x,y)
-      node.title = "Node($it)"
-      zoomablePane.content += node
-    }
+        node.moveTo(x, y)
+        node.title = "Node($it)"
+        zoomablePane.content += node
+      }
 
-    (1..5).forEach {
-      val x = ThreadLocalRandom.current().nextDouble(200.0, 400.0)
-      val y = ThreadLocalRandom.current().nextDouble(200.0, 400.0)
+      (1..5).forEach {
+        val x = ThreadLocalRandom.current().nextDouble(200.0, 400.0)
+        val y = ThreadLocalRandom.current().nextDouble(200.0, 400.0)
 
-      val node = DummyNode()
-      node.moveTo(x,y)
-      node.title = "Dummy($it)"
-      zoomablePane.content += node
-    }
+        val node = DummyNode()
+        node.moveTo(x, y)
+        node.title = "Dummy($it)"
+        zoomablePane.content += node
+      }
 
-    (1..3).forEach {
-      val x = ThreadLocalRandom.current().nextDouble(0.0, 400.0)
-      val y = ThreadLocalRandom.current().nextDouble(0.0, 400.0)
+      (1..3).forEach {
+        val x = ThreadLocalRandom.current().nextDouble(0.0, 400.0)
+        val y = ThreadLocalRandom.current().nextDouble(0.0, 400.0)
 
-      val node = ValuesNode()
-      node.moveTo(x,y)
-      node.title = "Value($it)"
-      zoomablePane.content += node
-    }
+        val node = ValuesNode()
+        node.moveTo(x, y)
+        node.title = "Value($it)"
+        zoomablePane.content += node
+      }
 
-    val tableProperty = SimpleObjectProperty(Table()
-        .add(Column.named<String>("name")
-            .set(3,"Klaus"))
-        .add(Column.named<Int>("age")
-            .set(7,99)))
+      val tableProperty = SimpleObjectProperty(Table()
+          .add(Column.named<String>("name")
+              .set(3, "Klaus"))
+          .add(Column.named<Int>("age")
+              .set(7, 99)))
 
-    (1..2).forEach {
-      val x = ThreadLocalRandom.current().nextDouble(0.0, 400.0)
-      val y = ThreadLocalRandom.current().nextDouble(0.0, 400.0)
+      (1..2).forEach {
+        val x = ThreadLocalRandom.current().nextDouble(0.0, 400.0)
+        val y = ThreadLocalRandom.current().nextDouble(0.0, 400.0)
 
-      val node = NewValuesNode(WritableObservableValue(tableProperty))
-      node.moveTo(x,y)
-      node.title = "New Value($it)"
-      zoomablePane.content += node
-    }
+        val node = NewValuesNode(WritableObservableValue(tableProperty))
+        node.moveTo(x, y)
+        node.title = "New Value($it)"
+        zoomablePane.content += node
+      }
 //    zoomablePane.content.apply {
 //      children += SampleNode().root
 //    }
+    }
 
     ModelRenderer(zoomablePane.content)
         .setModel(Model()
