@@ -29,8 +29,8 @@ class ModelRenderer(private val pane: Pane) {
     })
   }
 
-  fun setModel(model: Model) {
-    modelProperty.set(model)
+  fun change(change: (Model) -> Model) {
+    modelProperty.set(change(modelProperty.get()))
   }
 
   private fun renderModel(model: Model) {

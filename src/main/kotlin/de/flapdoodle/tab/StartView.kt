@@ -5,6 +5,7 @@ import de.flapdoodle.tab.data.Column
 import de.flapdoodle.tab.data.ColumnId
 import de.flapdoodle.tab.data.Model
 import de.flapdoodle.tab.data.Table
+import de.flapdoodle.tab.extensions.change
 import de.flapdoodle.tab.graph.SampleNode
 import de.flapdoodle.tab.graph.ZoomablePane
 import de.flapdoodle.tab.graph.nodes.DummyNode
@@ -22,15 +23,37 @@ import java.util.concurrent.ThreadLocalRandom
 
 class StartView : View("My View") {
   private val zoomablePane: ZoomablePane = find()
+  private val renderer = ModelRenderer(zoomablePane.content)
 
   override val root = borderpane {
-    top = label {
-      text = "Tab"
-
-      background = Background(BackgroundFill(Color.RED, null, null))
+    top {
+      label {
+        text = "Tab"
+        style {
+          textFill = Color.WHITE
+          backgroundColor = multi(Color.RED)
+        }
+      }
     }
+//    top = label {
+//      text = "Tab"
+//
+//      background = Background(BackgroundFill(Color.RED, null, null))
+//    }
 
     center = zoomablePane.root
+
+    bottom {
+      hbox {
+        button("+") {
+          onLeftClick {
+            renderer.change {
+              it.add(Table().add(Column.named<Int>("clicked")))
+            }
+          }
+        }
+      }
+    }
   }
 
   init {
@@ -131,14 +154,16 @@ class StartView : View("My View") {
 //    }
     }
 
-    ModelRenderer(zoomablePane.content)
-        .setModel(Model()
-        .add(Table()
-            .add(Column.named<String>("foo")
-                .set(4,"Test"))
-            .add(Column.named<Int>("bar")
-                .set(9,1))
-        ))
+    renderer
+        .change { model ->
+          model
+              .add(Table()
+                  .add(Column.named<String>("foo")
+                      .set(4, "Test"))
+                  .add(Column.named<Int>("bar")
+                      .set(9, 1))
+              )
+        }
 
     zoomablePane.content += SampleNode()
   }
