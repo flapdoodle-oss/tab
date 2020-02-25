@@ -1,22 +1,18 @@
 package de.flapdoodle.tab
 
-import de.flapdoodle.tab.bindings.WritableObservableValue
-import de.flapdoodle.tab.data.Column
+import de.flapdoodle.tab.data.CalculatedTable
 import de.flapdoodle.tab.data.ColumnId
-import de.flapdoodle.tab.data.Model
-import de.flapdoodle.tab.data.Table
-import de.flapdoodle.tab.extensions.change
+import de.flapdoodle.tab.data.NamedColumn
+import de.flapdoodle.tab.data.TableDef
+import de.flapdoodle.tab.data.calculations.Calculations
+import de.flapdoodle.tab.data.values.Variable
 import de.flapdoodle.tab.graph.SampleNode
 import de.flapdoodle.tab.graph.ZoomablePane
 import de.flapdoodle.tab.graph.nodes.DummyNode
 import de.flapdoodle.tab.graph.nodes.AbstractGraphNode
 import de.flapdoodle.tab.graph.nodes.ModelRenderer
-import de.flapdoodle.tab.graph.nodes.values.NewValuesNode
 import de.flapdoodle.tab.graph.nodes.values.ValuesNode
-import javafx.beans.property.SimpleObjectProperty
 import javafx.scene.Group
-import javafx.scene.layout.Background
-import javafx.scene.layout.BackgroundFill
 import javafx.scene.paint.Color
 import tornadofx.*
 import java.util.concurrent.ThreadLocalRandom
@@ -48,7 +44,7 @@ class StartView : View("My View") {
         button("+") {
           onLeftClick {
             renderer.change {
-              it.add(Table().add(Column.named<Int>("clicked")))
+              it.add(TableDef().add(ColumnId.create<Int>(), "clicked"))
             }
           }
         }
@@ -133,37 +129,50 @@ class StartView : View("My View") {
         node.title = "Value($it)"
         zoomablePane.content += node
       }
-
-      val tableProperty = SimpleObjectProperty(Table()
-          .add(Column.named<String>("name")
-              .set(3, "Klaus"))
-          .add(Column.named<Int>("age")
-              .set(7, 99)))
-
-      (1..2).forEach {
-        val x = ThreadLocalRandom.current().nextDouble(0.0, 400.0)
-        val y = ThreadLocalRandom.current().nextDouble(0.0, 400.0)
-
-        val node = NewValuesNode(WritableObservableValue(tableProperty))
-        node.moveTo(x, y)
-        node.title = "New Value($it)"
-        zoomablePane.content += node
-      }
-//    zoomablePane.content.apply {
-//      children += SampleNode().root
-//    }
     }
 
-    renderer
-        .change { model ->
-          model
-              .add(Table()
-                  .add(Column.named<String>("foo")
-                      .set(4, "Test"))
-                  .add(Column.named<Int>("bar")
-                      .set(9, 1))
-              )
-        }
+    val fooColumnId = ColumnId.create<String>()
+    val barColumnId = ColumnId.create<Int>()
+
+    renderer.apply {
+      change { model ->
+        model
+            .add(TableDef()
+                .add(fooColumnId, "foo")
+                .add(barColumnId, "bar")
+            )
+            .add(CalculatedTable(
+                variables = listOf(CalculatedTable.VariableMapping(
+                    columnId = fooColumnId,
+                    variable = Variable(String::class, "name")
+                )),
+                calculations = listOf(CalculatedTable.CalculationMapping(
+                    calculation = Calculations.Calc_1(
+                        a = Variable(String::class, "name"),
+                        formula = { s -> ">$s<" }
+                    ),
+                    column = NamedColumn("nameCol", ColumnId.create())
+                ))
+            ))
+            .add(CalculatedTable(
+                variables = listOf(CalculatedTable.VariableMapping(
+                    columnId = barColumnId,
+                    variable = Variable(Int::class, "x")
+                )),
+                calculations = listOf(CalculatedTable.CalculationMapping(
+                    calculation = Calculations.Calc_1(
+                        a = Variable(Int::class, "x"),
+                        formula = { s -> s?.let { it + 10 } }
+                    ),
+                    column = NamedColumn("offset", ColumnId.create())
+                ))
+            ))
+      }
+
+      changeData { data ->
+        data.change(fooColumnId, 4, "Klaus")
+      }
+    }
 
     zoomablePane.content += SampleNode()
   }

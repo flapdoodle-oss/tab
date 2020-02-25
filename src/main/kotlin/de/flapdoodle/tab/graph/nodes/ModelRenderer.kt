@@ -1,27 +1,42 @@
 package de.flapdoodle.tab.graph.nodes
 
-import de.flapdoodle.tab.bindings.ChangingConverter
-import de.flapdoodle.tab.bindings.ObjectProperties
 import de.flapdoodle.tab.bindings.Registration
+import de.flapdoodle.tab.bindings.map
+import de.flapdoodle.tab.data.CalculatedTable
+import de.flapdoodle.tab.data.ColumnId
+import de.flapdoodle.tab.data.Data
+import de.flapdoodle.tab.data.HasColumns
 import de.flapdoodle.tab.data.Model
-import de.flapdoodle.tab.data.Table
-import de.flapdoodle.tab.graph.nodes.values.NewValuesNode
+import de.flapdoodle.tab.data.TableDef
+import de.flapdoodle.tab.fx.SingleThreadMutex
+import de.flapdoodle.tab.graph.nodes.values.TableDefGraphNode
 import de.flapdoodle.tab.types.Id
 import javafx.beans.InvalidationListener
 import javafx.beans.property.ObjectProperty
 import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.value.ChangeListener
+import javafx.beans.value.ObservableValue
 import javafx.scene.layout.Pane
 import tornadofx.*
 import java.util.concurrent.ThreadLocalRandom
 
 class ModelRenderer(private val pane: Pane) {
   private val modelProperty: ObjectProperty<Model> = SimpleObjectProperty(Model())
-  private var tableNodes: Map<Id<Table>, Pair<Registration, NewValuesNode>> = emptyMap()
+  private val dataProperty: ObjectProperty<Data> = SimpleObjectProperty(Data())
+  private val calculationMutex = SingleThreadMutex()
+  private var tableNodes: Map<Id<out HasColumns>, Pair<Registration, TableDefGraphNode>> = emptyMap()
 
   init {
     modelProperty.addListener(ChangeListener { observable, oldValue, newValue ->
       renderModel(newValue ?: Model())
+    })
+
+    dataProperty.addListener(ChangeListener { _,_,newValue ->
+      println("data changed: $newValue")
+      calculationMutex.tryExecute {
+        println("calculate...")
+        dataProperty.set(calculate(modelProperty.get(), newValue))
+      }
     })
 
     modelProperty.addListener(InvalidationListener {
@@ -33,11 +48,24 @@ class ModelRenderer(private val pane: Pane) {
     modelProperty.set(change(modelProperty.get()))
   }
 
+  fun changeData(change: (Data) -> Data) {
+    dataProperty.set(change(dataProperty.get()))
+  }
+
+  private fun calculate(model: Model, data: Data): Data {
+    var currentData = data
+    val calcTables = model.tables().filterIsInstance<CalculatedTable>()
+    calcTables.forEach {
+      currentData = it.calculate(currentData)
+    }
+    return currentData
+  }
+
   private fun renderModel(model: Model) {
     println("model: $model")
     val currentTableNodes = tableNodes
 
-    val tablesStillThere = model.tables.map { it.id }.toSet()
+    val tablesStillThere = model.tableIds()
     val currentVisibleTables = currentTableNodes.keys
 
     val removed = currentVisibleTables - tablesStillThere
@@ -49,23 +77,25 @@ class ModelRenderer(private val pane: Pane) {
     val nodesToRemove = currentTableNodes.filterKeys { removed.contains(it) }.values
 
     val nodesToAdd = new.map { tableId ->
-      val (registration, tableProperty) = ObjectProperties.bidirectionalMappedSync(modelProperty, ChangingConverter<Model, Table>(
-          to = { m: Model?, old: Table? -> model.tables.firstOrNull { it.id == tableId } },
-          from = { t: Table?, old: Model? ->
-            old?.let {
-              t?.let { tab ->
-                it.changeTable(tableId, { tab })
-              } ?: it
-            }
-          }
-      ))
+      val (registration, tableProperty) = modelProperty.map { m -> m?.table(tableId) }
 
-      val registrationAndNode = registration to NewValuesNode(tableProperty).apply {
+      val changeListener = when (tableId.type) {
+        TableDef::class -> object : ColumnValueChangeListener {
+          override fun <T : Any> change(id: ColumnId<out T>, row: Int, value: T?) {
+            changeData { d -> d.change(id, row, value) }
+          }
+        }
+        else -> null
+      }
+
+      println("tableProp: ${tableProperty.value}")
+
+      val registrationAndNode = registration to TableDefGraphNode(tableProperty, dataProperty, changeListener).apply {
         val x = ThreadLocalRandom.current().nextDouble(0.0, 400.0)
         val y = ThreadLocalRandom.current().nextDouble(0.0, 400.0)
         moveTo(x, y)
         title = "Table (${tableId.id})"
-        println("table: ${tableProperty.get()}")
+        println("table: ${tableProperty.value}")
       }
 
       tableId to registrationAndNode

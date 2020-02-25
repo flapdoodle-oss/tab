@@ -9,6 +9,7 @@ fun <M: IsMarker> EventTarget.markedGroup(marker: M, initialChildren: Iterable<N
     opcr(this, MarkedGroup(marker).apply { if (initialChildren != null) children.addAll(initialChildren) }, op)
 
 
+@Deprecated("use HasMarkerProperty.kt")
 class MarkedGroup<M: IsMarker>(private val marker: M) : Group(), HasMarker<M> {
   override fun marker() = marker
 }

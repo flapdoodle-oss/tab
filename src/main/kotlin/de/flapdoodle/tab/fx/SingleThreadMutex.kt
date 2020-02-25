@@ -1,7 +1,5 @@
 package de.flapdoodle.tab.fx
 
-import java.util.concurrent.atomic.AtomicBoolean
-
 class SingleThreadMutex {
   private var switch = false
 
