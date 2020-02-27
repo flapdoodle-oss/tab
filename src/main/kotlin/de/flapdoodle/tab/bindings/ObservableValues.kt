@@ -1,20 +1,31 @@
 package de.flapdoodle.tab.bindings
 
+import de.flapdoodle.tab.extensions.Exceptions
 import de.flapdoodle.tab.fx.SingleThreadMutex
 import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.value.ChangeListener
 import javafx.beans.value.ObservableValue
 import javafx.beans.value.WeakChangeListener
+import javafx.beans.value.WritableObjectValue
 
 fun <A : Any, B : Any, T : Any> ObservableValue<A>.mergeWith(other: ObservableValue<B>, map: (A, B) -> T): Pair<Registration, ObservableValue<T>> {
   return ObservableValues.merge(this, other) { a, b ->
-    println("merge: $a and $b")
+    println("merge: $a and $b with $map")
+    require(a!=null) {"a is null ($map)"}
+    require(b!=null) {"b is null ($map)"}
+
     if (a != null && b != null) map(a, b) else null
   }
 }
 
 fun <S : Any, T : Any> ObservableValue<S>.map(map: (S?) -> T?): Pair<Registration, ObservableValue<T>> {
   return ObservableValues.map(this, map)
+}
+
+fun <S : Any, T : Any, TT> TT.mapFrom(src: ObservableValue<S>, map: (S?) -> T?): Registration
+    where TT : WritableObjectValue<T>,
+          TT : ObservableValue<T> {
+  return ObservableValues.bind(src, this, map)
 }
 
 object ObservableValues {
@@ -53,14 +64,19 @@ object ObservableValues {
     return registration to dst
   }
 
-  fun <S: Any, T: Any> map(src: ObservableValue<S>, map: (S?) -> T?): Pair<Registration, ObservableValue<T>> {
-    val mutex = SingleThreadMutex()
-
+  fun <S : Any, T : Any> map(src: ObservableValue<S>, map: (S?) -> T?): Pair<Registration, ObservableValue<T>> {
     val dst = SimpleObjectProperty<T>()
+    return bind(src, dst, map) to dst
+  }
+
+  fun <S : Any, T : Any, TT> bind(src: ObservableValue<S>, dst: TT, map: (S?) -> T?): Registration
+      where TT : WritableObjectValue<T>,
+            TT : ObservableValue<T> {
+    val mutex = SingleThreadMutex()
 
     val wrappedListener = ChangeListener<S> { _, _, newValue ->
       dst.set(map(newValue))
-    } .executeIn(mutex)
+    }.executeIn(mutex)
 
     val srcListener = wrappedListener.wrap(::WeakChangeListener)
 
@@ -81,7 +97,7 @@ object ObservableValues {
       dst.removeListener(dstChangeListener)
     }
 
-    return registration to dst
+    return registration
   }
 
   private class MergeListener<A : Any, B : Any>(
@@ -92,7 +108,9 @@ object ObservableValues {
 
     override fun changed(observable: ObservableValue<out Any>, oldValue: Any?, newValue: Any?) {
       require(observable == a || observable == b) { "observable does not match: $observable != $a, $b" }
-      onChange(a.value, b.value)
+      Exceptions.rethrowWithMessage({"a: $a, b: $b, onChange: $onChange"}) {
+        onChange(a.value, b.value)
+      }
     }
   }
 }

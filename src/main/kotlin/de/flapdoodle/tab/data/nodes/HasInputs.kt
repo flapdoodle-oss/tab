@@ -1,4 +1,4 @@
-package de.flapdoodle.tab.data
+package de.flapdoodle.tab.data.nodes
 
 import de.flapdoodle.tab.data.values.Variable
 

@@ -6,7 +6,14 @@ import javafx.scene.layout.StackPane
 import javafx.scene.paint.Color
 import tornadofx.*
 
-class OutNode(out: Out, color: Color = Color.ORANGE) : StackPane() {
+class OutNode(val out: Out, color: Color = Color.ORANGE) : StackPane() {
+  private val handle = circle {
+    style {
+      fill = color
+      radius = 4.0
+    }
+  }
+
   init {
     apply {
       marker = out
@@ -14,12 +21,10 @@ class OutNode(out: Out, color: Color = Color.ORANGE) : StackPane() {
         padding = box(2.0.px)
       }
 
-      circle {
-        style {
-          fill = color
-          radius = 4.0
-        }
-      }
+      this += handle
     }
   }
+
+  fun centerX() = handle.layoutXProperty()
+  fun centerY() = handle.layoutYProperty()
 }

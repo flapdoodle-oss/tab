@@ -1,28 +1,22 @@
-package de.flapdoodle.tab.graph.nodes.values
+package de.flapdoodle.tab.graph.nodes.renderer
 
 import de.flapdoodle.tab.bindings.mapToList
 import de.flapdoodle.tab.bindings.mergeWith
 import de.flapdoodle.tab.bindings.syncFrom
 import de.flapdoodle.tab.data.ColumnId
 import de.flapdoodle.tab.data.Data
-import de.flapdoodle.tab.data.HasColumns
-import de.flapdoodle.tab.data.HasInputs
 import de.flapdoodle.tab.data.NamedColumn
-import de.flapdoodle.tab.data.values.Variable
+import de.flapdoodle.tab.data.nodes.ConnectableNode
+import de.flapdoodle.tab.data.nodes.HasColumns
 import de.flapdoodle.tab.extensions.property
 import de.flapdoodle.tab.graph.nodes.ColumnValueChangeListener
-import de.flapdoodle.tab.graph.nodes.connections.Aggregate
-import de.flapdoodle.tab.graph.nodes.connections.ColumnValues
-import de.flapdoodle.tab.graph.nodes.connections.InNode
+import de.flapdoodle.tab.graph.nodes.connections.Out
 import de.flapdoodle.tab.graph.nodes.connections.OutNode
-import de.flapdoodle.tab.graph.nodes.connections.VariableInput
 import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.value.ObservableValue
 import javafx.scene.control.TableColumn
 import javafx.scene.control.cell.TextFieldTableCell
-import javafx.scene.layout.BorderPane
 import javafx.scene.layout.Priority
-import javafx.scene.layout.VBox
 import javafx.util.Callback
 import javafx.util.StringConverter
 import javafx.util.converter.BigDecimalStringConverter
@@ -44,23 +38,44 @@ import java.time.LocalDateTime
 import java.time.LocalTime
 import kotlin.reflect.KClass
 
-class TableDefNode(
-    table: ObservableValue<out HasColumns>,
+class ColumnsNode<T>(
+    node: ObservableValue<T>,
     data: ObservableValue<Data>,
-    private val changeListener: ColumnValueChangeListener?
-) : () -> BorderPane {
+    private val changeListener: ColumnValueChangeListener? = null
 
-  private val columnList = table.mapToList(HasColumns::columns)
-  private val inputs = table.mapToList {
-    when (it) {
-      is HasInputs -> it.variables().toList()
-      else -> emptyList()
-    }
+) : Fragment()
+    where T : HasColumns,
+          T : ConnectableNode {
+
+  init {
+    require(node.value!=null) {"node is null"}
   }
-  private val rows = table.mergeWith(data) { t, d ->
+
+  private val columnList = node.mapToList(HasColumns::columns)
+  private val rows = node.mergeWith(data) { t, d ->
     d to t.columns().map { it.id }
   }.second.mapToList {
     it.first.rows(it.second)
+  }
+
+  override val root = vbox {
+    val table = tableview(rows) {
+      isEditable = changeListener != null
+      vgrow = Priority.ALWAYS
+      columns.syncFrom(columnList) { tableColumn(it) }
+    }
+
+    hbox {
+      children.syncFrom(table.columns) {
+        val columnId = (it!!.property(ColumnId::class)
+            ?: throw IllegalArgumentException("columnId not set"))
+
+        OutNode(Out.Aggregate(columnId)).apply {
+          prefWidthProperty().bind(it.widthProperty())
+        }
+      }
+    }
+
   }
 
   private fun <T : Any> tableColumn(column: NamedColumn<out T>?): TableColumn<Data.Row, T> {
@@ -82,44 +97,6 @@ class TableDefNode(
       ret.makeEditable(column.id.type)
     }
     return ret
-  }
-
-  override fun invoke(): BorderPane {
-    return BorderPane().apply {
-      center {
-        vbox {
-          val table = tableview(rows) {
-            isEditable = true
-            vgrow = Priority.ALWAYS
-            columns.syncFrom(columnList) { tableColumn(it) }
-          }
-          hbox {
-            children.syncFrom(table.columns) {
-              val columnId = (it!!.property(ColumnId::class)
-                  ?: throw IllegalArgumentException("columnId not set"))
-
-              OutNode(Aggregate(columnId)).apply {
-                prefWidthProperty().bind(it.widthProperty())
-              }
-            }
-          }
-        }
-      }
-      right {
-        vbox {
-          children.syncFrom(columnList) {
-            OutNode(ColumnValues(it!!.id))
-          }
-        }
-      }
-      left {
-        vbox {
-          children.syncFrom(inputs) {
-            InNode(VariableInput(it!!))
-          }
-        }
-      }
-    }
   }
 
   @Suppress("CAST_NEVER_SUCCEEDS", "UNCHECKED_CAST")

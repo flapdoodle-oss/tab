@@ -1,16 +1,16 @@
 package de.flapdoodle.tab
 
-import de.flapdoodle.tab.data.CalculatedTable
 import de.flapdoodle.tab.data.ColumnId
 import de.flapdoodle.tab.data.NamedColumn
-import de.flapdoodle.tab.data.TableDef
+import de.flapdoodle.tab.data.calculations.CalculationMapping
 import de.flapdoodle.tab.data.calculations.Calculations
+import de.flapdoodle.tab.data.nodes.ConnectableNode
 import de.flapdoodle.tab.data.values.Variable
 import de.flapdoodle.tab.graph.SampleNode
 import de.flapdoodle.tab.graph.ZoomablePane
 import de.flapdoodle.tab.graph.nodes.DummyNode
 import de.flapdoodle.tab.graph.nodes.AbstractGraphNode
-import de.flapdoodle.tab.graph.nodes.ModelRenderer
+import de.flapdoodle.tab.graph.nodes.renderer.ModelRenderer
 import de.flapdoodle.tab.graph.nodes.values.ValuesNode
 import javafx.scene.Group
 import javafx.scene.paint.Color
@@ -44,7 +44,8 @@ class StartView : View("My View") {
         button("+") {
           onLeftClick {
             renderer.change {
-              it.add(TableDef().add(ColumnId.create<Int>(), "clicked"))
+              it.add(ConnectableNode.Table("new instance")
+                  .add(ColumnId.create<Int>(), "clicked"))
             }
           }
         }
@@ -136,37 +137,42 @@ class StartView : View("My View") {
 
     renderer.apply {
       change { model ->
-        model
-            .add(TableDef()
-                .add(fooColumnId, "foo")
-                .add(barColumnId, "bar")
-            )
-            .add(CalculatedTable(
-                variables = listOf(CalculatedTable.VariableMapping(
-                    columnId = fooColumnId,
-                    variable = Variable(String::class, "name")
-                )),
-                calculations = listOf(CalculatedTable.CalculationMapping(
-                    calculation = Calculations.Calc_1(
-                        a = Variable(String::class, "name"),
-                        formula = { s -> ">$s<" }
-                    ),
-                    column = NamedColumn("nameCol", ColumnId.create())
-                ))
+        val source = ConnectableNode.Table("source")
+            .add(fooColumnId, "foo")
+            .add(barColumnId, "bar")
+
+        val stringOpSample = ConnectableNode.Calculated("string op",
+            calculations = listOf(CalculationMapping(
+                calculation = Calculations.Calc_1(
+                    a = Variable(String::class, "name"),
+                    formula = { s -> ">$s<" }
+                ),
+                column = NamedColumn("nameCol", ColumnId.create())
+            )))
+
+        val numberOpSample = ConnectableNode.Calculated("add 10",
+            calculations = listOf(CalculationMapping(
+                calculation = Calculations.Calc_1(
+                    a = Variable(Int::class, "x"),
+                    formula = { s -> s?.let { it + 10 } }
+                ),
+                column = NamedColumn("offset", ColumnId.create())
             ))
-            .add(CalculatedTable(
-                variables = listOf(CalculatedTable.VariableMapping(
-                    columnId = barColumnId,
-                    variable = Variable(Int::class, "x")
-                )),
-                calculations = listOf(CalculatedTable.CalculationMapping(
-                    calculation = Calculations.Calc_1(
-                        a = Variable(Int::class, "x"),
-                        formula = { s -> s?.let { it + 10 } }
-                    ),
-                    column = NamedColumn("offset", ColumnId.create())
-                ))
-            ))
+        )
+
+        model.add(source)
+            .add(stringOpSample)
+            .add(numberOpSample)
+            .connect(stringOpSample.id,Variable(String::class, "name"),fooColumnId)
+            .connect(numberOpSample.id,Variable(Int::class, "x"), barColumnId)
+//      connections = listOf(VariableMapping(
+//          columnId = fooColumnId,
+//          variable = Variable(String::class, "name")
+//      )),
+//      connections = listOf(VariableMapping(
+//          columnId = barColumnId,
+//          variable = Variable(Int::class, "x")
+//      )),
       }
 
       changeData { data ->

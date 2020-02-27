@@ -7,7 +7,14 @@ import javafx.scene.layout.StackPane
 import javafx.scene.paint.Color
 import tornadofx.*
 
-class InNode(variableInput: VariableInput<out Any>, color: Color = Color.DARKGREEN) : StackPane() {
+class InNode(val variableInput: VariableInput<out Any>, color: Color = Color.DARKGREEN) : StackPane() {
+  private val handle = circle {
+    style {
+      fill = color
+      radius = 4.0
+    }
+  }
+
   init {
     apply {
       marker = variableInput
@@ -15,12 +22,10 @@ class InNode(variableInput: VariableInput<out Any>, color: Color = Color.DARKGRE
         padding = box(2.0.px)
       }
 
-      circle {
-        style {
-          fill = color
-          radius = 4.0
-        }
-      }
+      this += handle
     }
   }
+
+  fun centerX() = handle.centerXProperty()
+  fun centerY() = handle.centerXProperty()
 }
