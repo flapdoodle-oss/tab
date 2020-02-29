@@ -11,9 +11,10 @@ import de.flapdoodle.tab.data.values.Variable
 
 data class Model(
     private val nodes: Map<NodeId<out ConnectableNode>, ConnectableNode> = linkedMapOf(),
-    private val connections: Map<NodeId<out ConnectableNode>, Connections> = emptyMap(),
-    private val connectionMap: Map<NodeId<out ConnectableNode>, List<Connection<out Any>>> = allConnections(nodes, connections)
+    private val connections: Map<NodeId<out ConnectableNode>, Connections> = emptyMap()
 ) {
+
+  private val connectionMap: Map<NodeId<out ConnectableNode>, List<Connection<out Any>>> = allConnections(nodes, connections)
 
   fun add(node: ConnectableNode): Model {
     require(!nodes.contains(node.id)) { "node already set: ${node.id}" }
