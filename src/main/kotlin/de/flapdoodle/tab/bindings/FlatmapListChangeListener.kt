@@ -2,14 +2,16 @@ package de.flapdoodle.tab.bindings
 
 import javafx.beans.value.ChangeListener
 import javafx.beans.value.ObservableValue
+import javafx.collections.ListChangeListener
 import javafx.collections.ObservableList
 
-class ToListChangeListener<S, D>(
+class FlatmapListChangeListener<S, D>(
     private val dst: ObservableList<D>,
-    private val map: (S) -> List<D?>
-) : ChangeListener<S> {
-  override fun changed(observable: ObservableValue<out S>, oldValue: S?, newValue: S?) {
-    val list = if (newValue != null) map(newValue) else emptyList()
+    private val map: (S?) -> List<D?>
+) : ListChangeListener<S> {
+
+  override fun onChanged(change: ListChangeListener.Change<out S>) {
+    val list =  change.list.flatMap(map)
     if (list.size < dst.size) {
       dst.remove(list.size, dst.size)
     }

@@ -44,7 +44,9 @@ class StartView : View("My View") {
       hbox {
         button("+") {
           onLeftClick {
+            println("clicked")
             renderer.change {
+              println("old model: $it")
               it.add(ConnectableNode.Table("new instance")
                   .add(ColumnId.create<Int>(), "clicked"))
             }

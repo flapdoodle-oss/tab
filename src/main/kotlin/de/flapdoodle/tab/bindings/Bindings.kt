@@ -1,14 +1,12 @@
 package de.flapdoodle.tab.bindings
 
 import javafx.beans.property.Property
-import javafx.beans.value.ObservableListValue
 import javafx.beans.value.ObservableValue
 import javafx.collections.ObservableList
-import javafx.collections.WeakListChangeListener
 import org.fxmisc.easybind.EasyBind
 import org.fxmisc.easybind.monadic.MonadicBinding
 
-fun <S : Any, T : Any> ObservableValue<S>.map(map: (S?) -> T?): MonadicBinding<T> {
+fun <S : Any, T : Any> ObservableValue<S>.mapNullable(map: (S?) -> T?): MonadicBinding<T> {
   return EasyBind.map(this, map)
 }
 
@@ -21,13 +19,27 @@ fun <A : Any, B : Any, T : Any> ObservableValue<A>.mergeWith(other: ObservableVa
 }
 
 fun <S : Any, T : Any> Property<T>.mapFrom(src: ObservableValue<S>, map: (S?) -> T?) {
-  this.bind(src.map(map))
+  this.bind(src.mapNullable(map))
 }
 
 fun <S : Any, D : Any> ObservableValue<S>.mapToList(map: (S) -> List<D?>): ObservableList<D> {
   return ToListBinding(this,map)
 }
 
-fun <S : Any, D : Any> ObservableList<S>.map(map: (S?) -> D?): ObservableList<D> {
+fun <S : Any, D : Any> ObservableList<S>.mapNullable(map: (S?) -> D?): ObservableList<D> {
   return MappingListBinding(this,map)
+}
+
+fun <S : Any, D : Any> ObservableList<S>.map(map: (S) -> D): ObservableList<D> {
+  return MappingListBinding(this) {
+    require(it != null) {"source in $this is null"}
+    map(it)
+  }
+}
+
+fun <S: Any, D: Any> ObservableList<S>.flatMapObservable(map: (S?) -> List<D?>): ObservableList<D> {
+  return FlatmapListBinding(this) {
+    require(it != null) {"source in $this is null"}
+    map(it)
+  }
 }

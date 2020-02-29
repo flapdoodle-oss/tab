@@ -1,7 +1,6 @@
 package de.flapdoodle.tab.graph.nodes.renderer
 
-import de.flapdoodle.tab.bindings.Registration
-import de.flapdoodle.tab.bindings.map
+import de.flapdoodle.tab.bindings.mapNullable
 import de.flapdoodle.tab.bindings.mapFrom
 import de.flapdoodle.tab.data.Data
 import de.flapdoodle.tab.data.Model
@@ -44,7 +43,7 @@ class NodeAdapterGraphNode(
         dataProperty: ObjectProperty<Data>,
         changeListener: ColumnValueChangeListener
     ): NodeAdapterGraphNode {
-      val nodeProperty = modelProperty.map { m -> m!!.node(id) }
+      val nodeProperty = modelProperty.mapNullable { m -> m!!.node(id) }
       return NodeAdapterGraphNode {
         NodeAdapter(
             content = ColumnsNode(
@@ -64,7 +63,7 @@ class NodeAdapterGraphNode(
         modelProperty: ObjectProperty<Model>,
         dataProperty: ObjectProperty<Data>
     ): NodeAdapterGraphNode {
-      val nodeProperty = modelProperty.map { m -> m!!.node(id) }
+      val nodeProperty = modelProperty.mapNullable { m -> m!!.node(id) }
       return NodeAdapterGraphNode {
         NodeAdapter(
             content = ColumnsNode(
