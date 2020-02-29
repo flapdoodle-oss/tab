@@ -54,7 +54,7 @@ class ColumnsNode<T>(
   private val columnList = node.mapToList(HasColumns::columns)
   private val rows = node.mergeWith(data) { t, d ->
     d to t.columns().map { it.id }
-  }.second.mapToList {
+  }.mapToList {
     it.first.rows(it.second)
   }
 

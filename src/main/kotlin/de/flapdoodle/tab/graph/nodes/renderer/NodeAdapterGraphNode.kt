@@ -23,9 +23,9 @@ class NodeAdapterGraphNode(
         modelProperty: ObjectProperty<Model>,
         dataProperty: ObjectProperty<Data>,
         changeListener: ColumnValueChangeListener
-    ): Pair<Registration, NodeAdapterGraphNode> {
+    ): NodeAdapterGraphNode {
       require(modelProperty.get() != null) { "model is null" }
-      val (registration, node) = when (id) {
+      val node = when (id) {
         is NodeId.TableId -> tableNode(id, modelProperty, dataProperty, changeListener)
         is NodeId.CalculatedId -> calculated(id, modelProperty, dataProperty)
       }
@@ -34,8 +34,8 @@ class NodeAdapterGraphNode(
       val y = ThreadLocalRandom.current().nextDouble(0.0, 400.0)
       node.moveTo(x, y)
 
-      val titleReg = node.titleProperty.mapFrom(modelProperty) { m -> m?.node(id)?.name ?: "<undefined>" }
-      return titleReg.join(registration) to node
+      node.titleProperty.mapFrom(modelProperty) { m -> m?.node(id)?.name ?: "<undefined>" }
+      return node
     }
 
     private fun tableNode(
@@ -43,9 +43,9 @@ class NodeAdapterGraphNode(
         modelProperty: ObjectProperty<Model>,
         dataProperty: ObjectProperty<Data>,
         changeListener: ColumnValueChangeListener
-    ): Pair<Registration, NodeAdapterGraphNode> {
-      val (registration, nodeProperty) = modelProperty.map { m -> m!!.node(id) }
-      return registration to NodeAdapterGraphNode {
+    ): NodeAdapterGraphNode {
+      val nodeProperty = modelProperty.map { m -> m!!.node(id) }
+      return NodeAdapterGraphNode {
         NodeAdapter(
             content = ColumnsNode(
                 node = nodeProperty,
@@ -63,9 +63,9 @@ class NodeAdapterGraphNode(
         id: NodeId.CalculatedId,
         modelProperty: ObjectProperty<Model>,
         dataProperty: ObjectProperty<Data>
-    ): Pair<Registration, NodeAdapterGraphNode> {
-      val (registration, nodeProperty) = modelProperty.map { m -> m!!.node(id) }
-      return registration to NodeAdapterGraphNode {
+    ): NodeAdapterGraphNode {
+      val nodeProperty = modelProperty.map { m -> m!!.node(id) }
+      return NodeAdapterGraphNode {
         NodeAdapter(
             content = ColumnsNode(
                 node = nodeProperty,

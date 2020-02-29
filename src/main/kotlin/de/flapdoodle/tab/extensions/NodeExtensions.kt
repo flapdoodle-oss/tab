@@ -27,3 +27,12 @@ fun <T: Any> Parent.findAllInTree(type: KClass<T>): List<T> {
     nodeAsList + sub
   }
 }
+
+fun Node.parentPath(child: Node): List<Node> {
+  return if (child.parent == this) {
+    listOf(this, child)
+  } else {
+    val parentOfChild = child.parent
+    return this.parentPath(parentOfChild) + child
+  }
+}

@@ -4,6 +4,7 @@ import de.flapdoodle.tab.data.ColumnId
 import de.flapdoodle.tab.data.NamedColumn
 import de.flapdoodle.tab.data.calculations.CalculationMapping
 import de.flapdoodle.tab.data.calculations.Calculations
+import de.flapdoodle.tab.data.nodes.ColumnConnection
 import de.flapdoodle.tab.data.nodes.ConnectableNode
 import de.flapdoodle.tab.data.values.Variable
 import de.flapdoodle.tab.graph.SampleNode
@@ -163,16 +164,8 @@ class StartView : View("My View") {
         model.add(source)
             .add(stringOpSample)
             .add(numberOpSample)
-            .connect(stringOpSample.id,Variable(String::class, "name"),fooColumnId)
-            .connect(numberOpSample.id,Variable(Int::class, "x"), barColumnId)
-//      connections = listOf(VariableMapping(
-//          columnId = fooColumnId,
-//          variable = Variable(String::class, "name")
-//      )),
-//      connections = listOf(VariableMapping(
-//          columnId = barColumnId,
-//          variable = Variable(Int::class, "x")
-//      )),
+            .connect(stringOpSample.id,Variable(String::class, "name"), ColumnConnection.ColumnValues(fooColumnId))
+            .connect(numberOpSample.id,Variable(Int::class, "x"), ColumnConnection.ColumnValues(barColumnId))
       }
 
       changeData { data ->

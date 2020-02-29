@@ -1,28 +1,33 @@
 package de.flapdoodle.tab.graph.nodes.renderer
 
-import de.flapdoodle.tab.bindings.Registration
+import de.flapdoodle.tab.bindings.map
 import de.flapdoodle.tab.data.ColumnId
 import de.flapdoodle.tab.data.Data
+import de.flapdoodle.tab.data.Model
 import de.flapdoodle.tab.data.calculations.VariableMap
 import de.flapdoodle.tab.data.nodes.ConnectableNode
-import de.flapdoodle.tab.data.Model
 import de.flapdoodle.tab.data.nodes.NodeId
+import de.flapdoodle.tab.extensions.centerInTop
 import de.flapdoodle.tab.extensions.findAllInTree
 import de.flapdoodle.tab.fx.SingleThreadMutex
 import de.flapdoodle.tab.graph.nodes.ColumnValueChangeListener
 import de.flapdoodle.tab.graph.nodes.connections.OutNode
 import javafx.beans.InvalidationListener
+import javafx.beans.binding.Binding
 import javafx.beans.property.ObjectProperty
 import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.value.ChangeListener
+import javafx.geometry.Point2D
 import javafx.scene.layout.Pane
+import javafx.scene.paint.Color
 import tornadofx.*
+import java.util.concurrent.ThreadLocalRandom
 
 class ModelRenderer(private val pane: Pane) {
   private val modelProperty: ObjectProperty<Model> = SimpleObjectProperty(Model())
   private val dataProperty: ObjectProperty<Data> = SimpleObjectProperty(Data())
   private val calculationMutex = SingleThreadMutex()
-  private var tableNodes: Map<NodeId<*>, Pair<Registration, Fragment>> = emptyMap()
+  private var tableNodes: Map<NodeId<*>, Fragment> = emptyMap()
 
   init {
     modelProperty.addListener(ChangeListener { observable, oldValue, newValue ->
@@ -68,19 +73,53 @@ class ModelRenderer(private val pane: Pane) {
     tableNodes = tableNodes + changes.nodesToAdd
 
     changes.nodesToRemove.forEach {
-      it.first.remove()
-      pane.children.remove(it.second.root)
+      pane.children.remove(it.root)
     }
 
     changes.nodesToAdd.forEach {
-      pane += it.value.second.root
+      pane += it.value.root
     }
 
-    tableNodes.forEach { nodeId, (_, fragment) ->
+    connectionsMap(tableNodes)
+
+    tableNodes.forEach { nodeId, fragment ->
       val outNodes = fragment.root.findAllInTree(OutNode::class)
       println("for $nodeId")
       outNodes.forEach {
-        println(" -> ${it.centerX()}, ${it.centerY()}")
+        val c = fragment.root.centerInTop(it)
+        println(" -> ${c.value}")
+
+//        fragment.root.boundsInLocalProperty().addListener(ChangeListener { observable, oldValue, newValue ->
+//
+//        })
+
+        println("root: ${fragment.root}")
+
+        val r = ThreadLocalRandom.current().nextDouble(8.0) + 8.0
+        pane += Foo(r,c).root
+      }
+    }
+  }
+
+  private fun connectionsMap(src: Map<NodeId<*>, Fragment>) {
+    src.map { (nodeId, fragment) ->
+      val out = fragment.root.findAllInTree(OutNode::class).map {
+        it.out to fragment.root.centerInTop(it)
+      }
+
+    }
+  }
+
+  class Foo(
+      private val r: Double,
+      private val c: Binding<Point2D>
+  ) : Fragment() {
+    override val root = group {
+      circle {
+        centerXProperty().bind(c.map { it!!.x })
+        centerYProperty().bind(c.map { it!!.y })
+        fill = Color(0.3, 0.3, 0.3, 0.3)
+        radius = r
       }
     }
   }
@@ -88,8 +127,8 @@ class ModelRenderer(private val pane: Pane) {
   companion object {
     private fun changes(
         model: Model,
-        currentTableNodes: Map<NodeId<*>, Pair<Registration, Fragment>>,
-        nodeFactory: (NodeId<out ConnectableNode>) -> Pair<Registration, NodeAdapterGraphNode>
+        currentTableNodes: Map<NodeId<*>, Fragment>,
+        nodeFactory: (NodeId<out ConnectableNode>) -> NodeAdapterGraphNode
     ): Change {
       val tablesStillThere = model.nodeIds()
       val currentVisibleTables = currentTableNodes.keys
@@ -112,12 +151,12 @@ class ModelRenderer(private val pane: Pane) {
     }
 
     class Change(
-        val nodesToRemove: Collection<Pair<Registration, Fragment>>,
-        val nodesToAdd: Map<NodeId<out ConnectableNode>, Pair<Registration, NodeAdapterGraphNode>>
+        val nodesToRemove: Collection<Fragment>,
+        val nodesToAdd: Map<NodeId<out ConnectableNode>, NodeAdapterGraphNode>
     )
   }
 
-  private fun nodeFor(nodeId: NodeId<out ConnectableNode>): Pair<Registration, NodeAdapterGraphNode> {
+  private fun nodeFor(nodeId: NodeId<out ConnectableNode>): NodeAdapterGraphNode {
     val changeListener = object : ColumnValueChangeListener {
       override fun <T : Any> change(id: ColumnId<out T>, row: Int, value: T?) {
         changeData { d -> d.change(id, row, value) }

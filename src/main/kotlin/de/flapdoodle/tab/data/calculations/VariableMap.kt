@@ -1,6 +1,7 @@
 package de.flapdoodle.tab.data.calculations
 
 import de.flapdoodle.tab.data.Data
+import de.flapdoodle.tab.data.nodes.ColumnConnection
 import de.flapdoodle.tab.data.nodes.VariableMapping
 import de.flapdoodle.tab.data.values.Values
 import de.flapdoodle.tab.data.values.Variable
@@ -28,7 +29,8 @@ data class VariableMap(
   companion object {
     fun variableMap(data: Data, variables: List<VariableMapping<out Any>>): VariableMap {
       return VariableMap(variables.map {
-        it.variable to data[it.columnId]
+        require(it.columnConnection is ColumnConnection.ColumnValues) { "not implemented: ${it.columnConnection}"}
+        it.variable to data[it.columnConnection.columnId]
       }.toMap())
     }
   }

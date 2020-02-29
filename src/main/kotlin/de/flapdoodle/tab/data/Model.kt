@@ -1,5 +1,6 @@
 package de.flapdoodle.tab.data
 
+import de.flapdoodle.tab.data.nodes.ColumnConnection
 import de.flapdoodle.tab.data.nodes.VariableMapping
 import de.flapdoodle.tab.data.nodes.ConnectableNode
 import de.flapdoodle.tab.data.nodes.Connection
@@ -19,8 +20,8 @@ data class Model(
     return copy(nodes = nodes + (node.id to node))
   }
 
-  fun <T: Any> connect(id: NodeId<out ConnectableNode>, variable: Variable<T>, columnId: ColumnId<T>): Model {
-    return copy(connections = connections + (id to (connections[id] ?: Connections()).add(variable,columnId)))
+  fun <T: Any> connect(id: NodeId<out ConnectableNode>, variable: Variable<T>, columnConnection: ColumnConnection<T>): Model {
+    return copy(connections = connections + (id to (connections[id] ?: Connections()).add(variable,columnConnection)))
   }
 
   fun <T : ConnectableNode> node(id: NodeId<T>): T {
@@ -72,9 +73,9 @@ data class Model(
         columnToTableMap: Map<ColumnId<out Any>, NodeId<out ConnectableNode>>
     ): Connection<T> {
       return Connection(
-          sourceNode = columnToTableMap[mapping.columnId]
+          sourceNode = columnToTableMap[mapping.columnConnection.columnId]
               ?: throw IllegalArgumentException("source not found: $mapping"),
-          columnColumn = mapping.columnId,
+          columnConnection = mapping.columnConnection,
           variable = mapping.variable
       )
     }

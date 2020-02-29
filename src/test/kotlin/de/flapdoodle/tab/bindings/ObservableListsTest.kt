@@ -92,7 +92,7 @@ internal class ObservableListsTest {
   @Test
   fun `map observable to list`() {
     val src = SimpleObjectProperty<List<String>>(listOf("start"))
-    val dst = ObservableLists.mapToList(src) { it }
+    val dst = src.mapToList { it }
 
     assertThat(dst)
         .containsExactly("start")

@@ -17,18 +17,7 @@ fun <T> ChangeListener<T>.tryExecuteIn(mutex: SingleThreadMutex): ChangeListener
   return ChangeListeners.tryExecuteIn(mutex, this)
 }
 
-fun <T> ChangeListener<T>.keepReference(referene: Any): ChangeListener<T> {
-  return ChangeListeners.KeepReferenceChangeListener(
-      keepReference = referene,
-      delegate = this
-  )
-}
-
 object ChangeListeners {
-
-  fun <T> keepReferenceTo(referene: Any): ChangeListener<T> {
-    return KeepReferenceChangeListener(referene)
-  }
 
   fun <T> executeIn(mutex: SingleThreadMutex, delegate: ChangeListener<T>): ChangeListener<T> {
     return MutexChangeListener(mutex, true, delegate)
@@ -36,25 +25,6 @@ object ChangeListeners {
 
   fun <T> tryExecuteIn(mutex: SingleThreadMutex, delegate: ChangeListener<T>): ChangeListener<T> {
     return MutexChangeListener(mutex, false, delegate)
-  }
-
-  fun <T> failOnModification(message: () -> String): ChangeListener<T> {
-    return ModificationNotAllowedChangeListener(message)
-  }
-
-  class NoopChangeListener<T> : ChangeListener<T> {
-    override fun changed(observable: ObservableValue<out T>, oldValue: T, newValue: T) {
-
-    }
-  }
-
-  class KeepReferenceChangeListener<T>(
-      private val keepReference: Any,
-      private val delegate: ChangeListener<T> = NoopChangeListener()
-  ) : ChangeListener<T> {
-    override fun changed(observable: ObservableValue<out T>, oldValue: T, newValue: T) {
-      delegate.changed(observable, oldValue,newValue)
-    }
   }
 
   class MutexChangeListener<T>(
@@ -75,11 +45,10 @@ object ChangeListeners {
     }
   }
 
-  class ModificationNotAllowedChangeListener<T>(
-      private val message: () -> String
-  ) : ChangeListener<T> {
-    override fun changed(observable: ObservableValue<out T>, oldValue: T, newValue: T) {
-      throw IllegalArgumentException(message())
+  class Noop<T> : ChangeListener<T> {
+    override fun changed(observable: ObservableValue<out T>?, oldValue: T, newValue: T) {
+
     }
+
   }
 }

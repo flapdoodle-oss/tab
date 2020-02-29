@@ -8,10 +8,7 @@ import javafx.collections.FXCollections
 import javafx.collections.ListChangeListener
 import javafx.collections.ObservableList
 import javafx.collections.WeakListChangeListener
-
-fun <S : Any, D : Any> ObservableValue<S>.mapToList(map: (S) -> List<D?>): RegisteredObservableList<D> {
-  return ObservableLists.mapToList(this, map)
-}
+import org.fxmisc.easybind.EasyBind
 
 fun <S : Any, D : Any> ObservableList<D>.syncFrom(src: ObservableList<S>, map: (S?) -> D?): Registration {
   return ObservableLists.addMappedSync(src, this, map)
@@ -40,52 +37,6 @@ object ObservableLists {
     return Registration {
       src.removeListener(srcChangeListener)
       dst.removeListener(dstChangeListener)
-    }
-  }
-
-  fun <S : Any, D : Any> map(src: ObservableList<S>, map: (S?) -> D?): RegisteredObservableList<D> {
-    val ret = FXCollections.observableArrayList<D>()
-    val registration = addMappedSync(src, ret, map)
-    return RegisteredObservableList(ret, registration)
-  }
-
-  fun <S : Any, D : Any> mapToList(src: ObservableValue<S>, map: (S) -> List<D?>): RegisteredObservableList<D> {
-    val mutex = SingleThreadMutex()
-
-    val dst = FXCollections.observableArrayList<D>()
-
-    val wrappedChangeListener = ToListChangeListener(dst, map).executeIn(mutex)
-    val srcChangeListener = wrappedChangeListener.wrap(::WeakChangeListener)
-
-    val dstChangeListener = ListChangeListeners.failOnModification<D> { "$dst is synced" }
-        .tryExecuteIn(mutex)
-        .keepReference(wrappedChangeListener)
-
-    src.addListener(srcChangeListener)
-    dst.addListener(dstChangeListener)
-
-    mutex.execute {
-      val s = src.value
-      if (s!=null) {
-        dst.addAll(map(s))
-      }
-    }
-
-    val registration = Registration {
-      src.removeListener(wrappedChangeListener)
-      dst.removeListener(dstChangeListener)
-    }
-    return RegisteredObservableList(dst, registration)
-  }
-
-  private fun <D : Any, S : Any> changeProtectionListener(keepReference: ChangeListener<S>, mutex: SingleThreadMutex, dst: ObservableList<D>?, src: ObservableValue<S>): ListChangeListener<D> {
-    return object : ListChangeListener<D> {
-      private val keepReference = keepReference
-      override fun onChanged(it: ListChangeListener.Change<out D>) {
-        mutex.tryExecute {
-          throw IllegalArgumentException("$dst is synced with $src")
-        }
-      }
     }
   }
 }
