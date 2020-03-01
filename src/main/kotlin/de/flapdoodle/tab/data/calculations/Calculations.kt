@@ -1,6 +1,5 @@
 package de.flapdoodle.tab.data.calculations
 
-import de.flapdoodle.tab.data.values.ValueMap
 import de.flapdoodle.tab.data.values.Variable
 
 // mehrere berechnungen pro zeile

@@ -17,4 +17,15 @@ object Exceptions {
       }
     }
   }
+
+  inline fun <T, reified EX> returnOnException(fallback: T?, block: () -> T?): T? {
+    try {
+      return block()
+    } catch (ex: Exception) {
+      if (ex is EX) {
+        return fallback
+      }
+      throw ex
+    }
+  }
 }

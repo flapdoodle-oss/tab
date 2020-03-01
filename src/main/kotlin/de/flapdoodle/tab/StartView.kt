@@ -4,6 +4,7 @@ import de.flapdoodle.tab.data.ColumnId
 import de.flapdoodle.tab.data.NamedColumn
 import de.flapdoodle.tab.data.calculations.CalculationMapping
 import de.flapdoodle.tab.data.calculations.Calculations
+import de.flapdoodle.tab.data.calculations.EvalExCalculationAdapter
 import de.flapdoodle.tab.data.nodes.ColumnConnection
 import de.flapdoodle.tab.data.nodes.ConnectableNode
 import de.flapdoodle.tab.data.values.Variable
@@ -16,6 +17,7 @@ import de.flapdoodle.tab.graph.nodes.values.ValuesNode
 import javafx.scene.Group
 import javafx.scene.paint.Color
 import tornadofx.*
+import java.math.BigDecimal
 import java.util.concurrent.ThreadLocalRandom
 
 class StartView : View("My View") {
@@ -137,12 +139,14 @@ class StartView : View("My View") {
 
     val fooColumnId = ColumnId.create<String>()
     val barColumnId = ColumnId.create<Int>()
+    val numberColumnId = ColumnId.create<BigDecimal>()
 
     renderer.apply {
       change { model ->
         val source = ConnectableNode.Table("source")
             .add(fooColumnId, "foo")
             .add(barColumnId, "bar")
+            .add(numberColumnId, "numbers")
 
         val stringOpSample = ConnectableNode.Calculated("string op",
             calculations = listOf(CalculationMapping(
@@ -163,11 +167,20 @@ class StartView : View("My View") {
             ))
         )
 
+        val otherNumSample = ConnectableNode.Calculated("formula",
+            calculations = listOf(CalculationMapping(
+                calculation = EvalExCalculationAdapter("a*10"),
+                column = NamedColumn("result",ColumnId.create())
+            ))
+        )
+
         model.add(source)
             .add(stringOpSample)
             .add(numberOpSample)
+            .add(otherNumSample)
             .connect(stringOpSample.id,Variable(String::class, "name"), ColumnConnection.ColumnValues(fooColumnId))
             .connect(numberOpSample.id,Variable(Int::class, "x"), ColumnConnection.ColumnValues(barColumnId))
+            .connect(otherNumSample.id, Variable(BigDecimal::class, "a"), ColumnConnection.ColumnValues(numberColumnId))
       }
 
       changeData { data ->
