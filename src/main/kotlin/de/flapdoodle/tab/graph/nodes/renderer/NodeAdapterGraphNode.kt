@@ -75,6 +75,9 @@ class NodeAdapterGraphNode(
             ),
             inputs = VariableInputsNode(
                 node = nodeProperty
+            ),
+            configuration = CalculationsNode(
+                node = nodeProperty
             )
         )
       }

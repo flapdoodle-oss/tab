@@ -30,7 +30,7 @@ sealed class ConnectableNode {
       override val name: String,
       override val id: NodeId.CalculatedId = NodeId.CalculatedId(),
       private val calculations: List<CalculationMapping<out Any>> = emptyList()
-  ): ConnectableNode(), HasColumns, HasInputs {
+  ): ConnectableNode(), HasColumns, HasInputs, HasCalculations {
 
     override fun columns() = calculations.map(CalculationMapping<out Any>::column)
     override fun variables(): Set<Variable<out Any>> {
@@ -38,6 +38,8 @@ sealed class ConnectableNode {
           .flatMap { it.calculation.variables() }
           .toSet()
     }
+
+    override fun calculations() = calculations
 
     fun calculate(data: Data, variableMap: VariableMap): Data {
       var currentData = data

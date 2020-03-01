@@ -12,6 +12,7 @@ import de.flapdoodle.tab.graph.SampleNode
 import de.flapdoodle.tab.graph.ZoomablePane
 import de.flapdoodle.tab.graph.nodes.DummyNode
 import de.flapdoodle.tab.graph.nodes.AbstractGraphNode
+import de.flapdoodle.tab.graph.nodes.renderer.ModelEvent
 import de.flapdoodle.tab.graph.nodes.renderer.ModelRenderer
 import de.flapdoodle.tab.graph.nodes.values.ValuesNode
 import javafx.scene.Group
@@ -170,7 +171,7 @@ class StartView : View("My View") {
         val otherNumSample = ConnectableNode.Calculated("formula",
             calculations = listOf(CalculationMapping(
                 calculation = EvalExCalculationAdapter("a*10"),
-                column = NamedColumn("result",ColumnId.create())
+                column = NamedColumn("result", ColumnId.create())
             ))
         )
 
@@ -178,13 +179,27 @@ class StartView : View("My View") {
             .add(stringOpSample)
             .add(numberOpSample)
             .add(otherNumSample)
-            .connect(stringOpSample.id,Variable(String::class, "name"), ColumnConnection.ColumnValues(fooColumnId))
-            .connect(numberOpSample.id,Variable(Int::class, "x"), ColumnConnection.ColumnValues(barColumnId))
+            .connect(stringOpSample.id, Variable(String::class, "name"), ColumnConnection.ColumnValues(fooColumnId))
+            .connect(numberOpSample.id, Variable(Int::class, "x"), ColumnConnection.ColumnValues(barColumnId))
             .connect(otherNumSample.id, Variable(BigDecimal::class, "a"), ColumnConnection.ColumnValues(numberColumnId))
       }
 
       changeData { data ->
         data.change(fooColumnId, 4, "Klaus")
+      }
+
+      subscribe<ModelEvent> { event ->
+        println("got message: $event")
+
+        when (event.data) {
+          is ModelEvent.EventData.FormulaChanged<out ConnectableNode> -> {
+            println("formula changed: ${event.data.changedFormula}")
+          }
+        }
+
+//        renderer.change { model ->
+//          model
+//        }
       }
     }
 
