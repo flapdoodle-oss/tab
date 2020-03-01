@@ -18,13 +18,13 @@ class MappingListBinding<S : Any, T : Any>(
   init {
     source.addListener(srcChangeListener.wrap(::WeakListChangeListener))
     computed.addAll(source.map(map))
-    source.addListener(ListChangeListener<Any> {
-      invalidate()
-    }.wrap(::WeakListChangeListener))
+//    source.addListener(ListChangeListener<Any> {
+//      invalidate()
+//    }.wrap(::WeakListChangeListener))
   }
 
   override fun computeValue(): ObservableList<T> {
-    return FXCollections.observableArrayList(computed)
+    return computed
   }
   override fun getDependencies() = dependencies
 

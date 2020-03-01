@@ -26,7 +26,7 @@ class ToListBinding<S : Any, T : Any>(
   }
 
   override fun computeValue(): ObservableList<T> {
-    return FXCollections.observableArrayList(computed)
+    return computed
   }
 
   override fun getDependencies() = dependencies
