@@ -15,6 +15,7 @@ class VariableInputsNode<T>(
     where T : HasInputs,
           T : ConnectableNode {
   private val inputs = node.mapToList {
+    println("mapToList: variables for $it")
     it.variables().toList()
   }
 

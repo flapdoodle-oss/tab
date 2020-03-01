@@ -17,6 +17,10 @@ class NodeAdapterGraphNode(
 ) : AbstractGraphNode<Node>({ factory().root }) {
 
   companion object {
+    private var xOffset = 0.0
+    private var yOffset = 0.0
+    private var count = 0
+
     fun graphNodeFor(
         id: NodeId<*>,
         modelProperty: ObjectProperty<Model>,
@@ -29,9 +33,17 @@ class NodeAdapterGraphNode(
         is NodeId.CalculatedId -> calculated(id, modelProperty, dataProperty)
       }
 
-      val x = ThreadLocalRandom.current().nextDouble(0.0, 400.0)
-      val y = ThreadLocalRandom.current().nextDouble(0.0, 400.0)
-      node.moveTo(x, y)
+      println("--> ${node.root.layoutBounds}")
+
+//      val x = ThreadLocalRandom.current().nextDouble(0.0, 400.0)
+//      val y = ThreadLocalRandom.current().nextDouble(0.0, 400.0)
+      node.moveTo(xOffset, yOffset)
+      xOffset = xOffset + node.root.layoutBounds.width + 20.0
+      count ++
+      if (count>3) {
+        xOffset = 0.0
+        yOffset = yOffset + node.root.layoutBounds.height
+      }
 
       node.titleProperty.mapFrom(modelProperty) { m -> m?.node(id)?.name ?: "<undefined>" }
       return node
@@ -63,7 +75,10 @@ class NodeAdapterGraphNode(
         modelProperty: ObjectProperty<Model>,
         dataProperty: ObjectProperty<Data>
     ): NodeAdapterGraphNode {
-      val nodeProperty = modelProperty.mapNullable { m -> m!!.node(id) }
+      val nodeProperty = modelProperty.mapNullable { m ->
+        println("mapNullable: node for $id")
+        m!!.node(id)
+      }
       return NodeAdapterGraphNode {
         NodeAdapter(
             content = ColumnsNode(

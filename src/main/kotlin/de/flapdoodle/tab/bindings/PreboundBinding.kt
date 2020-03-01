@@ -15,7 +15,8 @@ abstract class PreboundBinding<T>(
     private vararg val dependencies: ObservableValue<*>
 ) : ObjectBinding<T>(), MonadicBinding<T> {
 
-  private val changeToInvalidListener = ChangeListener<Any> { _,_,_ ->
+  private val changeToInvalidListener = ChangeListener<Any> { _,_,new ->
+    println("source has changed to $new")
     invalidate()
   }
 

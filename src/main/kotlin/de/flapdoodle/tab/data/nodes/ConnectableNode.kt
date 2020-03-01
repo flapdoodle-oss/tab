@@ -60,10 +60,14 @@ sealed class ConnectableNode {
 
       calculations.forEach {
         val variables = it.calculation.variables()
-        val size = variableMap.size(variables)
-        (0..size).forEach { index ->
-          val result = it.calculation.calculate(variableMap.lookupFor(index))
-          currentData = currentData.change(it.column.id, index, result)
+        if (variableMap.isValidFor(variables)) {
+          val size = variableMap.size(variables)
+          (0..size).forEach { index ->
+            val result = it.calculation.calculate(variableMap.lookupFor(index))
+            currentData = currentData.change(it.column.id, index, result)
+          }
+        } else {
+          currentData = currentData.clear(it.column.id)
         }
       }
       return currentData

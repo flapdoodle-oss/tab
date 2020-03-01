@@ -5,6 +5,7 @@ import javafx.beans.value.ObservableValue
 import javafx.collections.ObservableList
 import org.fxmisc.easybind.EasyBind
 import org.fxmisc.easybind.monadic.MonadicBinding
+import java.lang.RuntimeException
 import java.util.function.Function
 
 fun <S : Any, T : Any> ObservableValue<S>.mapNullable(map: (S?) -> T?): MonadicBinding<T> {
@@ -31,22 +32,22 @@ fun <S : Any, T : Any> Property<T>.mapFrom(src: ObservableValue<S>, map: (S?) ->
 }
 
 fun <S : Any, D : Any> ObservableValue<S>.mapToList(map: (S) -> List<D?>): ObservableList<D> {
-  return ToListBinding(this,map)
+  return ToListBinding.newInstance(this,map)
 }
 
 fun <S : Any, D : Any> ObservableList<S>.mapNullable(map: (S?) -> D?): ObservableList<D> {
-  return MappingListBinding(this,map)
+  return MappingListBinding.newInstance(this,map)
 }
 
 fun <S : Any, D : Any> ObservableList<S>.map(map: (S) -> D): ObservableList<D> {
-  return MappingListBinding(this) {
+  return MappingListBinding.newInstance(this) {
     require(it != null) {"source in $this is null"}
     map(it)
   }
 }
 
 fun <S: Any, D: Any> ObservableList<S>.flatMapObservable(map: (S?) -> List<D?>): ObservableList<D> {
-  return FlatmapListBinding(this) {
+  return FlatmapListBinding.newInstance(this) {
     require(it != null) {"source in $this is null"}
     map(it)
   }
@@ -60,8 +61,9 @@ object Bindings {
   fun <T, U> map(
       src: ObservableValue<T>,
       f: (T?) -> U?): MonadicBinding<U> {
-    return object : org.fxmisc.easybind.PreboundBinding<U>(src) {
+    return object : PreboundBinding<U>(src) {
       override fun computeValue(): U? {
+        println("new value from ${src.value}")
         return f(src.value)
       }
     }

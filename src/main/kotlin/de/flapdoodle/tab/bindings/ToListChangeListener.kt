@@ -18,8 +18,6 @@ class ToListChangeListener<S, D>(
         dst[it] = list[it]
       }
     }
-    (dst.size until list.size).forEach {
-      dst.add(list[it])
-    }
+    dst.addAll(list.subList(dst.size,list.size))
   }
 }

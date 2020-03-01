@@ -191,20 +191,6 @@ class ModelRenderer(private val pane: Pane) {
     return currentData
   }
 
-  class Foo(
-      private val r: Double,
-      private val c: Binding<Point2D>
-  ) : Fragment() {
-    override val root = group {
-      circle {
-        centerXProperty().bind(c.mapNullable { it!!.x })
-        centerYProperty().bind(c.mapNullable { it!!.y })
-        fill = Color(0.3, 0.3, 0.3, 0.3)
-        radius = r
-      }
-    }
-  }
-
   private fun nodeFor(nodeId: NodeId<out ConnectableNode>): NodeAdapterGraphNode {
     val changeListener = object : ColumnValueChangeListener {
       override fun <T : Any> change(id: ColumnId<out T>, row: Int, value: T?) {

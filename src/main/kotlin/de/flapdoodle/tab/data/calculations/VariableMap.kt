@@ -7,8 +7,12 @@ import de.flapdoodle.tab.data.values.Values
 import de.flapdoodle.tab.data.values.Variable
 
 data class VariableMap(
-    val map: Map<Variable<out Any>, Values<Any>>
+    private val map: Map<Variable<out Any>, Values<Any>>
 ) {
+
+  fun isValidFor(variables: Set<Variable<out Any>>): Boolean {
+    return map.keys.containsAll(variables)
+  }
 
   fun size(variables: Set<Variable<out Any>>): Int {
     require(map.keys.containsAll(variables)) { "not all variables are mapped: ${map.keys} < $variables" }

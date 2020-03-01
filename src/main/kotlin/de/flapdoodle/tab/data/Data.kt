@@ -17,6 +17,11 @@ data class Data(
     return copy(columnValues = columnValues + (id to get(id).set(row, value)))
   }
 
+  fun clear(id: ColumnId<out Any>): Data {
+    return copy(columnValues = columnValues + (id to Values(id.type)))
+  }
+
+
   fun rows(columns: List<ColumnId<out Any>>): List<Row> {
     val columnValues = columns.map { it to get(it) }
     val size = columnValues.map { it.second.size() }.max() ?: 0

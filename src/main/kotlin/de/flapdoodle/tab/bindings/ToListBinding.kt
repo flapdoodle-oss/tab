@@ -1,5 +1,6 @@
 package de.flapdoodle.tab.bindings
 
+import javafx.beans.InvalidationListener
 import javafx.beans.binding.ListBinding
 import javafx.beans.value.ObservableValue
 import javafx.beans.value.WeakChangeListener
@@ -18,8 +19,35 @@ class ToListBinding<S : Any, T : Any>(
   init {
     source.addListener(srcChangeListener.wrap(::WeakChangeListener))
     computed.addAll(map(source.value))
+//    source.addListener(ChangeListener<Any> { _,_,newValue ->
+//      println("source changed: $newValue")
+//      invalidate()
+//    }.wrap(::WeakChangeListener))
   }
 
-  override fun computeValue() = computed
+  override fun computeValue(): ObservableList<T> {
+    return FXCollections.observableArrayList(computed)
+  }
+
   override fun getDependencies() = dependencies
+
+  companion object {
+
+    fun <S : Any, T : Any> newInstance(
+        source: ObservableValue<S>,
+        map: (S) -> List<T?>
+    ): ObservableList<T> {
+      val computed = FXCollections.observableArrayList<T>() as ObservableList<T>
+      val srcChangeListener = ToListChangeListener(computed, map)
+
+      source.addListener(srcChangeListener.wrap(::WeakChangeListener))
+      computed.addAll(map(source.value))
+
+      return object : ObservableList<T> by computed {}.apply {
+        addListener(InvalidationListener {
+          require(srcChangeListener != null) { "should never fail" }
+        })
+      }
+    }
+  }
 }
