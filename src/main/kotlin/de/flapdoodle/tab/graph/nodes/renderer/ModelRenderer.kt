@@ -46,10 +46,8 @@ class ModelRenderer(private val pane: Pane) {
   private val dataProperty: ObjectProperty<Data> = SimpleObjectProperty(Data())
   private val calculationMutex = SingleThreadMutex()
 
-  private var tableNodes: Map<NodeId<*>, Fragment> = emptyMap()
-
-  private val idAndNode = modelProperty.mapToList { model ->
-    model.nodeIds().map { it to model.node(it) }
+  private val ids = modelProperty.mapToList { model ->
+    model.nodeIds().toList()
   }
 
 //  private val graphNodes = nodeLayer.childrenUnmodifiable.map {
@@ -146,10 +144,17 @@ class ModelRenderer(private val pane: Pane) {
       }
     })
 
-    nodeLayer.children.syncFrom(idAndNode) { pair ->
-      println("node for $pair")
-      nodeFor(pair!!.first).root.apply {
-        this.property(NodeId::class, pair.first)
+    modelProperty.addListener(tornadofx.ChangeListener { _, _, newModel ->
+      calculationMutex.tryExecute {
+        println("calculate...")
+        dataProperty.set(calculate(newModel, dataProperty.get()))
+      }
+    })
+
+    nodeLayer.children.syncFrom(ids) { id ->
+      println("node for $id")
+      nodeFor(id!!).root.apply {
+        this.property(NodeId::class, id!!)
       }
     }
 
