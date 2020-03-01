@@ -8,6 +8,7 @@ import de.flapdoodle.tab.data.nodes.Connections
 import de.flapdoodle.tab.data.nodes.HasColumns
 import de.flapdoodle.tab.data.nodes.NodeId
 import de.flapdoodle.tab.data.values.Variable
+import de.flapdoodle.tab.extensions.change
 
 data class Model(
     private val nodes: Map<NodeId<out ConnectableNode>, ConnectableNode> = linkedMapOf(),
@@ -23,6 +24,16 @@ data class Model(
 
   fun <T: Any> connect(id: NodeId<out ConnectableNode>, variable: Variable<T>, columnConnection: ColumnConnection<T>): Model {
     return copy(connections = connections + (id to (connections[id] ?: Connections()).add(variable,columnConnection)))
+  }
+
+  fun <T: ConnectableNode> changeNode(id: NodeId<T>, change: (T) -> ConnectableNode): Model {
+    return copy(nodes = nodes.mapValues {
+      if (it.key == id) {
+        change(it.value as T)
+      } else {
+        it.value
+      }
+    })
   }
 
   fun <T : ConnectableNode> node(id: NodeId<T>): T {

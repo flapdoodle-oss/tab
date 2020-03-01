@@ -193,7 +193,11 @@ class StartView : View("My View") {
 
         when (event.data) {
           is ModelEvent.EventData.FormulaChanged<out ConnectableNode> -> {
-            println("formula changed: ${event.data.changedFormula}")
+            println("formula changed: ${event.data}")
+
+            renderer.change { model ->
+              event.data.applyTo(model)
+            }
           }
         }
 

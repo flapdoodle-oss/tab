@@ -3,9 +3,11 @@ package de.flapdoodle.tab.data.nodes
 import de.flapdoodle.tab.data.ColumnId
 import de.flapdoodle.tab.data.Data
 import de.flapdoodle.tab.data.NamedColumn
+import de.flapdoodle.tab.data.calculations.Calculation
 import de.flapdoodle.tab.data.calculations.CalculationMapping
 import de.flapdoodle.tab.data.calculations.VariableMap
 import de.flapdoodle.tab.data.values.Variable
+import javax.print.attribute.standard.Destination
 
 sealed class ConnectableNode {
   abstract val id: NodeId<out ConnectableNode>
@@ -40,6 +42,16 @@ sealed class ConnectableNode {
     }
 
     override fun calculations() = calculations
+
+    fun <T: Any> changeCalculation(destination: NamedColumn<T>, calculation: Calculation<T>): Calculated {
+      return copy(calculations = calculations.map {
+        if (it.column == destination) {
+          (it as CalculationMapping<T>).copy(calculation = calculation)
+        } else {
+          it
+        }
+      })
+    }
 
     fun calculate(data: Data, variableMap: VariableMap): Data {
       var currentData = data
