@@ -9,6 +9,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import tornadofx.*
 import java.lang.ref.WeakReference
+import java.util.Collections
 
 internal class ObservableListsTest {
 
@@ -17,7 +18,9 @@ internal class ObservableListsTest {
     val src = FXCollections.observableArrayList<String>()
     val dst = FXCollections.observableList(mutableListOf("stuff"))
 
-    ObservableLists.addMappedSync(src, dst) { ">$it<" }
+    val registration = ObservableLists.addMappedSync(src, dst) { ">$it<" }
+
+    System.gc()
 
     assertThat(dst).isEmpty()
 
@@ -29,7 +32,7 @@ internal class ObservableListsTest {
     assertThat(dst)
         .containsExactly(">1<", ">two<", ">four<", ">5!<", ">six<")
 
-    src.swap(0, 1)
+    Collections.swap(src,0, 1)
     assertThat(dst)
         .containsExactly(">two<", ">1<", ">four<", ">5!<", ">six<")
 
@@ -39,6 +42,8 @@ internal class ObservableListsTest {
 
     assertThat(dst)
         .containsExactly(">1<", ">5!<", ">four<", ">six<", ">two<")
+
+    registration.remove()
   }
 
   @Test

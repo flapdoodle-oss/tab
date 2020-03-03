@@ -37,7 +37,7 @@ object Zoomable {
     root.setOnMousePressed(EventHandler { click: MouseEvent ->
       if (doDrag.get() == null) {
         doDrag.set(MappedPoints(click.x, click.y, content.getLayoutX(), content.getLayoutY()))
-        println(" -> " + doDrag.get())
+//        println(" -> " + doDrag.get())
       }
       click.consume()
     })
@@ -46,14 +46,14 @@ object Zoomable {
       val start: MappedPoints? = doDrag.get()
       if (start != null) {
         val newLocal: Point2D = start.scaledLocalCoord(Point2D(drag.x, drag.y), 1.0)
-        println("drag to $newLocal")
+//        println("drag to $newLocal")
         content.relocate(newLocal.x, newLocal.y)
       }
       drag.consume()
     })
 
     root.addEventFilter<MouseEvent>(MouseEvent.MOUSE_RELEASED, EventHandler { exit: MouseEvent? ->
-      println("drag stopp....")
+//      println("drag stopp....")
       // root.relocate(10 + root.getLayoutX(), 10 + root.getLayoutY());
       doDrag.set(null)
     })

@@ -2,7 +2,11 @@ package de.flapdoodle.tab.bindings
 
 import de.flapdoodle.tab.fx.SingleThreadMutex
 import javafx.collections.ListChangeListener
-import kotlin.reflect.jvm.internal.impl.load.kotlin.JvmType
+import javafx.collections.WeakListChangeListener
+
+fun <T> ListChangeListener<T>.wrapByWeakChangeListener(): ListChangeListener<T> {
+  return this.wrap(::WeakListChangeListener)
+}
 
 fun <T> ListChangeListener<T>.wrap(wrapper: (ListChangeListener<T>) -> ListChangeListener<T>): ListChangeListener<T> {
   return wrapper(this)

@@ -135,6 +135,21 @@ class ModelRenderer(private val pane: Pane) {
 //        renderModel(newValue ?: throw IllegalArgumentException("model not set"))
 //      }
 //    })
+    modelProperty.onChange {
+      println("XX ModelRenderer: model changed to $it")
+    }
+
+    dataProperty.onChange {
+      println("XX ModelRenderer: data changed to $it")
+    }
+
+    ids.onChange {
+      println("XX ModelRenderer: nodeIds changed to $it")
+    }
+
+    nodeConnections.onChange {
+      println("XX ModelRenderer: nodeConnections changed to $it")
+    }
 
     dataProperty.addListener(ChangeListener { _, _, newValue ->
       println("data changed: $newValue")
@@ -173,7 +188,11 @@ class ModelRenderer(private val pane: Pane) {
   }
 
   fun change(change: (Model) -> Model) {
-    modelProperty.set(change(modelProperty.get()))
+    val changed = change(modelProperty.get())
+    if (changed==modelProperty.get()) {
+      println("this change did nothing: $change")
+    }
+    modelProperty.set(changed)
   }
 
   fun changeData(change: (Data) -> Data) {

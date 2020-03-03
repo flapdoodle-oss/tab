@@ -8,9 +8,9 @@ import de.flapdoodle.tab.data.calculations.EvalExCalculationAdapter
 import de.flapdoodle.tab.data.nodes.ColumnConnection
 import de.flapdoodle.tab.data.nodes.ConnectableNode
 import de.flapdoodle.tab.data.values.Variable
+import de.flapdoodle.tab.graph.DragPlayground
 import de.flapdoodle.tab.graph.SampleNode
 import de.flapdoodle.tab.graph.ZoomablePane
-import de.flapdoodle.tab.graph.nodes.DummyNode
 import de.flapdoodle.tab.graph.nodes.AbstractGraphNode
 import de.flapdoodle.tab.graph.nodes.renderer.ModelEvent
 import de.flapdoodle.tab.graph.nodes.renderer.ModelRenderer
@@ -117,16 +117,6 @@ class StartView : View("My View") {
         zoomablePane.content += node
       }
 
-      (1..5).forEach {
-        val x = ThreadLocalRandom.current().nextDouble(200.0, 400.0)
-        val y = ThreadLocalRandom.current().nextDouble(200.0, 400.0)
-
-        val node = DummyNode()
-        node.moveTo(x, y)
-        node.title = "Dummy($it)"
-        zoomablePane.content += node
-      }
-
       (1..3).forEach {
         val x = ThreadLocalRandom.current().nextDouble(0.0, 400.0)
         val y = ThreadLocalRandom.current().nextDouble(0.0, 400.0)
@@ -208,5 +198,6 @@ class StartView : View("My View") {
     }
 
     zoomablePane.content += SampleNode()
+    zoomablePane.content += DragPlayground()
   }
 }

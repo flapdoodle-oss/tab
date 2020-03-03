@@ -12,8 +12,12 @@ object HasMarkerProperty {
 
   private object KEY
 
-  fun markerOf(node: Node): IsMarker? {
-    return node.properties[KEY] as IsMarker?
+  fun markerOf(node: Node, searchInParent: Boolean = false): IsMarker? {
+    val marker = node.properties[KEY] as IsMarker?
+    if (marker==null && searchInParent && node.parent!=null) {
+      return markerOf(node.parent, searchInParent)
+    }
+    return marker
   }
 
   fun setMarker(node: Node, marker: IsMarker?) {

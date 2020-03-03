@@ -3,6 +3,7 @@ package de.flapdoodle.tab.graph
 import de.flapdoodle.tab.graph.events.Marker
 import de.flapdoodle.tab.graph.nodes.GraphNodeMoveHandler
 import de.flapdoodle.tab.graph.nodes.GraphNodeResizeHandler
+import de.flapdoodle.tab.graph.nodes.renderer.ConnectNodesHandler
 import javafx.beans.property.SimpleDoubleProperty
 import javafx.beans.value.ObservableValue
 import javafx.geometry.Bounds
@@ -46,8 +47,11 @@ class ZoomablePane : Fragment("My View") {
     Zoomable.enableZoom(this, scale)
     Zoomable.enableDrag(this, content)
 
-    val resolver = GraphNodeMoveHandler.resolver
+    val resolver = ConnectNodesHandler.inputResolver
+        .andThen(ConnectNodesHandler.outputResolver)
+        .andThen(GraphNodeMoveHandler.resolver)
         .andThen(GraphNodeResizeHandler.resolver)
+
 
     Marker.addEventDelegate(this, scale, resolver)
   }

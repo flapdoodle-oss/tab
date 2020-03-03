@@ -3,10 +3,7 @@ package de.flapdoodle.tab.bindings
 import javafx.beans.property.Property
 import javafx.beans.value.ObservableValue
 import javafx.collections.ObservableList
-import org.fxmisc.easybind.EasyBind
 import org.fxmisc.easybind.monadic.MonadicBinding
-import java.lang.RuntimeException
-import java.util.function.Function
 
 fun <S : Any, T : Any> ObservableValue<S>.mapNullable(map: (S?) -> T?): MonadicBinding<T> {
   return Bindings.map(this, map)
@@ -32,23 +29,23 @@ fun <S : Any, T : Any> Property<T>.mapFrom(src: ObservableValue<S>, map: (S?) ->
 }
 
 fun <S : Any, D : Any> ObservableValue<S>.mapToList(map: (S) -> List<D?>): ObservableList<D> {
-  return ToListBinding(this,map)
+  return ToListBinding.newInstance(this,map)
 }
 
 fun <S : Any, D : Any> ObservableList<S>.mapNullable(map: (S?) -> D?): ObservableList<D> {
-  return MappingListBinding(this,map)
+  return MappingListBinding.newInstance(this,map)
 }
 
 fun <S : Any, D : Any> ObservableList<S>.map(map: (S) -> D): ObservableList<D> {
-  return MappingListBinding(this) {
-    require(it != null) {"source in $this is null"}
+  return MappingListBinding.newInstance(this) {
+    require(it != null) {"source is null"}
     map(it)
   }
 }
 
 fun <S: Any, D: Any> ObservableList<S>.flatMapObservable(map: (S?) -> List<D?>): ObservableList<D> {
-  return FlatmapListBinding(this) {
-    require(it != null) {"source in $this is null"}
+  return FlatmapListBinding.newInstance(this) {
+    require(it != null) {"source is null"}
     map(it)
   }
 }
@@ -77,5 +74,11 @@ object Bindings {
         return f(src1.value, src2.value)
       }
     }
+  }
+
+  abstract class ObservableListWrapper<T>(
+      private val delegate: ObservableList<T>
+  ) : ObservableList<T> by delegate {
+
   }
 }

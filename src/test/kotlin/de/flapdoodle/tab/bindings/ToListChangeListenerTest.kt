@@ -21,7 +21,7 @@ internal class ToListChangeListenerTest {
     val src = SimpleObjectProperty(emptyList<String>())
     val testee = ToListChangeListener<List<String>, String>(result) { it }
 
-    src.addListener(testee.wrap(::WeakChangeListener))
+    src.addListener(testee.wrapByWeakChangeListener())
     result.addListener(ListChangeListener {
       assertNextChange(it)
     })

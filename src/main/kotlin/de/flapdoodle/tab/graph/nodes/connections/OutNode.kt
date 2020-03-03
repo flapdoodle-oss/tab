@@ -12,6 +12,7 @@ class OutNode(val out: Out, color: Color = Color.ORANGE) : StackPane() {
       fill = color
       radius = 4.0
     }
+    isMouseTransparent = true
   }
 
   init {

@@ -1,10 +1,7 @@
 package de.flapdoodle.tab.bindings
 
-import javafx.beans.Observable
 import javafx.beans.binding.ObjectBinding
-import javafx.beans.value.ChangeListener
 import javafx.beans.value.ObservableValue
-import javafx.beans.value.WeakChangeListener
 import org.fxmisc.easybind.monadic.MonadicBinding
 
 /**

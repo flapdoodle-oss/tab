@@ -33,8 +33,6 @@ class NodeAdapterGraphNode(
         is NodeId.CalculatedId -> calculated(id, modelProperty, dataProperty)
       }
 
-      println("--> ${node.root.layoutBounds}")
-
 //      val x = ThreadLocalRandom.current().nextDouble(0.0, 400.0)
 //      val y = ThreadLocalRandom.current().nextDouble(0.0, 400.0)
       node.moveTo(xOffset, yOffset)
@@ -76,9 +74,14 @@ class NodeAdapterGraphNode(
         dataProperty: ObjectProperty<Data>
     ): NodeAdapterGraphNode {
       val nodeProperty = modelProperty.mapNullable { m ->
-        println("mapNullable: node for $id")
+        println("XX NodeAdapterGraphNode: mapNullable: node for $id")
         m!!.node(id)
       }
+
+      nodeProperty.onChange {
+        println("XX NodeAdapterGraphNode(calculated): nodeProperty changed to $it")
+      }
+
       return NodeAdapterGraphNode {
         NodeAdapter(
             content = ColumnsNode(

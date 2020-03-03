@@ -1,9 +1,11 @@
 package de.flapdoodle.tab.graph.nodes.renderer
 
+import de.flapdoodle.tab.bindings.Registration
 import de.flapdoodle.tab.bindings.mapToList
 import de.flapdoodle.tab.bindings.syncFrom
 import de.flapdoodle.tab.data.nodes.ConnectableNode
 import de.flapdoodle.tab.data.nodes.HasInputs
+import de.flapdoodle.tab.extensions.property
 import de.flapdoodle.tab.graph.nodes.connections.InNode
 import de.flapdoodle.tab.graph.nodes.connections.VariableInput
 import javafx.beans.value.ObservableValue
@@ -15,8 +17,18 @@ class VariableInputsNode<T>(
     where T : HasInputs,
           T : ConnectableNode {
   private val inputs = node.mapToList {
-    println("mapToList: variables for $it")
+    println("XX VariableInputsNode: mapToList: variables for $it")
     it.variables().toList()
+  }
+
+  init {
+    node.onChange {
+      println("XX VariableInputsNode: node changed to $it")
+//      println("XX VariableInputsNode: should propagate to $inputs")
+    }
+    inputs.onChange {
+      println("XX VariableInputsNode: inputs changed to $it")
+    }
   }
 
   override val root = vbox {

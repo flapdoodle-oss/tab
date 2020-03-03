@@ -23,6 +23,7 @@ class ConnectionNode(
       centerYProperty().bind(startY)
       fill = Color(0.3, 0.5, 0.3, 0.3)
       radius = 8.0
+      isMouseTransparent = true
     }
 
     circle {
@@ -30,6 +31,7 @@ class ConnectionNode(
       centerYProperty().bind(endY)
       fill = Color(0.5, 0.3, 0.3, 0.3)
       radius = 8.0
+      isMouseTransparent = true
     }
 
     line {
@@ -40,6 +42,7 @@ class ConnectionNode(
 
       stroke = Color(0.3, 0.3, 0.3, 0.3)
       strokeWidth = 3.0
+      isMouseTransparent = true
     }
   }
 }

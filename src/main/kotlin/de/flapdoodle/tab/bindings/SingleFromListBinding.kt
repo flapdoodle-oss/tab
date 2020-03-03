@@ -1,14 +1,9 @@
 package de.flapdoodle.tab.bindings
 
-import javafx.beans.binding.ListBinding
 import javafx.beans.binding.ObjectBinding
 import javafx.beans.property.SimpleObjectProperty
-import javafx.beans.value.ObservableListValue
-import javafx.beans.value.ObservableValue
-import javafx.beans.value.WeakChangeListener
 import javafx.collections.FXCollections
 import javafx.collections.ObservableList
-import javafx.collections.WeakListChangeListener
 
 class SingleFromListBinding<S : Any, T : Any>(
     source: ObservableList<S>,
@@ -20,7 +15,7 @@ class SingleFromListBinding<S : Any, T : Any>(
   private val dependencies = FXCollections.singletonObservableList(source) as ObservableList<*>
 
   init {
-    source.addListener(srcChangeListener.wrap(::WeakListChangeListener))
+    source.addListener(srcChangeListener.wrapByWeakChangeListener())
     computed.set(map(source))
     computed.addListener { observable, oldValue, newValue ->
       this.invalidate()

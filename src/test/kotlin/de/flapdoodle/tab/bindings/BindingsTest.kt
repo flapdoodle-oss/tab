@@ -1,5 +1,7 @@
 package de.flapdoodle.tab.bindings
 
+import javafx.beans.property.SimpleIntegerProperty
+import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.property.SimpleStringProperty
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
@@ -17,7 +19,7 @@ internal class BindingsTest {
       var lastValueFromChangeListener: String? = null
 
       val src = SimpleStringProperty("start")
-      val mapped = src.mapNullable { ">$it<" }
+      val mapped = src.gcAbleCopy().mapNullable { ">$it<" }
 
       System.gc()
 
@@ -37,7 +39,7 @@ internal class BindingsTest {
       var lastValueFromChangeListener: String? = null
 
       val src = SimpleStringProperty("start")
-      val mapped = src.mapNullable { ">$it<" }.mapNullable { "[$it]" }
+      val mapped = src.gcAbleCopy().mapNullable { ">$it<" }.mapNullable { "[$it]" }
 
       System.gc()
 
@@ -57,7 +59,7 @@ internal class BindingsTest {
       var lastValueFromChangeListener: String? = null
 
       val src = SimpleStringProperty("start")
-      val mapped = src.mapNonNull { ">$it<" }
+      val mapped = src.gcAbleCopy().mapNonNull { ">$it<" }
 
       System.gc()
 
@@ -92,7 +94,7 @@ internal class BindingsTest {
 
       val src1 = SimpleStringProperty("foo")
       val src2 = SimpleStringProperty("bar")
-      val mapped = src1.mergeWith(src2) { a,b -> "$a$b" }
+      val mapped = Bindings.combine(src1.gcAbleCopy(), src2.gcAbleCopy()) { a,b -> "$a$b" }
 
       System.gc()
 
@@ -109,5 +111,28 @@ internal class BindingsTest {
       src2.value = "BAR"
       assertThat(lastValueFromChangeListener).isEqualTo("FOOBAR")
     }
+  }
+
+  @Test
+  fun `map from should sync property`() {
+    var lastValueFromChangeListener: String? = null
+    val dst = SimpleStringProperty()
+    val src = SimpleIntegerProperty(11)
+
+    dst.addListener { observable, oldValue, newValue ->
+      lastValueFromChangeListener = newValue
+    }
+
+    dst.mapFrom(src.gcAbleCopy()) { "$it" }
+
+    System.gc()
+
+    assertThat(lastValueFromChangeListener).isEqualTo("11")
+    assertThat(dst.value).isEqualTo("11")
+
+    src.value = 42
+
+    assertThat(lastValueFromChangeListener).isEqualTo("42")
+    assertThat(dst.value).isEqualTo("42")
   }
 }

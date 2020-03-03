@@ -13,6 +13,7 @@ class InNode(val variableInput: VariableInput<out Any>, color: Color = Color.DAR
       fill = color
       radius = 4.0
     }
+    isMouseTransparent = true
   }
 
   init {

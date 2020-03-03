@@ -27,6 +27,7 @@ data class Model(
   }
 
   fun <T: ConnectableNode> changeNode(id: NodeId<T>, change: (T) -> ConnectableNode): Model {
+    require(nodes.contains(id)) { "node $id not found in ${nodes.keys}"}
     return copy(nodes = nodes.mapValues {
       if (it.key == id) {
         change(it.value as T)
