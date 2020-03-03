@@ -1,7 +1,9 @@
 package de.flapdoodle.tab.bindings
 
 import javafx.beans.binding.ObjectBinding
+import javafx.beans.value.ChangeListener
 import javafx.beans.value.ObservableValue
+import javafx.beans.value.WeakChangeListener
 import org.fxmisc.easybind.monadic.MonadicBinding
 
 /**
@@ -12,16 +14,16 @@ abstract class PreboundBinding<T>(
     private vararg val dependencies: ObservableValue<*>
 ) : ObjectBinding<T>(), MonadicBinding<T> {
 
-//  private val changeToInvalidListener = ChangeListener<Any> { _,_,new ->
-//    invalidate()
-//  }
+  private val changeToInvalidListener = ChangeListener<Any> { _,_,new ->
+    invalidate()
+  }
 
   init {
-    bind(*dependencies)
-//    dependencies.forEach { it.addListener(changeToInvalidListener.wrap(::WeakChangeListener)) }
+//    bind(*dependencies)
+    dependencies.forEach { it.addListener(changeToInvalidListener.wrap(::WeakChangeListener)) }
   }
 
   override fun dispose() {
-    unbind(*dependencies)
+//    unbind(*dependencies)
   }
 }

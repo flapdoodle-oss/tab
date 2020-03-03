@@ -6,8 +6,10 @@ import de.flapdoodle.tab.data.NamedColumn
 import de.flapdoodle.tab.data.calculations.Calculation
 import de.flapdoodle.tab.data.calculations.CalculationMapping
 import de.flapdoodle.tab.data.calculations.EvalExCalculationAdapter
+import de.flapdoodle.tab.data.nodes.ColumnConnection
 import de.flapdoodle.tab.data.nodes.ConnectableNode
 import de.flapdoodle.tab.data.nodes.NodeId
+import de.flapdoodle.tab.data.values.Variable
 import tornadofx.*
 import java.math.BigDecimal
 
@@ -33,6 +35,17 @@ data class ModelEvent(
           require(it is ConnectableNode.Calculated) {"not supported: $it"}
           it.changeCalculation(namedColumn, newCalculation)
         }
+      }
+    }
+
+    data class Connect<T: Any>(
+        val nodeId: NodeId<out ConnectableNode>,
+        val variable: Variable<T>,
+        val columnConnection: ColumnConnection<T>
+    ) : EventData() {
+
+      override fun applyTo(model: Model): Model {
+        return model.connect(nodeId, variable, columnConnection)
       }
     }
   }

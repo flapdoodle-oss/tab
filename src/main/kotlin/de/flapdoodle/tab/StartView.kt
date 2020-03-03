@@ -189,6 +189,14 @@ class StartView : View("My View") {
               event.data.applyTo(model)
             }
           }
+
+          is ModelEvent.EventData.Connect<out Any> -> {
+            println("connect: ${event.data}")
+
+            renderer.change { model ->
+              event.data.applyTo(model)
+            }
+          }
         }
 
 //        renderer.change { model ->

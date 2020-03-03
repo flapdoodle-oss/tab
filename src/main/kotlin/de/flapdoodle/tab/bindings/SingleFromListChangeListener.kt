@@ -9,6 +9,7 @@ class SingleFromListChangeListener<S, D>(
 ) : ListChangeListener<S> {
 
   override fun onChanged(change: ListChangeListener.Change<out S>) {
+    println("XX SingleFromListChangeListener: changed with $map")
     val single =  map(change.list)
     dst.value = single
   }

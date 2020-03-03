@@ -7,6 +7,7 @@ import de.flapdoodle.tab.bindings.mapNonNull
 import de.flapdoodle.tab.bindings.mapNullable
 import de.flapdoodle.tab.bindings.mapTo
 import de.flapdoodle.tab.bindings.mapToList
+import de.flapdoodle.tab.bindings.mergeWith
 import de.flapdoodle.tab.bindings.syncFrom
 import de.flapdoodle.tab.data.ColumnId
 import de.flapdoodle.tab.data.Data
@@ -67,8 +68,14 @@ class ModelRenderer(private val pane: Pane) {
     model.nodeIds().map { it to model.tableConnections(it) }.toMap()
   }
 
-  private val nodeConnectors = nodeLayer.children.mapTo { list ->
-    println("nodeConnectors")
+  // die initialisierungsreihenfolge ist schwer zu handhaben
+  // vielleicht sollte man sowas einfach als event rumschicken
+  private val nodeConnectors = nodeLayer.children.mapTo { it ->
+    println("XX ModelRenderer: nodeLayer children ")
+    it.forEach { println("XX ModelRenderer: child $it") }
+    it
+  }.mergeWith(modelProperty) { list, _ ->
+    println("XX ModelRenderer: nodeConnectors ")
     println("list: $list")
     val result = list.map {
       val parent = it as Parent
@@ -100,7 +107,9 @@ class ModelRenderer(private val pane: Pane) {
     }
 
     operator fun get(variable: Variable<out Any>): Binding<Point2D> {
-      return input[variable]!!
+      val pos = input[variable]
+      require(pos!=null) {" could not find pos for $variable in $input"}
+      return pos
     }
   }
 

@@ -6,13 +6,13 @@ import javafx.collections.FXCollections
 import javafx.collections.ObservableList
 
 class SingleFromListBinding<S : Any, T : Any>(
-    source: ObservableList<S>,
+    private val source: ObservableList<S>,
     map: (List<S?>) -> T?
 ) : ObjectBinding<T>() {
 
   private var computed = SimpleObjectProperty<T>()
   private val srcChangeListener = SingleFromListChangeListener(computed, map)
-  private val dependencies = FXCollections.singletonObservableList(source) as ObservableList<*>
+//  private val dependencies = FXCollections.singletonObservableList(source) as ObservableList<*>
 
   init {
     source.addListener(srcChangeListener.wrapByWeakChangeListener())
@@ -26,5 +26,5 @@ class SingleFromListBinding<S : Any, T : Any>(
     return computed.get()
   }
 
-  override fun getDependencies() = dependencies
+//  override fun getDependencies() = dependencies
 }

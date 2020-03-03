@@ -1,5 +1,6 @@
 package de.flapdoodle.tab.bindings
 
+import javafx.beans.Observable
 import javafx.beans.property.Property
 import javafx.beans.value.ObservableValue
 import javafx.collections.ObservableList

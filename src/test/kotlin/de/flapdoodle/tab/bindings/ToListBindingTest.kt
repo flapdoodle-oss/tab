@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test
 internal class ToListBindingTest {
 
   @Test
-  fun `map must keep refernce to source to avoid GC`() {
+  fun `map must keep reference to source to avoid GC`() {
     val src = SimpleObjectProperty(listOf("A", "B", "C"))
     val mapped = src.gcAbleCopy().mapToList { it }
 

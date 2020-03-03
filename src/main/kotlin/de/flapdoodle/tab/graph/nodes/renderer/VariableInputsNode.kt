@@ -16,9 +16,8 @@ class VariableInputsNode<T>(
 ) : Fragment()
     where T : HasInputs,
           T : ConnectableNode {
-  private val inputs = node.mapToList {
-    println("XX VariableInputsNode: mapToList: variables for $it")
-    it.variables().toList()
+  private val inputs = node.mapToList {node ->
+    node.variables().toList().map { node.id to it }
   }
 
   init {
@@ -32,8 +31,9 @@ class VariableInputsNode<T>(
   }
 
   override val root = vbox {
-    children.syncFrom(inputs) {
-      InNode(VariableInput(it!!))
+    children.syncFrom(inputs) { it ->
+      val (id, v) = it!!
+      InNode(VariableInput(id, v))
     }
   }
 }

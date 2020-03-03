@@ -1,5 +1,7 @@
 package de.flapdoodle.tab.graph.nodes.renderer
 
+import de.flapdoodle.tab.data.ColumnId
+import de.flapdoodle.tab.data.nodes.ColumnConnection
 import de.flapdoodle.tab.graph.events.IsMarker
 import de.flapdoodle.tab.graph.events.MappedMouseEvent
 import de.flapdoodle.tab.graph.events.MouseEventHandler
@@ -7,6 +9,7 @@ import de.flapdoodle.tab.graph.events.MouseEventHandlerResolver
 import de.flapdoodle.tab.graph.nodes.connections.Out
 import de.flapdoodle.tab.graph.nodes.connections.VariableInput
 import javafx.geometry.Point2D
+import tornadofx.*
 
 object ConnectNodesHandler {
 
@@ -34,9 +37,7 @@ object ConnectNodesHandler {
             println("released: could connect $input to $marker")
             when (marker) {
               is Out.ColumnValues<*> -> {
-                if (input.variable.type == marker.columnId.type) {
-                  println("type matches: ${input.variable.type}")
-                }
+                connectIfPossible(input, marker)
               }
             }
             //if (input.variable.type==marker)
@@ -72,6 +73,18 @@ object ConnectNodesHandler {
         null
       } else
         this
+    }
+  }
+
+  private fun <T: Any> connectIfPossible(input: VariableInput<T>, marker: Out.ColumnValues<out Any>) {
+    if (input.variable.type == marker.columnId.type) {
+      println("type matches: ${input.variable.type}")
+
+      FX.eventbus.fire(ModelEvent.EventData.Connect(
+          input.id,
+          input.variable,
+          ColumnConnection.ColumnValues(marker.columnId as ColumnId<T>)
+      ).asEvent())
     }
   }
 
