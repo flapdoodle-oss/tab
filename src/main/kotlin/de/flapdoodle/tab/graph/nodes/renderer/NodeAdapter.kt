@@ -13,20 +13,20 @@ class NodeAdapter(
   override val root = borderpane {
     if (configuration!=null) {
       top {
-        this += configuration.root
+        this += configuration
       }
     }
     center {
-      this += content.root
+      this += content
     }
     if (inputs != null) {
       left {
-        this += inputs.root
+        this += inputs
       }
     }
     if (outputs != null) {
       right {
-        this += outputs.root
+        this += outputs
       }
     }
   }

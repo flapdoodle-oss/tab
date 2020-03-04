@@ -6,6 +6,7 @@ import de.flapdoodle.tab.data.nodes.ConnectableNode
 import de.flapdoodle.tab.data.nodes.Connection
 import de.flapdoodle.tab.data.nodes.Connections
 import de.flapdoodle.tab.data.nodes.HasColumns
+import de.flapdoodle.tab.data.nodes.HasInputs
 import de.flapdoodle.tab.data.nodes.NodeId
 import de.flapdoodle.tab.data.values.Variable
 import de.flapdoodle.tab.extensions.change
@@ -22,19 +23,41 @@ data class Model(
     return copy(nodes = nodes + (node.id to node))
   }
 
-  fun <T: Any> connect(id: NodeId<out ConnectableNode>, variable: Variable<T>, columnConnection: ColumnConnection<T>): Model {
-    return copy(connections = connections + (id to (connections[id] ?: Connections()).add(variable,columnConnection)))
+  fun <T : Any> connect(id: NodeId<out ConnectableNode>, variable: Variable<T>, columnConnection: ColumnConnection<T>): Model {
+    return copy(connections = connections + (id to (connections[id] ?: Connections()).add(variable, columnConnection)))
   }
 
-  fun <T: ConnectableNode> changeNode(id: NodeId<T>, change: (T) -> ConnectableNode): Model {
-    require(nodes.contains(id)) { "node $id not found in ${nodes.keys}"}
-    return copy(nodes = nodes.mapValues {
+  fun <T : ConnectableNode> changeNode(id: NodeId<T>, change: (T) -> ConnectableNode): Model {
+    require(nodes.contains(id)) { "node $id not found in ${nodes.keys}" }
+    val node = nodes[id] as T ?: throw IllegalArgumentException("node not found for $id in ${nodes.keys}")
+    val changedNode = change(node)
+
+    val originalColumnIds = if (node is HasColumns) {
+      node.columns().map(NamedColumn<out Any>::id).toSet()
+    } else emptySet()
+
+    val newColumnIds = if (changedNode is HasColumns) {
+      changedNode.columns().map(NamedColumn<out Any>::id).toSet()
+    } else emptySet()
+
+    val missingColumns = originalColumnIds-newColumnIds
+
+    val changedNodes = nodes.mapValues {
       if (it.key == id) {
-        change(it.value as T)
+        changedNode
       } else {
         it.value
       }
-    })
+    }
+
+    val changedConnections = connections.mapValues { (nodeId, connections) ->
+      if (nodeId == id && changedNode is HasInputs)
+        connections.filterInvalidInputs(changedNode)
+      else
+        connections.filterInvalidColumns(missingColumns)
+    }
+
+    return copy(nodes = changedNodes, connections = changedConnections)
   }
 
   fun <T : ConnectableNode> node(id: NodeId<T>): T {

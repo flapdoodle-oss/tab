@@ -3,12 +3,12 @@ package de.flapdoodle.tab.graph.nodes.renderer
 import de.flapdoodle.tab.bindings.mapToList
 import de.flapdoodle.tab.bindings.syncFrom
 import de.flapdoodle.tab.data.NamedColumn
-import de.flapdoodle.tab.data.calculations.Calculation
 import de.flapdoodle.tab.data.calculations.CalculationMapping
 import de.flapdoodle.tab.data.calculations.EvalExCalculationAdapter
 import de.flapdoodle.tab.data.nodes.ConnectableNode
 import de.flapdoodle.tab.data.nodes.HasCalculations
 import de.flapdoodle.tab.data.nodes.NodeId
+import de.flapdoodle.tab.graph.nodes.renderer.events.ModelEvent
 import javafx.beans.value.ObservableValue
 import javafx.geometry.Pos
 import javafx.scene.layout.HBox

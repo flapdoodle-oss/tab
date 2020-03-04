@@ -1,16 +1,8 @@
-package de.flapdoodle.tab.graph.nodes.renderer
+package de.flapdoodle.tab.graph.nodes.renderer.events
 
 import de.flapdoodle.tab.data.ColumnId
 import de.flapdoodle.tab.data.Data
-import de.flapdoodle.tab.data.Model
-import de.flapdoodle.tab.data.NamedColumn
-import de.flapdoodle.tab.data.calculations.Calculation
-import de.flapdoodle.tab.data.nodes.ColumnConnection
-import de.flapdoodle.tab.data.nodes.ConnectableNode
-import de.flapdoodle.tab.data.nodes.NodeId
-import de.flapdoodle.tab.data.values.Variable
 import tornadofx.*
-import java.math.BigDecimal
 
 data class DataEvent(
     val data: EventData

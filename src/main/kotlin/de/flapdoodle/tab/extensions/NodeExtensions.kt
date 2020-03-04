@@ -6,8 +6,16 @@ import javafx.scene.Node
 import javafx.scene.Parent
 import kotlin.reflect.KClass
 
-fun <T : Any> Node.property(key: KClass<T>, value: T?) {
-  ObservableMapExtensions.set(this.properties, key, value)
+fun <T : Any> Node.property(scope: KClass<out Any>, key: KClass<T>, value: T?): T? {
+  return ObservableMapExtensions.set(this.properties, scope,key, value)
+}
+
+fun <T : Any> Node.property(scope: KClass<out Any>, key: KClass<T>): T? {
+  return ObservableMapExtensions.get(this.properties, scope, key)
+}
+
+fun <T : Any> Node.property(key: KClass<T>, value: T?): T? {
+  return ObservableMapExtensions.set(this.properties, key, value)
 }
 
 fun <T : Any> Node.property(key: KClass<T>): T? {

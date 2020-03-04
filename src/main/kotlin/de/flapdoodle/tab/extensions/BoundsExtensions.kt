@@ -28,7 +28,7 @@ fun Bounds.centerOf(): Point2D {
 fun Node.mappedBounds(child: Node, localBounds: Bounds): Bounds {
   val parent = child.parent
   var bounds = child.localToParent(localBounds)
-  if (parent !== this) {
+  if (this !== parent) {
     bounds = this.mappedBounds(parent, bounds)
   }
   return bounds
@@ -63,6 +63,10 @@ class CenterBinding(
   }
 
   override fun computeValue(): Point2D {
-    return top.mappedBounds(child, child.boundsInLocal).centerOf()
+    try {
+      return top.mappedBounds(child, child.boundsInLocal).centerOf()
+    } catch (ex: Exception) {
+      return Point2D(0.0,0.0)
+    }
   }
 }

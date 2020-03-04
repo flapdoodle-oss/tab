@@ -1,4 +1,4 @@
-package de.flapdoodle.tab.graph.nodes.renderer
+package de.flapdoodle.tab.graph.nodes.renderer.events
 
 import de.flapdoodle.tab.data.ColumnId
 import de.flapdoodle.tab.data.Model

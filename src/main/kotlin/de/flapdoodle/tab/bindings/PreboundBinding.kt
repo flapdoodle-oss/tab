@@ -19,11 +19,12 @@ abstract class PreboundBinding<T>(
   }
 
   init {
-//    bind(*dependencies)
-    dependencies.forEach { it.addListener(changeToInvalidListener.wrap(::WeakChangeListener)) }
+    bind(*dependencies)
+    val weakListener = changeToInvalidListener.wrapByWeakChangeListener()
+    dependencies.forEach { it.addListener(weakListener) }
   }
 
   override fun dispose() {
-//    unbind(*dependencies)
+    unbind(*dependencies)
   }
 }

@@ -8,13 +8,13 @@ import de.flapdoodle.tab.data.calculations.EvalExCalculationAdapter
 import de.flapdoodle.tab.data.nodes.ColumnConnection
 import de.flapdoodle.tab.data.nodes.ConnectableNode
 import de.flapdoodle.tab.data.values.Variable
-import de.flapdoodle.tab.graph.DragPlayground
-import de.flapdoodle.tab.graph.SampleNode
+import de.flapdoodle.tab.extensions.subscribeEvent
 import de.flapdoodle.tab.graph.ZoomablePane
 import de.flapdoodle.tab.graph.nodes.AbstractGraphNode
-import de.flapdoodle.tab.graph.nodes.renderer.DataEvent
-import de.flapdoodle.tab.graph.nodes.renderer.ModelEvent
+import de.flapdoodle.tab.graph.nodes.renderer.events.DataEvent
+import de.flapdoodle.tab.graph.nodes.renderer.events.ModelEvent
 import de.flapdoodle.tab.graph.nodes.renderer.ModelRenderer
+import de.flapdoodle.tab.graph.nodes.renderer.events.ConnectEvent
 import de.flapdoodle.tab.graph.nodes.values.ValuesNode
 import javafx.scene.Group
 import javafx.scene.paint.Color
@@ -179,7 +179,7 @@ class StartView : View("My View") {
         data.change(fooColumnId, 4, "Klaus")
       }
 
-      subscribe<ModelEvent> { event ->
+      subscribeEvent<ModelEvent> { event ->
         println("got message: $event")
 
         when (event.data) {
@@ -205,7 +205,7 @@ class StartView : View("My View") {
 //        }
       }
 
-      subscribe<DataEvent> { event ->
+      subscribeEvent<DataEvent> { event ->
         println("change data: ${event.data}")
 
         renderer.changeData { data ->
@@ -214,7 +214,7 @@ class StartView : View("My View") {
       }
     }
 
-    zoomablePane.content += SampleNode()
-    zoomablePane.content += DragPlayground()
+//    zoomablePane.content += SampleNode()
+//    zoomablePane.content += DragPlayground()
   }
 }

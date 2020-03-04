@@ -8,6 +8,8 @@ import de.flapdoodle.tab.graph.events.MouseEventHandler
 import de.flapdoodle.tab.graph.events.MouseEventHandlerResolver
 import de.flapdoodle.tab.graph.nodes.connections.Out
 import de.flapdoodle.tab.graph.nodes.connections.VariableInput
+import de.flapdoodle.tab.graph.nodes.renderer.events.ConnectEvent
+import de.flapdoodle.tab.graph.nodes.renderer.events.ModelEvent
 import javafx.geometry.Point2D
 import tornadofx.*
 
@@ -23,7 +25,12 @@ object ConnectNodesHandler {
 //      println("touched $input with $mouseEvent, marker: $marker")
 
       when (mouseEvent) {
-        is MappedMouseEvent.Click -> dragStarted = mouseEvent.coord
+        is MappedMouseEvent.Click -> {
+          dragStarted = mouseEvent.coord
+          val event = ConnectEvent.startConnectTo(input)
+          println("fire event: $event")
+          FX.eventbus.fire(event)
+        }
         is MappedMouseEvent.DragDetected -> {
           mouseEvent.startFullDrag()
         }
@@ -70,6 +77,7 @@ object ConnectNodesHandler {
 //      println("end $input with $dragStarted")
 
       return if (dragStarted == null && exited) {
+        FX.eventbus.fire(ConnectEvent.stop())
         null
       } else
         this

@@ -11,6 +11,7 @@ import de.flapdoodle.tab.data.nodes.HasColumns
 import de.flapdoodle.tab.extensions.property
 import de.flapdoodle.tab.graph.nodes.connections.Out
 import de.flapdoodle.tab.graph.nodes.connections.OutNode
+import de.flapdoodle.tab.graph.nodes.renderer.events.DataEvent
 import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.value.ObservableValue
 import javafx.scene.control.TableColumn

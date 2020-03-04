@@ -28,6 +28,7 @@ import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.value.ChangeListener
 import javafx.geometry.Point2D
 import javafx.scene.Group
+import javafx.scene.Node
 import javafx.scene.Parent
 import javafx.scene.layout.Pane
 import tornadofx.*
@@ -44,6 +45,13 @@ class ModelRenderer(private val pane: Pane) {
     model.nodeIds().toList()
   }
 
+  private val nodeLayerSyncReg = nodeLayer.children.syncFrom(ids) { id ->
+    println("node for $id")
+    nodeFor(id!!).root.apply {
+      this.property(NodeId::class, id!!)
+    }
+  }
+
 //  private val graphNodes = nodeLayer.childrenUnmodifiable.map {
 //    val parent = it as Parent
 //    val id = parent.property(NodeId::class) ?: throw IllegalArgumentException("node id not set")
@@ -58,6 +66,8 @@ class ModelRenderer(private val pane: Pane) {
 //  }
 
   private val nodeConnections = modelProperty.mapNonNull { model ->
+    println("XX ModelRenderer: modelProperty -> nodeConnections")
+    println("XX ModelRenderer: $model")
     model.nodeIds().map { it to model.tableConnections(it) }.toMap()
   }
 
@@ -70,6 +80,12 @@ class ModelRenderer(private val pane: Pane) {
   }.mergeWith(modelProperty) { list, _ ->
     println("XX ModelRenderer: nodeConnectors ")
     println("list: $list")
+    val result = connectorPositions(list)
+    println("---> $result")
+    result
+  }
+
+  private fun connectorPositions(list: List<Node?>): Map<NodeId<*>, ConnectorPositions> {
     val result = list.map {
       val parent = it as Parent
       val id = parent.property(NodeId::class) ?: throw IllegalArgumentException("node id not set")
@@ -84,8 +100,7 @@ class ModelRenderer(private val pane: Pane) {
 
       id to ConnectorPositions(out, ins)
     }.toMap()
-    println("---> $result")
-    result
+    return result
   }
 
   data class ConnectorPositions(
@@ -106,10 +121,13 @@ class ModelRenderer(private val pane: Pane) {
     }
   }
 
-  private val connectionNodes = Bindings.combine(nodeConnections, nodeConnectors) { connections, connectors ->
+  private val connectionNodes = nodeConnections.mapNonNull { connections->
+    val connectors = connectorPositions(nodeLayer.children)
+
     println("connection nodes")
     println("connections: $connections")
     println("connectors: $connectors")
+
     connections.flatMap { entry ->
       println("connection: $entry")
       if (entry.value.isNotEmpty()) {
@@ -130,6 +148,37 @@ class ModelRenderer(private val pane: Pane) {
     println("connections: $it")
     it
   }
+
+  private val connectionNodesReg = connectionLayer.children.syncFrom(connectionNodes) { pair ->
+    require(pair != null) { "pair is null" }
+    ConnectionNode(pair.first, pair.second).root
+  }
+
+//  private val connectionNodes = Bindings.combine(nodeConnections, nodeConnectors) { connections, connectors ->
+//    println("connection nodes")
+//    println("connections: $connections")
+//    println("connectors: $connectors")
+//
+//    connections.flatMap { entry ->
+//      println("connection: $entry")
+//      if (entry.value.isNotEmpty()) {
+//        val dstConnectors = connectors[entry.key]
+//        if (dstConnectors!=null) {
+//          require(dstConnectors != null) { "connectors for ${entry.key} not found in $connectors" }
+//          entry.value.map { c ->
+//            val start = (connectors[c.sourceNode]!!)[c.columnConnection]
+//            val end = dstConnectors[c.variable]
+//            Pair(start, end)
+//          }
+//        } else emptyList()
+//      } else {
+//        emptyList()
+//      }
+//    }
+//  }.mapToList {
+//    println("connections: $it")
+//    it
+//  }
 
   init {
 //    modelProperty.addListener(ChangeListener { observable, oldValue, newValue ->
@@ -168,22 +217,22 @@ class ModelRenderer(private val pane: Pane) {
       }
     })
 
-    nodeLayer.children.syncFrom(ids) { id ->
-      println("node for $id")
-      nodeFor(id!!).root.apply {
-        this.property(NodeId::class, id!!)
-      }
-    }
+//    nodeLayer.children.syncFrom(ids) { id ->
+//      println("node for $id")
+//      nodeFor(id!!).root.apply {
+//        this.property(NodeId::class, id!!)
+//      }
+//    }
 
 //    connectionLayer.children.syncFrom(outBindings) {
 //      val r = ThreadLocalRandom.current().nextDouble(8.0) + 8.0
 //      Foo(r, it!!).root
 //    }
 
-    connectionLayer.children.syncFrom(connectionNodes) { pair ->
-      require(pair != null) { "pair is null" }
-      ConnectionNode(pair.first, pair.second).root
-    }
+//    connectionLayer.children.syncFrom(connectionNodes) { pair ->
+//      require(pair != null) { "pair is null" }
+//      ConnectionNode(pair.first, pair.second).root
+//    }
 
     pane += nodeLayer
     pane += connectionLayer
