@@ -6,11 +6,9 @@ import de.flapdoodle.tab.data.Data
 import de.flapdoodle.tab.data.Model
 import de.flapdoodle.tab.data.nodes.NodeId
 import de.flapdoodle.tab.graph.nodes.AbstractGraphNode
-import de.flapdoodle.tab.graph.nodes.ColumnValueChangeListener
 import javafx.beans.property.ObjectProperty
 import javafx.scene.Node
 import tornadofx.*
-import java.util.concurrent.ThreadLocalRandom
 
 class NodeAdapterGraphNode(
     factory: () -> Fragment
@@ -24,12 +22,11 @@ class NodeAdapterGraphNode(
     fun graphNodeFor(
         id: NodeId<*>,
         modelProperty: ObjectProperty<Model>,
-        dataProperty: ObjectProperty<Data>,
-        changeListener: ColumnValueChangeListener
+        dataProperty: ObjectProperty<Data>
     ): NodeAdapterGraphNode {
       require(modelProperty.get() != null) { "model is null" }
       val node = when (id) {
-        is NodeId.TableId -> tableNode(id, modelProperty, dataProperty, changeListener)
+        is NodeId.TableId -> tableNode(id, modelProperty, dataProperty)
         is NodeId.CalculatedId -> calculated(id, modelProperty, dataProperty)
       }
 
@@ -50,8 +47,7 @@ class NodeAdapterGraphNode(
     private fun tableNode(
         id: NodeId.TableId,
         modelProperty: ObjectProperty<Model>,
-        dataProperty: ObjectProperty<Data>,
-        changeListener: ColumnValueChangeListener
+        dataProperty: ObjectProperty<Data>
     ): NodeAdapterGraphNode {
       val nodeProperty = modelProperty.mapNullable { m -> m!!.node(id) }
       return NodeAdapterGraphNode {
@@ -59,7 +55,7 @@ class NodeAdapterGraphNode(
             content = ColumnsNode(
                 node = nodeProperty,
                 data = dataProperty,
-                changeListener = changeListener
+                editable = true
             ),
             outputs = ColumnOutputsNode(
                 node = nodeProperty

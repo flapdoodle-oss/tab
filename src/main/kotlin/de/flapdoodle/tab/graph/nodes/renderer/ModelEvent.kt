@@ -1,11 +1,9 @@
 package de.flapdoodle.tab.graph.nodes.renderer
 
-import com.sun.scenario.effect.Blend
+import de.flapdoodle.tab.data.ColumnId
 import de.flapdoodle.tab.data.Model
 import de.flapdoodle.tab.data.NamedColumn
 import de.flapdoodle.tab.data.calculations.Calculation
-import de.flapdoodle.tab.data.calculations.CalculationMapping
-import de.flapdoodle.tab.data.calculations.EvalExCalculationAdapter
 import de.flapdoodle.tab.data.nodes.ColumnConnection
 import de.flapdoodle.tab.data.nodes.ConnectableNode
 import de.flapdoodle.tab.data.nodes.NodeId
@@ -46,6 +44,16 @@ data class ModelEvent(
 
       override fun applyTo(model: Model): Model {
         return model.connect(nodeId, variable, columnConnection)
+      }
+    }
+
+    data class DataChanged<T: Any>(
+        val id: ColumnId<out T>,
+        val row: Int,
+        val value: T?
+    ) : EventData() {
+      override fun applyTo(model: Model): Model {
+        return model
       }
     }
   }

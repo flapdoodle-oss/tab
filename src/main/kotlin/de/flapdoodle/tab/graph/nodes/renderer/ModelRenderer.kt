@@ -1,10 +1,7 @@
 package de.flapdoodle.tab.graph.nodes.renderer
 
 import de.flapdoodle.tab.bindings.Bindings
-import de.flapdoodle.tab.bindings.flatMapObservable
-import de.flapdoodle.tab.bindings.map
 import de.flapdoodle.tab.bindings.mapNonNull
-import de.flapdoodle.tab.bindings.mapNullable
 import de.flapdoodle.tab.bindings.mapTo
 import de.flapdoodle.tab.bindings.mapToList
 import de.flapdoodle.tab.bindings.mergeWith
@@ -25,7 +22,6 @@ import de.flapdoodle.tab.graph.nodes.ColumnValueChangeListener
 import de.flapdoodle.tab.graph.nodes.connections.InNode
 import de.flapdoodle.tab.graph.nodes.connections.Out
 import de.flapdoodle.tab.graph.nodes.connections.OutNode
-import de.flapdoodle.tab.graph.nodes.connections.VariableInput
 import javafx.beans.binding.Binding
 import javafx.beans.property.ObjectProperty
 import javafx.beans.property.SimpleObjectProperty
@@ -34,10 +30,7 @@ import javafx.geometry.Point2D
 import javafx.scene.Group
 import javafx.scene.Parent
 import javafx.scene.layout.Pane
-import javafx.scene.paint.Color
-import org.fxmisc.easybind.EasyBind
 import tornadofx.*
-import java.util.concurrent.ThreadLocalRandom
 
 class ModelRenderer(private val pane: Pane) {
   private val nodeLayer = Group()
@@ -220,12 +213,6 @@ class ModelRenderer(private val pane: Pane) {
   }
 
   private fun nodeFor(nodeId: NodeId<out ConnectableNode>): NodeAdapterGraphNode {
-    val changeListener = object : ColumnValueChangeListener {
-      override fun <T : Any> change(id: ColumnId<out T>, row: Int, value: T?) {
-        changeData { d -> d.change(id, row, value) }
-      }
-    }
-
-    return NodeAdapterGraphNode.graphNodeFor(nodeId, modelProperty, dataProperty, changeListener)
+    return NodeAdapterGraphNode.graphNodeFor(nodeId, modelProperty, dataProperty)
   }
 }

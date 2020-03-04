@@ -12,6 +12,7 @@ import de.flapdoodle.tab.graph.DragPlayground
 import de.flapdoodle.tab.graph.SampleNode
 import de.flapdoodle.tab.graph.ZoomablePane
 import de.flapdoodle.tab.graph.nodes.AbstractGraphNode
+import de.flapdoodle.tab.graph.nodes.renderer.DataEvent
 import de.flapdoodle.tab.graph.nodes.renderer.ModelEvent
 import de.flapdoodle.tab.graph.nodes.renderer.ModelRenderer
 import de.flapdoodle.tab.graph.nodes.values.ValuesNode
@@ -202,6 +203,14 @@ class StartView : View("My View") {
 //        renderer.change { model ->
 //          model
 //        }
+      }
+
+      subscribe<DataEvent> { event ->
+        println("change data: ${event.data}")
+
+        renderer.changeData { data ->
+          event.data.applyTo(data)
+        }
       }
     }
 

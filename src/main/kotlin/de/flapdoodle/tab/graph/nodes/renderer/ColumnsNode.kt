@@ -9,7 +9,6 @@ import de.flapdoodle.tab.data.NamedColumn
 import de.flapdoodle.tab.data.nodes.ConnectableNode
 import de.flapdoodle.tab.data.nodes.HasColumns
 import de.flapdoodle.tab.extensions.property
-import de.flapdoodle.tab.graph.nodes.ColumnValueChangeListener
 import de.flapdoodle.tab.graph.nodes.connections.Out
 import de.flapdoodle.tab.graph.nodes.connections.OutNode
 import javafx.beans.property.SimpleObjectProperty
@@ -41,8 +40,7 @@ import kotlin.reflect.KClass
 class ColumnsNode<T>(
     node: ObservableValue<T>,
     data: ObservableValue<Data>,
-    private val changeListener: ColumnValueChangeListener? = null
-
+    private val editable: Boolean = false
 ) : Fragment()
     where T : HasColumns,
           T : ConnectableNode {
@@ -60,7 +58,7 @@ class ColumnsNode<T>(
 
   override val root = vbox {
     val table = tableview(rows) {
-      isEditable = changeListener != null
+      isEditable = editable
       vgrow = Priority.ALWAYS
       columns.syncFrom(columnList) { tableColumn(it) }
     }
@@ -85,15 +83,16 @@ class ColumnsNode<T>(
     ret.cellValueFactory = Callback {
       val row = it.value
       SimpleObjectProperty(row[column.id]).apply {
-        if (changeListener != null) {
+        if (editable) {
           onChange { value ->
-            changeListener.change(column.id, row.index, value)
+            fire(DataEvent.EventData.Changed(column.id, row.index, value).asEvent())
+//            changeListener.change(column.id, row.index, value)
           }
         }
       }
     }
     ret.isReorderable = false
-    if (changeListener != null) {
+    if (editable) {
       ret.makeEditable(column.id.type)
     }
     return ret
