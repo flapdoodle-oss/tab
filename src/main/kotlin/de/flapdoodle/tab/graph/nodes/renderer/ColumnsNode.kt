@@ -18,6 +18,7 @@ import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.value.ObservableValue
 import javafx.scene.Group
 import javafx.scene.Node
+import javafx.scene.Parent
 import javafx.scene.control.TableCell
 import javafx.scene.control.TableColumn
 import javafx.scene.control.TableView
@@ -66,7 +67,27 @@ class ColumnsNode<T>(
     it.first.rows(it.second)
   }
 
+  class AskForType : View() {
+    override val root = borderpane {
+      center {
+        button {
+          text = "woohooo"
+          action {
+            close()
+          }
+        }
+      }
+    }
+  }
+
   override val root = vbox {
+    contextmenu {
+      item("Add Column").action {
+        find<AskForType>().openModal()
+        //selectedItem?.apply { println("Sending Email to $name") }
+      }
+    }
+
     val table = TableView(rows).apply {
       isEditable = editable
       vgrow = Priority.ALWAYS

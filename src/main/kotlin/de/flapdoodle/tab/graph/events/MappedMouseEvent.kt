@@ -2,12 +2,17 @@ package de.flapdoodle.tab.graph.events
 
 import javafx.geometry.Point2D
 import javafx.scene.Node
+import javafx.scene.input.MouseButton
 import javafx.scene.input.MouseEvent
 
 
 sealed class MappedMouseEvent(
     internal val event: MouseEvent
 ) {
+
+  fun button(): MouseButton {
+    return event.button
+  }
 
   class Enter(event: MouseEvent) : MappedMouseEvent(event)
   class Click(event: MouseEvent, val coord: Point2D) : MappedMouseEvent(event)

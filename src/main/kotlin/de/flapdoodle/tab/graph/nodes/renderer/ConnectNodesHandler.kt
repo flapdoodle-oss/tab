@@ -11,6 +11,7 @@ import de.flapdoodle.tab.graph.nodes.renderer.events.ConnectEvent
 import de.flapdoodle.tab.graph.nodes.renderer.events.ExplainEvent
 import de.flapdoodle.tab.graph.nodes.renderer.events.ModelEvent
 import javafx.geometry.Point2D
+import javafx.scene.input.MouseButton
 
 object ConnectNodesHandler {
 
@@ -25,8 +26,10 @@ object ConnectNodesHandler {
 
       when (mouseEvent) {
         is MappedMouseEvent.Click -> {
-          dragStarted = mouseEvent.coord
-          ConnectEvent.startConnectTo(input, mouseEvent.coord).fire()
+          if (mouseEvent.button()==MouseButton.PRIMARY) {
+            dragStarted = mouseEvent.coord
+            ConnectEvent.startConnectTo(input, mouseEvent.coord).fire()
+          }
         }
         is MappedMouseEvent.DragDetected -> {
           mouseEvent.startFullDrag()
