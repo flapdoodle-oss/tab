@@ -7,7 +7,6 @@ import de.flapdoodle.tab.data.calculations.Calculation
 import de.flapdoodle.tab.data.calculations.CalculationMapping
 import de.flapdoodle.tab.data.calculations.VariableMap
 import de.flapdoodle.tab.data.values.Variable
-import javax.print.attribute.standard.Destination
 
 sealed class ConnectableNode {
   abstract val id: NodeId<out ConnectableNode>
@@ -25,6 +24,12 @@ sealed class ConnectableNode {
       require(!columns.any { it.id == id }) { "column already added" }
 
       return copy(columns = columns + NamedColumn(name,id))
+    }
+
+    fun remove(id: ColumnId<*>): ConnectableNode {
+      require(columns.any { it.id == id }) { "column not found" }
+
+      return copy(columns = columns.filter { it.id != id })
     }
   }
 

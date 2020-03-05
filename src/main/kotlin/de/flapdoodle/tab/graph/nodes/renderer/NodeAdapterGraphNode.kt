@@ -55,6 +55,8 @@ class NodeAdapterGraphNode(
             content = ColumnsNode(
                 node = nodeProperty,
                 data = dataProperty,
+                columnFooter = ::TableColumnAggregateNode,
+                columnHeader = TableColumnActionNode.factoryFor(id),
                 editable = true
             ),
             outputs = ColumnOutputsNode(
@@ -82,7 +84,8 @@ class NodeAdapterGraphNode(
         NodeAdapter(
             content = ColumnsNode(
                 node = nodeProperty,
-                data = dataProperty
+                data = dataProperty,
+                columnFooter = ::TableColumnAggregateNode
             ),
             outputs = ColumnOutputsNode(
                 node = nodeProperty

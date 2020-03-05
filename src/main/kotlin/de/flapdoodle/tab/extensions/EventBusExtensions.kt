@@ -9,10 +9,17 @@ inline fun <reified T : FXEvent> Node.subscribeEvent(noinline action: EventConte
   EventBusExtensions.subscribe(this, T::class, action)
 }
 
+fun Node.fire(event: FXEvent) {
+  FX.eventbus.fire(event)
+}
+
 inline fun <reified T : FXEvent> UIComponent.subscribeEvent(noinline action: EventContext.(T) -> Unit) {
   EventBusExtensions.subscribe(this.root, T::class, action)
 }
 
+fun FXEvent.fire() {
+  FX.eventbus.fire(this)
+}
 
 object EventBusExtensions {
 
@@ -40,5 +47,4 @@ object EventBusExtensions {
     val registration = FXEventRegistration(eventType, null, null, delegate as EventContext.(FXEvent) -> Unit)
     FX.eventbus.subscribe(eventType, FX.defaultScope, registration)
   }
-
 }

@@ -1,7 +1,6 @@
 package de.flapdoodle.tab.graph.nodes.renderer
 
-import de.flapdoodle.tab.data.ColumnId
-import de.flapdoodle.tab.data.nodes.ColumnConnection
+import de.flapdoodle.tab.extensions.fire
 import de.flapdoodle.tab.graph.events.IsMarker
 import de.flapdoodle.tab.graph.events.MappedMouseEvent
 import de.flapdoodle.tab.graph.events.MouseEventHandler
@@ -9,9 +8,9 @@ import de.flapdoodle.tab.graph.events.MouseEventHandlerResolver
 import de.flapdoodle.tab.graph.nodes.connections.Out
 import de.flapdoodle.tab.graph.nodes.connections.VariableInput
 import de.flapdoodle.tab.graph.nodes.renderer.events.ConnectEvent
+import de.flapdoodle.tab.graph.nodes.renderer.events.ExplainEvent
 import de.flapdoodle.tab.graph.nodes.renderer.events.ModelEvent
 import javafx.geometry.Point2D
-import tornadofx.*
 
 object ConnectNodesHandler {
 
@@ -27,72 +26,45 @@ object ConnectNodesHandler {
       when (mouseEvent) {
         is MappedMouseEvent.Click -> {
           dragStarted = mouseEvent.coord
-          val event = ConnectEvent.startConnectTo(input)
-          println("fire event: $event")
-          FX.eventbus.fire(event)
+          ConnectEvent.startConnectTo(input, mouseEvent.coord).fire()
         }
         is MappedMouseEvent.DragDetected -> {
           mouseEvent.startFullDrag()
         }
         is MappedMouseEvent.DragEnter -> {
-          if (marker is Out) {
-            println("enter: could connect $input to $marker")
+          if (marker is Out<out Any>) {
+            ExplainEvent.columnselected(marker.columnId).fire()
+          }
+        }
+        is MappedMouseEvent.Drag -> {
+          ConnectEvent.connectTo(input, mouseEvent.coord, source = null).fire()
+        }
+        is MappedMouseEvent.DragExit -> {
+          if (marker is Out<out Any>) {
+            ExplainEvent.noColumnSelected().fire()
           }
         }
         is MappedMouseEvent.DragRelease -> {
-          if (marker is Out) {
-            println("released: could connect $input to $marker")
+          if (marker is Out<out Any>) {
             when (marker) {
               is Out.ColumnValues<*> -> {
-                connectIfPossible(input, marker)
+                ModelEvent.connect(input, marker)?.fire()
               }
             }
-            //if (input.variable.type==marker)
           }
           dragStarted = null
           exited = true
         }
-//        is MappedMouseEvent.Drag -> {
-//          dragStarted?.let { it + mouseEvent.delta }?.apply {
-//            //        println("should move ${moveMarker.parent} by ${mouseEvent.delta}")
-//            //moveMarker.parent.moveTo(this.x, this.y)
-//          }
-//          if (marker != null) {
-//            println("dragged $input to $marker")
-//          }
-//          if (marker is Out) {
-//            println("could connect $input to $marker")
-//          }
-//        }
-//        is MappedMouseEvent.Release -> dragStarted = null
-////        is MappedMouseEvent.Enter -> {
-////          if (marker is Out) {
-////            println("could connect $input to $marker")
-////          }
-////        }
         is MappedMouseEvent.Exit -> {
           exited = dragStarted == null
         }
       }
-//      println("end $input with $dragStarted")
 
       return if (dragStarted == null && exited) {
-        FX.eventbus.fire(ConnectEvent.stop())
+        ConnectEvent.stop().fire()
         null
       } else
         this
-    }
-  }
-
-  private fun <T: Any> connectIfPossible(input: VariableInput<T>, marker: Out.ColumnValues<out Any>) {
-    if (input.variable.type == marker.columnId.type) {
-      println("type matches: ${input.variable.type}")
-
-      FX.eventbus.fire(ModelEvent.EventData.Connect(
-          input.id,
-          input.variable,
-          ColumnConnection.ColumnValues(marker.columnId as ColumnId<T>)
-      ).asEvent())
     }
   }
 
@@ -100,9 +72,53 @@ object ConnectNodesHandler {
   class OnOutput(
       val output: Out.ColumnValues<out Any>
   ) : MouseEventHandler {
+    var exited: Boolean = false
+    var dragStarted: Point2D? = null
+
     override fun onEvent(mouseEvent: MappedMouseEvent, marker: IsMarker?): MouseEventHandler? {
       println("touched input: $output")
-      return null
+      when (mouseEvent) {
+        is MappedMouseEvent.Enter -> {
+          exited = false
+          ExplainEvent.columnselected(output.columnId).fire()
+        }
+        is MappedMouseEvent.Click -> {
+          dragStarted = mouseEvent.coord
+          ConnectEvent.startConnectFrom(output.columnId, mouseEvent.coord).fire()
+        }
+        is MappedMouseEvent.DragDetected -> {
+          mouseEvent.startFullDrag()
+        }
+        is MappedMouseEvent.DragEnter -> {
+          if (marker is VariableInput<out Any>) {
+//            ExplainEvent.columnselected(marker.columnId).fire()
+          }
+        }
+        is MappedMouseEvent.Drag -> {
+          ConnectEvent.connectFrom(output.columnId, mouseEvent.coord, dest = null).fire()
+        }
+        is MappedMouseEvent.DragExit -> {
+          if (marker is Out<out Any>) {
+            ExplainEvent.noColumnSelected().fire()
+          }
+        }
+        is MappedMouseEvent.DragRelease -> {
+          if (marker is VariableInput<out Any>) {
+            ModelEvent.connect(marker, output)?.fire()
+          }
+          dragStarted = null
+          exited = true
+        }
+        is MappedMouseEvent.Exit -> {
+          exited = dragStarted == null
+          ExplainEvent.noColumnSelected().fire()
+        }
+      }
+      return if (dragStarted == null && exited) {
+        ConnectEvent.stop().fire()
+        null
+      } else
+        this
     }
   }
 

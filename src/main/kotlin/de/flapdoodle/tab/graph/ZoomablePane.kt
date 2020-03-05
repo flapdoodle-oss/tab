@@ -53,6 +53,6 @@ class ZoomablePane : Fragment("My View") {
         .andThen(GraphNodeResizeHandler.resolver)
 
 
-    Marker.addEventDelegate(this, scale, resolver)
+    Marker.addEventDelegate(content, scale, resolver)
   }
 }

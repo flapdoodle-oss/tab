@@ -1,14 +1,17 @@
 package de.flapdoodle.tab.graph.nodes.connections
 
+import de.flapdoodle.tab.extensions.fire
 import de.flapdoodle.tab.extensions.subscribeEvent
 import de.flapdoodle.tab.graph.events.marker
 import de.flapdoodle.tab.graph.nodes.renderer.events.ConnectEvent
+import de.flapdoodle.tab.graph.nodes.renderer.events.ExplainEvent
 import javafx.scene.Group
+import javafx.scene.input.MouseEvent
 import javafx.scene.layout.StackPane
 import javafx.scene.paint.Color
 import tornadofx.*
 
-class OutNode(val out: Out, val color: Color = Color.ORANGE) : StackPane() {
+class OutNode(val out: Out<out Any>, val color: Color = Color.ORANGE) : StackPane() {
   private val handle = circle {
     style {
       fill = color

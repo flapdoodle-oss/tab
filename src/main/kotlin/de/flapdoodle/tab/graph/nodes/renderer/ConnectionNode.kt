@@ -1,7 +1,9 @@
 package de.flapdoodle.tab.graph.nodes.renderer
 
 import de.flapdoodle.tab.bindings.mapNullable
+import javafx.beans.Observable
 import javafx.beans.binding.Binding
+import javafx.beans.value.ObservableValue
 import javafx.geometry.Point2D
 import javafx.scene.Group
 import javafx.scene.Parent
@@ -9,8 +11,8 @@ import javafx.scene.paint.Color
 import tornadofx.*
 
 class ConnectionNode(
-    private val start: Binding<Point2D>,
-    private val end: Binding<Point2D>
+    private val start: ObservableValue<Point2D>,
+    private val end: ObservableValue<Point2D>
 ) : Fragment() {
   override val root = group {
     val startX = start.mapNullable { it!!.x }

@@ -9,14 +9,21 @@ import de.flapdoodle.tab.data.NamedColumn
 import de.flapdoodle.tab.data.nodes.ConnectableNode
 import de.flapdoodle.tab.data.nodes.HasColumns
 import de.flapdoodle.tab.extensions.property
+import de.flapdoodle.tab.extensions.subscribeEvent
 import de.flapdoodle.tab.graph.nodes.connections.Out
 import de.flapdoodle.tab.graph.nodes.connections.OutNode
 import de.flapdoodle.tab.graph.nodes.renderer.events.DataEvent
+import de.flapdoodle.tab.graph.nodes.renderer.events.ExplainEvent
 import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.value.ObservableValue
+import javafx.scene.Group
+import javafx.scene.Node
+import javafx.scene.control.TableCell
 import javafx.scene.control.TableColumn
+import javafx.scene.control.TableView
 import javafx.scene.control.cell.TextFieldTableCell
 import javafx.scene.layout.Priority
+import javafx.scene.paint.Color
 import javafx.util.Callback
 import javafx.util.StringConverter
 import javafx.util.converter.BigDecimalStringConverter
@@ -41,13 +48,15 @@ import kotlin.reflect.KClass
 class ColumnsNode<T>(
     node: ObservableValue<T>,
     data: ObservableValue<Data>,
+    private val columnHeader: ((TableColumn<Data.Row,*>) -> Fragment)? = null,
+    private val columnFooter: (TableColumn<Data.Row,*>) -> Fragment,
     private val editable: Boolean = false
 ) : Fragment()
     where T : HasColumns,
           T : ConnectableNode {
 
   init {
-    require(node.value!=null) {"node is null"}
+    require(node.value != null) { "node is null" }
   }
 
   private val columnList = node.mapToList(HasColumns::columns)
@@ -58,28 +67,114 @@ class ColumnsNode<T>(
   }
 
   override val root = vbox {
-    val table = tableview(rows) {
+    val table = TableView(rows).apply {
       isEditable = editable
       vgrow = Priority.ALWAYS
+
       columns.syncFrom(columnList) { tableColumn(it) }
     }
-
-    hbox {
-      children.syncFrom(table.columns) {
-        val columnId = (it!!.property(ColumnId::class)
-            ?: throw IllegalArgumentException("columnId not set"))
-
-        OutNode(Out.Aggregate(columnId)).apply {
-          prefWidthProperty().bind(it.widthProperty())
+    if (columnHeader!=null) {
+      hbox {
+        val factory = columnHeader
+        children.syncFrom(table.columns) {
+          factory(it!!).root
         }
       }
     }
 
+    this += table
+
+//    val table = tableview(rows) {
+//      isEditable = editable
+//      vgrow = Priority.ALWAYS
+//
+//      columns.syncFrom(columnList) { tableColumn(it) }
+//    }
+
+    hbox {
+      children.syncFrom(table.columns) {
+        columnFooter(it!!).root
+      }
+    }
   }
 
-  private fun <T : Any> tableColumn(column: NamedColumn<out T>?): TableColumn<Data.Row, T> {
+  private fun <T : Any> tableColumn(namedColumn: NamedColumn<out T>?): TableColumn<Data.Row, T> {
+    val ret = TableColumn<Data.Row, T>(namedColumn!!.name)
+    ret.property(ColumnId::class, namedColumn.id)
+
+    ret.apply {
+      value {
+        val row = it.value
+        SimpleObjectProperty(row[namedColumn.id]).apply {
+          if (editable) {
+            onChange { value ->
+              fire(DataEvent.EventData.Changed(namedColumn.id, row.index, value).asEvent())
+            }
+          }
+        }
+      }
+      isEditable = editable
+      isReorderable = false
+      isSortable = false
+//        cellFactory = cellFactoryForType(namedColumn.id.type)
+      cellFactory = Callback {
+        TextFieldTableCell<Data.Row, T>(converterFor(namedColumn.id.type)).apply {
+
+          subscribeEvent<ExplainEvent> {event ->
+            when (event.data) {
+              is ExplainEvent.EventData.ColumnSelected<out Any> -> {
+                if (event.data.id==namedColumn.id) {
+                  style {
+                    backgroundColor += Color(0.0,0.0,0.0,0.1)
+//                    borderWidth += box(0.0.px, 1.0.px)
+//                    borderColor += box(Color.RED)
+                  }
+                }
+              }
+              is ExplainEvent.EventData.NoColumnSelected -> {
+                style {
+                  backgroundColor = multi()
+//                  borderWidth = multi()
+//                  borderColor = multi()
+                }
+              }
+            }
+          }
+
+//          style {
+//            //backgroundColor += Color.BLUE
+//            borderWidth += box(0.0.px, 1.0.px)
+////              borderWidth = multi(box(1.0.px), box(0.0.px))
+//            borderColor += box(Color.RED)
+//          }
+        }
+      }
+    }
+
+//    ret.isReorderable = false
+//    ret.isSortable = false
+//    if (editable) {
+//      ret.makeEditable(namedColumn.id.type)
+//    }
+    return ret
+  }
+
+  private fun <T : Any> tableColumnOLD(column: NamedColumn<out T>?): TableColumn<Data.Row, T> {
     val ret = TableColumn<Data.Row, T>(column!!.name)
     ret.property(ColumnId::class, column.id)
+
+    if (false) {
+      ret.apply {
+        cellFormat {
+          val x = it
+          SimpleObjectProperty<Data.Row>()
+        }
+      }
+    }
+
+//    ret.cellFactory = Callback {
+//      SmartTableCell(FX.defaultScope, it)
+//    }
 
     ret.cellValueFactory = Callback {
       val row = it.value
@@ -93,6 +188,7 @@ class ColumnsNode<T>(
       }
     }
     ret.isReorderable = false
+    ret.isSortable = false
     if (editable) {
       ret.makeEditable(column.id.type)
     }
@@ -123,6 +219,58 @@ class ColumnsNode<T>(
       Boolean::class.javaPrimitiveType -> {
         (this as TableColumn<T, Boolean?>).useCheckbox(true)
       }
+      else -> throw RuntimeException("makeEditable() is not implemented for specified class type:" + s.qualifiedName)
+    }
+  }
+
+  private fun <T, S : Any> cellFactoryForType(s: KClass<out S>): Callback<TableColumn<T, S>, TableCell<T, S>> {
+    @Suppress("UNCHECKED_CAST")
+    return when (s.javaPrimitiveType ?: s) {
+      Int::class -> TextFieldTableCell.forTableColumn<T, S>(IntegerStringConverter() as StringConverter<S>)
+      Integer::class -> TextFieldTableCell.forTableColumn<T, S>(IntegerStringConverter() as StringConverter<S>)
+      Integer::class.javaPrimitiveType -> TextFieldTableCell.forTableColumn<T, S>(IntegerStringConverter() as StringConverter<S>)
+      Double::class -> TextFieldTableCell.forTableColumn<T, S>(DoubleStringConverter() as StringConverter<S>)
+      Double::class.javaPrimitiveType -> TextFieldTableCell.forTableColumn<T, S>(DoubleStringConverter() as StringConverter<S>)
+      Float::class -> TextFieldTableCell.forTableColumn<T, S>(FloatStringConverter() as StringConverter<S>)
+      Float::class.javaPrimitiveType -> TextFieldTableCell.forTableColumn<T, S>(FloatStringConverter() as StringConverter<S>)
+      Long::class -> TextFieldTableCell.forTableColumn<T, S>(LongStringConverter() as StringConverter<S>)
+      Long::class.javaPrimitiveType -> TextFieldTableCell.forTableColumn<T, S>(LongStringConverter() as StringConverter<S>)
+      Number::class -> TextFieldTableCell.forTableColumn<T, S>(NumberStringConverter() as StringConverter<S>)
+      BigDecimal::class -> TextFieldTableCell.forTableColumn<T, S>(BigDecimalStringConverter() as StringConverter<S>)
+      BigInteger::class -> TextFieldTableCell.forTableColumn<T, S>(BigIntegerStringConverter() as StringConverter<S>)
+      String::class -> TextFieldTableCell.forTableColumn<T, S>(DefaultStringConverter() as StringConverter<S>)
+      LocalDate::class -> TextFieldTableCell.forTableColumn<T, S>(LocalDateStringConverter() as StringConverter<S>)
+      LocalTime::class -> TextFieldTableCell.forTableColumn<T, S>(LocalTimeStringConverter() as StringConverter<S>)
+      LocalDateTime::class -> TextFieldTableCell.forTableColumn<T, S>(LocalDateTimeStringConverter() as StringConverter<S>)
+//      Boolean::class.javaPrimitiveType -> {
+//        (this as TableColumn<T, Boolean?>).useCheckbox(true)
+//      }
+      else -> throw RuntimeException("makeEditable() is not implemented for specified class type:" + s.qualifiedName)
+    }
+  }
+
+  private fun <S : Any> converterFor(s: KClass<out S>): StringConverter<S> {
+    @Suppress("UNCHECKED_CAST")
+    return when (s.javaPrimitiveType ?: s) {
+      Int::class -> IntegerStringConverter() as StringConverter<S>
+      Integer::class -> IntegerStringConverter() as StringConverter<S>
+      Integer::class.javaPrimitiveType -> IntegerStringConverter() as StringConverter<S>
+      Double::class -> DoubleStringConverter() as StringConverter<S>
+      Double::class.javaPrimitiveType -> DoubleStringConverter() as StringConverter<S>
+      Float::class -> FloatStringConverter() as StringConverter<S>
+      Float::class.javaPrimitiveType -> FloatStringConverter() as StringConverter<S>
+      Long::class -> LongStringConverter() as StringConverter<S>
+      Long::class.javaPrimitiveType -> LongStringConverter() as StringConverter<S>
+      Number::class -> NumberStringConverter() as StringConverter<S>
+      BigDecimal::class -> BigDecimalStringConverter() as StringConverter<S>
+      BigInteger::class -> BigIntegerStringConverter() as StringConverter<S>
+      String::class -> DefaultStringConverter() as StringConverter<S>
+      LocalDate::class -> LocalDateStringConverter() as StringConverter<S>
+      LocalTime::class -> LocalTimeStringConverter() as StringConverter<S>
+      LocalDateTime::class -> LocalDateTimeStringConverter() as StringConverter<S>
+//      Boolean::class.javaPrimitiveType -> {
+//        (this as TableColumn<T, Boolean?>).useCheckbox(true)
+//      }
       else -> throw RuntimeException("makeEditable() is not implemented for specified class type:" + s.qualifiedName)
     }
   }

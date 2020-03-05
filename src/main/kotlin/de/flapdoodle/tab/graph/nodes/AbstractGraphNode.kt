@@ -1,12 +1,10 @@
 package de.flapdoodle.tab.graph.nodes
 
-import de.flapdoodle.tab.graph.events.markedGroup
 import de.flapdoodle.tab.graph.events.marker
 import javafx.geometry.Point2D
 import javafx.geometry.Pos
 import javafx.scene.Node
 import javafx.scene.effect.DropShadow
-import javafx.scene.effect.Reflection
 import javafx.scene.paint.Color
 import tornadofx.*
 
@@ -26,7 +24,8 @@ abstract class AbstractGraphNode<T : Node>(
   private val footer = hbox {
     alignment = Pos.BOTTOM_RIGHT
 
-    markedGroup(Resize(this@AbstractGraphNode)) {
+    group {
+      marker = Resize(this@AbstractGraphNode)
       rectangle {
         style {
           fill = Color.GREEN

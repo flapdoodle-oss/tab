@@ -198,6 +198,10 @@ class StartView : View("My View") {
               event.data.applyTo(model)
             }
           }
+
+          else -> {
+            renderer.change { model -> event.data.applyTo(model) }
+          }
         }
 
 //        renderer.change { model ->
