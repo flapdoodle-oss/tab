@@ -53,6 +53,7 @@ class NodeAdapterGraphNode(
       return NodeAdapterGraphNode {
         NodeAdapter(
             content = ColumnsNode(
+                id = id,
                 node = nodeProperty,
                 data = dataProperty,
                 columnFooter = ::TableColumnAggregateNode,
@@ -83,6 +84,7 @@ class NodeAdapterGraphNode(
       return NodeAdapterGraphNode {
         NodeAdapter(
             content = ColumnsNode(
+                id = id,
                 node = nodeProperty,
                 data = dataProperty,
                 columnFooter = ::TableColumnAggregateNode

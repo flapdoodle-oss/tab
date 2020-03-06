@@ -12,6 +12,7 @@ import de.flapdoodle.tab.graph.nodes.connections.Out
 import de.flapdoodle.tab.graph.nodes.connections.VariableInput
 import tornadofx.*
 import java.math.BigDecimal
+import kotlin.reflect.KClass
 
 data class ModelEvent(
     val data: EventData
@@ -39,6 +40,10 @@ data class ModelEvent(
     fun <T: Any> deleteColumn(nodeId: NodeId.TableId, columnId: ColumnId<T>): ModelEvent {
       return EventData.DeleteColumn(nodeId, columnId).asEvent()
     }
+
+    fun addColumn(nodeId: NodeId.TableId, name: String, type: KClass<out Any>): ModelEvent {
+      return EventData.AddColumn(nodeId,name,type).asEvent()
+    }
   }
 
   sealed class EventData {
@@ -58,6 +63,18 @@ data class ModelEvent(
         return model.changeNode(nodeId) {
           require(it is ConnectableNode.Calculated) { "not supported: $it" }
           it.changeCalculation(namedColumn, newCalculation)
+        }
+      }
+    }
+
+    data class AddColumn(
+        val nodeId: NodeId.TableId,
+        val name: String,
+        val type: KClass<out Any>
+    ) : EventData() {
+      override fun applyTo(model: Model): Model {
+        return model.changeNode(nodeId) { table ->
+          table.add(ColumnId.create(type), name)
         }
       }
     }

@@ -8,13 +8,17 @@ import de.flapdoodle.tab.data.Data
 import de.flapdoodle.tab.data.NamedColumn
 import de.flapdoodle.tab.data.nodes.ConnectableNode
 import de.flapdoodle.tab.data.nodes.HasColumns
+import de.flapdoodle.tab.data.nodes.NodeId
+import de.flapdoodle.tab.extensions.fire
 import de.flapdoodle.tab.extensions.property
 import de.flapdoodle.tab.extensions.subscribeEvent
 import de.flapdoodle.tab.graph.nodes.connections.Out
 import de.flapdoodle.tab.graph.nodes.connections.OutNode
 import de.flapdoodle.tab.graph.nodes.renderer.events.DataEvent
 import de.flapdoodle.tab.graph.nodes.renderer.events.ExplainEvent
+import de.flapdoodle.tab.graph.nodes.renderer.events.ModelEvent
 import javafx.beans.property.SimpleObjectProperty
+import javafx.beans.property.SimpleStringProperty
 import javafx.beans.value.ObservableValue
 import javafx.scene.Group
 import javafx.scene.Node
@@ -25,6 +29,7 @@ import javafx.scene.control.TableView
 import javafx.scene.control.cell.TextFieldTableCell
 import javafx.scene.layout.Priority
 import javafx.scene.paint.Color
+import javafx.stage.StageStyle
 import javafx.util.Callback
 import javafx.util.StringConverter
 import javafx.util.converter.BigDecimalStringConverter
@@ -47,6 +52,7 @@ import java.time.LocalTime
 import kotlin.reflect.KClass
 
 class ColumnsNode<T>(
+    id: NodeId<T>,
     node: ObservableValue<T>,
     data: ObservableValue<Data>,
     private val columnHeader: ((TableColumn<Data.Row,*>) -> Fragment)? = null,
@@ -68,12 +74,29 @@ class ColumnsNode<T>(
   }
 
   class AskForType : View() {
+    private val nodeId: NodeId.TableId = params["nodeId"] as NodeId.TableId
+
     override val root = borderpane {
       center {
-        button {
-          text = "woohooo"
-          action {
-            close()
+        val type = SimpleObjectProperty<KClass<out Any>>()
+        val name = SimpleStringProperty()
+        form {
+          fieldset {
+            label("Name")
+            textfield(name) {  }
+          }
+          fieldset {
+            label("Type")
+            choicebox(type, listOf(String::class, BigDecimal::class, Int::class))
+          }
+          fieldset {
+            button {
+              text = "Add"
+              action {
+                ModelEvent.addColumn(nodeId, name.value!!, type.value!!).fire()
+                close()
+              }
+            }
           }
         }
       }
@@ -81,10 +104,12 @@ class ColumnsNode<T>(
   }
 
   override val root = vbox {
-    contextmenu {
-      item("Add Column").action {
-        find<AskForType>().openModal()
-        //selectedItem?.apply { println("Sending Email to $name") }
+    if (id is NodeId.TableId) {
+      contextmenu {
+        item("Add Column").action {
+          find<AskForType>("nodeId" to id).openModal(stageStyle = StageStyle.UNDECORATED)
+          //selectedItem?.apply { println("Sending Email to $name") }
+        }
       }
     }
 
