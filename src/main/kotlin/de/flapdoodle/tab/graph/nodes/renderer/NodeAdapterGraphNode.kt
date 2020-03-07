@@ -2,21 +2,16 @@ package de.flapdoodle.tab.graph.nodes.renderer
 
 import de.flapdoodle.tab.bindings.mapNullable
 import de.flapdoodle.tab.bindings.mapFrom
-import de.flapdoodle.tab.bindings.mapNonNull
 import de.flapdoodle.tab.bindings.mapOnlyNonNull
 import de.flapdoodle.tab.data.Data
-import de.flapdoodle.tab.data.Model
+import de.flapdoodle.tab.data.Nodes
 import de.flapdoodle.tab.data.nodes.NodeId
-import de.flapdoodle.tab.extensions.Exceptions
 import de.flapdoodle.tab.extensions.fire
 import de.flapdoodle.tab.graph.nodes.AbstractGraphNode
 import de.flapdoodle.tab.graph.nodes.renderer.events.ModelEvent
 import javafx.beans.property.ObjectProperty
 import javafx.scene.Node
-import javafx.stage.StageStyle
 import tornadofx.*
-import java.lang.Exception
-import java.lang.IllegalArgumentException
 
 class NodeAdapterGraphNode(
     factory: () -> Fragment
@@ -29,13 +24,13 @@ class NodeAdapterGraphNode(
 
     fun graphNodeFor(
         id: NodeId<*>,
-        modelProperty: ObjectProperty<Model>,
+        nodesProperty: ObjectProperty<Nodes>,
         dataProperty: ObjectProperty<Data>
     ): NodeAdapterGraphNode {
-      require(modelProperty.get() != null) { "model is null" }
+      require(nodesProperty.get() != null) { "model is null" }
       val node = when (id) {
-        is NodeId.TableId -> tableNode(id, modelProperty, dataProperty)
-        is NodeId.CalculatedId -> calculated(id, modelProperty, dataProperty)
+        is NodeId.TableId -> tableNode(id, nodesProperty, dataProperty)
+        is NodeId.CalculatedId -> calculated(id, nodesProperty, dataProperty)
       }
 
 //      val x = ThreadLocalRandom.current().nextDouble(0.0, 400.0)
@@ -48,16 +43,16 @@ class NodeAdapterGraphNode(
         yOffset = yOffset + node.root.layoutBounds.height
       }
 
-      node.titleProperty.mapFrom(modelProperty) { m -> m?.find(id)?.name ?: "<undefined>" }
+      node.titleProperty.mapFrom(nodesProperty) { m -> m?.find(id)?.name ?: "<undefined>" }
       return node
     }
 
     private fun tableNode(
         id: NodeId.TableId,
-        modelProperty: ObjectProperty<Model>,
+        nodesProperty: ObjectProperty<Nodes>,
         dataProperty: ObjectProperty<Data>
     ): NodeAdapterGraphNode {
-      val nodeProperty = modelProperty.mapNullable { m -> m!!.node(id) }
+      val nodeProperty = nodesProperty.mapNullable { m -> m!!.node(id) }
       return NodeAdapterGraphNode {
         NodeAdapter(
             content = ColumnsNode(
@@ -84,10 +79,10 @@ class NodeAdapterGraphNode(
 
     private fun calculated(
         id: NodeId.CalculatedId,
-        modelProperty: ObjectProperty<Model>,
+        nodesProperty: ObjectProperty<Nodes>,
         dataProperty: ObjectProperty<Data>
     ): NodeAdapterGraphNode {
-      val nodeProperty = modelProperty.mapNullable { m ->
+      val nodeProperty = nodesProperty.mapNullable { m ->
         println("XX NodeAdapterGraphNode: mapNullable: node for $id")
         m?.find(id)
       }.mapOnlyNonNull()

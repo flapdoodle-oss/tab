@@ -6,9 +6,8 @@ import de.flapdoodle.tab.bindings.mapToList
 import de.flapdoodle.tab.bindings.mergeWith
 import de.flapdoodle.tab.bindings.syncFrom
 import de.flapdoodle.tab.data.Data
-import de.flapdoodle.tab.data.Model
+import de.flapdoodle.tab.data.Nodes
 import de.flapdoodle.tab.data.calculation.Calculation
-import de.flapdoodle.tab.data.calculations.VariableMap
 import de.flapdoodle.tab.data.nodes.ColumnConnection
 import de.flapdoodle.tab.data.nodes.ConnectableNode
 import de.flapdoodle.tab.data.nodes.NodeId
@@ -36,7 +35,7 @@ class ModelRenderer(private val pane: Pane) {
   private val nodeLayer = Group()
   private val connectionLayer = Group()
 
-  private val modelProperty: ObjectProperty<Model> = SimpleObjectProperty(Model())
+  private val modelProperty: ObjectProperty<Nodes> = SimpleObjectProperty(Nodes())
   private val dataProperty: ObjectProperty<Data> = SimpleObjectProperty(Data())
   private val calculationMutex = SingleThreadMutex()
 
@@ -195,7 +194,7 @@ class ModelRenderer(private val pane: Pane) {
     pane += ShowConnectHandleNode()
   }
 
-  fun change(change: (Model) -> Model) {
+  fun change(change: (Nodes) -> Nodes) {
     val changed = change(modelProperty.get())
     if (changed==modelProperty.get()) {
       println("this change did nothing: $change")

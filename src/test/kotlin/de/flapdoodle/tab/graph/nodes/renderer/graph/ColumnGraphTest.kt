@@ -1,7 +1,7 @@
 package de.flapdoodle.tab.graph.nodes.renderer.graph
 
 import de.flapdoodle.tab.data.ColumnId
-import de.flapdoodle.tab.data.Model
+import de.flapdoodle.tab.data.Nodes
 import de.flapdoodle.tab.data.NamedColumn
 import de.flapdoodle.tab.data.calculations.CalculationMapping
 import de.flapdoodle.tab.data.calculations.Calculations
@@ -53,7 +53,7 @@ internal class ColumnGraphTest {
         ))
     )
 
-    val model = Model().add(source)
+    val model = Nodes().add(source)
         .add(stringOpSample)
         .add(numberOpSample)
         .add(otherNumSample)

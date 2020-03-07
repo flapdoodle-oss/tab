@@ -1,10 +1,9 @@
 package de.flapdoodle.tab.graph.nodes.renderer.events
 
 import de.flapdoodle.tab.data.ColumnId
-import de.flapdoodle.tab.data.Model
+import de.flapdoodle.tab.data.Nodes
 import de.flapdoodle.tab.data.NamedColumn
 import de.flapdoodle.tab.data.calculations.Calculation
-import de.flapdoodle.tab.data.calculations.EvalExCalculationAdapter
 import de.flapdoodle.tab.data.nodes.ColumnConnection
 import de.flapdoodle.tab.data.nodes.ConnectableNode
 import de.flapdoodle.tab.data.nodes.NodeId
@@ -60,7 +59,7 @@ data class ModelEvent(
       return ModelEvent(this)
     }
 
-    abstract fun applyTo(model: Model): Model
+    abstract fun applyTo(nodes: Nodes): Nodes
 
     data class FormulaChanged<T : ConnectableNode>(
         val nodeId: NodeId<T>,
@@ -68,8 +67,8 @@ data class ModelEvent(
         val newCalculation: Calculation<BigDecimal>
     ) : EventData() {
 
-      override fun applyTo(model: Model): Model {
-        return model.changeNode(nodeId) {
+      override fun applyTo(nodes: Nodes): Nodes {
+        return nodes.changeNode(nodeId) {
           require(it is ConnectableNode.Calculated) { "not supported: $it" }
           it.changeCalculation(namedColumn, newCalculation)
         }
@@ -81,8 +80,8 @@ data class ModelEvent(
         val name: String,
         val type: KClass<out Any>
     ) : EventData() {
-      override fun applyTo(model: Model): Model {
-        return model.changeNode(nodeId) { table ->
+      override fun applyTo(nodes: Nodes): Nodes {
+        return nodes.changeNode(nodeId) { table ->
           table.add(ColumnId.create(type), name)
         }
       }
@@ -93,8 +92,8 @@ data class ModelEvent(
         val column: NamedColumn<T>,
         val calculation: Calculation<T>
     ) : EventData() {
-      override fun applyTo(model: Model): Model {
-        return model.changeNode(nodeId) { table ->
+      override fun applyTo(nodes: Nodes): Nodes {
+        return nodes.changeNode(nodeId) { table ->
           table.add(column, calculation)
         }
       }
@@ -104,8 +103,8 @@ data class ModelEvent(
         val nodeId: NodeId.TableId,
         val columnId: ColumnId<T>
     ): EventData() {
-      override fun applyTo(model: Model): Model {
-        return model.changeNode(nodeId) {
+      override fun applyTo(nodes: Nodes): Nodes {
+        return nodes.changeNode(nodeId) {
           it.remove(columnId)
         }
       }
@@ -114,8 +113,8 @@ data class ModelEvent(
     data class DeleteTable(
         val nodeId: NodeId<*>
     ): EventData() {
-      override fun applyTo(model: Model): Model {
-        return model.delete(nodeId)
+      override fun applyTo(nodes: Nodes): Nodes {
+        return nodes.delete(nodeId)
       }
     }
 
@@ -125,8 +124,8 @@ data class ModelEvent(
         val columnConnection: ColumnConnection<T>
     ) : EventData() {
 
-      override fun applyTo(model: Model): Model {
-        return model.connect(nodeId, variable, columnConnection)
+      override fun applyTo(nodes: Nodes): Nodes {
+        return nodes.connect(nodeId, variable, columnConnection)
       }
     }
 

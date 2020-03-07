@@ -9,25 +9,23 @@ import de.flapdoodle.tab.data.nodes.HasColumns
 import de.flapdoodle.tab.data.nodes.HasInputs
 import de.flapdoodle.tab.data.nodes.NodeId
 import de.flapdoodle.tab.data.values.Variable
-import de.flapdoodle.tab.extensions.change
 
-data class Model(
+data class Nodes(
     private val nodes: Map<NodeId<out ConnectableNode>, ConnectableNode> = linkedMapOf(),
-    private val deleted: Map<NodeId<out ConnectableNode>, ConnectableNode> = linkedMapOf(),
     private val connections: Map<NodeId<out ConnectableNode>, Connections> = emptyMap()
 ) {
 
   private val connectionMap: Map<NodeId<out ConnectableNode>, List<Connection<out Any>>> = allConnections(nodes, connections)
 
-  fun add(node: ConnectableNode): Model {
+  fun add(node: ConnectableNode): Nodes {
     require(!nodes.contains(node.id)) { "node already set: ${node.id}" }
     return copy(nodes = nodes + (node.id to node))
   }
 
-  fun delete(id: NodeId<*>): Model {
+  fun delete(id: NodeId<*>): Nodes {
     val deleted = nodes[id]
     require(deleted != null) { "no node found for $id" }
-    return copy(nodes = nodes.filter { it.key != id }, deleted = mapOf(id to deleted))
+    return copy(nodes = nodes.filter { it.key != id })
   }
 
   fun <T: ConnectableNode> find(id: NodeId<T>): T? {
@@ -37,23 +35,18 @@ data class Model(
 
   fun <T : ConnectableNode> node(id: NodeId<T>): T {
     @Suppress("UNCHECKED_CAST")
-    var table = nodes[id] as T?
-    if (table==null) {
-      println("fallback to deleted: $deleted")
-      @Suppress("UNCHECKED_CAST")
-      table = deleted[id] as T?
-    }
+    val table = nodes[id] as T?
     require(table != null) { "no node found for $id" }
     return table
   }
 
-  fun <T : Any> connect(id: NodeId<out ConnectableNode>, variable: Variable<T>, columnConnection: ColumnConnection<T>): Model {
+  fun <T : Any> connect(id: NodeId<out ConnectableNode>, variable: Variable<T>, columnConnection: ColumnConnection<T>): Nodes {
     return copy(connections = connections + (id to (connections[id] ?: Connections()).add(variable, columnConnection)))
   }
 
-  fun <T : ConnectableNode> changeNode(id: NodeId<T>, change: (T) -> ConnectableNode): Model {
+  fun <T : ConnectableNode> changeNode(id: NodeId<T>, change: (T) -> ConnectableNode): Nodes {
     require(nodes.contains(id)) { "node $id not found in ${nodes.keys}" }
-    val node = nodes[id] as T ?: throw IllegalArgumentException("node not found for $id in ${nodes.keys}")
+    val node = nodes[id] as T? ?: throw IllegalArgumentException("node not found for $id in ${nodes.keys}")
     val changedNode = change(node)
 
     val changedNodes = nodes.mapValues {
