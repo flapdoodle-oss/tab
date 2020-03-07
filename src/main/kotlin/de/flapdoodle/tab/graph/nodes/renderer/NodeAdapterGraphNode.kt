@@ -2,6 +2,8 @@ package de.flapdoodle.tab.graph.nodes.renderer
 
 import de.flapdoodle.tab.bindings.mapNullable
 import de.flapdoodle.tab.bindings.mapFrom
+import de.flapdoodle.tab.bindings.mapNonNull
+import de.flapdoodle.tab.bindings.mapOnlyNonNull
 import de.flapdoodle.tab.data.Data
 import de.flapdoodle.tab.data.Model
 import de.flapdoodle.tab.data.nodes.NodeId
@@ -46,7 +48,7 @@ class NodeAdapterGraphNode(
         yOffset = yOffset + node.root.layoutBounds.height
       }
 
-      node.titleProperty.mapFrom(modelProperty) { m -> m?.node(id)?.name ?: "<undefined>" }
+      node.titleProperty.mapFrom(modelProperty) { m -> m?.find(id)?.name ?: "<undefined>" }
       return node
     }
 
@@ -87,8 +89,8 @@ class NodeAdapterGraphNode(
     ): NodeAdapterGraphNode {
       val nodeProperty = modelProperty.mapNullable { m ->
         println("XX NodeAdapterGraphNode: mapNullable: node for $id")
-        m!!.node(id)
-      }
+        m?.find(id)
+      }.mapOnlyNonNull()
 
       nodeProperty.onChange {
         println("XX NodeAdapterGraphNode(calculated): nodeProperty changed to $it")

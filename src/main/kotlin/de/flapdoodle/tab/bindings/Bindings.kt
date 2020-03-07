@@ -1,10 +1,16 @@
 package de.flapdoodle.tab.bindings
 
-import javafx.beans.Observable
+import de.flapdoodle.tab.bindings.Bindings.OnlyNonNullBinding
+import javafx.beans.binding.ObjectBinding
 import javafx.beans.property.Property
+import javafx.beans.value.ChangeListener
 import javafx.beans.value.ObservableValue
 import javafx.collections.ObservableList
 import org.fxmisc.easybind.monadic.MonadicBinding
+
+fun <T: Any> ObservableValue<T>.mapOnlyNonNull(): MonadicBinding<T> {
+  return OnlyNonNullBinding(this)
+}
 
 fun <S : Any, T : Any> ObservableValue<S>.mapNullable(map: (S?) -> T?): MonadicBinding<T> {
   return Bindings.map(this, map)
@@ -19,8 +25,8 @@ fun <S : Any, T : Any> ObservableValue<S>.mapNonNull(map: (S) -> T): MonadicBind
 
 fun <A : Any, B : Any, T : Any> ObservableValue<A>.mergeWith(other: ObservableValue<B>, map: (A, B) -> T): MonadicBinding<T> {
   return Bindings.combine(this, other) { a, b ->
-    require(a != null) { "a is null" }
-    require(b != null) { "b is null" }
+    require(a != null) { "a is null for $map" }
+    require(b != null) { "b is null for $map" }
     map(a, b)
   }
 }
@@ -56,6 +62,7 @@ fun <S: Any, D: Any> ObservableList<S>.mapTo(map: (List<S?>) -> D?): ObservableV
 }
 
 object Bindings {
+
   fun <T, U> map(
       src: ObservableValue<T>,
       f: (T?) -> U?): MonadicBinding<U> {
@@ -69,7 +76,7 @@ object Bindings {
   fun <A, B, R> combine(
       src1: ObservableValue<out A>,
       src2: ObservableValue<out B>,
-      f: (A, B) -> R): MonadicBinding<R> {
+      f: (A?, B?) -> R): MonadicBinding<R> {
     return object : PreboundBinding<R>(src1, src2) {
       override fun computeValue(): R {
         return f(src1.value, src2.value)
@@ -79,7 +86,34 @@ object Bindings {
 
   abstract class ObservableListWrapper<T>(
       private val delegate: ObservableList<T>
-  ) : ObservableList<T> by delegate {
+  ) : ObservableList<T> by delegate
 
+  class OnlyNonNullBinding<T>(
+      private val src: ObservableValue<T>
+  ) : ObjectBinding<T>(), MonadicBinding<T> {
+
+    private var v: T = src.value
+
+    private val changeToInvalidListener = ChangeListener<T> { _,_,new ->
+      if (new!=null) {
+        v = new
+        invalidate()
+      }
+    }
+
+    init {
+      bind(src)
+      val weakListener = changeToInvalidListener.wrapByWeakChangeListener()
+      src.addListener(weakListener)
+    }
+
+    override fun computeValue(): T {
+      return v
+    }
+
+    override fun dispose() {
+      unbind(src)
+    }
   }
+
 }

@@ -30,11 +30,17 @@ data class Model(
     return copy(nodes = nodes.filter { it.key != id }, deleted = mapOf(id to deleted))
   }
 
+  fun <T: ConnectableNode> find(id: NodeId<T>): T? {
+    @Suppress("UNCHECKED_CAST")
+    return nodes[id] as T?
+  }
+
   fun <T : ConnectableNode> node(id: NodeId<T>): T {
     @Suppress("UNCHECKED_CAST")
     var table = nodes[id] as T?
     if (table==null) {
       println("fallback to deleted: $deleted")
+      @Suppress("UNCHECKED_CAST")
       table = deleted[id] as T?
     }
     require(table != null) { "no node found for $id" }
