@@ -4,6 +4,7 @@ import de.flapdoodle.tab.data.ColumnId
 import de.flapdoodle.tab.data.Model
 import de.flapdoodle.tab.data.NamedColumn
 import de.flapdoodle.tab.data.calculations.Calculation
+import de.flapdoodle.tab.data.calculations.EvalExCalculationAdapter
 import de.flapdoodle.tab.data.nodes.ColumnConnection
 import de.flapdoodle.tab.data.nodes.ConnectableNode
 import de.flapdoodle.tab.data.nodes.NodeId
@@ -41,8 +42,16 @@ data class ModelEvent(
       return EventData.DeleteColumn(nodeId, columnId).asEvent()
     }
 
+    fun deleteTable(nodeId: NodeId<*>): ModelEvent {
+      return EventData.DeleteTable(nodeId).asEvent()
+    }
+
     fun addColumn(nodeId: NodeId.TableId, name: String, type: KClass<out Any>): ModelEvent {
       return EventData.AddColumn(nodeId,name,type).asEvent()
+    }
+
+    fun <T: Any> addCalculation(nodeId: NodeId.CalculatedId, column: NamedColumn<T>,calculation: Calculation<T>): ModelEvent {
+      return EventData.AddCalculation(nodeId, column, calculation).asEvent()
     }
   }
 
@@ -79,6 +88,18 @@ data class ModelEvent(
       }
     }
 
+    data class AddCalculation<T: Any>(
+        val nodeId: NodeId.CalculatedId,
+        val column: NamedColumn<T>,
+        val calculation: Calculation<T>
+    ) : EventData() {
+      override fun applyTo(model: Model): Model {
+        return model.changeNode(nodeId) { table ->
+          table.add(column, calculation)
+        }
+      }
+    }
+
     data class DeleteColumn<T: Any>(
         val nodeId: NodeId.TableId,
         val columnId: ColumnId<T>
@@ -87,6 +108,14 @@ data class ModelEvent(
         return model.changeNode(nodeId) {
           it.remove(columnId)
         }
+      }
+    }
+
+    data class DeleteTable(
+        val nodeId: NodeId<*>
+    ): EventData() {
+      override fun applyTo(model: Model): Model {
+        return model.delete(nodeId)
       }
     }
 

@@ -13,6 +13,7 @@ import de.flapdoodle.tab.extensions.change
 
 data class Model(
     private val nodes: Map<NodeId<out ConnectableNode>, ConnectableNode> = linkedMapOf(),
+    private val deleted: Map<NodeId<out ConnectableNode>, ConnectableNode> = linkedMapOf(),
     private val connections: Map<NodeId<out ConnectableNode>, Connections> = emptyMap()
 ) {
 
@@ -21,6 +22,23 @@ data class Model(
   fun add(node: ConnectableNode): Model {
     require(!nodes.contains(node.id)) { "node already set: ${node.id}" }
     return copy(nodes = nodes + (node.id to node))
+  }
+
+  fun delete(id: NodeId<*>): Model {
+    val deleted = nodes[id]
+    require(deleted != null) { "no node found for $id" }
+    return copy(nodes = nodes.filter { it.key != id }, deleted = mapOf(id to deleted))
+  }
+
+  fun <T : ConnectableNode> node(id: NodeId<T>): T {
+    @Suppress("UNCHECKED_CAST")
+    var table = nodes[id] as T?
+    if (table==null) {
+      println("fallback to deleted: $deleted")
+      table = deleted[id] as T?
+    }
+    require(table != null) { "no node found for $id" }
+    return table
   }
 
   fun <T : Any> connect(id: NodeId<out ConnectableNode>, variable: Variable<T>, columnConnection: ColumnConnection<T>): Model {
@@ -32,6 +50,14 @@ data class Model(
     val node = nodes[id] as T ?: throw IllegalArgumentException("node not found for $id in ${nodes.keys}")
     val changedNode = change(node)
 
+    val changedNodes = nodes.mapValues {
+      if (it.key == id) {
+        changedNode
+      } else {
+        it.value
+      }
+    }
+
     val originalColumnIds = if (node is HasColumns) {
       node.columns().map(NamedColumn<out Any>::id).toSet()
     } else emptySet()
@@ -40,15 +66,7 @@ data class Model(
       changedNode.columns().map(NamedColumn<out Any>::id).toSet()
     } else emptySet()
 
-    val missingColumns = originalColumnIds-newColumnIds
-
-    val changedNodes = nodes.mapValues {
-      if (it.key == id) {
-        changedNode
-      } else {
-        it.value
-      }
-    }
+    val missingColumns = originalColumnIds - newColumnIds
 
     val changedConnections = connections.mapValues { (nodeId, connections) ->
       if (nodeId == id && changedNode is HasInputs)
@@ -58,13 +76,6 @@ data class Model(
     }
 
     return copy(nodes = changedNodes, connections = changedConnections)
-  }
-
-  fun <T : ConnectableNode> node(id: NodeId<T>): T {
-    @Suppress("UNCHECKED_CAST")
-    val table = nodes[id] as T?
-    require(table != null) { "no node found for $id" }
-    return table
   }
 
   fun nodeIds(): Set<NodeId<out ConnectableNode>> {

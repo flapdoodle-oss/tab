@@ -58,25 +58,29 @@ sealed class ConnectableNode {
       })
     }
 
-    fun calculate(data: Data, variableMap: VariableMap): Data {
-      var currentData = data
-
-//      val variableMap = VariableMap.variableMap(currentData, connections)
-
-      calculations.forEach {
-        val variables = it.calculation.variables()
-        if (variableMap.isValidFor(variables)) {
-          val size = variableMap.size(variables)
-          (0..size).forEach { index ->
-            val result = it.calculation.calculate(variableMap.lookupFor(index))
-            currentData = currentData.change(it.column.id, index, result)
-          }
-        } else {
-          currentData = currentData.clear(it.column.id)
-        }
-      }
-      return currentData
+    fun <T: Any> add(column: NamedColumn<T>, calculation: Calculation<T>): ConnectableNode {
+      return copy(calculations = calculations + CalculationMapping(calculation, column))
     }
+
+//    fun calculate(data: Data, variableMap: VariableMap): Data {
+//      var currentData = data
+//
+////      val variableMap = VariableMap.variableMap(currentData, connections)
+//
+//      calculations.forEach {
+//        val variables = it.calculation.variables()
+//        if (variableMap.isValidFor(variables)) {
+//          val size = variableMap.size(variables)
+//          (0 until size).forEach { index ->
+//            val result = it.calculation.calculate(variableMap.lookupFor(index))
+//            currentData = currentData.change(it.column.id, index, result)
+//          }
+//        } else {
+//          currentData = currentData.clear(it.column.id)
+//        }
+//      }
+//      return currentData
+//    }
 
   }
 }

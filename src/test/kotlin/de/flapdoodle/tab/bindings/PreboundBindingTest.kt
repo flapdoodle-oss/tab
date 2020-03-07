@@ -37,7 +37,7 @@ internal class PreboundBindingTest {
     src.set("new")
 
     assertThat(testee.get()).isEqualTo("new")
-    assertThat(invalidationCalledFor).containsExactly(testee)
+    assertThat(invalidationCalledFor).containsExactly(testee, testee)
     assertThat(changeLog).containsExactly("new")
   }
 
@@ -72,13 +72,13 @@ internal class PreboundBindingTest {
     src1.set("FOO")
 
     assertThat(testee.get()).isEqualTo("FOObar")
-    assertThat(invalidationCalledFor).containsExactly(testee)
+    assertThat(invalidationCalledFor).containsExactly(testee, testee)
     assertThat(changeLog).containsExactly("FOObar")
 
     src2.set("BAR")
 
     assertThat(testee.get()).isEqualTo("FOOBAR")
-    assertThat(invalidationCalledFor).containsExactly(testee, testee)
+    assertThat(invalidationCalledFor).containsExactly(testee, testee, testee, testee)
     assertThat(changeLog).containsExactly("FOObar","FOOBAR")
   }
 }

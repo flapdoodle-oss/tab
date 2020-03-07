@@ -46,13 +46,23 @@ class StartView : View("My View") {
 
     bottom {
       hbox {
-        button("+") {
+        button("Table") {
           onLeftClick {
-            println("clicked")
             renderer.change {
-              println("old model: $it")
               it.add(ConnectableNode.Table("new instance")
                   .add(ColumnId.create<Int>(), "clicked"))
+            }
+          }
+        }
+        button("Calculation") {
+          onLeftClick {
+            renderer.change {
+              it.add(ConnectableNode.Calculated("formula",
+                  calculations = listOf(CalculationMapping(
+                      calculation = EvalExCalculationAdapter("a"),
+                      column = NamedColumn("result", ColumnId.create())
+                  ))
+              ))
             }
           }
         }

@@ -8,28 +8,19 @@ import de.flapdoodle.tab.data.Data
 import de.flapdoodle.tab.data.NamedColumn
 import de.flapdoodle.tab.data.nodes.ConnectableNode
 import de.flapdoodle.tab.data.nodes.HasColumns
-import de.flapdoodle.tab.data.nodes.NodeId
-import de.flapdoodle.tab.extensions.fire
 import de.flapdoodle.tab.extensions.property
 import de.flapdoodle.tab.extensions.subscribeEvent
-import de.flapdoodle.tab.graph.nodes.connections.Out
-import de.flapdoodle.tab.graph.nodes.connections.OutNode
 import de.flapdoodle.tab.graph.nodes.renderer.events.DataEvent
 import de.flapdoodle.tab.graph.nodes.renderer.events.ExplainEvent
-import de.flapdoodle.tab.graph.nodes.renderer.events.ModelEvent
 import javafx.beans.property.SimpleObjectProperty
-import javafx.beans.property.SimpleStringProperty
 import javafx.beans.value.ObservableValue
-import javafx.scene.Group
-import javafx.scene.Node
-import javafx.scene.Parent
+import javafx.scene.control.ContextMenu
 import javafx.scene.control.TableCell
 import javafx.scene.control.TableColumn
 import javafx.scene.control.TableView
 import javafx.scene.control.cell.TextFieldTableCell
 import javafx.scene.layout.Priority
 import javafx.scene.paint.Color
-import javafx.stage.StageStyle
 import javafx.util.Callback
 import javafx.util.StringConverter
 import javafx.util.converter.BigDecimalStringConverter
@@ -52,12 +43,12 @@ import java.time.LocalTime
 import kotlin.reflect.KClass
 
 class ColumnsNode<T>(
-    id: NodeId<T>,
     node: ObservableValue<T>,
     data: ObservableValue<Data>,
-    private val columnHeader: ((TableColumn<Data.Row,*>) -> Fragment)? = null,
-    private val columnFooter: (TableColumn<Data.Row,*>) -> Fragment,
-    private val editable: Boolean = false
+    private val columnHeader: ((TableColumn<Data.Row, *>) -> Fragment)? = null,
+    private val columnFooter: (TableColumn<Data.Row, *>) -> Fragment,
+    private val editable: Boolean = false,
+    private val menu: (ContextMenu.() -> Unit)? = null
 ) : Fragment()
     where T : HasColumns,
           T : ConnectableNode {
@@ -70,47 +61,19 @@ class ColumnsNode<T>(
   private val rows = node.mergeWith(data) { t, d ->
     d to t.columns().map { it.id }
   }.mapToList {
-    it.first.rows(it.second)
+    appendEmptyRow(it.first.rows(it.second))
   }
 
-  class AskForType : View() {
-    private val nodeId: NodeId.TableId = params["nodeId"] as NodeId.TableId
-
-    override val root = borderpane {
-      center {
-        val type = SimpleObjectProperty<KClass<out Any>>()
-        val name = SimpleStringProperty()
-        form {
-          fieldset {
-            label("Name")
-            textfield(name) {  }
-          }
-          fieldset {
-            label("Type")
-            choicebox(type, listOf(String::class, BigDecimal::class, Int::class))
-          }
-          fieldset {
-            button {
-              text = "Add"
-              action {
-                ModelEvent.addColumn(nodeId, name.value!!, type.value!!).fire()
-                close()
-              }
-            }
-          }
-        }
-      }
-    }
+  private fun appendEmptyRow(rows: List<Data.Row>): List<Data.Row> {
+    return if (editable)
+      rows + Data.Row(rows.size, emptyMap())
+    else
+      rows
   }
 
   override val root = vbox {
-    if (id is NodeId.TableId) {
-      contextmenu {
-        item("Add Column").action {
-          find<AskForType>("nodeId" to id).openModal(stageStyle = StageStyle.UNDECORATED)
-          //selectedItem?.apply { println("Sending Email to $name") }
-        }
-      }
+    if (menu!=null) {
+      contextmenu(menu)
     }
 
     val table = TableView(rows).apply {

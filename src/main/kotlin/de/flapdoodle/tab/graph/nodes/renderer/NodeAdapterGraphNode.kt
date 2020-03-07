@@ -5,10 +5,16 @@ import de.flapdoodle.tab.bindings.mapFrom
 import de.flapdoodle.tab.data.Data
 import de.flapdoodle.tab.data.Model
 import de.flapdoodle.tab.data.nodes.NodeId
+import de.flapdoodle.tab.extensions.Exceptions
+import de.flapdoodle.tab.extensions.fire
 import de.flapdoodle.tab.graph.nodes.AbstractGraphNode
+import de.flapdoodle.tab.graph.nodes.renderer.events.ModelEvent
 import javafx.beans.property.ObjectProperty
 import javafx.scene.Node
+import javafx.stage.StageStyle
 import tornadofx.*
+import java.lang.Exception
+import java.lang.IllegalArgumentException
 
 class NodeAdapterGraphNode(
     factory: () -> Fragment
@@ -34,8 +40,8 @@ class NodeAdapterGraphNode(
 //      val y = ThreadLocalRandom.current().nextDouble(0.0, 400.0)
       node.moveTo(xOffset, yOffset)
       xOffset = xOffset + node.root.layoutBounds.width + 20.0
-      count ++
-      if (count>3) {
+      count++
+      if (count > 3) {
         xOffset = 0.0
         yOffset = yOffset + node.root.layoutBounds.height
       }
@@ -53,12 +59,19 @@ class NodeAdapterGraphNode(
       return NodeAdapterGraphNode {
         NodeAdapter(
             content = ColumnsNode(
-                id = id,
                 node = nodeProperty,
                 data = dataProperty,
-                columnFooter = ::TableColumnAggregateNode,
                 columnHeader = TableColumnActionNode.factoryFor(id),
-                editable = true
+                columnFooter = ::TableColumnAggregateNode,
+                editable = true,
+                menu = {
+                  item("Add Column").action {
+                    AddColumnModalView.openModalWith(id)
+                  }
+                  item("Delete Table").action {
+                    ModelEvent.deleteTable(id).fire()
+                  }
+                }
             ),
             outputs = ColumnOutputsNode(
                 node = nodeProperty
@@ -84,10 +97,17 @@ class NodeAdapterGraphNode(
       return NodeAdapterGraphNode {
         NodeAdapter(
             content = ColumnsNode(
-                id = id,
                 node = nodeProperty,
                 data = dataProperty,
-                columnFooter = ::TableColumnAggregateNode
+                columnFooter = ::TableColumnAggregateNode,
+                menu = {
+                  item("Add Calculation").action {
+                    AddCalculationModalView.openModalWith(id)
+                  }
+                  item("Delete Table").action {
+                    ModelEvent.deleteTable(id).fire()
+                  }
+                }
             ),
             outputs = ColumnOutputsNode(
                 node = nodeProperty

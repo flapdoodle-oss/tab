@@ -1,14 +1,13 @@
 package de.flapdoodle.tab.graph.nodes.renderer
 
-import de.flapdoodle.tab.bindings.Bindings
 import de.flapdoodle.tab.bindings.mapNonNull
 import de.flapdoodle.tab.bindings.mapTo
 import de.flapdoodle.tab.bindings.mapToList
 import de.flapdoodle.tab.bindings.mergeWith
 import de.flapdoodle.tab.bindings.syncFrom
-import de.flapdoodle.tab.data.ColumnId
 import de.flapdoodle.tab.data.Data
 import de.flapdoodle.tab.data.Model
+import de.flapdoodle.tab.data.calculation.Calculation
 import de.flapdoodle.tab.data.calculations.VariableMap
 import de.flapdoodle.tab.data.nodes.ColumnConnection
 import de.flapdoodle.tab.data.nodes.ConnectableNode
@@ -18,10 +17,10 @@ import de.flapdoodle.tab.extensions.centerInTop
 import de.flapdoodle.tab.extensions.findAllInTree
 import de.flapdoodle.tab.extensions.property
 import de.flapdoodle.tab.fx.SingleThreadMutex
-import de.flapdoodle.tab.graph.nodes.ColumnValueChangeListener
 import de.flapdoodle.tab.graph.nodes.connections.InNode
 import de.flapdoodle.tab.graph.nodes.connections.Out
 import de.flapdoodle.tab.graph.nodes.connections.OutNode
+import de.flapdoodle.tab.data.graph.ColumnGraph
 import javafx.beans.binding.Binding
 import javafx.beans.property.ObjectProperty
 import javafx.beans.property.SimpleObjectProperty
@@ -176,14 +175,18 @@ class ModelRenderer(private val pane: Pane) {
       println("data changed: $newValue")
       calculationMutex.tryExecute {
         println("calculate...")
-        dataProperty.set(calculate(modelProperty.get(), newValue))
+        dataProperty.set(Calculation.calculate(modelProperty.get(), newValue))
       }
     })
+
+    modelProperty.addListener { observable, oldValue, newValue ->
+      ColumnGraph.of(newValue)
+    }
 
     modelProperty.addListener(tornadofx.ChangeListener { _, _, newModel ->
       calculationMutex.tryExecute {
         println("calculate...")
-        dataProperty.set(calculate(newModel, dataProperty.get()))
+        dataProperty.set(Calculation.calculate(newModel, dataProperty.get()))
       }
     })
 
@@ -202,17 +205,6 @@ class ModelRenderer(private val pane: Pane) {
 
   fun changeData(change: (Data) -> Data) {
     dataProperty.set(change(dataProperty.get()))
-  }
-
-  private fun calculate(model: Model, data: Data): Data {
-    var currentData = data
-    val calcTables = model.nodes().filterIsInstance<ConnectableNode.Calculated>()
-    calcTables.forEach {
-      val connections = model.connections(it.id)?.variableMappings ?: emptyList()
-      val variableMap = VariableMap.variableMap(currentData, connections)
-      currentData = it.calculate(currentData, variableMap)
-    }
-    return currentData
   }
 
   private fun nodeFor(nodeId: NodeId<out ConnectableNode>): NodeAdapterGraphNode {
