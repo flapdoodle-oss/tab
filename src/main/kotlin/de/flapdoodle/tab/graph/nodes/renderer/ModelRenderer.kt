@@ -7,6 +7,7 @@ import de.flapdoodle.tab.bindings.mergeWith
 import de.flapdoodle.tab.bindings.syncFrom
 import de.flapdoodle.tab.data.Data
 import de.flapdoodle.tab.data.Nodes
+import de.flapdoodle.tab.data.TabModel
 import de.flapdoodle.tab.data.calculation.Calculation
 import de.flapdoodle.tab.data.nodes.ColumnConnection
 import de.flapdoodle.tab.data.nodes.ConnectableNode
@@ -19,7 +20,6 @@ import de.flapdoodle.tab.fx.SingleThreadMutex
 import de.flapdoodle.tab.graph.nodes.connections.InNode
 import de.flapdoodle.tab.graph.nodes.connections.Out
 import de.flapdoodle.tab.graph.nodes.connections.OutNode
-import de.flapdoodle.tab.data.graph.ColumnGraph
 import javafx.beans.binding.Binding
 import javafx.beans.property.ObjectProperty
 import javafx.beans.property.SimpleObjectProperty
@@ -29,14 +29,18 @@ import javafx.scene.Group
 import javafx.scene.Node
 import javafx.scene.Parent
 import javafx.scene.layout.Pane
+import org.fxmisc.easybind.monadic.MonadicBinding
 import tornadofx.*
 
 class ModelRenderer(private val pane: Pane) {
   private val nodeLayer = Group()
   private val connectionLayer = Group()
 
-  private val modelProperty: ObjectProperty<Nodes> = SimpleObjectProperty(Nodes())
-  private val dataProperty: ObjectProperty<Data> = SimpleObjectProperty(Data())
+  private val modelProperty: ObjectProperty<TabModel> = SimpleObjectProperty(TabModel())
+
+  private val nodesProperty: MonadicBinding<Nodes> = modelProperty.mapNonNull { it.nodes }
+  private val dataProperty: MonadicBinding<Data> = modelProperty.mapNonNull { it.data }
+
   private val calculationMutex = SingleThreadMutex()
 
   private val ids = modelProperty.mapToList { model ->
@@ -49,19 +53,6 @@ class ModelRenderer(private val pane: Pane) {
       this.property(NodeId::class, id!!)
     }
   }
-
-//  private val graphNodes = nodeLayer.childrenUnmodifiable.map {
-//    val parent = it as Parent
-//    val id = parent.property(NodeId::class) ?: throw IllegalArgumentException("node id not set")
-//
-//    id to parent.findAllInTree(OutNode::class).map {
-//      it.out to parent.centerInTop(it)
-//    }
-//  }
-//
-//  private val outBindings = graphNodes.flatMapObservable { it ->
-//    it!!.second.map { it.second }
-//  }
 
   private val nodeConnections = modelProperty.mapNonNull { model ->
     println("XX ModelRenderer: modelProperty -> nodeConnections")
@@ -170,24 +161,28 @@ class ModelRenderer(private val pane: Pane) {
       println("XX ModelRenderer: nodeConnections changed to $it")
     }
 
-    dataProperty.addListener(ChangeListener { _, _, newValue ->
-      println("data changed: $newValue")
-      calculationMutex.tryExecute {
-        println("calculate...")
-        dataProperty.set(Calculation.calculate(modelProperty.get(), newValue))
-      }
-    })
+    modelProperty.addListener { _, _, _ ->
 
-    modelProperty.addListener { observable, oldValue, newValue ->
-      ColumnGraph.of(newValue)
     }
 
-    modelProperty.addListener(tornadofx.ChangeListener { _, _, newModel ->
-      calculationMutex.tryExecute {
-        println("calculate...")
-        dataProperty.set(Calculation.calculate(newModel, dataProperty.get()))
-      }
-    })
+//    dataProperty.addListener(ChangeListener { _, _, newValue ->
+//      println("data changed: $newValue")
+//      calculationMutex.tryExecute {
+//        println("calculate...")
+//        dataProperty.set(Calculation.calculate(nodesProperty.get(), newValue))
+//      }
+//    })
+
+//    nodesProperty.addListener { observable, oldValue, newValue ->
+//      ColumnGraph.of(newValue)
+//    }
+
+//    nodesProperty.addListener(tornadofx.ChangeListener { _, _, newModel ->
+//      calculationMutex.tryExecute {
+//        println("calculate...")
+//        dataProperty.set(Calculation.calculate(newModel, dataProperty.get()))
+//      }
+//    })
 
     pane += nodeLayer
     pane += connectionLayer
@@ -195,18 +190,20 @@ class ModelRenderer(private val pane: Pane) {
   }
 
   fun change(change: (Nodes) -> Nodes) {
-    val changed = change(modelProperty.get())
-    if (changed==modelProperty.get()) {
-      println("this change did nothing: $change")
-    }
-    modelProperty.set(changed)
+    modelProperty.set(modelProperty.get().applyNodeChanges(change))
+//    val changed = change(nodesProperty.get())
+//    if (changed==nodesProperty.get()) {
+//      println("this change did nothing: $change")
+//    }
+//    nodesProperty.set(changed)
   }
 
   fun changeData(change: (Data) -> Data) {
-    dataProperty.set(change(dataProperty.get()))
+    modelProperty.set(modelProperty.get().applyDataChanges(change))
+//    dataProperty.set(change(dataProperty.get()))
   }
 
   private fun nodeFor(nodeId: NodeId<out ConnectableNode>): NodeAdapterGraphNode {
-    return NodeAdapterGraphNode.graphNodeFor(nodeId, modelProperty, dataProperty)
+    return NodeAdapterGraphNode.graphNodeFor(nodeId, nodesProperty, dataProperty)
   }
 }

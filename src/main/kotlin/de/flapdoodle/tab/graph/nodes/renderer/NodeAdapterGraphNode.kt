@@ -9,8 +9,10 @@ import de.flapdoodle.tab.data.nodes.NodeId
 import de.flapdoodle.tab.extensions.fire
 import de.flapdoodle.tab.graph.nodes.AbstractGraphNode
 import de.flapdoodle.tab.graph.nodes.renderer.events.ModelEvent
+import javafx.beans.binding.Binding
 import javafx.beans.property.ObjectProperty
 import javafx.scene.Node
+import org.fxmisc.easybind.monadic.MonadicBinding
 import tornadofx.*
 
 class NodeAdapterGraphNode(
@@ -24,8 +26,8 @@ class NodeAdapterGraphNode(
 
     fun graphNodeFor(
         id: NodeId<*>,
-        nodesProperty: ObjectProperty<Nodes>,
-        dataProperty: ObjectProperty<Data>
+        nodesProperty: MonadicBinding<Nodes>,
+        dataProperty: MonadicBinding<Data>
     ): NodeAdapterGraphNode {
       require(nodesProperty.get() != null) { "model is null" }
       val node = when (id) {
@@ -49,8 +51,8 @@ class NodeAdapterGraphNode(
 
     private fun tableNode(
         id: NodeId.TableId,
-        nodesProperty: ObjectProperty<Nodes>,
-        dataProperty: ObjectProperty<Data>
+        nodesProperty: MonadicBinding<Nodes>,
+        dataProperty: MonadicBinding<Data>
     ): NodeAdapterGraphNode {
       val nodeProperty = nodesProperty.mapNullable { m -> m!!.node(id) }
       return NodeAdapterGraphNode {
@@ -79,8 +81,8 @@ class NodeAdapterGraphNode(
 
     private fun calculated(
         id: NodeId.CalculatedId,
-        nodesProperty: ObjectProperty<Nodes>,
-        dataProperty: ObjectProperty<Data>
+        nodesProperty: MonadicBinding<Nodes>,
+        dataProperty: MonadicBinding<Data>
     ): NodeAdapterGraphNode {
       val nodeProperty = nodesProperty.mapNullable { m ->
         println("XX NodeAdapterGraphNode: mapNullable: node for $id")
