@@ -54,7 +54,11 @@ class NodeAdapterGraphNode(
         nodesProperty: MonadicBinding<Nodes>,
         dataProperty: MonadicBinding<Data>
     ): NodeAdapterGraphNode {
-      val nodeProperty = nodesProperty.mapNullable { m -> m!!.node(id) }
+      val nodeProperty = nodesProperty.mapNullable { m ->
+        println("XX NodeAdapterGraphNode: mapNullable: node for $id")
+        m?.find(id)
+      }.mapOnlyNonNull()
+
       return NodeAdapterGraphNode {
         NodeAdapter(
             content = ColumnsNode(
