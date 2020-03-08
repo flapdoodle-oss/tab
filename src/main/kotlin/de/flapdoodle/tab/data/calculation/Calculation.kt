@@ -1,16 +1,17 @@
 package de.flapdoodle.tab.data.calculation
 
 import de.flapdoodle.tab.data.Data
+import de.flapdoodle.tab.data.NodeConnections
 import de.flapdoodle.tab.data.Nodes
 import de.flapdoodle.tab.data.calculations.VariableMap
 import de.flapdoodle.tab.data.graph.ColumnGraph
 import de.flapdoodle.tab.data.nodes.ConnectableNode
 
 object Calculation {
-  fun calculate(nodes: Nodes, data: Data): Data {
+  fun calculate(nodes: Nodes, nodeConnections: NodeConnections, data: Data): Data {
     var currentData = data
 
-    val graph = ColumnGraph.of(nodes)
+    val graph = ColumnGraph.of(nodes, nodeConnections)
     val columns = graph.columnsStartToEnd()
     val nodeOfColumns = nodes.nodes().flatMap { node ->
       when (node) {
@@ -22,7 +23,7 @@ object Calculation {
     columns.forEach {id ->
       when (val node = nodeOfColumns[id]) {
         is ConnectableNode.Calculated -> {
-          val connections = nodes.connections(node.id)?.variableMappings ?: emptyList()
+          val connections = nodeConnections.connections(node.id)?.variableMappings ?: emptyList()
           val variableMap = VariableMap.variableMap(currentData, connections)
 
           currentData = node.calculations()

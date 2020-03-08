@@ -1,6 +1,5 @@
 package de.flapdoodle.tab.data
 
-import de.flapdoodle.tab.data.nodes.ColumnConnection
 import de.flapdoodle.tab.data.nodes.VariableMapping
 import de.flapdoodle.tab.data.nodes.ConnectableNode
 import de.flapdoodle.tab.data.nodes.Connection
@@ -11,11 +10,11 @@ import de.flapdoodle.tab.data.nodes.NodeId
 import de.flapdoodle.tab.data.values.Variable
 
 data class Nodes(
-    private val nodes: Map<NodeId<out ConnectableNode>, ConnectableNode> = linkedMapOf(),
-    private val connections: Map<NodeId<out ConnectableNode>, Connections> = emptyMap()
+    internal val nodes: Map<NodeId<out ConnectableNode>, ConnectableNode> = linkedMapOf()
+//    private val connections: Map<NodeId<out ConnectableNode>, Connections> = emptyMap()
 ) {
 
-  private val connectionMap: Map<NodeId<out ConnectableNode>, List<Connection<out Any>>> = allConnections(nodes, connections)
+//  private val connectionMap: Map<NodeId<out ConnectableNode>, List<Connection<out Any>>> = allConnections(nodes, connections)
 
   fun add(node: ConnectableNode): Nodes {
     require(!nodes.contains(node.id)) { "node already set: ${node.id}" }
@@ -40,10 +39,10 @@ data class Nodes(
     return table
   }
 
-  fun <T : Any> connect(id: NodeId<out ConnectableNode>, variable: Variable<T>, columnConnection: ColumnConnection<T>): Nodes {
-    return copy(connections = connections + (id to (connections[id] ?: Connections()).add(variable, columnConnection)))
-  }
-
+//  fun <T : Any> connect(id: NodeId<out ConnectableNode>, variable: Variable<T>, columnConnection: ColumnConnection<T>): Nodes {
+//    return copy(connections = connections + (id to (connections[id] ?: Connections()).add(variable, columnConnection)))
+//  }
+//
   fun <T : ConnectableNode> changeNode(id: NodeId<T>, change: (T) -> ConnectableNode): Nodes {
     require(nodes.contains(id)) { "node $id not found in ${nodes.keys}" }
     val node = nodes[id] as T? ?: throw IllegalArgumentException("node not found for $id in ${nodes.keys}")
@@ -67,14 +66,14 @@ data class Nodes(
 
     val missingColumns = originalColumnIds - newColumnIds
 
-    val changedConnections = connections.mapValues { (nodeId, connections) ->
-      if (nodeId == id && changedNode is HasInputs)
-        connections.filterInvalidInputs(changedNode)
-      else
-        connections.filterInvalidColumns(missingColumns)
-    }
+//    val changedConnections = connections.mapValues { (nodeId, connections) ->
+//      if (nodeId == id && changedNode is HasInputs)
+//        connections.filterInvalidInputs(changedNode)
+//      else
+//        connections.filterInvalidColumns(missingColumns)
+//    }
 
-    return copy(nodes = changedNodes, connections = changedConnections)
+    return copy(nodes = changedNodes/*, connections = changedConnections*/)
   }
 
   fun nodeIds(): Set<NodeId<out ConnectableNode>> {
@@ -85,13 +84,40 @@ data class Nodes(
     return nodes.values
   }
 
-  fun connections(id: NodeId<out ConnectableNode>): Connections? {
-    return connections[id]
+  internal fun allColumnIds(): Set<ColumnId<out Any>> {
+    val allColumns = nodes.flatMap {
+      val node = it.value
+      if (node is HasColumns) {
+        node.columns().map { it.id }
+      } else emptyList()
+    }
+    return allColumns.toSet()
   }
 
-  fun tableConnections(id: NodeId<out ConnectableNode>): List<Connection<out Any>> {
-    return connectionMap[id] ?: emptyList()
+  internal fun allInputs(): Map<NodeId<out ConnectableNode>, Set<Variable<out Any>>> {
+    return nodes.map {
+      val node = it.value
+      it.key to if (node is HasInputs) {
+        node.variables()
+      } else {
+        emptySet()
+      }
+    }.toMap()
   }
+
+  fun explain() {
+    nodes.forEach { nodeId, connectableNode ->
+      println("node $nodeId -> $connectableNode")
+    }
+  }
+//
+//  fun connections(id: NodeId<out ConnectableNode>): Connections? {
+//    return connections[id]
+//  }
+//
+//  fun tableConnections(id: NodeId<out ConnectableNode>): List<Connection<out Any>> {
+//    return connectionMap[id] ?: emptyList()
+//  }
 
   companion object {
     private fun allConnections(

@@ -189,14 +189,18 @@ class ModelRenderer(private val pane: Pane) {
     pane += ShowConnectHandleNode()
   }
 
-  fun change(change: (Nodes) -> Nodes) {
-    modelProperty.set(modelProperty.get().applyNodeChanges(change))
-//    val changed = change(nodesProperty.get())
-//    if (changed==nodesProperty.get()) {
-//      println("this change did nothing: $change")
-//    }
-//    nodesProperty.set(changed)
+  fun change(change: (TabModel) -> TabModel) {
+    modelProperty.set(change(modelProperty.get()))
   }
+
+//  fun change(change: (Nodes) -> Nodes) {
+//    modelProperty.set(modelProperty.get().applyNodeChanges(change))
+////    val changed = change(nodesProperty.get())
+////    if (changed==nodesProperty.get()) {
+////      println("this change did nothing: $change")
+////    }
+////    nodesProperty.set(changed)
+//  }
 
   fun changeData(change: (Data) -> Data) {
     modelProperty.set(modelProperty.get().applyDataChanges(change))

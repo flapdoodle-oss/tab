@@ -3,6 +3,7 @@ package de.flapdoodle.tab.data.graph
 import de.flapdoodle.graph.GraphAsDot
 import de.flapdoodle.graph.Graphs
 import de.flapdoodle.tab.data.ColumnId
+import de.flapdoodle.tab.data.NodeConnections
 import de.flapdoodle.tab.data.Nodes
 import de.flapdoodle.tab.data.nodes.ConnectableNode
 import de.flapdoodle.tab.data.nodes.Connections
@@ -59,10 +60,10 @@ data class ColumnGraph(
 
   companion object {
 
-    fun of(nodes: Nodes): ColumnGraph {
+    fun of(nodes: Nodes, nodeConnections: NodeConnections): ColumnGraph {
       val wrapper = Wrapper()
       nodes.nodeIds().forEach { id ->
-        val connections = nodes.connections(id)
+        val connections = nodeConnections.connections(id)
         if (connections != null) {
           val node = nodes.node(id)
           when (node) {

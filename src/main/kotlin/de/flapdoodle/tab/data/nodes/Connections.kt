@@ -31,4 +31,24 @@ data class Connections(
     }
     return this
   }
+
+  fun filterColumns(columnIds: Set<ColumnId<out Any>>): Connections {
+    val filtered = variableMappings.filter {
+      columnIds.contains(it.columnConnection.columnId)
+    }
+    if (filtered != variableMappings) {
+      return copy(variableMappings = filtered)
+    }
+    return this
+  }
+
+  fun filterInputs(allVariables: Set<Variable<out Any>>): Connections {
+    val filtered = variableMappings.filter {
+      allVariables.contains(it.variable)
+    }
+    if (filtered != variableMappings) {
+      return copy(variableMappings = filtered)
+    }
+    return this
+  }
 }

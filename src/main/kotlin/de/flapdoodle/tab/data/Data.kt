@@ -31,6 +31,12 @@ data class Data(
     }
   }
 
+  fun explain() {
+    columnValues.forEach { columnId, values ->
+      println("column $columnId -> $values")
+    }
+  }
+
   data class Row(val index: Int, private val map: Map<ColumnId<out Any>, Any?>) {
     operator fun <T : Any> get(id: ColumnId<T>): T? {
       @Suppress("UNCHECKED_CAST")
