@@ -1,7 +1,5 @@
 package de.flapdoodle.tab.graph.nodes.renderer
 
-import de.flapdoodle.tab.bindings.mapToList
-import de.flapdoodle.tab.bindings.syncFrom
 import de.flapdoodle.tab.data.NamedColumn
 import de.flapdoodle.tab.data.calculations.CalculationMapping
 import de.flapdoodle.tab.data.calculations.EvalExCalculationAdapter
@@ -9,25 +7,27 @@ import de.flapdoodle.tab.data.nodes.ConnectableNode
 import de.flapdoodle.tab.data.nodes.HasCalculations
 import de.flapdoodle.tab.data.nodes.NodeId
 import de.flapdoodle.tab.graph.nodes.renderer.events.ModelEvent
-import javafx.beans.value.ObservableValue
+import de.flapdoodle.tab.observable.AObservable
+import de.flapdoodle.tab.observable.map
+import de.flapdoodle.tab.observable.syncFrom
 import javafx.geometry.Pos
 import javafx.scene.layout.HBox
 import tornadofx.*
 import java.math.BigDecimal
 
 class CalculationsNode<T>(
-    node: ObservableValue<T>
+    node: AObservable<T>
 ) : Fragment()
     where T : HasCalculations,
           T : ConnectableNode {
 
-  private val calculations = node.mapToList {
+  private val calculations = node.map {
     it.calculations()
   }
 
   override val root = vbox {
     children.syncFrom(calculations) {
-      CalcNode(it!!, { node.value.id }) {
+      CalcNode(it!!, { node.value().id }) {
         fire(it)
       }
     }

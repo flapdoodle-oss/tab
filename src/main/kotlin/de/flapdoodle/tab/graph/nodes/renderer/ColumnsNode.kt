@@ -1,8 +1,5 @@
 package de.flapdoodle.tab.graph.nodes.renderer
 
-import de.flapdoodle.tab.bindings.mapToList
-import de.flapdoodle.tab.bindings.mergeWith
-import de.flapdoodle.tab.bindings.syncFrom
 import de.flapdoodle.tab.data.ColumnId
 import de.flapdoodle.tab.data.Data
 import de.flapdoodle.tab.data.NamedColumn
@@ -12,8 +9,13 @@ import de.flapdoodle.tab.extensions.property
 import de.flapdoodle.tab.extensions.subscribeEvent
 import de.flapdoodle.tab.graph.nodes.renderer.events.DataEvent
 import de.flapdoodle.tab.graph.nodes.renderer.events.ExplainEvent
+import de.flapdoodle.tab.observable.AObservable
+import de.flapdoodle.tab.observable.asAObservable
+import de.flapdoodle.tab.observable.asListBinding
+import de.flapdoodle.tab.observable.map
+import de.flapdoodle.tab.observable.merge
+import de.flapdoodle.tab.observable.syncFrom
 import javafx.beans.property.SimpleObjectProperty
-import javafx.beans.value.ObservableValue
 import javafx.scene.control.ContextMenu
 import javafx.scene.control.TableCell
 import javafx.scene.control.TableColumn
@@ -43,8 +45,8 @@ import java.time.LocalTime
 import kotlin.reflect.KClass
 
 class ColumnsNode<T>(
-    node: ObservableValue<T>,
-    data: ObservableValue<Data>,
+    node: AObservable<T>,
+    data: AObservable<Data>,
     private val columnHeader: ((TableColumn<Data.Row, *>) -> Fragment)? = null,
     private val columnFooter: (TableColumn<Data.Row, *>) -> Fragment,
     private val editable: Boolean = false,
@@ -54,15 +56,15 @@ class ColumnsNode<T>(
           T : ConnectableNode {
 
   init {
-    require(node.value != null) { "node is null" }
+    require(node.value() != null) { "node is null" }
   }
 
-  private val columnList = node.mapToList(HasColumns::columns)
-  private val rows = node.mergeWith(data) { t, d ->
+  private val columnList = node.map(HasColumns::columns)
+  private val rows = node.merge(data) { t, d ->
     d to t.columns().map { it.id }
-  }.mapToList {
+  }.map {
     appendEmptyRow(it.first.rows(it.second))
-  }
+  }.asListBinding()
 
   private fun appendEmptyRow(rows: List<Data.Row>): List<Data.Row> {
     return if (editable)
@@ -85,9 +87,12 @@ class ColumnsNode<T>(
     if (columnHeader!=null) {
       hbox {
         val factory = columnHeader
-        children.syncFrom(table.columns) {
-          factory(it!!).root
+        children.syncFrom(table.columns.asAObservable()) {
+          factory(it).root
         }
+//        children.syncFrom(table.columns) {
+//          factory(it!!).root
+//        }
       }
     }
 
@@ -101,7 +106,7 @@ class ColumnsNode<T>(
 //    }
 
     hbox {
-      children.syncFrom(table.columns) {
+      children.syncFrom(table.columns.asAObservable()) {
         columnFooter(it!!).root
       }
     }

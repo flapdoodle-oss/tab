@@ -1,18 +1,16 @@
 package de.flapdoodle.tab.graph.nodes.renderer
 
-import de.flapdoodle.tab.bindings.mapNullable
-import de.flapdoodle.tab.bindings.mapFrom
-import de.flapdoodle.tab.bindings.mapOnlyNonNull
 import de.flapdoodle.tab.data.Data
 import de.flapdoodle.tab.data.Nodes
 import de.flapdoodle.tab.data.nodes.NodeId
 import de.flapdoodle.tab.extensions.fire
 import de.flapdoodle.tab.graph.nodes.AbstractGraphNode
 import de.flapdoodle.tab.graph.nodes.renderer.events.ModelEvent
-import javafx.beans.binding.Binding
-import javafx.beans.property.ObjectProperty
+import de.flapdoodle.tab.observable.AObservable
+import de.flapdoodle.tab.observable.asBinding
+import de.flapdoodle.tab.observable.map
+import de.flapdoodle.tab.observable.mapNonNull
 import javafx.scene.Node
-import org.fxmisc.easybind.monadic.MonadicBinding
 import tornadofx.*
 
 class NodeAdapterGraphNode(
@@ -26,10 +24,10 @@ class NodeAdapterGraphNode(
 
     fun graphNodeFor(
         id: NodeId<*>,
-        nodesProperty: MonadicBinding<Nodes>,
-        dataProperty: MonadicBinding<Data>
+        nodesProperty: AObservable<Nodes>,
+        dataProperty: AObservable<Data>
     ): NodeAdapterGraphNode {
-      require(nodesProperty.get() != null) { "model is null" }
+      require(nodesProperty.value() != null) { "model is null" }
       val node = when (id) {
         is NodeId.TableId -> tableNode(id, nodesProperty, dataProperty)
         is NodeId.CalculatedId -> calculated(id, nodesProperty, dataProperty)
@@ -45,19 +43,19 @@ class NodeAdapterGraphNode(
         yOffset = yOffset + node.root.layoutBounds.height
       }
 
-      node.titleProperty.mapFrom(nodesProperty) { m -> m?.find(id)?.name ?: "<undefined>" }
+      node.titleProperty.bind(nodesProperty.map { m -> m?.find(id)?.name ?: "<undefined>" }.asBinding())
       return node
     }
 
     private fun tableNode(
         id: NodeId.TableId,
-        nodesProperty: MonadicBinding<Nodes>,
-        dataProperty: MonadicBinding<Data>
+        nodesProperty: AObservable<Nodes>,
+        dataProperty: AObservable<Data>
     ): NodeAdapterGraphNode {
-      val nodeProperty = nodesProperty.mapNullable { m ->
-        println("XX NodeAdapterGraphNode: mapNullable: node for $id")
+      val nodeProperty = nodesProperty.mapNonNull { m ->
+        println("XX NodeAdapterGraphNode: node for $id")
         m?.find(id)
-      }.mapOnlyNonNull()
+      }
 
       return NodeAdapterGraphNode {
         NodeAdapter(
@@ -85,17 +83,17 @@ class NodeAdapterGraphNode(
 
     private fun calculated(
         id: NodeId.CalculatedId,
-        nodesProperty: MonadicBinding<Nodes>,
-        dataProperty: MonadicBinding<Data>
+        nodesProperty: AObservable<Nodes>,
+        dataProperty: AObservable<Data>
     ): NodeAdapterGraphNode {
-      val nodeProperty = nodesProperty.mapNullable { m ->
-        println("XX NodeAdapterGraphNode: mapNullable: node for $id")
+      val nodeProperty = nodesProperty.mapNonNull { m ->
+        println("XX NodeAdapterGraphNode: node for $id")
         m?.find(id)
-      }.mapOnlyNonNull()
-
-      nodeProperty.onChange {
-        println("XX NodeAdapterGraphNode(calculated): nodeProperty changed to $it")
       }
+
+//      nodeProperty.onChange {
+//        println("XX NodeAdapterGraphNode(calculated): nodeProperty changed to $it")
+//      }
 
       return NodeAdapterGraphNode {
         NodeAdapter(

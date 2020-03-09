@@ -1,8 +1,5 @@
 package de.flapdoodle.tab.extensions
 
-import de.flapdoodle.tab.bindings.ChangeListeners
-import javafx.beans.InvalidationListener
-import javafx.beans.Observable
 import javafx.beans.binding.Binding
 import javafx.beans.binding.ObjectBinding
 import javafx.beans.value.ChangeListener
@@ -11,9 +8,6 @@ import javafx.geometry.BoundingBox
 import javafx.geometry.Bounds
 import javafx.geometry.Point2D
 import javafx.scene.Node
-import org.fxmisc.easybind.EasyBind
-import java.lang.RuntimeException
-import java.util.concurrent.atomic.AtomicBoolean
 
 fun Bounds.min(): Point2D {
   return Point2D(this.minX, this.minY)

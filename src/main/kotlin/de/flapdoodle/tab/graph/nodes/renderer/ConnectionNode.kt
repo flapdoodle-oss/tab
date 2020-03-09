@@ -1,12 +1,8 @@
 package de.flapdoodle.tab.graph.nodes.renderer
 
 import de.flapdoodle.tab.bindings.mapNullable
-import javafx.beans.Observable
-import javafx.beans.binding.Binding
 import javafx.beans.value.ObservableValue
 import javafx.geometry.Point2D
-import javafx.scene.Group
-import javafx.scene.Parent
 import javafx.scene.paint.Color
 import tornadofx.*
 
