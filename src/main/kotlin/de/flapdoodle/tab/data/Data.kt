@@ -4,7 +4,7 @@ import de.flapdoodle.tab.data.values.Values
 import kotlin.reflect.KClass
 
 data class Data(
-    private val columnValues: Map<ColumnId<out Any>, Values<out Any>> = emptyMap()
+    val columnValues: Map<ColumnId<out Any>, Values<out Any>> = emptyMap()
 ) {
 
   operator fun <T: Any> get(columnId: ColumnId<out T>): Values<T> {

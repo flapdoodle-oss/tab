@@ -3,6 +3,7 @@ package de.flapdoodle.tab.graph.nodes.renderer.graph
 import de.flapdoodle.tab.data.ColumnId
 import de.flapdoodle.tab.data.Nodes
 import de.flapdoodle.tab.data.NamedColumn
+import de.flapdoodle.tab.data.TabModel
 import de.flapdoodle.tab.data.calculations.CalculationMapping
 import de.flapdoodle.tab.data.calculations.Calculations
 import de.flapdoodle.tab.data.calculations.EvalExCalculationAdapter
@@ -53,7 +54,7 @@ internal class ColumnGraphTest {
         ))
     )
 
-    val model = Nodes().add(source)
+    val model = TabModel().add(source)
         .add(stringOpSample)
         .add(numberOpSample)
         .add(otherNumSample)
@@ -61,7 +62,7 @@ internal class ColumnGraphTest {
         .connect(numberOpSample.id, Variable(Int::class, "x"), ColumnConnection.ColumnValues(barColumnId))
         .connect(otherNumSample.id, Variable(BigDecimal::class, "a"), ColumnConnection.ColumnValues(numberColumnId))
 
-    val graph = ColumnGraph.of(model)
+    val graph = ColumnGraph.of(model.nodes, model.nodeConnections)
 
     val destsForCalculatedColumn = graph.possibleDestinationsFor(otherNumSample.calculations()[0].column.id)
 

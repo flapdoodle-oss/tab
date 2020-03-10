@@ -6,12 +6,13 @@ import de.flapdoodle.tab.data.nodes.NodeId
 import de.flapdoodle.tab.extensions.fire
 import de.flapdoodle.tab.graph.nodes.AbstractGraphNode
 import de.flapdoodle.tab.graph.nodes.renderer.events.ModelEvent
-import de.flapdoodle.tab.observable.AObservable
-import de.flapdoodle.tab.observable.asBinding
-import de.flapdoodle.tab.observable.map
-import de.flapdoodle.tab.observable.mapNonNull
+import de.flapdoodle.tab.lazy.LazyValue
+import de.flapdoodle.tab.lazy.asBinding
+import de.flapdoodle.tab.lazy.map
+import de.flapdoodle.tab.lazy.mapNonNull
 import javafx.scene.Node
 import tornadofx.*
+import javax.swing.UIDefaults
 
 class NodeAdapterGraphNode(
     factory: () -> Fragment
@@ -24,8 +25,8 @@ class NodeAdapterGraphNode(
 
     fun graphNodeFor(
         id: NodeId<*>,
-        nodesProperty: AObservable<Nodes>,
-        dataProperty: AObservable<Data>
+        nodesProperty: LazyValue<Nodes>,
+        dataProperty: LazyValue<Data>
     ): NodeAdapterGraphNode {
       require(nodesProperty.value() != null) { "model is null" }
       val node = when (id) {
@@ -49,8 +50,8 @@ class NodeAdapterGraphNode(
 
     private fun tableNode(
         id: NodeId.TableId,
-        nodesProperty: AObservable<Nodes>,
-        dataProperty: AObservable<Data>
+        nodesProperty: LazyValue<Nodes>,
+        dataProperty: LazyValue<Data>
     ): NodeAdapterGraphNode {
       val nodeProperty = nodesProperty.mapNonNull { m ->
         println("XX NodeAdapterGraphNode: node for $id")
@@ -83,8 +84,8 @@ class NodeAdapterGraphNode(
 
     private fun calculated(
         id: NodeId.CalculatedId,
-        nodesProperty: AObservable<Nodes>,
-        dataProperty: AObservable<Data>
+        nodesProperty: LazyValue<Nodes>,
+        dataProperty: LazyValue<Data>
     ): NodeAdapterGraphNode {
       val nodeProperty = nodesProperty.mapNonNull { m ->
         println("XX NodeAdapterGraphNode: node for $id")

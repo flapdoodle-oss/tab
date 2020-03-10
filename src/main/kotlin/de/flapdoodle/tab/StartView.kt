@@ -2,37 +2,61 @@ package de.flapdoodle.tab
 
 import de.flapdoodle.tab.data.ColumnId
 import de.flapdoodle.tab.data.NamedColumn
+import de.flapdoodle.tab.data.TabModel
 import de.flapdoodle.tab.data.calculations.CalculationMapping
 import de.flapdoodle.tab.data.calculations.Calculations
 import de.flapdoodle.tab.data.calculations.EvalExCalculationAdapter
 import de.flapdoodle.tab.data.nodes.ColumnConnection
 import de.flapdoodle.tab.data.nodes.ConnectableNode
 import de.flapdoodle.tab.data.values.Variable
+import de.flapdoodle.tab.extensions.fire
 import de.flapdoodle.tab.extensions.subscribeEvent
 import de.flapdoodle.tab.graph.ZoomablePane
 import de.flapdoodle.tab.graph.nodes.AbstractGraphNode
-import de.flapdoodle.tab.graph.nodes.renderer.events.DataEvent
-import de.flapdoodle.tab.graph.nodes.renderer.events.ModelEvent
 import de.flapdoodle.tab.graph.nodes.renderer.ModelRenderer
-import de.flapdoodle.tab.graph.nodes.renderer.events.ConnectEvent
+import de.flapdoodle.tab.graph.nodes.renderer.events.DataEvent
+import de.flapdoodle.tab.graph.nodes.renderer.events.IOEvent
+import de.flapdoodle.tab.graph.nodes.renderer.events.ModelEvent
 import de.flapdoodle.tab.graph.nodes.values.ValuesNode
+import de.flapdoodle.tab.lazy.ChangeableValue
+import de.flapdoodle.tab.persist.TabModelIO
 import javafx.scene.Group
 import javafx.scene.paint.Color
+import javafx.stage.FileChooser
 import tornadofx.*
 import java.math.BigDecimal
+import java.nio.file.Files
+import java.nio.file.StandardOpenOption
 import java.util.concurrent.ThreadLocalRandom
 
 class StartView : View("My View") {
+  private val model = ChangeableValue(TabModel())
   private val zoomablePane: ZoomablePane = find()
-  private val renderer = ModelRenderer(zoomablePane.content)
+  private val renderer = ModelRenderer(zoomablePane.content, model)
 
   override val root = borderpane {
     top {
-      label {
-        text = "Tab"
-        style {
-          textFill = Color.WHITE
-          backgroundColor = multi(Color.RED)
+//      label {
+//        text = "Tab"
+//        style {
+//          textFill = Color.WHITE
+//          backgroundColor = multi(Color.RED)
+//        }
+//      }
+
+      menubar {
+        menu("Files") {
+          item("Open") {
+            action {
+              IOEvent.load().fire()
+            }
+          }
+
+          item("Save") {
+            action {
+              IOEvent.save().fire()
+            }
+          }
         }
       }
     }
@@ -140,7 +164,7 @@ class StartView : View("My View") {
     }
 
     val fooColumnId = ColumnId.create<String>()
-    val barColumnId = ColumnId.create<Int>()
+    val barColumnId = ColumnId.create<BigDecimal>()
     val numberColumnId = ColumnId.create<BigDecimal>()
 
     renderer.apply {
@@ -159,16 +183,16 @@ class StartView : View("My View") {
                 column = NamedColumn("nameCol", ColumnId.create())
             )))
 
-        val numberOpSample = ConnectableNode.Calculated("add 10",
-            calculations = listOf(CalculationMapping(
-                calculation = Calculations.Calc_1(
-                    a = Variable(Int::class, "x"),
-                    formula = { s -> s?.let { it + 10 } }
-                ),
-                column = NamedColumn("offset", ColumnId.create())
-            ))
-        )
-
+//        val numberOpSample = ConnectableNode.Calculated("add 10",
+//            calculations = listOf(CalculationMapping(
+//                calculation = Calculations.Calc_1(
+//                    a = Variable(Int::class, "x"),
+//                    formula = { s -> s?.let { it + 10 } }
+//                ),
+//                column = NamedColumn("offset", ColumnId.create())
+//            ))
+//        )
+//
         val otherNumSample = ConnectableNode.Calculated("formula",
             calculations = listOf(CalculationMapping(
                 calculation = EvalExCalculationAdapter("a*10"),
@@ -178,10 +202,10 @@ class StartView : View("My View") {
 
         model.add(source)
             .add(stringOpSample)
-            .add(numberOpSample)
+//            .add(numberOpSample)
             .add(otherNumSample)
             .connect(stringOpSample.id, Variable(String::class, "name"), ColumnConnection.ColumnValues(fooColumnId))
-            .connect(numberOpSample.id, Variable(Int::class, "x"), ColumnConnection.ColumnValues(barColumnId))
+//            .connect(numberOpSample.id, Variable(Int::class, "x"), ColumnConnection.ColumnValues(barColumnId))
             .connect(otherNumSample.id, Variable(BigDecimal::class, "a"), ColumnConnection.ColumnValues(numberColumnId))
       }
 
@@ -226,9 +250,40 @@ class StartView : View("My View") {
           event.data.applyTo(data)
         }
       }
+
+      subscribeEvent<IOEvent> { event ->
+        when (event.action) {
+          IOEvent.Action.Load -> {
+            val fileChooser = fileChooser()
+            fileChooser.title = "Open File"
+            fileChooser.showOpenDialog(currentStage)
+          }
+
+          IOEvent.Action.Save -> {
+            val fileChooser = fileChooser()
+            fileChooser.title = "Save File"
+            fileChooser.initialFileName = "sample.tab"
+            val file = fileChooser.showSaveDialog(currentStage)
+            println("write to $file")
+            if (file!=null) {
+              val json = TabModelIO.asJson(model.value())
+              Files.write(file.toPath(),json.toByteArray(Charsets.UTF_8), StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE)
+            }
+          }
+        }
+      }
     }
 
 //    zoomablePane.content += SampleNode()
 //    zoomablePane.content += DragPlayground()
+  }
+
+  private fun fileChooser(): FileChooser {
+    return FileChooser().apply {
+      extensionFilters.addAll(
+          FileChooser.ExtensionFilter("All Files", "*.*"),
+          FileChooser.ExtensionFilter("Tab File", "*.tab")
+      )
+    }
   }
 }

@@ -7,16 +7,17 @@ import de.flapdoodle.tab.data.nodes.ConnectableNode
 import de.flapdoodle.tab.data.nodes.HasCalculations
 import de.flapdoodle.tab.data.nodes.NodeId
 import de.flapdoodle.tab.graph.nodes.renderer.events.ModelEvent
-import de.flapdoodle.tab.observable.AObservable
-import de.flapdoodle.tab.observable.map
-import de.flapdoodle.tab.observable.syncFrom
+import de.flapdoodle.tab.lazy.LazyValue
+import de.flapdoodle.tab.lazy.map
+import de.flapdoodle.tab.lazy.syncFrom
 import javafx.geometry.Pos
 import javafx.scene.layout.HBox
 import tornadofx.*
 import java.math.BigDecimal
+import javax.swing.UIDefaults
 
 class CalculationsNode<T>(
-    node: AObservable<T>
+    node: LazyValue<T>
 ) : Fragment()
     where T : HasCalculations,
           T : ConnectableNode {

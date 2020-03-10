@@ -12,13 +12,12 @@ import de.flapdoodle.tab.extensions.property
 import de.flapdoodle.tab.graph.nodes.connections.InNode
 import de.flapdoodle.tab.graph.nodes.connections.Out
 import de.flapdoodle.tab.graph.nodes.connections.OutNode
-import de.flapdoodle.tab.observable.ChangeableObservable
-import de.flapdoodle.tab.observable.asAObservable
-import de.flapdoodle.tab.observable.asBinding
-import de.flapdoodle.tab.observable.bindFrom
-import de.flapdoodle.tab.observable.map
-import de.flapdoodle.tab.observable.merge
-import de.flapdoodle.tab.observable.syncFrom
+import de.flapdoodle.tab.lazy.ChangeableValue
+import de.flapdoodle.tab.lazy.asAObservable
+import de.flapdoodle.tab.lazy.bindFrom
+import de.flapdoodle.tab.lazy.map
+import de.flapdoodle.tab.lazy.merge
+import de.flapdoodle.tab.lazy.syncFrom
 import javafx.beans.binding.Binding
 import javafx.geometry.Point2D
 import javafx.scene.Group
@@ -27,11 +26,14 @@ import javafx.scene.Parent
 import javafx.scene.layout.Pane
 import tornadofx.*
 
-class ModelRenderer(private val pane: Pane) {
+class ModelRenderer(
+    private val pane: Pane,
+    private val modelProperty: ChangeableValue<TabModel>
+) {
   private val nodeLayer = Group()
   private val connectionLayer = Group()
 
-  private val modelProperty = ChangeableObservable(TabModel())
+//  private val modelProperty = ChangeableValue(TabModel())
   private val nodesProperty = modelProperty.map { it.nodes }
   private val dataProperty = modelProperty.map { it.data }
 

@@ -9,12 +9,12 @@ import de.flapdoodle.tab.extensions.property
 import de.flapdoodle.tab.extensions.subscribeEvent
 import de.flapdoodle.tab.graph.nodes.renderer.events.DataEvent
 import de.flapdoodle.tab.graph.nodes.renderer.events.ExplainEvent
-import de.flapdoodle.tab.observable.AObservable
-import de.flapdoodle.tab.observable.asAObservable
-import de.flapdoodle.tab.observable.asListBinding
-import de.flapdoodle.tab.observable.map
-import de.flapdoodle.tab.observable.merge
-import de.flapdoodle.tab.observable.syncFrom
+import de.flapdoodle.tab.lazy.LazyValue
+import de.flapdoodle.tab.lazy.asAObservable
+import de.flapdoodle.tab.lazy.asListBinding
+import de.flapdoodle.tab.lazy.map
+import de.flapdoodle.tab.lazy.merge
+import de.flapdoodle.tab.lazy.syncFrom
 import javafx.beans.property.SimpleObjectProperty
 import javafx.scene.control.ContextMenu
 import javafx.scene.control.TableCell
@@ -45,8 +45,8 @@ import java.time.LocalTime
 import kotlin.reflect.KClass
 
 class ColumnsNode<T>(
-    node: AObservable<T>,
-    data: AObservable<Data>,
+    node: LazyValue<T>,
+    data: LazyValue<Data>,
     private val columnHeader: ((TableColumn<Data.Row, *>) -> Fragment)? = null,
     private val columnFooter: (TableColumn<Data.Row, *>) -> Fragment,
     private val editable: Boolean = false,
