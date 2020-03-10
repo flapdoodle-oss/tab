@@ -25,6 +25,7 @@ import javafx.scene.paint.Color
 import javafx.stage.FileChooser
 import tornadofx.*
 import java.math.BigDecimal
+import java.nio.charset.Charset
 import java.nio.file.Files
 import java.nio.file.StandardOpenOption
 import java.util.concurrent.ThreadLocalRandom
@@ -256,7 +257,12 @@ class StartView : View("My View") {
           IOEvent.Action.Load -> {
             val fileChooser = fileChooser()
             fileChooser.title = "Open File"
-            fileChooser.showOpenDialog(currentStage)
+            val file = fileChooser.showOpenDialog(currentStage)
+            println("load $file")
+            if (file!=null) {
+              val content = Files.readAllBytes(file.toPath())
+              model.value(TabModelIO.fromJson(String(content, Charsets.UTF_8)))
+            }
           }
 
           IOEvent.Action.Save -> {

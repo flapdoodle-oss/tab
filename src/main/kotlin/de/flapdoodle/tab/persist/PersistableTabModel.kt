@@ -16,5 +16,9 @@ data class PersistableTabModel(
           data = PersistableData.toPersistable(source.data)
       )
     }
+
+    fun from(source: PersistableTabModel?): TabModel {
+      return TabModel()
+    }
   }
 }

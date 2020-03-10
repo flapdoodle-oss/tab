@@ -20,4 +20,9 @@ object TabModelIO {
     val persistable = PersistableTabModel.toPersistable(model)
     return modelAdapter.toJson(persistable)
   }
+
+  fun fromJson(json: String): TabModel {
+    val persistable = modelAdapter.fromJson(json)
+    return PersistableTabModel.from(persistable)
+  }
 }
