@@ -1,8 +1,5 @@
-package de.flapdoodle.tab.graph.nodes.renderer
+package de.flapdoodle.tab.graph.nodes.renderer.modals
 
-import de.flapdoodle.tab.data.ColumnId
-import de.flapdoodle.tab.data.NamedColumn
-import de.flapdoodle.tab.data.calculations.EvalExCalculationAdapter
 import de.flapdoodle.tab.data.nodes.NodeId
 import de.flapdoodle.tab.extensions.fire
 import de.flapdoodle.tab.graph.nodes.renderer.events.ModelEvent
@@ -12,29 +9,29 @@ import tornadofx.*
 import java.math.BigDecimal
 import kotlin.reflect.KClass
 
-class AddCalculationModalView : View() {
-  private var nodeId: NodeId.CalculatedId? = null
+class AddColumnModalView : View() {
+  private var nodeId: NodeId.TableId? = null
 
   override val root = borderpane {
     center {
+      val type = SimpleObjectProperty<KClass<out Any>>()
       val name = SimpleStringProperty()
-      val formula = SimpleStringProperty()
       form {
         fieldset {
           label("Name")
-          textfield(name) { }
+          textfield(name) {  }
         }
         fieldset {
-          label("Formula")
-          textfield(formula) { }
+          label("Type")
+          choicebox(type, listOf(String::class, BigDecimal::class, Int::class))
         }
         fieldset {
           button {
             text = "Add"
             action {
-              val currentNodeId = nodeId
-              require(currentNodeId != null) { "nodeId not set" }
-              ModelEvent.addCalculation(currentNodeId, NamedColumn(name.value, ColumnId.create()), EvalExCalculationAdapter(formula.value)).fire()
+              val id = nodeId
+              require(id!=null) {"nodeId is null"}
+              ModelEvent.addColumn(id, name.value!!, type.value!!).fire()
               close()
             }
           }
@@ -44,8 +41,9 @@ class AddCalculationModalView : View() {
   }
 
   companion object {
-    fun openModalWith(nodeId: NodeId.CalculatedId) {
-      val view = find(AddCalculationModalView::class)
+    // put instance creation here
+    fun openModalWith(nodeId: NodeId.TableId) {
+      val view = find(AddColumnModalView::class)
       view.nodeId = nodeId
       view.openModal(stageStyle = javafx.stage.StageStyle.UNDECORATED)
     }

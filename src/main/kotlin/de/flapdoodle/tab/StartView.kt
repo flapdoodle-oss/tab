@@ -19,6 +19,7 @@ import de.flapdoodle.tab.graph.nodes.renderer.events.DataEvent
 import de.flapdoodle.tab.graph.nodes.renderer.events.IOEvent
 import de.flapdoodle.tab.graph.nodes.renderer.events.ModelEvent
 import de.flapdoodle.tab.graph.nodes.renderer.events.UIEvent
+import de.flapdoodle.tab.graph.nodes.renderer.modals.AddNodeModalView
 import de.flapdoodle.tab.graph.nodes.values.ValuesNode
 import de.flapdoodle.tab.lazy.ChangeableValue
 import de.flapdoodle.tab.persist.TabModelIO
@@ -73,6 +74,11 @@ class StartView : View("My View") {
 
     bottom {
       hbox {
+        button("Add") {
+          onLeftClick {
+            AddNodeModalView.openModal()
+          }
+        }
         button("Table") {
           onLeftClick {
             renderer.change {

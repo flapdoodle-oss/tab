@@ -8,6 +8,8 @@ import de.flapdoodle.tab.extensions.subscribeEvent
 import de.flapdoodle.tab.graph.nodes.AbstractGraphNode
 import de.flapdoodle.tab.graph.nodes.renderer.events.ModelEvent
 import de.flapdoodle.tab.graph.nodes.renderer.events.UIEvent
+import de.flapdoodle.tab.graph.nodes.renderer.modals.AddCalculationModalView
+import de.flapdoodle.tab.graph.nodes.renderer.modals.AddColumnModalView
 import de.flapdoodle.tab.lazy.LazyValue
 import de.flapdoodle.tab.lazy.asBinding
 import de.flapdoodle.tab.lazy.map
