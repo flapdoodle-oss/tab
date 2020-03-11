@@ -1,8 +1,8 @@
 package de.flapdoodle.tab.graph.nodes
 
-import javafx.geometry.Point2D
+import javafx.geometry.Dimension2D
 
 interface Resizeable {
-  fun size(): Point2D
+  fun size(): Dimension2D
   fun resizeTo(width: Double, height: Double)
 }

@@ -1,5 +1,6 @@
 package de.flapdoodle.tab.persist
 
+import de.flapdoodle.tab.data.NodePositions
 import de.flapdoodle.tab.data.TabModel
 
 data class PersistableTabModel(
@@ -8,7 +9,7 @@ data class PersistableTabModel(
     val data: PersistableData
 ) {
 
-  companion object : ToPersistable<TabModel, PersistableTabModel> {
+  companion object : PersistableAdapter<TabModel, PersistableTabModel> {
     override fun toPersistable(source: TabModel): PersistableTabModel {
       return PersistableTabModel(
           nodes = PersistableNodes.toPersistable(source.nodes),
@@ -17,8 +18,13 @@ data class PersistableTabModel(
       )
     }
 
-    fun from(source: PersistableTabModel?): TabModel {
-      return TabModel()
+    override fun from(context: FromPersistableContext, source: PersistableTabModel): TabModel {
+      return TabModel(
+          nodes = PersistableNodes.from(context, source.nodes),
+          nodeConnections = PersistableNodeConnections.from(context, source.nodeConnections),
+          data = PersistableData.from(context, source.data)
+      )
     }
+
   }
 }

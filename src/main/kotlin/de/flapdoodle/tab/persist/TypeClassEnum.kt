@@ -20,5 +20,9 @@ interface TypeClassEnum<E : Enum<E>, T : Any> {
       }
       throw IllegalArgumentException("could not find a matching entry in $enumConstants for $type")
     }
+
+    fun <T: TypeClassEnum<out Any, out Any>> typeClassOf(type: T): KClass<out Any> {
+      return type.type
+    }
   }
 }

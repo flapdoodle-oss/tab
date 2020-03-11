@@ -13,7 +13,7 @@ data class PersistableColumnConnection(
     Aggregates
   }
 
-  companion object : ToPersistable<ColumnConnection<out Any>, PersistableColumnConnection> {
+  companion object : PersistableAdapter<ColumnConnection<out Any>, PersistableColumnConnection> {
     override fun toPersistable(source: ColumnConnection<out Any>): PersistableColumnConnection {
       return when (source) {
         is ColumnConnection.ColumnValues<out Any> -> {
@@ -31,5 +31,11 @@ data class PersistableColumnConnection(
       }
     }
 
+    override fun from(context: FromPersistableContext, source: PersistableColumnConnection): ColumnConnection<out Any> {
+      return when (source.type) {
+        Type.Values -> ColumnConnection.ColumnValues(PersistableColumnId.forType(Any::class).from(context, source.id))
+        Type.Aggregates -> ColumnConnection.Aggregate(PersistableColumnId.forType(Any::class).from(context, source.id))
+      }
+    }
   }
 }

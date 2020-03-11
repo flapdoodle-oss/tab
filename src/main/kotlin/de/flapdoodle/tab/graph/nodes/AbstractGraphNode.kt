@@ -1,6 +1,10 @@
 package de.flapdoodle.tab.graph.nodes
 
+import de.flapdoodle.tab.bindings.Registration
 import de.flapdoodle.tab.graph.events.marker
+import javafx.beans.value.ChangeListener
+import javafx.geometry.Bounds
+import javafx.geometry.Dimension2D
 import javafx.geometry.Point2D
 import javafx.geometry.Pos
 import javafx.scene.Node
@@ -83,13 +87,27 @@ abstract class AbstractGraphNode<T : Node>(
     window.relocate(x, y)
   }
 
-  override fun size(): Point2D {
-    return Point2D(window.width, window.height)
+  override fun size(): Dimension2D {
+    return Dimension2D(window.width, window.height)
   }
 
   override fun resizeTo(width: Double, height: Double) {
     window.setPrefSize(width, height)
   }
 
+  fun addListener(onChanged: (Point2D, Dimension2D) -> Unit): Registration {
+    val listener: ChangeListener<Any> = ChangeListener { _, _, _ ->
+      onChanged(position(), size())
+    }
+    window.layoutXProperty().addListener(listener)
+    window.layoutYProperty().addListener(listener)
+    window.layoutBoundsProperty().addListener(listener)
+
+    return Registration {
+      window.layoutXProperty().removeListener(listener)
+      window.layoutYProperty().removeListener(listener)
+      window.layoutBoundsProperty().removeListener(listener)
+    }
+  }
 
 }

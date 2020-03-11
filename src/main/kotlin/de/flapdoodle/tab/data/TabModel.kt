@@ -89,7 +89,10 @@ data class TabModel(
       data.explain()
       println("----------------------------")
 
-      val changed = Calculation.calculate(nodes, nodeConnections, data)
+      //val filtered = data.clear()
+      val allColumns = nodes.allColumnIds()
+      val filtered = data.filterUnused(allColumns)
+      val changed = Calculation.calculate(nodes, nodeConnections, filtered)
       return if (changed != data) changed else data
     }
 

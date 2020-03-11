@@ -9,6 +9,7 @@ import de.flapdoodle.tab.data.calculations.EvalExCalculationAdapter
 import de.flapdoodle.tab.data.nodes.ColumnConnection
 import de.flapdoodle.tab.data.nodes.ConnectableNode
 import de.flapdoodle.tab.data.values.Variable
+import de.flapdoodle.tab.persist.PersistableTabModel.Companion.from
 import de.flapdoodle.tab.persist.adapter.BigDecimalAdapter
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -49,8 +50,10 @@ internal class PersistableTabModelTest {
     println("--------------------")
 
     val readBack = modelAdapter.fromJson(json)
+    assertThat(readBack).isNotNull
     assertThat(persistableTabModel).isEqualTo(readBack)
 
+    val readBackModel = from(FromPersistableContext(), readBack!!)
 //    assertThat(json).isEqualTo("{\"name\":\"test\"}")
   }
 }

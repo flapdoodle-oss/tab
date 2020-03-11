@@ -2,6 +2,7 @@ package de.flapdoodle.tab
 
 import de.flapdoodle.tab.data.ColumnId
 import de.flapdoodle.tab.data.NamedColumn
+import de.flapdoodle.tab.data.NodePositions
 import de.flapdoodle.tab.data.TabModel
 import de.flapdoodle.tab.data.calculations.CalculationMapping
 import de.flapdoodle.tab.data.calculations.Calculations
@@ -17,6 +18,7 @@ import de.flapdoodle.tab.graph.nodes.renderer.ModelRenderer
 import de.flapdoodle.tab.graph.nodes.renderer.events.DataEvent
 import de.flapdoodle.tab.graph.nodes.renderer.events.IOEvent
 import de.flapdoodle.tab.graph.nodes.renderer.events.ModelEvent
+import de.flapdoodle.tab.graph.nodes.renderer.events.UIEvent
 import de.flapdoodle.tab.graph.nodes.values.ValuesNode
 import de.flapdoodle.tab.lazy.ChangeableValue
 import de.flapdoodle.tab.persist.TabModelIO
@@ -25,7 +27,6 @@ import javafx.scene.paint.Color
 import javafx.stage.FileChooser
 import tornadofx.*
 import java.math.BigDecimal
-import java.nio.charset.Charset
 import java.nio.file.Files
 import java.nio.file.StandardOpenOption
 import java.util.concurrent.ThreadLocalRandom
@@ -34,6 +35,7 @@ class StartView : View("My View") {
   private val model = ChangeableValue(TabModel())
   private val zoomablePane: ZoomablePane = find()
   private val renderer = ModelRenderer(zoomablePane.content, model)
+  private var nodePositions = NodePositions()
 
   override val root = borderpane {
     top {
@@ -261,7 +263,14 @@ class StartView : View("My View") {
             println("load $file")
             if (file!=null) {
               val content = Files.readAllBytes(file.toPath())
-              model.value(TabModelIO.fromJson(String(content, Charsets.UTF_8)))
+              //model.value(TabModel())
+              val (newModel,newPositions) = TabModelIO.fromJson(String(content, Charsets.UTF_8))
+              model.value(newModel)
+              nodePositions = newPositions
+              println("Loaded $nodePositions")
+              nodePositions.forEach { nodeId, pos, size ->
+                UIEvent.moveNode(nodeId,pos,size).fire()
+              }
             }
           }
 
@@ -272,10 +281,16 @@ class StartView : View("My View") {
             val file = fileChooser.showSaveDialog(currentStage)
             println("write to $file")
             if (file!=null) {
-              val json = TabModelIO.asJson(model.value())
+              val json = TabModelIO.asJson(model.value(), nodePositions)
               Files.write(file.toPath(),json.toByteArray(Charsets.UTF_8), StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE)
             }
           }
+        }
+      }
+
+      subscribeEvent<UIEvent> { event ->
+        if (event.eventData is UIEvent.EventData.NodeMoved) {
+          nodePositions = nodePositions.set(event.eventData.id, event.eventData.position, event.eventData.size)
         }
       }
     }

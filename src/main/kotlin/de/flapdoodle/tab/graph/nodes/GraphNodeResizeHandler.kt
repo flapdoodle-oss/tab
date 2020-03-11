@@ -4,13 +4,14 @@ import de.flapdoodle.tab.graph.events.IsMarker
 import de.flapdoodle.tab.graph.events.MappedMouseEvent
 import de.flapdoodle.tab.graph.events.MouseEventHandler
 import de.flapdoodle.tab.graph.events.MouseEventHandlerResolver
+import javafx.geometry.Dimension2D
 import javafx.geometry.Point2D
 import tornadofx.*
 
 class GraphNodeResizeHandler(
     private val resizeMarker: Resize
 ) : MouseEventHandler {
-  var dragStarted: Point2D? = null
+  var dragStarted: Dimension2D? = null
   var exited: Boolean = false
 
   override fun onEvent(mouseEvent: MappedMouseEvent, marker: IsMarker?): MouseEventHandler? {
@@ -19,7 +20,7 @@ class GraphNodeResizeHandler(
       is MappedMouseEvent.Click -> dragStarted = resizeMarker.parent.size()
       is MappedMouseEvent.Drag -> dragStarted?.let { it + mouseEvent.delta }?.apply {
 //        println("should move ${resizeMarker.parent} by ${mouseEvent.delta}")
-        resizeMarker.parent.resizeTo(this.x, this.y)
+        resizeMarker.parent.resizeTo(this.width, this.height)
       }
       is MappedMouseEvent.Release -> dragStarted = null
       is MappedMouseEvent.Exit -> exited = exited || marker == resizeMarker
@@ -36,4 +37,8 @@ class GraphNodeResizeHandler(
     val resolver = MouseEventHandlerResolver.forType(::GraphNodeResizeHandler)
   }
 
+}
+
+private operator fun Dimension2D.plus(delta: Point2D): Dimension2D {
+  return Dimension2D(this.width + delta.x, this.height + delta.y)
 }

@@ -22,12 +22,13 @@ data class EvalExCalculationAdapter(
 
     return Exceptions.returnOnException<BigDecimal, ArithmeticException>(null) {
       return Expression(formula).apply {
-        variableMap.forEach { (name, value) ->
-          setVariable(name, value)
-        }
-      }
-          .eval()
-          .setScale(maxScale)
+            variableMap.forEach { (name, value) ->
+              setVariable(name, value)
+            }
+          }
+          .eval().let {
+            it.setScale(maxScale)
+          }
     }
   }
 }

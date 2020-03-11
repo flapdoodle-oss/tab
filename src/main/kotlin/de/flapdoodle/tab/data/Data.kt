@@ -18,7 +18,7 @@ data class Data(
   }
 
   fun clear(id: ColumnId<out Any>): Data {
-    return copy(columnValues = columnValues + (id to Values(id.type)))
+    return copy(columnValues = columnValues - id)
   }
 
 
@@ -35,6 +35,13 @@ data class Data(
     columnValues.forEach { columnId, values ->
       println("column $columnId -> $values")
     }
+  }
+
+  fun filterUnused(columnIds: Set<ColumnId<out Any>>): Data {
+    if (!columnIds.containsAll(columnValues.keys)) {
+      return copy(columnValues = columnValues.filterKeys { columnIds.contains(it) })
+    } else
+    return this
   }
 
   data class Row(val index: Int, private val map: Map<ColumnId<out Any>, Any?>) {
