@@ -1,7 +1,6 @@
 package de.flapdoodle.tab.graph.nodes.renderer.graph
 
 import de.flapdoodle.tab.data.ColumnId
-import de.flapdoodle.tab.data.Nodes
 import de.flapdoodle.tab.data.NamedColumn
 import de.flapdoodle.tab.data.TabModel
 import de.flapdoodle.tab.data.calculations.CalculationMapping
@@ -10,7 +9,7 @@ import de.flapdoodle.tab.data.calculations.EvalExCalculationAdapter
 import de.flapdoodle.tab.data.graph.ColumnGraph
 import de.flapdoodle.tab.data.nodes.ColumnConnection
 import de.flapdoodle.tab.data.nodes.ConnectableNode
-import de.flapdoodle.tab.data.values.Variable
+import de.flapdoodle.tab.data.values.Input
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import java.math.BigDecimal
@@ -31,7 +30,7 @@ internal class ColumnGraphTest {
     val stringOpSample = ConnectableNode.Calculated("string op",
         calculations = listOf(CalculationMapping(
             calculation = Calculations.Calc_1(
-                a = Variable(String::class, "name"),
+                a = Input.Variable(String::class, "name"),
                 formula = { s -> ">$s<" }
             ),
             column = NamedColumn("nameCol", ColumnId.create())
@@ -40,7 +39,7 @@ internal class ColumnGraphTest {
     val numberOpSample = ConnectableNode.Calculated("add 10",
         calculations = listOf(CalculationMapping(
             calculation = Calculations.Calc_1(
-                a = Variable(Int::class, "x"),
+                a = Input.Variable(Int::class, "x"),
                 formula = { s -> s?.let { it + 10 } }
             ),
             column = NamedColumn("offset", ColumnId.create())
@@ -58,9 +57,9 @@ internal class ColumnGraphTest {
         .add(stringOpSample)
         .add(numberOpSample)
         .add(otherNumSample)
-        .connect(stringOpSample.id, Variable(String::class, "name"), ColumnConnection.ColumnValues(fooColumnId))
-        .connect(numberOpSample.id, Variable(Int::class, "x"), ColumnConnection.ColumnValues(barColumnId))
-        .connect(otherNumSample.id, Variable(BigDecimal::class, "a"), ColumnConnection.ColumnValues(numberColumnId))
+        .connect(stringOpSample.id, Input.Variable(String::class, "name"), ColumnConnection.ColumnValues(fooColumnId))
+        .connect(numberOpSample.id, Input.Variable(Int::class, "x"), ColumnConnection.ColumnValues(barColumnId))
+        .connect(otherNumSample.id, Input.Variable(BigDecimal::class, "a"), ColumnConnection.ColumnValues(numberColumnId))
 
     val graph = ColumnGraph.of(model.nodes, model.nodeConnections)
 

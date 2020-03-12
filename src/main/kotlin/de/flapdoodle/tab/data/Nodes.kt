@@ -7,7 +7,7 @@ import de.flapdoodle.tab.data.nodes.Connections
 import de.flapdoodle.tab.data.nodes.HasColumns
 import de.flapdoodle.tab.data.nodes.HasInputs
 import de.flapdoodle.tab.data.nodes.NodeId
-import de.flapdoodle.tab.data.values.Variable
+import de.flapdoodle.tab.data.values.Input
 
 data class Nodes(
     internal val nodes: Map<NodeId<out ConnectableNode>, ConnectableNode> = linkedMapOf()
@@ -94,7 +94,7 @@ data class Nodes(
     return allColumns.toSet()
   }
 
-  internal fun allInputs(): Map<NodeId<out ConnectableNode>, Set<Variable<out Any>>> {
+  internal fun allInputs(): Map<NodeId<out ConnectableNode>, Set<Input<out Any>>> {
     return nodes.map {
       val node = it.value
       it.key to if (node is HasInputs) {

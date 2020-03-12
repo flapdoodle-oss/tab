@@ -1,10 +1,8 @@
 package de.flapdoodle.tab.data.calculations
 
+import de.flapdoodle.tab.data.values.Input
 import de.flapdoodle.tab.data.values.ValueMap
-import de.flapdoodle.tab.data.values.Variable
-import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import java.math.BigDecimal
 
@@ -25,7 +23,7 @@ internal class EvalExCalculationAdapterTest {
     val calculation = EvalExCalculationAdapter("a*2")
 
     assertThat(calculation.variables())
-        .containsExactlyInAnyOrder(Variable(BigDecimal::class,"a"))
+        .containsExactlyInAnyOrder(Input.Variable(BigDecimal::class,"a"))
   }
 
   @Test
@@ -33,6 +31,6 @@ internal class EvalExCalculationAdapterTest {
     val calculation = EvalExCalculationAdapter("a*2+b")
 
     assertThat(calculation.variables())
-        .containsExactlyInAnyOrder(Variable(BigDecimal::class,"a"), Variable(BigDecimal::class,"b"))
+        .containsExactlyInAnyOrder(Input.Variable(BigDecimal::class,"a"), Input.Variable(BigDecimal::class,"b"))
   }
 }

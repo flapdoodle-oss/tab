@@ -1,7 +1,7 @@
 package de.flapdoodle.tab.data.calculations
 
 import com.udojava.evalex.Expression
-import de.flapdoodle.tab.data.values.Variable
+import de.flapdoodle.tab.data.values.Input
 import de.flapdoodle.tab.extensions.Exceptions
 import java.lang.ArithmeticException
 import java.math.BigDecimal
@@ -11,7 +11,7 @@ data class EvalExCalculationAdapter(
 ) : Calculation<BigDecimal> {
 
   private val expression = Expression(formula)
-  private val variables = expression.usedVariables.map { Variable(BigDecimal::class, it) }.toSet()
+  private val variables = expression.usedVariables.map { Input.Variable(BigDecimal::class, it) }.toSet()
 
   override fun variables() = variables
   override fun calculate(lookup: Calculation.VariableLookup): BigDecimal? {

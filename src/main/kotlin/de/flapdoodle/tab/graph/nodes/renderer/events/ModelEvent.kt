@@ -1,16 +1,15 @@
 package de.flapdoodle.tab.graph.nodes.renderer.events
 
 import de.flapdoodle.tab.data.ColumnId
-import de.flapdoodle.tab.data.Nodes
 import de.flapdoodle.tab.data.NamedColumn
 import de.flapdoodle.tab.data.TabModel
 import de.flapdoodle.tab.data.calculations.Calculation
 import de.flapdoodle.tab.data.nodes.ColumnConnection
 import de.flapdoodle.tab.data.nodes.ConnectableNode
 import de.flapdoodle.tab.data.nodes.NodeId
-import de.flapdoodle.tab.data.values.Variable
+import de.flapdoodle.tab.data.values.Input
+import de.flapdoodle.tab.graph.nodes.connections.In
 import de.flapdoodle.tab.graph.nodes.connections.Out
-import de.flapdoodle.tab.graph.nodes.connections.VariableInput
 import tornadofx.*
 import java.math.BigDecimal
 import kotlin.reflect.KClass
@@ -22,13 +21,13 @@ data class ModelEvent(
   companion object {
     fun <T : Any> connect(
         nodeId: NodeId<out ConnectableNode>,
-        variable: Variable<T>,
+        variable: Input<T>,
         columnConnection: ColumnConnection<T>): ModelEvent {
       return EventData.Connect(nodeId, variable, columnConnection).asEvent()
     }
 
     fun <T : Any> connect(
-        input: VariableInput<T>,
+        input: In<T>,
         marker: Out.ColumnValues<out Any>
     ): ModelEvent? {
       return if (input.variable.type == marker.columnId.type)
@@ -145,7 +144,7 @@ data class ModelEvent(
 
     data class Connect<T : Any>(
         val nodeId: NodeId<out ConnectableNode>,
-        val variable: Variable<T>,
+        val variable: Input<T>,
         val columnConnection: ColumnConnection<T>
     ) : EventData() {
 

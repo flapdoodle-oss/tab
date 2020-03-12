@@ -1,12 +1,10 @@
 package de.flapdoodle.tab.data.nodes
 
 import de.flapdoodle.tab.data.ColumnId
-import de.flapdoodle.tab.data.Data
 import de.flapdoodle.tab.data.NamedColumn
 import de.flapdoodle.tab.data.calculations.Calculation
 import de.flapdoodle.tab.data.calculations.CalculationMapping
-import de.flapdoodle.tab.data.calculations.VariableMap
-import de.flapdoodle.tab.data.values.Variable
+import de.flapdoodle.tab.data.values.Input
 
 sealed class ConnectableNode {
   abstract val id: NodeId<out ConnectableNode>
@@ -40,7 +38,7 @@ sealed class ConnectableNode {
   ): ConnectableNode(), HasColumns, HasInputs, HasCalculations {
 
     override fun columns() = calculations.map(CalculationMapping<out Any>::column)
-    override fun variables(): Set<Variable<out Any>> {
+    override fun variables(): Set<Input<out Any>> {
       return calculations
           .flatMap { it.calculation.variables() }
           .toSet()

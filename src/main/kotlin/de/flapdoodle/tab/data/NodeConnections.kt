@@ -4,13 +4,13 @@ import de.flapdoodle.tab.data.nodes.ColumnConnection
 import de.flapdoodle.tab.data.nodes.ConnectableNode
 import de.flapdoodle.tab.data.nodes.Connections
 import de.flapdoodle.tab.data.nodes.NodeId
-import de.flapdoodle.tab.data.values.Variable
+import de.flapdoodle.tab.data.values.Input
 
 data class NodeConnections(
     internal val connections: Map<NodeId<out ConnectableNode>, Connections> = emptyMap()
 ) {
 
-  fun <T : Any> connect(id: NodeId<out ConnectableNode>, variable: Variable<T>, columnConnection: ColumnConnection<T>): NodeConnections {
+  fun <T : Any> connect(id: NodeId<out ConnectableNode>, variable: Input<T>, columnConnection: ColumnConnection<T>): NodeConnections {
     return copy(connections = connections + (id to (connections[id] ?: Connections()).add(variable, columnConnection)))
   }
 
@@ -58,7 +58,7 @@ data class NodeConnections(
     return this
   }
 
-  private fun filterInputs(allInputs: Map<NodeId<out ConnectableNode>, Set<Variable<out Any>>>): NodeConnections {
+  private fun filterInputs(allInputs: Map<NodeId<out ConnectableNode>, Set<Input<out Any>>>): NodeConnections {
     val changed = connections.mapValues {
       val allVariables = allInputs[it.key]
       require(allVariables!=null) { "is null"}

@@ -7,7 +7,7 @@ import de.flapdoodle.tab.data.NodeConnections
 import de.flapdoodle.tab.data.Nodes
 import de.flapdoodle.tab.data.nodes.ConnectableNode
 import de.flapdoodle.tab.data.nodes.Connections
-import de.flapdoodle.tab.data.values.Variable
+import de.flapdoodle.tab.data.values.Input
 import org.jgrapht.graph.DefaultDirectedGraph
 import org.jgrapht.graph.DefaultEdge
 
@@ -83,7 +83,7 @@ data class ColumnGraph(
       return ColumnGraph(wrapper.build())
     }
 
-    private fun mappedSource(connections: Connections, variable: Variable<out Any>): ColumnId<out Any>? {
+    private fun mappedSource(connections: Connections, variable: Input<out Any>): ColumnId<out Any>? {
       return connections.variableMappings.find { it.variable == variable }?.columnConnection?.columnId
     }
 

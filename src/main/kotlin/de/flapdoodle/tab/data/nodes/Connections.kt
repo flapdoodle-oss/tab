@@ -1,12 +1,12 @@
 package de.flapdoodle.tab.data.nodes
 
 import de.flapdoodle.tab.data.ColumnId
-import de.flapdoodle.tab.data.values.Variable
+import de.flapdoodle.tab.data.values.Input
 
 data class Connections(
     val variableMappings: List<VariableMapping<out Any>> = emptyList()
 ) {
-  fun <T : Any> add(variable: Variable<T>, columnConnection: ColumnConnection<T>): Connections {
+  fun <T : Any> add(variable: Input<T>, columnConnection: ColumnConnection<T>): Connections {
     require(!variableMappings.any { it.variable == variable }) { "$variable already connected" }
     return copy(variableMappings = variableMappings + VariableMapping(columnConnection, variable))
   }
@@ -42,7 +42,7 @@ data class Connections(
     return this
   }
 
-  fun filterInputs(allVariables: Set<Variable<out Any>>): Connections {
+  fun filterInputs(allVariables: Set<Input<out Any>>): Connections {
     val filtered = variableMappings.filter {
       allVariables.contains(it.variable)
     }

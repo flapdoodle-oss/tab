@@ -5,8 +5,8 @@ import de.flapdoodle.tab.graph.events.IsMarker
 import de.flapdoodle.tab.graph.events.MappedMouseEvent
 import de.flapdoodle.tab.graph.events.MouseEventHandler
 import de.flapdoodle.tab.graph.events.MouseEventHandlerResolver
+import de.flapdoodle.tab.graph.nodes.connections.In
 import de.flapdoodle.tab.graph.nodes.connections.Out
-import de.flapdoodle.tab.graph.nodes.connections.VariableInput
 import de.flapdoodle.tab.graph.nodes.renderer.events.ConnectEvent
 import de.flapdoodle.tab.graph.nodes.renderer.events.ExplainEvent
 import de.flapdoodle.tab.graph.nodes.renderer.events.ModelEvent
@@ -16,7 +16,7 @@ import javafx.scene.input.MouseButton
 object ConnectNodesHandler {
 
   class OnInput(
-      val input: VariableInput<out Any>
+      val input: In<out Any>
   ) : MouseEventHandler {
     var dragStarted: Point2D? = null
     var exited: Boolean = false
@@ -93,7 +93,7 @@ object ConnectNodesHandler {
           mouseEvent.startFullDrag()
         }
         is MappedMouseEvent.DragEnter -> {
-          if (marker is VariableInput<out Any>) {
+          if (marker is In<out Any>) {
 //            ExplainEvent.columnselected(marker.columnId).fire()
           }
         }
@@ -106,7 +106,7 @@ object ConnectNodesHandler {
           }
         }
         is MappedMouseEvent.DragRelease -> {
-          if (marker is VariableInput<out Any>) {
+          if (marker is In<out Any>) {
             ModelEvent.connect(marker, output)?.fire()
           }
           dragStarted = null

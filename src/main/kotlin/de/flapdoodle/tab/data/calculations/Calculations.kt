@@ -1,13 +1,14 @@
 package de.flapdoodle.tab.data.calculations
 
-import de.flapdoodle.tab.data.values.Variable
+import de.flapdoodle.tab.data.values.Input
+
 
 // mehrere berechnungen pro zeile
 // so kommen mehrere spalten raus..
 sealed class Calculations<T : Any> : Calculation<T> {
 
   class Calc_1<A : Any, T : Any>(
-      val a: Variable<A>,
+      val a: Input.Variable<A>,
       val formula: (A?) -> T?
   ) : Calculations<T>() {
     override fun calculate(lookup: Calculation.VariableLookup): T? {
@@ -18,8 +19,8 @@ sealed class Calculations<T : Any> : Calculation<T> {
   }
 
   class Calc_2<A : Any, B : Any, T : Any>(
-      val a: Variable<A>,
-      val b: Variable<B>,
+      val a: Input.Variable<A>,
+      val b: Input.Variable<B>,
       val formula: (A?, B?) -> T?
   ) : Calculations<T>() {
     override fun calculate(lookup: Calculation.VariableLookup): T? {

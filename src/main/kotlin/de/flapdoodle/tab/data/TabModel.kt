@@ -8,7 +8,7 @@ import de.flapdoodle.tab.data.nodes.Connections
 import de.flapdoodle.tab.data.nodes.HasColumns
 import de.flapdoodle.tab.data.nodes.NodeId
 import de.flapdoodle.tab.data.nodes.VariableMapping
-import de.flapdoodle.tab.data.values.Variable
+import de.flapdoodle.tab.data.values.Input
 
 data class TabModel(
     val nodes: Nodes = Nodes(),
@@ -54,7 +54,7 @@ data class TabModel(
     return applyNodeChanges { nodes -> nodes.add(node) }
   }
 
-  fun <T : Any> connect(id: NodeId<out ConnectableNode>, variable: Variable<T>, columnConnection: ColumnConnection<T>): TabModel {
+  fun <T : Any> connect(id: NodeId<out ConnectableNode>, variable: Input<T>, columnConnection: ColumnConnection<T>): TabModel {
     return applyConnectionChanges {
       it.connect(id,variable,columnConnection)
     }

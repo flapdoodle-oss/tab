@@ -5,7 +5,7 @@ import de.flapdoodle.tab.data.TabModel
 import de.flapdoodle.tab.data.nodes.ColumnConnection
 import de.flapdoodle.tab.data.nodes.ConnectableNode
 import de.flapdoodle.tab.data.nodes.NodeId
-import de.flapdoodle.tab.data.values.Variable
+import de.flapdoodle.tab.data.values.Input
 import de.flapdoodle.tab.extensions.centerInTop
 import de.flapdoodle.tab.extensions.findAllInTree
 import de.flapdoodle.tab.extensions.property
@@ -65,7 +65,7 @@ class ModelRenderer(
       }.toMap()
 
       val ins = parent.findAllInTree(InNode::class).map {
-        it.variableInput.variable to parent.centerInTop(it)
+        it.input.variable to parent.centerInTop(it)
       }.toMap()
 
       id to ConnectorPositions(out, ins)
@@ -75,7 +75,7 @@ class ModelRenderer(
 
   data class ConnectorPositions(
       val output: Map<Out<out Any>, Binding<Point2D>>,
-      val input: Map<Variable<out Any>, Binding<Point2D>>
+      val input: Map<Input<out Any>, Binding<Point2D>>
   ) {
     operator fun get(connection: ColumnConnection<out Any>): Binding<Point2D> {
       return when (connection) {
@@ -84,7 +84,7 @@ class ModelRenderer(
       }
     }
 
-    operator fun get(variable: Variable<out Any>): Binding<Point2D> {
+    operator fun get(variable: Input<out Any>): Binding<Point2D> {
       val pos = input[variable]
       require(pos != null) { " could not find pos for $variable in $input" }
       return pos

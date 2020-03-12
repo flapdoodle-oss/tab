@@ -9,7 +9,7 @@ import de.flapdoodle.tab.data.calculations.Calculations
 import de.flapdoodle.tab.data.calculations.EvalExCalculationAdapter
 import de.flapdoodle.tab.data.nodes.ColumnConnection
 import de.flapdoodle.tab.data.nodes.ConnectableNode
-import de.flapdoodle.tab.data.values.Variable
+import de.flapdoodle.tab.data.values.Input
 import de.flapdoodle.tab.extensions.fire
 import de.flapdoodle.tab.extensions.subscribeEvent
 import de.flapdoodle.tab.graph.ZoomablePane
@@ -166,7 +166,7 @@ class StartView : View("My View") {
         val stringOpSample = ConnectableNode.Calculated("string op",
             calculations = listOf(CalculationMapping(
                 calculation = Calculations.Calc_1(
-                    a = Variable(String::class, "name"),
+                    a = Input.Variable(String::class, "name"),
                     formula = { s -> ">$s<" }
                 ),
                 column = NamedColumn("nameCol", ColumnId.create())
@@ -193,9 +193,9 @@ class StartView : View("My View") {
             .add(stringOpSample)
 //            .add(numberOpSample)
             .add(otherNumSample)
-            .connect(stringOpSample.id, Variable(String::class, "name"), ColumnConnection.ColumnValues(fooColumnId))
+            .connect(stringOpSample.id, Input.Variable(String::class, "name"), ColumnConnection.ColumnValues(fooColumnId))
 //            .connect(numberOpSample.id, Variable(Int::class, "x"), ColumnConnection.ColumnValues(barColumnId))
-            .connect(otherNumSample.id, Variable(BigDecimal::class, "a"), ColumnConnection.ColumnValues(numberColumnId))
+            .connect(otherNumSample.id, Input.Variable(BigDecimal::class, "a"), ColumnConnection.ColumnValues(numberColumnId))
       }
 
       changeData { data ->

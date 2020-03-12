@@ -8,7 +8,7 @@ import de.flapdoodle.tab.data.TabModel
 import de.flapdoodle.tab.data.calculations.EvalExCalculationAdapter
 import de.flapdoodle.tab.data.nodes.ColumnConnection
 import de.flapdoodle.tab.data.nodes.ConnectableNode
-import de.flapdoodle.tab.data.values.Variable
+import de.flapdoodle.tab.data.values.Input
 import de.flapdoodle.tab.persist.PersistableTabModel.Companion.from
 import de.flapdoodle.tab.persist.adapter.BigDecimalAdapter
 import org.assertj.core.api.Assertions.assertThat
@@ -38,7 +38,7 @@ internal class PersistableTabModelTest {
     val model = TabModel()
         .add(testTable)
         .add(calcTable)
-        .connect(calcTable.id, Variable(BigDecimal::class,"a"), ColumnConnection.ColumnValues(numberColumnId))
+        .connect(calcTable.id, Input.Variable(BigDecimal::class,"a"), ColumnConnection.ColumnValues(numberColumnId))
         .applyDataChanges { data -> data.change(numberColumnId,2, BigDecimal.valueOf(123.456789)) }
 
 

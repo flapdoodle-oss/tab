@@ -2,8 +2,9 @@ package de.flapdoodle.tab.graph.nodes.renderer
 
 import de.flapdoodle.tab.data.nodes.ConnectableNode
 import de.flapdoodle.tab.data.nodes.HasInputs
+import de.flapdoodle.tab.data.values.Input
+import de.flapdoodle.tab.graph.nodes.connections.In
 import de.flapdoodle.tab.graph.nodes.connections.InNode
-import de.flapdoodle.tab.graph.nodes.connections.VariableInput
 import de.flapdoodle.tab.lazy.ChangedListener
 import de.flapdoodle.tab.lazy.LazyValue
 import de.flapdoodle.tab.lazy.map
@@ -37,7 +38,10 @@ class VariableInputsNode<T>(
     children.syncFrom(inputs) { it ->
       println("XX VariableInputsNode: syncFrom $it")
       val (id, v) = it!!
-      InNode(VariableInput(id, v))
+      when (v) {
+        is Input.Variable<out Any> -> InNode(In.Value(id, v))
+        is Input.List<out Any> -> InNode(In.List(id, v))
+      }
     }
   }
 }
