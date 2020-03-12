@@ -1,9 +1,13 @@
 package de.flapdoodle.tab.graph.nodes.renderer.modals
 
+import de.flapdoodle.tab.data.nodes.ConnectableNode
 import de.flapdoodle.tab.data.nodes.NodeId
+import de.flapdoodle.tab.extensions.fire
+import de.flapdoodle.tab.graph.nodes.renderer.events.ModelEvent
 import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.property.SimpleStringProperty
 import javafx.scene.Parent
+import javafx.scene.control.ButtonBar
 import tornadofx.*
 
 class AddNodeModalView : View() {
@@ -29,20 +33,39 @@ class AddNodeModalView : View() {
           label("Name")
           textfield(model.name).required()
         }
-        button("Create") {
-          enableWhen(model.valid)
+        buttonbar {
+          button("Create", ButtonBar.ButtonData.OK_DONE) {
+            enableWhen(model.valid)
 
-          action {
-            println("could do it")
+            action {
+              println("could do it")
+              model.commit {
+                val type = model.type.value
+                require(type != null) { "how can we get here?" }
+                println("create: $type")
+
+                val node: ConnectableNode = when (type) {
+                  NodeType.Table -> ConnectableNode.Table(
+                      name = model.name.value
+                  )
+                  NodeType.Calculation -> ConnectableNode.Calculated(
+                      name = model.name.value
+                  )
+                  NodeType.Aggregation -> throw IllegalArgumentException("not implemented: $type")
+                }
+
+                ModelEvent.addNode(node).fire()
+                close()
+              }
+            }
           }
-        }
-      }
-    }
 
-    bottom {
-      button("close") {
-        action {
-          close()
+          button("Abort", ButtonBar.ButtonData.CANCEL_CLOSE) {
+            action {
+              model.rollback(model.type, model.name)
+              close()
+            }
+          }
         }
       }
     }

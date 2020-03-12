@@ -42,6 +42,10 @@ data class ModelEvent(
       return EventData.DeleteColumn(nodeId, columnId).asEvent()
     }
 
+    fun addNode(node: ConnectableNode): ModelEvent {
+      return EventData.AddNode(node).asEvent()
+    }
+
     fun deleteTable(nodeId: NodeId<*>): ModelEvent {
       return EventData.DeleteTable(nodeId).asEvent()
     }
@@ -115,6 +119,16 @@ data class ModelEvent(
           nodes.changeNode(nodeId) {
             it.remove(columnId)
           }
+        }
+      }
+    }
+
+    data class AddNode(
+        val table: ConnectableNode
+    ): EventData() {
+      override fun applyTo(model: TabModel): TabModel {
+        return model.applyNodeChanges { nodes ->
+          nodes.add(table)
         }
       }
     }
