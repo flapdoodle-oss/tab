@@ -1,14 +1,12 @@
 package de.flapdoodle.tab.lazy
 
 import de.flapdoodle.tab.bindings.Registration
-import de.flapdoodle.tab.observable.AObservable
-import de.flapdoodle.tab.observable.KObservableBindings
 import javafx.collections.ListChangeListener
 import javafx.collections.ObservableList
 import javafx.collections.WeakListChangeListener
 import javafx.scene.Node
 
-fun <S : Any, D : Node> ObservableList<Node>.bindFrom(src: LazyValue<List<S>>, map: (S) -> D): Registration {
+fun <S : Any, D : Any> ObservableList<D>.bindFrom(src: LazyValue<List<S>>, map: (S) -> D): Registration {
   return LazyBindings.bindFrom(src, this, map)
 }
 
@@ -21,10 +19,10 @@ fun <S: Any> ObservableList<S>.asAObservable(): LazyValue<List<S>> {
 }
 
 object LazyBindings {
-  fun <S : Any, D : Node> bindFrom(src: LazyValue<List<S>>, children: ObservableList<Node>, map: (S) -> D): Registration {
-    val listener = NodeFactoryChangeListener(src, children, map)
+  fun <S : Any, D : Any> bindFrom(src: LazyValue<List<S>>, children: ObservableList<D>, map: (S) -> D): Registration {
+    val listener = FactoryTrackingChangeListener(src, children, map)
     val weakListener = WeakChangeListenerDelegate(listener)
-    val keepReferenceListener = KeepReference<Node>(listener)
+    val keepReferenceListener = KeepReference<Any>(listener)
 
     src.addListener(weakListener)
     children.addListener(keepReferenceListener)
@@ -65,9 +63,9 @@ object LazyBindings {
     return LazyValue.Wrapper(ret, listener)
   }
 
-  class NodeFactoryChangeListener<S : Any, D : Node>(
+  class FactoryTrackingChangeListener<S : Any, D : Any>(
       private val src: LazyValue<List<S>>,
-      private val children: ObservableList<Node>,
+      private val children: ObservableList<D>,
       private val map: (S) -> D
   ) : ChangedListener<List<S>> {
 

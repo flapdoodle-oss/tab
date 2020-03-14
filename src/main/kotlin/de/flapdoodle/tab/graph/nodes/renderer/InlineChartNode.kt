@@ -4,16 +4,10 @@ import de.flapdoodle.tab.data.Data
 import de.flapdoodle.tab.data.NamedColumn
 import de.flapdoodle.tab.data.nodes.ConnectableNode
 import de.flapdoodle.tab.data.nodes.HasColumns
-import de.flapdoodle.tab.data.values.Values
 import de.flapdoodle.tab.lazy.LazyValue
 import de.flapdoodle.tab.lazy.asListBinding
 import de.flapdoodle.tab.lazy.map
-import de.flapdoodle.tab.lazy.mapList
 import de.flapdoodle.tab.lazy.merge
-import de.flapdoodle.tab.lazy.syncFrom
-import javafx.collections.FXCollections
-import javafx.collections.ObservableList
-import javafx.scene.Parent
 import javafx.scene.chart.CategoryAxis
 import javafx.scene.chart.LineChart
 import javafx.scene.chart.NumberAxis
@@ -39,13 +33,21 @@ class InlineChartNode<T>(
 
   private val chartData = columnValues.map { list ->
     val max = list.map { (column, values) -> values.size() }.max() ?: 0
-    list.map { (column, values) ->
-      val list = (0 until max).map { XYChart.Data<String, Number>("$it", values[it]) }
-      XYChart.Series<String, Number>(column.name, list.toObservable())
+    list.mapNotNull { (column, values) ->
+      val v = (0 until max).map { values[it] }
+      val notNull = v.mapNotNull { it }
+      if (notNull.size == v.size) {
+        XYChart.Series(column.name, notNull.mapIndexed { index, it ->
+          XYChart.Data<String, Number>("${index + 1}", it)
+        }.toObservable())
+      } else null
     }
   }.asListBinding()
 
   override val root = LineChart(CategoryAxis(), NumberAxis()).apply {
+//    this.data.bindFrom(columnValues) {
+//
+//    }
     this.data = chartData
   }
 }
