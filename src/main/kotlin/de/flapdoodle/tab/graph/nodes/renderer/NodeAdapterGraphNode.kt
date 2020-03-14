@@ -142,10 +142,6 @@ class NodeAdapterGraphNode(
             ),
             configuration = CalculationsNode(
                 node = nodeProperty
-            ),
-            additional = ChartNode(
-                node = nodeProperty,
-                data = dataProperty
             )
         )
       }

@@ -96,7 +96,16 @@ class ColumnsNode<T>(
       }
     }
 
-    this += table
+    tabpane {
+      tab("Data") {
+        isClosable = false
+        this += table
+      }
+      tab("Chart") {
+        isClosable = false
+        this += InlineChartNode(node,data)
+      }
+    }
 
 //    val table = tableview(rows) {
 //      isEditable = editable

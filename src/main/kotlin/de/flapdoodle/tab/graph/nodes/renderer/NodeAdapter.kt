@@ -22,8 +22,18 @@ class NodeAdapter(
         }
       }
     }
+    val contentFragment = content
+
     center {
       this += content
+//      tabpane {
+//        tab("Data") {
+//          isClosable = false
+//
+//          this += contentFragment
+////          content += contentFragment
+//        }
+//      }
     }
     if (inputs != null) {
       left {
