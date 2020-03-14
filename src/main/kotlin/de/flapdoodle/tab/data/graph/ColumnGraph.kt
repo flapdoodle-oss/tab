@@ -76,6 +76,15 @@ data class ColumnGraph(
                 wrapper.add(dest, mappedSources)
               }
             }
+            is ConnectableNode.Aggregated -> {
+              node.aggregations().forEach { aggregation ->
+                val dest = aggregation.column.id
+                val mappedSource = mappedSource(connections, aggregation.aggregation.variable())
+                if (mappedSource!=null) {
+                  wrapper.add(dest, listOf(mappedSource))
+                }
+              }
+            }
             else -> throw IllegalArgumentException("not implemented: $node")
           }
         }

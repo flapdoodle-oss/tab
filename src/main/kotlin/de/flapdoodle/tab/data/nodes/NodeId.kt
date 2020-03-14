@@ -12,6 +12,10 @@ sealed class NodeId<T : ConnectableNode> {
       override val id: Int = nextIdFor(ConnectableNode.Table::class)
   ) : NodeId<ConnectableNode.Table>()
 
+  data class AggregatedId(
+      override val id: Int = nextIdFor(ConnectableNode.Aggregated::class)
+  ) : NodeId<ConnectableNode.Aggregated>()
+
   data class CalculatedId(
       override val id: Int = nextIdFor(ConnectableNode.Calculated::class)
   ) : NodeId<ConnectableNode.Calculated>()

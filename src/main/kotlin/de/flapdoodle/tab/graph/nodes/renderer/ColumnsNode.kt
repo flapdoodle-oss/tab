@@ -48,7 +48,7 @@ class ColumnsNode<T>(
     node: LazyValue<T>,
     data: LazyValue<Data>,
     private val columnHeader: ((TableColumn<Data.Row, *>) -> Fragment)? = null,
-    private val columnFooter: (TableColumn<Data.Row, *>) -> Fragment,
+    private val columnFooter: ((TableColumn<Data.Row, *>) -> Fragment)? = null,
     private val editable: Boolean = false,
     private val menu: (ContextMenu.() -> Unit)? = null
 ) : Fragment()
@@ -105,9 +105,12 @@ class ColumnsNode<T>(
 //      columns.syncFrom(columnList) { tableColumn(it) }
 //    }
 
-    hbox {
-      children.syncFrom(table.columns.asAObservable()) {
-        columnFooter(it!!).root
+    if (columnFooter!=null) {
+      hbox {
+        val factory = columnFooter
+        children.syncFrom(table.columns.asAObservable()) {
+          factory(it!!).root
+        }
       }
     }
   }

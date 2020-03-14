@@ -53,14 +53,14 @@ data class PersistableValues(
     private fun stringToPersistable(source: Values<String>): PersistableValues {
       return PersistableValues(
           type = TypeClassEnum.typeOf(VariableOrColumnType::class, source.type),
-          values = (0 until source.size()).map { source[it] }
+          values = source.asList()
       )
     }
 
     private fun bigDecimalToPersistable(source: Values<BigDecimal>): PersistableValues {
       return PersistableValues(
           type = TypeClassEnum.typeOf(VariableOrColumnType::class, source.type),
-          values = (0 until source.size()).map { source[it]?.toString() }
+          values = source.asList().map { it?.toString() }
       )
     }
   }

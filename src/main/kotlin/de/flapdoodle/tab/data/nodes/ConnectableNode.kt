@@ -2,6 +2,8 @@ package de.flapdoodle.tab.data.nodes
 
 import de.flapdoodle.tab.data.ColumnId
 import de.flapdoodle.tab.data.NamedColumn
+import de.flapdoodle.tab.data.calculations.Aggregation
+import de.flapdoodle.tab.data.calculations.AggregationMapping
 import de.flapdoodle.tab.data.calculations.Calculation
 import de.flapdoodle.tab.data.calculations.CalculationMapping
 import de.flapdoodle.tab.data.values.Input
@@ -21,13 +23,32 @@ sealed class ConnectableNode {
     fun add(id: ColumnId<*>, name: String): Table {
       require(!columns.any { it.id == id }) { "column already added" }
 
-      return copy(columns = columns + NamedColumn(name,id))
+      return copy(columns = columns + NamedColumn(name, id))
     }
 
-    fun remove(id: ColumnId<*>): ConnectableNode {
+    fun remove(id: ColumnId<*>): Table {
       require(columns.any { it.id == id }) { "column not found" }
 
       return copy(columns = columns.filter { it.id != id })
+    }
+  }
+
+  data class Aggregated(
+      override val name: String,
+      override val id: NodeId.AggregatedId = NodeId.AggregatedId(),
+      private val aggregations: List<AggregationMapping<out Any>> = emptyList()
+  ) : ConnectableNode(), HasColumns, HasInputs {
+    override fun columns() = aggregations.map(AggregationMapping<out Any>::column)
+    override fun variables(): Set<Input<out Any>> {
+      return aggregations
+          .map { it.aggregation.variable() }
+          .toSet()
+    }
+
+    fun aggregations() = aggregations
+
+    fun <T : Any> add(column: NamedColumn<T>, aggregation: Aggregation<T>): Aggregated {
+      return copy(aggregations = aggregations + AggregationMapping(aggregation, column))
     }
   }
 
@@ -35,7 +56,7 @@ sealed class ConnectableNode {
       override val name: String,
       override val id: NodeId.CalculatedId = NodeId.CalculatedId(),
       private val calculations: List<CalculationMapping<out Any>> = emptyList()
-  ): ConnectableNode(), HasColumns, HasInputs, HasCalculations {
+  ) : ConnectableNode(), HasColumns, HasInputs, HasCalculations {
 
     override fun columns() = calculations.map(CalculationMapping<out Any>::column)
     override fun variables(): Set<Input<out Any>> {
@@ -46,7 +67,7 @@ sealed class ConnectableNode {
 
     override fun calculations() = calculations
 
-    fun <T: Any> changeCalculation(destination: NamedColumn<T>, calculation: Calculation<T>): Calculated {
+    fun <T : Any> changeCalculation(destination: NamedColumn<T>, calculation: Calculation<T>): Calculated {
       return copy(calculations = calculations.map {
         if (it.column == destination) {
           (it as CalculationMapping<T>).copy(calculation = calculation)
@@ -56,29 +77,9 @@ sealed class ConnectableNode {
       })
     }
 
-    fun <T: Any> add(column: NamedColumn<T>, calculation: Calculation<T>): ConnectableNode {
+    fun <T : Any> add(column: NamedColumn<T>, calculation: Calculation<T>): Calculated {
       return copy(calculations = calculations + CalculationMapping(calculation, column))
     }
-
-//    fun calculate(data: Data, variableMap: VariableMap): Data {
-//      var currentData = data
-//
-////      val variableMap = VariableMap.variableMap(currentData, connections)
-//
-//      calculations.forEach {
-//        val variables = it.calculation.variables()
-//        if (variableMap.isValidFor(variables)) {
-//          val size = variableMap.size(variables)
-//          (0 until size).forEach { index ->
-//            val result = it.calculation.calculate(variableMap.lookupFor(index))
-//            currentData = currentData.change(it.column.id, index, result)
-//          }
-//        } else {
-//          currentData = currentData.clear(it.column.id)
-//        }
-//      }
-//      return currentData
-//    }
 
   }
 }

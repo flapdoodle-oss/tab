@@ -3,6 +3,7 @@ package de.flapdoodle.tab.data.calculation
 import de.flapdoodle.tab.data.Data
 import de.flapdoodle.tab.data.NodeConnections
 import de.flapdoodle.tab.data.Nodes
+import de.flapdoodle.tab.data.calculations.ListMap
 import de.flapdoodle.tab.data.calculations.VariableMap
 import de.flapdoodle.tab.data.graph.ColumnGraph
 import de.flapdoodle.tab.data.nodes.ConnectableNode
@@ -17,6 +18,7 @@ object Calculation {
       when (node) {
         is ConnectableNode.Table -> node.columns().map { it.id to node }
         is ConnectableNode.Calculated -> node.calculations().map { it.column.id to node }
+        is ConnectableNode.Aggregated -> node.columns().map { it.id to node }
       }
     }.toMap()
 
@@ -29,6 +31,17 @@ object Calculation {
           currentData = node.calculations()
               .find { it.column.id==id }
               ?.calculate(currentData,variableMap) ?: currentData
+        }
+        is ConnectableNode.Table -> {
+          // data already there
+        }
+        is ConnectableNode.Aggregated -> {
+          val connections = nodeConnections.connections(node.id)?.variableMappings ?: emptyList()
+          val listMap = ListMap.variableMap(currentData, connections)
+
+          currentData = node.aggregations()
+              .find { it.column.id==id }
+              ?.aggregate(currentData,listMap) ?: currentData
         }
       }
     }

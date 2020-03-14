@@ -8,6 +8,7 @@ import de.flapdoodle.tab.extensions.subscribeEvent
 import de.flapdoodle.tab.graph.nodes.AbstractGraphNode
 import de.flapdoodle.tab.graph.nodes.renderer.events.ModelEvent
 import de.flapdoodle.tab.graph.nodes.renderer.events.UIEvent
+import de.flapdoodle.tab.graph.nodes.renderer.modals.AddAggregationModalView
 import de.flapdoodle.tab.graph.nodes.renderer.modals.AddCalculationModalView
 import de.flapdoodle.tab.graph.nodes.renderer.modals.AddColumnModalView
 import de.flapdoodle.tab.lazy.LazyValue
@@ -35,6 +36,7 @@ class NodeAdapterGraphNode(
       val node = when (id) {
         is NodeId.TableId -> tableNode(id, nodesProperty, dataProperty)
         is NodeId.CalculatedId -> calculated(id, nodesProperty, dataProperty)
+        is NodeId.AggregatedId -> aggregated(id, nodesProperty, dataProperty)
       }
 
 //      val x = ThreadLocalRandom.current().nextDouble(0.0, 400.0)
@@ -140,9 +142,52 @@ class NodeAdapterGraphNode(
             ),
             configuration = CalculationsNode(
                 node = nodeProperty
+            ),
+            additional = ChartNode()
+        )
+      }
+    }
+
+    private fun aggregated(
+        id: NodeId.AggregatedId,
+        nodesProperty: LazyValue<Nodes>,
+        dataProperty: LazyValue<Data>
+    ): NodeAdapterGraphNode {
+      val nodeProperty = nodesProperty.mapNonNull { m ->
+        println("XX NodeAdapterGraphNode: node for $id")
+        m?.find(id)
+      }
+
+//      nodeProperty.onChange {
+//        println("XX NodeAdapterGraphNode(calculated): nodeProperty changed to $it")
+//      }
+
+      return NodeAdapterGraphNode {
+        NodeAdapter(
+            content = ColumnsNode(
+                node = nodeProperty,
+                data = dataProperty,
+                menu = {
+                  item("Add Aggregation").action {
+                    AddAggregationModalView.openModalWith(id)
+                  }
+                  item("Delete Table").action {
+                    ModelEvent.deleteTable(id).fire()
+                  }
+                }
+            ),
+            outputs = ColumnOutputsNode(
+                node = nodeProperty
+            ),
+            inputs = VariableInputsNode(
+                node = nodeProperty
             )
+//            configuration = CalculationsNode(
+//                node = nodeProperty
+//            )
         )
       }
     }
   }
+
 }

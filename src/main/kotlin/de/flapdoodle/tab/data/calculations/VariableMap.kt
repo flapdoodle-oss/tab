@@ -7,11 +7,16 @@ import de.flapdoodle.tab.data.values.Input
 import de.flapdoodle.tab.data.values.Values
 
 data class VariableMap(
-    private val map: Map<Input.Variable<out Any>, Values<Any>>
+    private val map: Map<Input.Variable<out Any>, Values<Any>>,
+    private val isSingleValue: Set<Input.Variable<out Any>>
 ) {
 
   fun isValidFor(variables: Set<Input.Variable<out Any>>): Boolean {
     return map.keys.containsAll(variables)
+  }
+
+  fun areSingleValues(variables: Set<Input.Variable<out Any>>): Boolean {
+    return isSingleValue.containsAll(variables)
   }
 
   fun size(variables: Set<Input.Variable<out Any>>): Int {
@@ -25,18 +30,30 @@ data class VariableMap(
     return object : Calculation.VariableLookup {
       override fun <T : Any> get(variable: Input.Variable<T>): T? {
         @Suppress("UNCHECKED_CAST")
-        return (map[variable] as Values<T>)[index]
+        val values = map[variable] as Values<T>
+        return if (isSingleValue.contains(variable))
+          values[0]
+        else
+          values[index]
       }
     }
   }
 
   companion object {
     fun variableMap(data: Data, variables: List<VariableMapping<out Any>>): VariableMap {
-      return VariableMap(variables.map {
-        require(it.columnConnection is ColumnConnection.ColumnValues) { "not implemented: ${it.columnConnection}"}
-        require(it.variable is Input.Variable) { "not implemented: ${it.variable}"}
-        it.variable to data[it.columnConnection.columnId]
-      }.toMap())
+      return VariableMap(
+          map = variables.map {
+            require(it.columnConnection is ColumnConnection.ColumnValues) { "not implemented: ${it.columnConnection}" }
+            require(it.variable is Input.Variable) { "not implemented: ${it.variable}" }
+            it.variable to data[it.columnConnection.columnId]
+          }.toMap(),
+          isSingleValue = variables.mapNotNull {
+            require(it.variable is Input.Variable) { "not implemented: ${it.variable}" }
+            if (data.isSingleValue(it.columnConnection.columnId)) {
+              it.variable
+            } else null
+          }.toSet()
+      )
     }
   }
 }

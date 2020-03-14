@@ -8,6 +8,7 @@ import kotlin.reflect.KClass
 class FromPersistableContext {
   private var tableIds: Map<Int, NodeId.TableId> = emptyMap()
   private var calculatedIds: Map<Int, NodeId.CalculatedId> = emptyMap()
+  private var aggregatedIds: Map<Int, NodeId.AggregatedId> = emptyMap()
   private var columnIds: Map<Pair<Int,KClass<out Any>>, ColumnId<out Any>> = emptyMap()
 
   fun tableIdFor(id: Int): NodeId.TableId {
@@ -24,6 +25,15 @@ class FromPersistableContext {
     return if (ret == null) {
       val newId = NodeId.CalculatedId()
       calculatedIds = calculatedIds + (id to newId)
+      newId
+    } else ret
+  }
+
+  fun aggregatedIdFor(id: Int): NodeId.AggregatedId {
+    val ret = aggregatedIds[id]
+    return if (ret == null) {
+      val newId = NodeId.AggregatedId()
+      aggregatedIds = aggregatedIds + (id to newId)
       newId
     } else ret
   }

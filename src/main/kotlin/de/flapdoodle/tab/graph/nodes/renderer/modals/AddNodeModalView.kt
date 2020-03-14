@@ -51,7 +51,9 @@ class AddNodeModalView : View() {
                   NodeType.Calculation -> ConnectableNode.Calculated(
                       name = model.name.value
                   )
-                  NodeType.Aggregation -> throw IllegalArgumentException("not implemented: $type")
+                  NodeType.Aggregation -> ConnectableNode.Aggregated(
+                      name = model.name.value
+                  )
                 }
 
                 ModelEvent.addNode(node).fire()

@@ -49,9 +49,20 @@ object ConnectNodesHandler {
         }
         is MappedMouseEvent.DragRelease -> {
           if (marker is Out<out Any>) {
-            when (marker) {
-              is Out.ColumnValues<*> -> {
-                ModelEvent.connect(input, marker)?.fire()
+            when (input) {
+              is In.Value -> {
+                when (marker) {
+                  is Out.ColumnValues<*> -> {
+                    ModelEvent.connect(input, marker)?.fire()
+                  }
+                }
+              }
+              is In.List -> {
+                when (marker) {
+                  is Out.Aggregate<*> -> {
+                    ModelEvent.connect(input, marker)?.fire()
+                  }
+                }
               }
             }
           }
@@ -73,7 +84,7 @@ object ConnectNodesHandler {
 
 
   class OnOutput(
-      val output: Out.ColumnValues<out Any>
+      val output: Out<out Any>
   ) : MouseEventHandler {
     var exited: Boolean = false
     var dragStarted: Point2D? = null
@@ -107,7 +118,18 @@ object ConnectNodesHandler {
         }
         is MappedMouseEvent.DragRelease -> {
           if (marker is In<out Any>) {
-            ModelEvent.connect(marker, output)?.fire()
+            when (output) {
+              is Out.ColumnValues -> {
+                when (marker) {
+                  is In.Value<*> -> ModelEvent.connect(marker, output)?.fire()
+                }
+              }
+              is Out.Aggregate -> {
+                when (marker) {
+                  is In.List<*> -> ModelEvent.connect(marker, output)?.fire()
+                }
+              }
+            }
           }
           dragStarted = null
           exited = true

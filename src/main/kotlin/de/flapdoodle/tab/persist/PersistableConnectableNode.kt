@@ -7,12 +7,14 @@ data class PersistableConnectableNode(
     val type: Type,
     val id: PersistableNodeId,
     val columns: List<PersistableNamedColumn> = emptyList(),
-    val calculations: List<PersistableCalculationMapping> = emptyList()
+    val calculations: List<PersistableCalculationMapping> = emptyList(),
+    val aggregations: List<PersistableAggregationMapping> = emptyList()
 ) {
 
   enum class Type {
     Table,
-    Calculated
+    Calculated,
+    Aggregated
   }
 
   companion object : PersistableAdapter<ConnectableNode, PersistableConnectableNode> {
@@ -31,6 +33,12 @@ data class PersistableConnectableNode(
             id = PersistableNodeId.toPersistable(source.id),
             calculations = source.calculations().map(PersistableCalculationMapping.Companion::toPersistable)
         )
+        is ConnectableNode.Aggregated -> PersistableConnectableNode(
+            name = source.name,
+            type = Type.Aggregated,
+            id = PersistableNodeId.toPersistable(source.id),
+            aggregations = source.aggregations().map(PersistableAggregationMapping.Companion::toPersistable)
+        )
       }
     }
 
@@ -45,6 +53,11 @@ data class PersistableConnectableNode(
             name = source.name,
             id = PersistableNodeId.FromCalculatedId.from(context, source.id),
             calculations = source.calculations.map { PersistableCalculationMapping.from(context, it) }
+        )
+        Type.Aggregated -> ConnectableNode.Aggregated(
+            name = source.name,
+            id = PersistableNodeId.FromAggregatedId.from(context, source.id),
+            aggregations = source.aggregations.map { PersistableAggregationMapping.from(context, it) }
         )
       }
     }

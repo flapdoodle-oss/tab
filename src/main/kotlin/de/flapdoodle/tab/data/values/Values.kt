@@ -17,4 +17,12 @@ data class Values<T: Any>(
   operator fun get(index: Int): T? {
     return rows[index]
   }
+
+  fun clear(): Values<T> {
+    return copy(rows = emptyMap())
+  }
+
+  fun asList(): List<T?> {
+    return (0 until size()).map { get(it) }
+  }
 }

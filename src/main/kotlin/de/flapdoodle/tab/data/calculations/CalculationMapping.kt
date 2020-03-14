@@ -13,10 +13,15 @@ data class CalculationMapping<T : Any>(
 
     val variables = calculation.variables()
     if (variableMap.isValidFor(variables)) {
-      val size = variableMap.size(variables)
-      (0 until size).forEach { index ->
-        val result = this.calculation.calculate(variableMap.lookupFor(index))
-        currentData = currentData.change(this.column.id, index, result)
+      if (variableMap.areSingleValues(variables)) {
+        val result = this.calculation.calculate(variableMap.lookupFor(0))
+        currentData = currentData.change(this.column.id, result)
+      } else {
+        val size = variableMap.size(variables)
+        (0 until size).forEach { index ->
+          val result = this.calculation.calculate(variableMap.lookupFor(index))
+          currentData = currentData.change(this.column.id, index, result)
+        }
       }
     } else {
       currentData = currentData.clear(this.column.id)

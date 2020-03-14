@@ -8,12 +8,18 @@ class NodeAdapter(
     private val content: Fragment,
     private val inputs: Fragment? = null,
     private val outputs: Fragment? = null,
-    private val configuration: Fragment? = null
+    private val configuration: Fragment? = null,
+    private val additional: Fragment? = null
 ) : Fragment() {
   override val root = borderpane {
-    if (configuration!=null) {
-      top {
-        this += configuration
+    top {
+      vbox {
+        if (configuration != null) {
+          this += configuration
+        }
+        if (additional!=null) {
+          this += additional
+        }
       }
     }
     center {

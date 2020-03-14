@@ -14,7 +14,8 @@ data class PersistableNodeId(
       override val type: KClass<out NodeId<out ConnectableNode>>
   ) : TypeClassEnum<Type, NodeId<out ConnectableNode>> {
     Table(NodeId.TableId::class),
-    Calculated(NodeId.CalculatedId::class)
+    Calculated(NodeId.CalculatedId::class),
+    Aggregated(NodeId.AggregatedId::class)
   }
 
   companion object : PersistableAdapter<NodeId<out ConnectableNode>, PersistableNodeId> {
@@ -29,6 +30,7 @@ data class PersistableNodeId(
       return when (source.type) {
         Type.Table -> FromTableId.from(context,source)
         Type.Calculated -> FromCalculatedId.from(context,source)
+        Type.Aggregated -> FromAggregatedId.from(context,source)
       }
     }
   }
@@ -43,6 +45,12 @@ data class PersistableNodeId(
     override fun from(context: FromPersistableContext, source: PersistableNodeId): NodeId.CalculatedId {
       require(source.type==Type.Calculated) {"type mismatch: $source"}
       return context.calculatedIdFor(source.id)
+    }
+  }
+  object FromAggregatedId : FromPersistable<NodeId.AggregatedId, PersistableNodeId> {
+    override fun from(context: FromPersistableContext, source: PersistableNodeId): NodeId.AggregatedId {
+      require(source.type==Type.Aggregated) {"type mismatch: $source"}
+      return context.aggregatedIdFor(source.id)
     }
   }
 }

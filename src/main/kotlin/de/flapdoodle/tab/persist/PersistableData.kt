@@ -3,7 +3,8 @@ package de.flapdoodle.tab.persist
 import de.flapdoodle.tab.data.Data
 
 data class PersistableData(
-    val columnValues: List<PersistableDataEntry>
+    val columnValues: List<PersistableDataEntry>,
+    val isSingleValue: List<PersistableColumnId>
 ) {
 
   companion object : PersistableAdapter<Data, PersistableData> {
@@ -14,7 +15,8 @@ data class PersistableData(
                 columnId = PersistableColumnId.toPersistable(entry.key),
                 values = PersistableValues.toPersistable(entry.value)
             )
-          }
+          },
+          isSingleValue = source.singleValueColumns.map(PersistableColumnId.Companion::toPersistable)
       )
     }
 
@@ -27,7 +29,10 @@ data class PersistableData(
 
             require(id.type==values.type) {"read type mismatch: $id != ${values.type} -> should be $valueType"}
             id to values
-          }.toMap()
+          }.toMap(),
+          singleValueColumns = source.isSingleValue.map {
+            PersistableColumnId.forType(Any::class).from(context, it)
+          }.toSet()
       )
     }
   }

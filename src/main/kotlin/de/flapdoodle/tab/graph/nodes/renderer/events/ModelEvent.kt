@@ -3,6 +3,7 @@ package de.flapdoodle.tab.graph.nodes.renderer.events
 import de.flapdoodle.tab.data.ColumnId
 import de.flapdoodle.tab.data.NamedColumn
 import de.flapdoodle.tab.data.TabModel
+import de.flapdoodle.tab.data.calculations.Aggregation
 import de.flapdoodle.tab.data.calculations.Calculation
 import de.flapdoodle.tab.data.nodes.ColumnConnection
 import de.flapdoodle.tab.data.nodes.ConnectableNode
@@ -27,7 +28,7 @@ data class ModelEvent(
     }
 
     fun <T : Any> connect(
-        input: In<T>,
+        input: In.Value<T>,
         marker: Out.ColumnValues<out Any>
     ): ModelEvent? {
       return if (input.variable.type == marker.columnId.type)
@@ -37,7 +38,18 @@ data class ModelEvent(
         null
     }
 
-    fun <T: Any> deleteColumn(nodeId: NodeId.TableId, columnId: ColumnId<T>): ModelEvent {
+    fun <T : Any> connect(
+        input: In.List<T>,
+        marker: Out.Aggregate<out Any>
+    ): ModelEvent? {
+      return if (input.variable.type == marker.columnId.type)
+        @Suppress("UNCHECKED_CAST")
+        connect(input.id, input.variable, ColumnConnection.Aggregate(marker.columnId as ColumnId<T>))
+      else
+        null
+    }
+
+    fun <T : Any> deleteColumn(nodeId: NodeId.TableId, columnId: ColumnId<T>): ModelEvent {
       return EventData.DeleteColumn(nodeId, columnId).asEvent()
     }
 
@@ -50,11 +62,15 @@ data class ModelEvent(
     }
 
     fun addColumn(nodeId: NodeId.TableId, name: String, type: KClass<out Any>): ModelEvent {
-      return EventData.AddColumn(nodeId,name,type).asEvent()
+      return EventData.AddColumn(nodeId, name, type).asEvent()
     }
 
-    fun <T: Any> addCalculation(nodeId: NodeId.CalculatedId, column: NamedColumn<T>,calculation: Calculation<T>): ModelEvent {
+    fun <T : Any> addCalculation(nodeId: NodeId.CalculatedId, column: NamedColumn<T>, calculation: Calculation<T>): ModelEvent {
       return EventData.AddCalculation(nodeId, column, calculation).asEvent()
+    }
+
+    fun <T : Any> addAggregation(nodeId: NodeId.AggregatedId, column: NamedColumn<T>, aggregation: Aggregation<T>): ModelEvent {
+      return EventData.AddAggregation(nodeId, column, aggregation).asEvent()
     }
   }
 
@@ -95,7 +111,7 @@ data class ModelEvent(
       }
     }
 
-    data class AddCalculation<T: Any>(
+    data class AddCalculation<T : Any>(
         val nodeId: NodeId.CalculatedId,
         val column: NamedColumn<T>,
         val calculation: Calculation<T>
@@ -109,10 +125,24 @@ data class ModelEvent(
       }
     }
 
-    data class DeleteColumn<T: Any>(
+    data class AddAggregation<T : Any>(
+        val nodeId: NodeId.AggregatedId,
+        val column: NamedColumn<T>,
+        val aggregation: Aggregation<T>
+    ) : EventData() {
+      override fun applyTo(model: TabModel): TabModel {
+        return model.applyNodeChanges { nodes ->
+          nodes.changeNode(nodeId) { table ->
+            table.add(column, aggregation)
+          }
+        }
+      }
+    }
+
+    data class DeleteColumn<T : Any>(
         val nodeId: NodeId.TableId,
         val columnId: ColumnId<T>
-    ): EventData() {
+    ) : EventData() {
       override fun applyTo(model: TabModel): TabModel {
         return model.applyNodeChanges { nodes ->
           nodes.changeNode(nodeId) {
@@ -124,7 +154,7 @@ data class ModelEvent(
 
     data class AddNode(
         val table: ConnectableNode
-    ): EventData() {
+    ) : EventData() {
       override fun applyTo(model: TabModel): TabModel {
         return model.applyNodeChanges { nodes ->
           nodes.add(table)
@@ -134,7 +164,7 @@ data class ModelEvent(
 
     data class DeleteTable(
         val nodeId: NodeId<*>
-    ): EventData() {
+    ) : EventData() {
       override fun applyTo(model: TabModel): TabModel {
         return model.applyNodeChanges { nodes ->
           nodes.delete(nodeId)
