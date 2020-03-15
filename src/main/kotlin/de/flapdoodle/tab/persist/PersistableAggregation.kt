@@ -1,8 +1,6 @@
 package de.flapdoodle.tab.persist
 
 import de.flapdoodle.tab.data.calculations.Aggregation
-import de.flapdoodle.tab.data.calculations.Calculation
-import de.flapdoodle.tab.data.calculations.EvalExCalculationAdapter
 import de.flapdoodle.tab.data.calculations.NumberAggregation
 import kotlin.reflect.KClass
 

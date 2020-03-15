@@ -3,7 +3,6 @@ package de.flapdoodle.tab.persist
 import de.flapdoodle.tab.data.nodes.ConnectableNode
 import de.flapdoodle.tab.data.nodes.NodeId
 import kotlin.reflect.KClass
-import kotlin.reflect.typeOf
 
 data class PersistableNodeId(
     val id: Int,

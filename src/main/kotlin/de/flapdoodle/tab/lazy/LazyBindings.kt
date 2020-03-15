@@ -4,7 +4,6 @@ import de.flapdoodle.tab.bindings.Registration
 import javafx.collections.ListChangeListener
 import javafx.collections.ObservableList
 import javafx.collections.WeakListChangeListener
-import javafx.scene.Node
 
 fun <S : Any, D : Any> ObservableList<D>.bindFrom(src: LazyValue<List<S>>, map: (S) -> D): Registration {
   return LazyBindings.bindFrom(src, this, map)

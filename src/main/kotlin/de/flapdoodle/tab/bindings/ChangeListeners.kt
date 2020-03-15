@@ -1,8 +1,6 @@
 package de.flapdoodle.tab.bindings
 
-import de.flapdoodle.tab.fx.SingleThreadMutex
 import javafx.beans.value.ChangeListener
-import javafx.beans.value.ObservableValue
 import javafx.beans.value.WeakChangeListener
 
 fun <T> ChangeListener<T>.wrapByWeakChangeListener(): ChangeListener<T> {

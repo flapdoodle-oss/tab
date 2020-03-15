@@ -5,8 +5,6 @@ import de.flapdoodle.tab.data.Data
 import de.flapdoodle.tab.extensions.property
 import de.flapdoodle.tab.graph.nodes.connections.Out
 import de.flapdoodle.tab.graph.nodes.connections.OutNode
-import javafx.scene.Group
-import javafx.scene.Parent
 import javafx.scene.control.TableColumn
 import tornadofx.*
 

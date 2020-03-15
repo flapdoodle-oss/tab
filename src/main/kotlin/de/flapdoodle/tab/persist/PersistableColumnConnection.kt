@@ -1,7 +1,6 @@
 package de.flapdoodle.tab.persist
 
 import de.flapdoodle.tab.data.nodes.ColumnConnection
-import kotlin.reflect.KClass
 
 data class PersistableColumnConnection(
     val id: PersistableColumnId,

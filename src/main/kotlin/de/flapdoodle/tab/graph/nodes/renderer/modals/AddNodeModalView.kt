@@ -1,12 +1,10 @@
 package de.flapdoodle.tab.graph.nodes.renderer.modals
 
 import de.flapdoodle.tab.data.nodes.ConnectableNode
-import de.flapdoodle.tab.data.nodes.NodeId
 import de.flapdoodle.tab.extensions.fire
 import de.flapdoodle.tab.graph.nodes.renderer.events.ModelEvent
 import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.property.SimpleStringProperty
-import javafx.scene.Parent
 import javafx.scene.control.ButtonBar
 import tornadofx.*
 

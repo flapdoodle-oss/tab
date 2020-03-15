@@ -3,7 +3,6 @@ package de.flapdoodle.tab.data.calculations
 import com.udojava.evalex.Expression
 import de.flapdoodle.tab.data.values.Input
 import de.flapdoodle.tab.extensions.Exceptions
-import java.lang.ArithmeticException
 import java.math.BigDecimal
 
 data class EvalExCalculationAdapter(

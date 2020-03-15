@@ -3,7 +3,6 @@ package de.flapdoodle.tab.graph.nodes
 import de.flapdoodle.tab.bindings.Registration
 import de.flapdoodle.tab.graph.events.marker
 import javafx.beans.value.ChangeListener
-import javafx.geometry.Bounds
 import javafx.geometry.Dimension2D
 import javafx.geometry.Point2D
 import javafx.geometry.Pos

@@ -1,7 +1,6 @@
 package de.flapdoodle.tab.persist
 
 import de.flapdoodle.tab.data.ColumnId
-import java.math.BigDecimal
 import kotlin.reflect.KClass
 import kotlin.reflect.full.isSubclassOf
 

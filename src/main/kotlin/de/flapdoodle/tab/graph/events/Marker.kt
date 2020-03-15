@@ -1,10 +1,6 @@
 package de.flapdoodle.tab.graph.events
 
-import com.sun.javafx.collections.MappingChange
-import de.flapdoodle.tab.extensions.fire
 import de.flapdoodle.tab.extensions.scaledChange
-import de.flapdoodle.tab.graph.MappedPoints
-import de.flapdoodle.tab.graph.nodes.renderer.events.ExplainEvent
 import javafx.beans.property.DoubleProperty
 import javafx.event.EventTarget
 import javafx.geometry.Point2D

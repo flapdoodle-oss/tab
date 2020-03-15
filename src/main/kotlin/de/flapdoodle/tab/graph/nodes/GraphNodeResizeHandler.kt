@@ -6,7 +6,6 @@ import de.flapdoodle.tab.graph.events.MouseEventHandler
 import de.flapdoodle.tab.graph.events.MouseEventHandlerResolver
 import javafx.geometry.Dimension2D
 import javafx.geometry.Point2D
-import tornadofx.*
 
 class GraphNodeResizeHandler(
     private val resizeMarker: Resize

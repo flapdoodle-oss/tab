@@ -1,12 +1,12 @@
 package de.flapdoodle.tab.data
 
-import de.flapdoodle.tab.data.nodes.VariableMapping
 import de.flapdoodle.tab.data.nodes.ConnectableNode
 import de.flapdoodle.tab.data.nodes.Connection
 import de.flapdoodle.tab.data.nodes.Connections
 import de.flapdoodle.tab.data.nodes.HasColumns
 import de.flapdoodle.tab.data.nodes.HasInputs
 import de.flapdoodle.tab.data.nodes.NodeId
+import de.flapdoodle.tab.data.nodes.VariableMapping
 import de.flapdoodle.tab.data.values.Input
 
 data class Nodes(

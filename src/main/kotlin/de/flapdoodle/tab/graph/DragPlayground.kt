@@ -1,7 +1,6 @@
 package de.flapdoodle.tab.graph
 
 import javafx.scene.Node
-import javafx.scene.Parent
 import javafx.scene.input.MouseDragEvent
 import javafx.scene.input.MouseEvent
 import javafx.scene.paint.Color

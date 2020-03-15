@@ -1,6 +1,5 @@
 package de.flapdoodle.tab.persist
 
-import de.flapdoodle.tab.data.NodePositions
 import de.flapdoodle.tab.data.TabModel
 
 data class PersistableTabModel(

@@ -2,7 +2,6 @@ package de.flapdoodle.tab.persist
 
 import de.flapdoodle.tab.data.ColumnId
 import de.flapdoodle.tab.data.nodes.NodeId
-import org.w3c.dom.Node
 import kotlin.reflect.KClass
 
 class FromPersistableContext {

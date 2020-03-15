@@ -1,8 +1,6 @@
 package de.flapdoodle.tab.extensions
 
-import com.sun.source.tree.Scope
 import javafx.collections.ObservableMap
-import javafx.scene.Node
 import kotlin.reflect.KClass
 
 object ObservableMapExtensions {

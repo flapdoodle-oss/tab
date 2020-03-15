@@ -14,7 +14,6 @@ import javafx.geometry.Pos
 import javafx.scene.layout.HBox
 import tornadofx.*
 import java.math.BigDecimal
-import javax.swing.UIDefaults
 
 class CalculationsNode<T>(
     node: LazyValue<T>

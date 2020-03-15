@@ -1,6 +1,5 @@
 package de.flapdoodle.tab.data.nodes
 
-import de.flapdoodle.tab.data.ColumnId
 import de.flapdoodle.tab.data.values.Input
 
 data class VariableMapping<T: Any>(

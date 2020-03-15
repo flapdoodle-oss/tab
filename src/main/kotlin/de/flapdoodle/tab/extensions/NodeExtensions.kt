@@ -1,7 +1,5 @@
 package de.flapdoodle.tab.extensions
 
-import de.flapdoodle.tab.graph.events.HasMarkerProperty
-import de.flapdoodle.tab.graph.events.IsMarker
 import javafx.scene.Node
 import javafx.scene.Parent
 import kotlin.reflect.KClass

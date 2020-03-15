@@ -2,7 +2,6 @@ package de.flapdoodle.tab.graph.nodes.renderer.events
 
 import de.flapdoodle.tab.data.nodes.ConnectableNode
 import de.flapdoodle.tab.data.nodes.NodeId
-import javafx.geometry.Bounds
 import javafx.geometry.Dimension2D
 import javafx.geometry.Point2D
 import tornadofx.*

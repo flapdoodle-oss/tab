@@ -1,6 +1,5 @@
 package de.flapdoodle.tab.extensions
 
-import javafx.geometry.Bounds
 import javafx.geometry.Point2D
 import javafx.scene.input.MouseEvent
 
