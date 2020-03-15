@@ -143,6 +143,10 @@
                     <options>
                         <option>--add-opens</option>
                         <option>javafx.graphics/javafx.scene=ALL-UNNAMED</option>
+                        <option>--add-exports</option>
+                        <option>javafx.controls/com.sun.javafx.scene.control=ALL-UNNAMED</option>
+                        <option>--add-exports</option>
+                        <option>javafx.base/com.sun.javafx.event=ALL-UNNAMED</option>
                     </options>
                     <mainClass>de.flapdoodle.tab.Tab</mainClass>
                 </configuration>
@@ -236,7 +240,11 @@
             <artifactId>easybind</artifactId>
             <version>1.0.3</version>
         </dependency>
-
+        <dependency>
+            <groupId>org.controlsfx</groupId>
+            <artifactId>controlsfx</artifactId>
+            <version>8.40.16</version>
+        </dependency>
 
         <!--
         <dependency>

@@ -1,5 +1,6 @@
 package de.flapdoodle.tab
 
+import de.flapdoodle.tab.controls.SpreadSheetPlayground
 import de.flapdoodle.tab.data.ColumnId
 import de.flapdoodle.tab.data.NamedColumn
 import de.flapdoodle.tab.data.NodePositions
@@ -283,6 +284,7 @@ class StartView : View("My View") {
 
 //    zoomablePane.content += SampleNode()
 //    zoomablePane.content += DragPlayground()
+    zoomablePane.content += SpreadSheetPlayground()
   }
 
   private fun fileChooser(): FileChooser {
