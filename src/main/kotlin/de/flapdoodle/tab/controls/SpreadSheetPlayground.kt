@@ -7,6 +7,7 @@ import javafx.scene.Parent
 import javafx.scene.control.Button
 import javafx.scene.control.Control
 import javafx.scene.control.cell.TextFieldTableCell
+import javafx.scene.paint.Color
 import javafx.util.StringConverter
 import javafx.util.converter.DefaultStringConverter
 import org.controlsfx.control.spreadsheet.GridBase
@@ -17,7 +18,7 @@ import tornadofx.*
 
 class SpreadSheetPlayground : Fragment() {
 
-//  override val root = group {
+  //  override val root = group {
 //      val rowCount = 15
 //      val columnCount = 10
 //      val grid = GridBase(rowCount, columnCount)
@@ -35,14 +36,32 @@ class SpreadSheetPlayground : Fragment() {
 //      val spv = SpreadsheetView(grid)
 //    }
   override val root = gridpane {
-    button("A")
-    button("B")
-    button("C")
+    style {
+      backgroundColor = multi(Color.WHITE)
+      borderColor += box(Color.RED)
+      borderWidth += box(1.0.px)
+    }
+    row {
+      button("A")
+      button("B")
+      button("C")
+    }
+    row {
+      pane {
+        style {
+          backgroundColor = multi(Color(0.0,0.0,0.0, 0.2))
+          borderWidth += box(1.0.px)
+          borderColor += box(Color.BLACK)
+          padding = box(2.0.px)
+        }
+        button("pane")
+      }
+    }
 
-    this.add(Button("X---------"),2,3)
+    this.add(Button("X---------"), 2, 3)
     add(TextFieldTableCell<String, String>(DefaultStringConverter()).apply {
       text = "Wooohooo"
-    },2,2)
+    }, 2, 2)
   }
 
 }
