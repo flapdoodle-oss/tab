@@ -30,6 +30,14 @@ class ModelRenderer(
     private val pane: Pane,
     private val modelProperty: ChangeableValue<TabModel>
 ) {
+  companion object {
+    fun debug(msg: String) {
+      if (false) {
+        println(msg)
+      }
+    }
+  }
+
   private val nodeLayer = Group()
   private val connectionLayer = Group()
 
@@ -39,23 +47,23 @@ class ModelRenderer(
 
   private val idsP = modelProperty.map { it.nodeIds().toList() }
 
-  private val nodeLayerSyncReg2 = nodeLayer.children.bindFrom(idsP) { id ->
-    println("node for $id")
+ private val nodeLayerSyncReg2 = nodeLayer.children.bindFrom(idsP) { id ->
+    debug("node for $id")
     nodeForP(id!!).root.apply {
       this.property(NodeId::class, id!!)
     }
   }
 
   private val nodeConnectionsP = modelProperty.map { model ->
-    println("XX ModelRenderer: modelProperty -> nodeConnections")
-    println("XX ModelRenderer: $model")
+    debug("XX ModelRenderer: modelProperty -> nodeConnections")
+    debug("XX ModelRenderer: $model")
     val ret = model.nodeIds().map { it to model.tableConnections(it) }.toMap()
-    println("XX ModelRenderer: -> $ret")
+    debug("XX ModelRenderer: -> $ret")
     ret
   }
 
   private fun connectorPositions(list: List<Node?>): Map<NodeId<*>, ConnectorPositions> {
-    println("XX ModelRenderer: connectorPositions - list: $list")
+    debug("XX ModelRenderer: connectorPositions - list: $list")
     val result = list.map {
       val parent = it as Parent
       val id = parent.property(NodeId::class) ?: throw IllegalArgumentException("node id not set")
@@ -94,23 +102,23 @@ class ModelRenderer(
   private val connectionNodesP = nodeConnectionsP.merge(nodeLayer.children.asAObservable()) { connections , children->
     val connectors = connectorPositions(children)
 
-    println("connection nodes")
-    println("connections: $connections")
-    println("connectors: $connectors")
+    debug("connection nodes")
+    debug("connections: $connections")
+    debug("connectors: $connectors")
 
     connections.flatMap { entry ->
-      println("connection: $entry")
+      debug("connection: $entry")
       System.out.flush()
 
       if (entry.value.isNotEmpty()) {
-        println("connection: not empty -> ${entry.value}")
+        debug("connection: not empty -> ${entry.value}")
         System.out.flush()
 
         val dstConnectors = connectors[entry.key]
         if (dstConnectors != null) {
           require(dstConnectors != null) { "connectors for ${entry.key} not found in $connectors" }
           entry.value.mapNotNull { c ->
-            println("connection: entry value -> $c")
+            debug("connection: entry value -> $c")
             val positions = connectors[c.sourceNode]
             if (positions!=null) {
 //              require(positions != null) { "positions for ${c.sourceNode} not found in $connectors" }

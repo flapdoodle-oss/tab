@@ -27,6 +27,12 @@ class NodeAdapterGraphNode(
     private var yOffset = 0.0
     private var count = 0
 
+    private fun debug(msg: String) {
+      if (false) {
+        println(msg)
+      }
+    }
+
     fun graphNodeFor(
         id: NodeId<*>,
         nodesProperty: LazyValue<Nodes>,
@@ -55,10 +61,10 @@ class NodeAdapterGraphNode(
       }
       node.apply {
         subscribeEvent<UIEvent> {event ->
-          println("XX NodeAdapterGraphNode -> got $event")
+          debug("XX NodeAdapterGraphNode -> got $event")
           if (event.eventData is UIEvent.EventData.MoveNode) {
             if (event.eventData.id == id) {
-              println("should move node $event")
+              debug("should move node $event")
               val eventData: UIEvent.EventData.MoveNode = event.eventData
 
               node.moveTo(eventData.position.x, eventData.position.y)
@@ -77,7 +83,7 @@ class NodeAdapterGraphNode(
         dataProperty: LazyValue<Data>
     ): NodeAdapterGraphNode {
       val nodeProperty = nodesProperty.mapNonNull { m ->
-        println("XX NodeAdapterGraphNode: node for $id")
+        debug("XX NodeAdapterGraphNode: node for $id")
         m?.find(id)
       }
 
@@ -111,12 +117,12 @@ class NodeAdapterGraphNode(
         dataProperty: LazyValue<Data>
     ): NodeAdapterGraphNode {
       val nodeProperty = nodesProperty.mapNonNull { m ->
-        println("XX NodeAdapterGraphNode: node for $id")
+        debug("XX NodeAdapterGraphNode: node for $id")
         m?.find(id)
       }
 
 //      nodeProperty.onChange {
-//        println("XX NodeAdapterGraphNode(calculated): nodeProperty changed to $it")
+//        debug("XX NodeAdapterGraphNode(calculated): nodeProperty changed to $it")
 //      }
 
       return NodeAdapterGraphNode {
@@ -153,12 +159,12 @@ class NodeAdapterGraphNode(
         dataProperty: LazyValue<Data>
     ): NodeAdapterGraphNode {
       val nodeProperty = nodesProperty.mapNonNull { m ->
-        println("XX NodeAdapterGraphNode: node for $id")
+        debug("XX NodeAdapterGraphNode: node for $id")
         m?.find(id)
       }
 
 //      nodeProperty.onChange {
-//        println("XX NodeAdapterGraphNode(calculated): nodeProperty changed to $it")
+//        debug("XX NodeAdapterGraphNode(calculated): nodeProperty changed to $it")
 //      }
 
       return NodeAdapterGraphNode {

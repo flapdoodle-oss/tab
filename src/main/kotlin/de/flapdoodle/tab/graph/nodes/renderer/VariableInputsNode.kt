@@ -16,27 +16,36 @@ class VariableInputsNode<T>(
 ) : Fragment()
     where T : HasInputs,
           T : ConnectableNode {
+
+  companion object {
+    fun debug(msg: String) {
+      if (false) {
+        println(msg)
+      }
+    }
+  }
+
   private val inputs = node.map { node ->
-    println("XX VariableInputsNode: node changed to $node")
+    debug("XX VariableInputsNode: node changed to $node")
     node.variables().toList().map { node.id to it }
   }
 
   init {
     node.addListener(ChangedListener { _ ->
-      println("XX VariableInputsNode: node changed to(2) ${node.value()}")
+      debug("XX VariableInputsNode: node changed to(2) ${node.value()}")
     })
 //    node.onChange {
-//      println("XX VariableInputsNode: node changed to $it")
-////      println("XX VariableInputsNode: should propagate to $inputs")
+//      debug("XX VariableInputsNode: node changed to $it")
+////      debug("XX VariableInputsNode: should propagate to $inputs")
 //    }
 //    inputs.onChange {
-//      println("XX VariableInputsNode: inputs changed to $it")
+//      debug("XX VariableInputsNode: inputs changed to $it")
 //    }
   }
 
   override val root = vbox {
     children.syncFrom(inputs) { it ->
-      println("XX VariableInputsNode: syncFrom $it")
+      debug("XX VariableInputsNode: syncFrom $it")
       val (id, v) = it!!
       when (v) {
         is Input.Variable<out Any> -> InNode(In.Value(id, v))

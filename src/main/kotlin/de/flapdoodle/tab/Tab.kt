@@ -1,8 +1,9 @@
 package de.flapdoodle.tab
 
+import de.flapdoodle.tab.styles.TabStyle
 import tornadofx.*
 
-class Tab : App(StartView::class) {
+class Tab : App(StartView::class, TabStyle::class) {
 
   companion object {
     @JvmStatic

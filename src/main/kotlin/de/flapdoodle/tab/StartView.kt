@@ -1,6 +1,8 @@
 package de.flapdoodle.tab
 
+import de.flapdoodle.tab.controls.SpreadSheet
 import de.flapdoodle.tab.controls.SpreadSheetPlayground
+import de.flapdoodle.tab.controls.layout.LayoutFun
 import de.flapdoodle.tab.data.ColumnId
 import de.flapdoodle.tab.data.NamedColumn
 import de.flapdoodle.tab.data.NodePositions
@@ -27,6 +29,7 @@ import de.flapdoodle.tab.persist.TabModelIO
 import javafx.scene.Group
 import javafx.scene.paint.Color
 import javafx.stage.FileChooser
+import javafx.util.Duration
 import tornadofx.*
 import java.math.BigDecimal
 import java.nio.file.Files
@@ -285,6 +288,12 @@ class StartView : View("My View") {
 //    zoomablePane.content += SampleNode()
 //    zoomablePane.content += DragPlayground()
     zoomablePane.content += SpreadSheetPlayground()
+    if (false) {
+      zoomablePane.content += SpreadSheet().apply {
+        move(time = Duration.seconds(2.0), destination = javafx.geometry.Point2D(-40.0, -40.0))
+      }
+    }
+    zoomablePane.content += LayoutFun()
   }
 
   private fun fileChooser(): FileChooser {
