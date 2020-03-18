@@ -1,8 +1,11 @@
 package de.flapdoodle.tab
 
 import de.flapdoodle.tab.controls.SpreadSheet
+import de.flapdoodle.tab.controls.SpreadSheetCell
 import de.flapdoodle.tab.controls.SpreadSheetPlayground
 import de.flapdoodle.tab.controls.layout.LayoutFun
+import de.flapdoodle.tab.controls.tables.Column
+import de.flapdoodle.tab.controls.tables.SmartTable
 import de.flapdoodle.tab.data.ColumnId
 import de.flapdoodle.tab.data.NamedColumn
 import de.flapdoodle.tab.data.NodePositions
@@ -26,7 +29,10 @@ import de.flapdoodle.tab.graph.nodes.renderer.modals.AddNodeModalView
 import de.flapdoodle.tab.graph.nodes.values.ValuesNode
 import de.flapdoodle.tab.lazy.ChangeableValue
 import de.flapdoodle.tab.persist.TabModelIO
+import javafx.collections.FXCollections
 import javafx.scene.Group
+import javafx.scene.control.Button
+import javafx.scene.control.Label
 import javafx.scene.paint.Color
 import javafx.stage.FileChooser
 import javafx.util.Duration
@@ -292,8 +298,17 @@ class StartView : View("My View") {
       zoomablePane.content += SpreadSheet().apply {
         move(time = Duration.seconds(2.0), destination = javafx.geometry.Point2D(-40.0, -40.0))
       }
+      zoomablePane.content += LayoutFun()
     }
-    zoomablePane.content += LayoutFun()
+
+    val rows = FXCollections.observableArrayList("ONE","2","drei")
+    zoomablePane.content += SmartTable<String>(rows).apply {
+      columns().addAll(
+          Column.of<String,String>("A", { it }),
+          Column.of<String,String>("Loooong", { it }),
+          Column.of<String,String>("--B--", { it })
+      )
+    }
   }
 
   private fun fileChooser(): FileChooser {

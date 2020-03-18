@@ -1,9 +1,10 @@
 package de.flapdoodle.tab
 
+import de.flapdoodle.tab.controls.tables.SmartTableStyles
 import de.flapdoodle.tab.styles.TabStyle
 import tornadofx.*
 
-class Tab : App(StartView::class, TabStyle::class) {
+class Tab : App(StartView::class, TabStyle::class, SmartTableStyles::class) {
 
   companion object {
     @JvmStatic

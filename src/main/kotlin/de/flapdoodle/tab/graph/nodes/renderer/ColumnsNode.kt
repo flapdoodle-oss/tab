@@ -1,5 +1,6 @@
 package de.flapdoodle.tab.graph.nodes.renderer
 
+import de.flapdoodle.tab.converter.Converters
 import de.flapdoodle.tab.data.ColumnId
 import de.flapdoodle.tab.data.Data
 import de.flapdoodle.tab.data.NamedColumn
@@ -276,28 +277,6 @@ class ColumnsNode<T>(
   }
 
   private fun <S : Any> converterFor(s: KClass<out S>): StringConverter<S> {
-    @Suppress("UNCHECKED_CAST")
-    return when (s.javaPrimitiveType ?: s) {
-      Int::class -> IntegerStringConverter() as StringConverter<S>
-      Integer::class -> IntegerStringConverter() as StringConverter<S>
-      Integer::class.javaPrimitiveType -> IntegerStringConverter() as StringConverter<S>
-      Double::class -> DoubleStringConverter() as StringConverter<S>
-      Double::class.javaPrimitiveType -> DoubleStringConverter() as StringConverter<S>
-      Float::class -> FloatStringConverter() as StringConverter<S>
-      Float::class.javaPrimitiveType -> FloatStringConverter() as StringConverter<S>
-      Long::class -> LongStringConverter() as StringConverter<S>
-      Long::class.javaPrimitiveType -> LongStringConverter() as StringConverter<S>
-      Number::class -> NumberStringConverter() as StringConverter<S>
-      BigDecimal::class -> BigDecimalStringConverter() as StringConverter<S>
-      BigInteger::class -> BigIntegerStringConverter() as StringConverter<S>
-      String::class -> DefaultStringConverter() as StringConverter<S>
-      LocalDate::class -> LocalDateStringConverter() as StringConverter<S>
-      LocalTime::class -> LocalTimeStringConverter() as StringConverter<S>
-      LocalDateTime::class -> LocalDateTimeStringConverter() as StringConverter<S>
-//      Boolean::class.javaPrimitiveType -> {
-//        (this as TableColumn<T, Boolean?>).useCheckbox(true)
-//      }
-      else -> throw RuntimeException("makeEditable() is not implemented for specified class type:" + s.qualifiedName)
-    }
+    return Converters.converterFor(s)
   }
 }

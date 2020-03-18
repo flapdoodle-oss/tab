@@ -12,6 +12,8 @@ class TabStyle : Stylesheet() {
     //    val odd by csspseudoclass("odd")
     val odd by csspseudoclass("odd")
     val even by csspseudoclass("even")
+
+    val styledSplitPane by cssclass("styled-split-pane")
   }
 
   init {
@@ -53,6 +55,18 @@ class TabStyle : Stylesheet() {
         }
       }
     }
+
+    styledSplitPane {
+      child(splitPaneDivider) {
+        backgroundColor += Color(0.0,0.0,0.0,0.2)
+        borderColor += box(Color(0.0,0.0,0.0,0.2))
+        borderWidth += box(top = 0.0.px, left = 1.0.px, right = 1.0.px, bottom = 0.0.px)
+        //padding = box(top = 0.0.px, left = 1.0.px, right = 1.0.px, bottom = 0.0.px)
+        padding = box(0.0.px)
+      }
+    }
+
+
 
     if (false) {
       label {
