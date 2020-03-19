@@ -92,7 +92,7 @@ class NodeAdapterGraphNode(
             content = SmartColumnsNode(
                 node = nodeProperty,
                 data = dataProperty,
-//                columnHeader = SmartHeaderColumnActionNode.factoryFor(id),
+                columnHeader = ColumnActionNode.factoryFor(id),
                 columnFooter = ::SmartHeaderColumnAggregateNode,
                 editable = true,
                 menu = {

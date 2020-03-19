@@ -22,6 +22,7 @@ import de.flapdoodle.tab.lazy.merge
 import de.flapdoodle.tab.lazy.syncFrom
 import javafx.beans.property.SimpleObjectProperty
 import javafx.scene.control.ContextMenu
+import javafx.scene.control.Control
 import javafx.scene.control.Label
 import javafx.scene.control.TableCell
 import javafx.scene.control.TableColumn
@@ -52,7 +53,7 @@ import kotlin.reflect.KClass
 class SmartColumnsNode<T>(
     node: LazyValue<T>,
     data: LazyValue<Data>,
-    private val columnHeader: ((SmartColumn<Data.Row, *>) -> Fragment)? = null,
+    private val columnHeader: ((NamedColumn<out Any>) -> Fragment)? = null,
     private val columnFooter: ((SmartColumn<Data.Row, *>) -> Fragment)? = null,
     private val editable: Boolean = false,
     private val menu: (ContextMenu.() -> Unit)? = null
@@ -79,7 +80,7 @@ class SmartColumnsNode<T>(
   }
 
   override val root = vbox {
-    if (menu!=null) {
+    if (menu != null) {
       contextmenu(menu)
     }
 
@@ -92,14 +93,6 @@ class SmartColumnsNode<T>(
 
       //columns().syncFrom(columnList) { tableColumn(it) }
     }
-    if (columnHeader!=null) {
-      hbox {
-        val factory = columnHeader
-        children.syncFrom(table.columns().asAObservable()) {
-          factory(it).root
-        }
-      }
-    }
 
     tabpane {
       tab("Data") {
@@ -108,7 +101,7 @@ class SmartColumnsNode<T>(
       }
       tab("Chart") {
         isClosable = false
-        this += InlineChartNode(node,data)
+        this += InlineChartNode(node, data)
       }
     }
 
@@ -119,8 +112,8 @@ class SmartColumnsNode<T>(
 //      columns.syncFrom(columnList) { tableColumn(it) }
 //    }
 
-    if (columnFooter!=null) {
-      hbox {
+    if (columnFooter != null) {
+      flowpane {
         val factory = columnFooter
         children.syncFrom(table.columns().asAObservable()) {
           factory(it!!).root
@@ -130,7 +123,14 @@ class SmartColumnsNode<T>(
   }
 
   private fun <T : Any> tableColumn(namedColumn: NamedColumn<out T>): SmartColumn<Data.Row, T> {
-    val header = Label(namedColumn.name)
+    val header = if (columnHeader != null) {
+      hbox {
+        label(namedColumn.name)
+        this += columnHeader.invoke(namedColumn).root
+      }
+    } else {
+      label(namedColumn.name)
+    }
 
     return object : SmartColumn<Data.Row, T>(header) {
 
@@ -195,12 +195,12 @@ class SmartColumnsNode<T>(
       cellFactory = Callback {
         TextFieldTableCell<Data.Row, T>(converterFor(namedColumn.id.type)).apply {
 
-          subscribeEvent<ExplainEvent> {event ->
+          subscribeEvent<ExplainEvent> { event ->
             when (event.data) {
               is ExplainEvent.EventData.ColumnSelected<out Any> -> {
-                if (event.data.id==namedColumn.id) {
+                if (event.data.id == namedColumn.id) {
                   style {
-                    backgroundColor += Color(0.0,0.0,0.0,0.1)
+                    backgroundColor += Color(0.0, 0.0, 0.0, 0.1)
 //                    borderWidth += box(0.0.px, 1.0.px)
 //                    borderColor += box(Color.RED)
                   }
