@@ -13,6 +13,10 @@ class SmartRows<T : Any>(
 
   private val skin = SmartRowsSkin(this)
 
+  init {
+    addClass(SmartTableStyles.smartRows)
+  }
+
   override fun createDefaultSkin() = skin
   internal fun rowsChanged() {
     skin.rowsChanged()
@@ -34,10 +38,13 @@ class SmartRows<T : Any>(
     }
 
     internal fun rowsChanged() {
-      rowPane.children.clear()
-      control.rows.forEach {
-        rowPane.add(SmartRow(control.columns, it))
-      }
+      rowPane.children.setAll(control.rows.mapIndexed { index, t ->
+        SmartRow(control.columns, t, index % 2 == 0)
+      })
+//      rowPane.children.clear()
+//      control.rows.forEachIndexed { index, it ->
+//        rowPane.add(SmartRow(control.columns, it, index % 2 == 0))
+//      }
     }
 
     fun columnsChanged() {

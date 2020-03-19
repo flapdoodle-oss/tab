@@ -1,16 +1,14 @@
 package de.flapdoodle.tab.controls.tables
 
-import de.flapdoodle.tab.styles.TabStyle
 import javafx.collections.ListChangeListener
 import javafx.collections.ObservableList
 import javafx.scene.control.Control
-import javafx.scene.control.Label
 import javafx.scene.control.SkinBase
 import javafx.scene.control.SplitPane
 import tornadofx.*
 
 class SmartHeader<T : Any>(
-    private val columns: ObservableList<Column<T, out Any>>
+    private val columns: ObservableList<out SmartColumn<T, out Any>>
 ) : Control() {
 
   private val skin = SmartHeaderSkin(this)
@@ -31,13 +29,14 @@ class SmartHeader<T : Any>(
   ) : SkinBase<SmartHeader<T>>(src) {
     private val header = SplitPane().apply {
 //      addClass(TabStyle.styledSplitPane)
-      prefWidth = 200.0
+//      prefWidth = 200.0
     }
 
 //    private val headerColumns = FXCollections.observableArrayList<ColumnHeader<T>>()
 
     internal fun columnsChanged() {
-      header.items.bind(src.columns) { SmartColumnHeader(it) }
+//      header.items.bind(src.columns) { SmartHeaderColumn(it) }
+      header.items.setAll(src.columns)
       header.items.addListener(ListChangeListener {
         val size = it.list.size
         if (size > 0) {
@@ -60,19 +59,11 @@ class SmartHeader<T : Any>(
 
     init {
       children.add(header)
+//      columnsChanged()
     }
 
     @Suppress("UNCHECKED_CAST")
-    fun headerColumns() = header.items.asUnmodifiable() as ObservableList<out SmartColumn<T, out Any>>
+    fun headerColumns() = header.items.asUnmodifiable() as ObservableList<SmartColumn<T, out Any>>
   }
 
-  class SmartColumnHeader<T : Any, C: Any>(
-      override val column: Column<T, C>
-  ) : Label(column.columnName), SmartColumn<T, C> {
-    init {
-      maxWidth = 200.0
-
-      widthProperty()
-    }
-  }
 }

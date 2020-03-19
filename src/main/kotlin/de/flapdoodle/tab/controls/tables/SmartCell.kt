@@ -11,9 +11,10 @@ import javafx.scene.input.KeyEvent
 import javafx.util.StringConverter
 import tornadofx.*
 
-class SmartCell<C : Any>(
-    val column: SmartColumn<out Any, C>,
-    val value: C?
+open class SmartCell<T: Any, C : Any>(
+    val value: C?,
+    val editable: Boolean,
+    val converter: StringConverter<C>
 ) : Control() {
 
   private val skin = SmartCellSkin(this)
@@ -21,34 +22,41 @@ class SmartCell<C : Any>(
   init {
     isFocusTraversable = true
 
+    addClass(SmartTableStyles.smartCell)
+
 //    addClass(TabStyle.spreadSheedCell)
 //    if (odd) {
 //      addClass(TabStyle.odd)
 //    }
   }
 
+  open fun onChange(value: C?) {}
+
   override fun createDefaultSkin() = skin
 
-  class SmartCellSkin<T : Any>(
-      private val control: SmartCell<T>
-  ) : SkinBase<SmartCell<T>>(control) {
+  class SmartCellSkin<T : Any, C : Any>(
+      private val control: SmartCell<T, C>
+  ) : SkinBase<SmartCell<T, C>>(control) {
 
     private val label = Label().apply {
       isWrapText = false
       prefWidth = Double.MAX_VALUE
-      text = control.column.converter().toString(control.value)
-      addEventHandler(javafx.scene.input.MouseEvent.MOUSE_RELEASED) {
-        if (it.clickCount == 2) {
-          _edit()
+      text = control.converter.toString(control.value)
+      if (control.editable) {
+        addEventHandler(javafx.scene.input.MouseEvent.MOUSE_RELEASED) {
+          if (it.clickCount == 2) {
+            _edit()
+          }
         }
       }
     }
 
     private val field = createTextField(
         value = control.value,
-        converter = control.column.converter(),
+        converter = control.converter,
         commitEdit = {
-          println("got $it")
+          label.text = control.converter.toString(it)
+          control.onChange(it)
           _cancelEdit()
         },
         cancelEdit = this::_cancelEdit
@@ -65,6 +73,7 @@ class SmartCell<C : Any>(
     internal fun _cancelEdit() {
       label.show()
       field.hide()
+      field.text = label.text
     }
 
     internal fun _edit() {
@@ -77,7 +86,7 @@ class SmartCell<C : Any>(
       children.add(field)
       children.add(label)
 
-      control.prefWidthProperty().bind(control.column.widthProperty())
+//      control.prefWidthProperty().bind(control.column.widthProperty())
     }
 
     override fun computeMinWidth(height: Double, topInset: Double, rightInset: Double, bottomInset: Double, leftInset: Double): Double {

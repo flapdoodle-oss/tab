@@ -89,11 +89,11 @@ class NodeAdapterGraphNode(
 
       return NodeAdapterGraphNode {
         NodeAdapter(
-            content = ColumnsNode(
+            content = SmartColumnsNode(
                 node = nodeProperty,
                 data = dataProperty,
-                columnHeader = TableColumnActionNode.factoryFor(id),
-                columnFooter = ::TableColumnAggregateNode,
+//                columnHeader = SmartHeaderColumnActionNode.factoryFor(id),
+                columnFooter = ::SmartHeaderColumnAggregateNode,
                 editable = true,
                 menu = {
                   item("Add Column").action {

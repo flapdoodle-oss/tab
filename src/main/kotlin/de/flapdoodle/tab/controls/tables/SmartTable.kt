@@ -1,6 +1,5 @@
 package de.flapdoodle.tab.controls.tables
 
-import javafx.collections.FXCollections
 import javafx.collections.ListChangeListener
 import javafx.collections.ObservableList
 import javafx.collections.WeakListChangeListener
@@ -13,24 +12,24 @@ import tornadofx.*
 
 
 class SmartTable<T : Any>(
-    internal val rows: ObservableList<T>
+    internal val rows: ObservableList<T>,
+    internal val columns: ObservableList<out SmartColumn<T, out Any>>
 ) : Control() {
 
-  private val columns: ObservableList<Column<T, out Any>> = FXCollections.observableArrayList()
   private val skin = SmartTableSkin(this)
 
   private val rowsChangeListener = ListChangeListener<T> { skin.rowsChanged() }
-  private val columnsChangeListener = ListChangeListener<Column<T, out Any>> { skin.columnsChanged() }
+  private val columnsChangeListener = ListChangeListener<SmartColumn<T, out Any>> { skin.columnsChanged() }
 
   init {
     rows.addListener(WeakListChangeListener(rowsChangeListener))
-    columns.addListener(columnsChangeListener)
+    columns.addListener(WeakListChangeListener(columnsChangeListener))
 
     addClass(SmartTableStyles.smartTable)
   }
 
   override fun createDefaultSkin() = skin
-  fun columns() = columns
+  fun columns() = skin.headerColumns()
 
   class SmartTableSkin<T : Any>(
       control: SmartTable<T>
@@ -41,17 +40,20 @@ class SmartTable<T : Any>(
     private val rowsPane = SmartRows(control.rows, header.headerColumns()).apply {
       VBox.setVgrow(this, Priority.ALWAYS)
     }
+    private val footer = SmartFooter(control.columns)
+
+    private val scroll = ScrollPane().apply {
+      add(rowsPane)
+    }
 
     private val all = VBox().apply {
       add(header)
-      add(rowsPane)
-    }
-    private val scrollPane = ScrollPane().apply {
-      add(all)
+      add(scroll)
+      add(footer)
     }
 
     init {
-      children.add(scrollPane)
+      children.add(all)
       columnsChanged()
       rowsChanged()
     }
@@ -63,7 +65,8 @@ class SmartTable<T : Any>(
     internal fun columnsChanged() {
       header.columnsChanged()
       rowsPane.columnsChanged()
+      footer.columnsChanged()
     }
+    internal fun headerColumns() = header.headerColumns()
   }
-
 }
