@@ -3,6 +3,7 @@ package de.flapdoodle.tab.controls.tables
 import javafx.collections.ListChangeListener
 import javafx.collections.ObservableList
 import javafx.scene.control.Control
+import javafx.scene.control.Label
 import javafx.scene.control.SkinBase
 import javafx.scene.control.SplitPane
 import tornadofx.*
@@ -36,13 +37,15 @@ class SmartHeader<T : Any>(
 
     internal fun columnsChanged() {
 //      header.items.bind(src.columns) { SmartHeaderColumn(it) }
-      header.items.setAll(src.columns)
+      header.items.setAll(src.columns + Label("   ").apply { maxWidth = Double.MAX_VALUE })
       header.items.addListener(ListChangeListener {
         val size = it.list.size
         if (size > 0) {
-          val offset = 1.0 / size
+          val offset = 1.0 / (size + 1)
           (0 until size).forEach { index ->
-            header.setDividerPosition(index, offset * (index + 1))
+            if (false) {
+              header.setDividerPosition(index, offset * (index + 1))
+            }
           }
         }
       })

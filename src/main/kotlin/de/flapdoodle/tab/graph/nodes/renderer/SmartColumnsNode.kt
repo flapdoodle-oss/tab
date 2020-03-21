@@ -27,7 +27,10 @@ import javafx.scene.control.Label
 import javafx.scene.control.TableCell
 import javafx.scene.control.TableColumn
 import javafx.scene.control.cell.TextFieldTableCell
+import javafx.scene.layout.FlowPane
+import javafx.scene.layout.HBox
 import javafx.scene.layout.Priority
+import javafx.scene.layout.StackPane
 import javafx.scene.paint.Color
 import javafx.util.Callback
 import javafx.util.StringConverter
@@ -80,6 +83,7 @@ class SmartColumnsNode<T>(
   }
 
   override val root = vbox {
+
     if (menu != null) {
       contextmenu(menu)
     }
@@ -95,6 +99,7 @@ class SmartColumnsNode<T>(
     }
 
     tabpane {
+      vgrow = Priority.ALWAYS
       tab("Data") {
         isClosable = false
         this += table
@@ -114,8 +119,9 @@ class SmartColumnsNode<T>(
 
     if (columnFooter != null) {
       flowpane {
+//        maxWidth = Control.USE_PREF_SIZE
         val factory = columnFooter
-        children.syncFrom(table.columns().asAObservable()) {
+        children.syncFrom(table.columns()) {
           factory(it!!).root
         }
       }
@@ -127,6 +133,8 @@ class SmartColumnsNode<T>(
       hbox {
         label(namedColumn.name)
         this += columnHeader.invoke(namedColumn).root
+
+        maxWidth=Control.USE_PREF_SIZE
       }
     } else {
       label(namedColumn.name)
@@ -173,158 +181,14 @@ class SmartColumnsNode<T>(
     }
   }
 
-  private fun <T : Any> tableColumnX(namedColumn: NamedColumn<out T>?): TableColumn<Data.Row, T> {
-    val ret = TableColumn<Data.Row, T>(namedColumn!!.name)
-    ret.property(ColumnId::class, namedColumn.id)
+  class XFlowPane : FlowPane() {
 
-    ret.apply {
-      value {
-        val row = it.value
-        SimpleObjectProperty(row[namedColumn.id]).apply {
-          if (editable) {
-            onChange { value ->
-              fire(DataEvent.EventData.Changed(namedColumn.id, row.index, value).asEvent())
-            }
-          }
-        }
-      }
-      isEditable = editable
-      isReorderable = false
-      isSortable = false
-//        cellFactory = cellFactoryForType(namedColumn.id.type)
-      cellFactory = Callback {
-        TextFieldTableCell<Data.Row, T>(converterFor(namedColumn.id.type)).apply {
+    override fun computePrefWidth(forHeight: Double): Double {
+      val ret = super.computePrefWidth(forHeight)
+      println("FlowPane.computePrefWidth -> $ret")
 
-          subscribeEvent<ExplainEvent> { event ->
-            when (event.data) {
-              is ExplainEvent.EventData.ColumnSelected<out Any> -> {
-                if (event.data.id == namedColumn.id) {
-                  style {
-                    backgroundColor += Color(0.0, 0.0, 0.0, 0.1)
-//                    borderWidth += box(0.0.px, 1.0.px)
-//                    borderColor += box(Color.RED)
-                  }
-                }
-              }
-              is ExplainEvent.EventData.NoColumnSelected -> {
-                style {
-                  backgroundColor = multi()
-//                  borderWidth = multi()
-//                  borderColor = multi()
-                }
-              }
-            }
-          }
-
-//          style {
-//            //backgroundColor += Color.BLUE
-//            borderWidth += box(0.0.px, 1.0.px)
-////              borderWidth = multi(box(1.0.px), box(0.0.px))
-//            borderColor += box(Color.RED)
-//          }
-        }
-      }
+      println("-> ${minWidth}, ${maxWidth}")
+      return ret
     }
-
-//    ret.isReorderable = false
-//    ret.isSortable = false
-//    if (editable) {
-//      ret.makeEditable(namedColumn.id.type)
-//    }
-    return ret
-  }
-
-  private fun <T : Any> tableColumnOLD(column: NamedColumn<out T>?): TableColumn<Data.Row, T> {
-    val ret = TableColumn<Data.Row, T>(column!!.name)
-    ret.property(ColumnId::class, column.id)
-
-    if (false) {
-      ret.apply {
-        cellFormat {
-          val x = it
-          SimpleObjectProperty<Data.Row>()
-        }
-      }
-    }
-
-//    ret.cellFactory = Callback {
-//      SmartTableCell(FX.defaultScope, it)
-//    }
-
-    ret.cellValueFactory = Callback {
-      val row = it.value
-      SimpleObjectProperty(row[column.id]).apply {
-        if (editable) {
-          onChange { value ->
-            fire(DataEvent.EventData.Changed(column.id, row.index, value).asEvent())
-//            changeListener.change(column.id, row.index, value)
-          }
-        }
-      }
-    }
-    ret.isReorderable = false
-    ret.isSortable = false
-    if (editable) {
-      ret.makeEditable(column.id.type)
-    }
-    return ret
-  }
-
-  @Suppress("CAST_NEVER_SUCCEEDS", "UNCHECKED_CAST")
-  private fun <T, S : Any> TableColumn<T, S>.makeEditable(s: KClass<out S>) = apply {
-    //tableView?.isEditable = true
-    isEditable = true
-    when (s.javaPrimitiveType ?: s) {
-      Int::class -> cellFactory = TextFieldTableCell.forTableColumn<T, S>(IntegerStringConverter() as StringConverter<S>)
-      Integer::class -> cellFactory = TextFieldTableCell.forTableColumn<T, S>(IntegerStringConverter() as StringConverter<S>)
-      Integer::class.javaPrimitiveType -> cellFactory = TextFieldTableCell.forTableColumn<T, S>(IntegerStringConverter() as StringConverter<S>)
-      Double::class -> cellFactory = TextFieldTableCell.forTableColumn<T, S>(DoubleStringConverter() as StringConverter<S>)
-      Double::class.javaPrimitiveType -> cellFactory = TextFieldTableCell.forTableColumn<T, S>(DoubleStringConverter() as StringConverter<S>)
-      Float::class -> cellFactory = TextFieldTableCell.forTableColumn<T, S>(FloatStringConverter() as StringConverter<S>)
-      Float::class.javaPrimitiveType -> cellFactory = TextFieldTableCell.forTableColumn<T, S>(FloatStringConverter() as StringConverter<S>)
-      Long::class -> cellFactory = TextFieldTableCell.forTableColumn<T, S>(LongStringConverter() as StringConverter<S>)
-      Long::class.javaPrimitiveType -> cellFactory = TextFieldTableCell.forTableColumn<T, S>(LongStringConverter() as StringConverter<S>)
-      Number::class -> cellFactory = TextFieldTableCell.forTableColumn<T, S>(NumberStringConverter() as StringConverter<S>)
-      BigDecimal::class -> cellFactory = TextFieldTableCell.forTableColumn<T, S>(BigDecimalStringConverter() as StringConverter<S>)
-      BigInteger::class -> cellFactory = TextFieldTableCell.forTableColumn<T, S>(BigIntegerStringConverter() as StringConverter<S>)
-      String::class -> cellFactory = TextFieldTableCell.forTableColumn<T, S>(DefaultStringConverter() as StringConverter<S>)
-      LocalDate::class -> cellFactory = TextFieldTableCell.forTableColumn<T, S>(LocalDateStringConverter() as StringConverter<S>)
-      LocalTime::class -> cellFactory = TextFieldTableCell.forTableColumn<T, S>(LocalTimeStringConverter() as StringConverter<S>)
-      LocalDateTime::class -> cellFactory = TextFieldTableCell.forTableColumn<T, S>(LocalDateTimeStringConverter() as StringConverter<S>)
-      Boolean::class.javaPrimitiveType -> {
-        (this as TableColumn<T, Boolean?>).useCheckbox(true)
-      }
-      else -> throw RuntimeException("makeEditable() is not implemented for specified class type:" + s.qualifiedName)
-    }
-  }
-
-  private fun <T, S : Any> cellFactoryForType(s: KClass<out S>): Callback<TableColumn<T, S>, TableCell<T, S>> {
-    @Suppress("UNCHECKED_CAST")
-    return when (s.javaPrimitiveType ?: s) {
-      Int::class -> TextFieldTableCell.forTableColumn<T, S>(IntegerStringConverter() as StringConverter<S>)
-      Integer::class -> TextFieldTableCell.forTableColumn<T, S>(IntegerStringConverter() as StringConverter<S>)
-      Integer::class.javaPrimitiveType -> TextFieldTableCell.forTableColumn<T, S>(IntegerStringConverter() as StringConverter<S>)
-      Double::class -> TextFieldTableCell.forTableColumn<T, S>(DoubleStringConverter() as StringConverter<S>)
-      Double::class.javaPrimitiveType -> TextFieldTableCell.forTableColumn<T, S>(DoubleStringConverter() as StringConverter<S>)
-      Float::class -> TextFieldTableCell.forTableColumn<T, S>(FloatStringConverter() as StringConverter<S>)
-      Float::class.javaPrimitiveType -> TextFieldTableCell.forTableColumn<T, S>(FloatStringConverter() as StringConverter<S>)
-      Long::class -> TextFieldTableCell.forTableColumn<T, S>(LongStringConverter() as StringConverter<S>)
-      Long::class.javaPrimitiveType -> TextFieldTableCell.forTableColumn<T, S>(LongStringConverter() as StringConverter<S>)
-      Number::class -> TextFieldTableCell.forTableColumn<T, S>(NumberStringConverter() as StringConverter<S>)
-      BigDecimal::class -> TextFieldTableCell.forTableColumn<T, S>(BigDecimalStringConverter() as StringConverter<S>)
-      BigInteger::class -> TextFieldTableCell.forTableColumn<T, S>(BigIntegerStringConverter() as StringConverter<S>)
-      String::class -> TextFieldTableCell.forTableColumn<T, S>(DefaultStringConverter() as StringConverter<S>)
-      LocalDate::class -> TextFieldTableCell.forTableColumn<T, S>(LocalDateStringConverter() as StringConverter<S>)
-      LocalTime::class -> TextFieldTableCell.forTableColumn<T, S>(LocalTimeStringConverter() as StringConverter<S>)
-      LocalDateTime::class -> TextFieldTableCell.forTableColumn<T, S>(LocalDateTimeStringConverter() as StringConverter<S>)
-//      Boolean::class.javaPrimitiveType -> {
-//        (this as TableColumn<T, Boolean?>).useCheckbox(true)
-//      }
-      else -> throw RuntimeException("makeEditable() is not implemented for specified class type:" + s.qualifiedName)
-    }
-  }
-
-  private fun <S : Any> converterFor(s: KClass<out S>): StringConverter<S> {
-    return Converters.converterFor(s)
   }
 }

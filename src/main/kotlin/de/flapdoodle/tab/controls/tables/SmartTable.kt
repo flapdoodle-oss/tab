@@ -29,7 +29,7 @@ class SmartTable<T : Any>(
   }
 
   override fun createDefaultSkin() = skin
-  fun columns() = skin.headerColumns()
+  fun columns() = columns
 
   class SmartTableSkin<T : Any>(
       control: SmartTable<T>
@@ -37,12 +37,15 @@ class SmartTable<T : Any>(
 
 
     private val header = SmartHeader(control.columns)
-    private val rowsPane = SmartRows(control.rows, header.headerColumns()).apply {
+    private val rowsPane = SmartRows(control.rows, control.columns).apply {
       VBox.setVgrow(this, Priority.ALWAYS)
     }
     private val footer = SmartFooter(control.columns)
 
     private val scroll = ScrollPane().apply {
+      style {
+        padding = box(0.px)
+      }
       add(rowsPane)
     }
 
@@ -68,5 +71,13 @@ class SmartTable<T : Any>(
       footer.columnsChanged()
     }
     internal fun headerColumns() = header.headerColumns()
+
+    override fun computePrefWidth(height: Double, topInset: Double, rightInset: Double, bottomInset: Double, leftInset: Double): Double {
+      val ret = super.computePrefWidth(height, topInset, rightInset, bottomInset, leftInset)
+      println("-------------------------------------------")
+      println("pref width: $ret -> ${all.prefWidth}")
+      println("-------------------------------------------")
+      return ret
+    }
   }
 }

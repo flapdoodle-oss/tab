@@ -127,10 +127,12 @@ class NodeAdapterGraphNode(
 
       return NodeAdapterGraphNode {
         NodeAdapter(
-            content = ColumnsNode(
+            content = SmartColumnsNode(
                 node = nodeProperty,
                 data = dataProperty,
-                columnFooter = ::TableColumnAggregateNode,
+//                columnFooter = ::TableColumnAggregateNode,
+                columnFooter = ::SmartHeaderColumnAggregateNode,
+
                 menu = {
                   item("Add Calculation").action {
                     AddCalculationModalView.openModalWith(id)
@@ -169,7 +171,7 @@ class NodeAdapterGraphNode(
 
       return NodeAdapterGraphNode {
         NodeAdapter(
-            content = ColumnsNode(
+            content = SmartColumnsNode(
                 node = nodeProperty,
                 data = dataProperty,
                 menu = {

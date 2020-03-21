@@ -40,7 +40,7 @@ object LazyBindings {
       children.setAll(mapped)
     }
     val weakListener = WeakChangeListenerDelegate(listener)
-    val keepReferenceListener = KeepReference<D>(listOf(src,listener))
+    val keepReferenceListener = KeepReference<D>(listOf(src, listener))
 
     src.addListener(weakListener)
     children.addListener(keepReferenceListener)
@@ -91,9 +91,4 @@ object LazyBindings {
     }
   }
 
-  class KeepReference<T>(
-      private val reference: Any
-  ) : ListChangeListener<T> {
-    override fun onChanged(c: ListChangeListener.Change<out T>?) {}
-  }
 }
