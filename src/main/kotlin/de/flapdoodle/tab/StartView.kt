@@ -2,6 +2,7 @@ package de.flapdoodle.tab
 
 import de.flapdoodle.tab.controls.SpreadSheet
 import de.flapdoodle.tab.controls.SpreadSheetPlayground
+import de.flapdoodle.tab.controls.layout.BetterSplitPaneSampler
 import de.flapdoodle.tab.controls.layout.LayoutFun
 import de.flapdoodle.tab.data.ColumnId
 import de.flapdoodle.tab.data.NamedColumn
@@ -83,6 +84,11 @@ class StartView : View("My View") {
         button("Test") {
           onLeftClick {
             LayoutSizeFun.open()
+          }
+        }
+        button("Better SplitPane") {
+          onLeftClick {
+            BetterSplitPaneSampler.open()
           }
         }
       }

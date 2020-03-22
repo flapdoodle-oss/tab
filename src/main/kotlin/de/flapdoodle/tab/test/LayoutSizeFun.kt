@@ -1,5 +1,6 @@
 package de.flapdoodle.tab.test
 
+import de.flapdoodle.tab.controls.layout.BetterSplitPane
 import de.flapdoodle.tab.graph.nodes.renderer.modals.AddNodeModalView
 import javafx.scene.control.Control
 import javafx.scene.paint.Color
@@ -20,7 +21,7 @@ class LayoutSizeFun : View("My View") {
         label("some text")
         button("foo")
 
-        maxWidth=Control.USE_PREF_SIZE
+        maxWidth = Control.USE_PREF_SIZE
       }
     }
   }
