@@ -46,7 +46,7 @@ class BetterSplitPane(
     init {
       control.nodes.addListener(ListChangeListener {
         handles.setAll(control.nodes.map {
-          SplitHandle(it)
+          SplitHandle(this, it)
         })
 
         children.setAll(
@@ -54,6 +54,60 @@ class BetterSplitPane(
         )
         control.requestLayout()
       })
+
+      var dragStarted: DragStart? = null
+      control.addEventFilter(MouseEvent.MOUSE_PRESSED) { event ->
+        println("mouse clicked in parent")
+        val target = event.target
+        if (target is SplitHandle && target.parentSkin == this) {
+          println("start")
+          dragStarted = DragStart(Point2D(event.x, event.y), target)
+
+          event.isDragDetect = true
+          event.consume()
+        } else {
+          println("skip ${event.target}")
+        }
+      }
+
+      control.addEventFilter(MouseEvent.DRAG_DETECTED) { event ->
+//        dragStarted = dragStarted?.copy(pos = Point2D(event.x, event.y))
+        control.startFullDrag()
+        event.consume()
+      }
+
+      control.addEventFilter(MouseDragEvent.MOUSE_DRAGGED) { event ->
+        if (dragStarted != null) {
+          val start = dragStarted
+          require(start != null) { "drag not started.." }
+          val current = Point2D(event.x, event.y)
+
+          val localStart = control.sceneToLocal(start.pos)
+          val localCurrent = control.sceneToLocal(current)
+
+          val diff = current - start.pos
+
+          println("${start.handle.node}: from $dragStarted to $current -> $diff (local)")
+
+
+          if (diff.x > 20.0 || diff.x < -20.0) {
+            println("###################################")
+            println("# WHAT                            #")
+            println("###################################")
+          }
+          start.handle.changedPrefWidth = start.currentWith + diff.x
+          start.handle.requestLayout()
+          //        //node.prefWidth = node.layoutBounds.width + diff.x
+          event.consume()
+        }
+      }
+      control.addEventFilter(MouseEvent.MOUSE_RELEASED) { event ->
+        if (dragStarted != null) {
+          dragStarted = null
+          event.consume()
+        }
+      }
+
     }
 
     override fun computePrefWidth(height: Double, topInset: Double, rightInset: Double, bottomInset: Double, leftInset: Double): Double {
@@ -93,7 +147,14 @@ class BetterSplitPane(
     }
   }
 
+  data class DragStart(
+      val pos: Point2D,
+      val handle: SplitHandle,
+      val currentWith: Double = handle.changedPrefWidth ?: 0.0
+  )
+
   class SplitHandle(
+      internal val parentSkin: BetterSplitPane.Skin,
       internal val node: Node
   ) : Control() {
     private val skin = Skin(this)
@@ -105,7 +166,7 @@ class BetterSplitPane(
       val ret = node.prefWidth(height) + (changedPrefWidth ?: 0.0)
       val min = node.minWidth(height)
       //println("$node prefWidth -> $ret")
-      return max(min,ret)
+      return max(min, ret)
     }
 
     fun isNodeManaged(): Boolean {
@@ -123,59 +184,61 @@ class BetterSplitPane(
           padding = box(0.px, 5.px)
         }
 
-        var dragStarted: Point2D? = null
+        if (false) {
+          var dragStarted: Point2D? = null
 
-        control.addEventFilter(MouseEvent.ANY) { event ->
-          println("--> $event")
-        }
-
-        control.addEventHandler(MouseEvent.MOUSE_PRESSED) { event ->
-          event.isDragDetect = true
-          dragStarted = Point2D(event.x, event.y)
-          println("node.width: ${node.layoutBounds.width}")
-          control.changedPrefWidth = 0.0
-
-          control.style {
-            borderColor += box(Color.GREEN)
-            padding = box(0.px, 5.px)
+          control.addEventFilter(MouseEvent.ANY) { event ->
+            println("--> $event")
           }
 
-          event.consume()
-        }
-        control.addEventHandler(MouseDragEvent.DRAG_DETECTED) { event ->
-          println("drag detected")
-          event.consume()
-          control.parent.startFullDrag()
-        }
-        control.addEventHandler(MouseDragEvent.MOUSE_DRAGGED) { event ->
-          val start = dragStarted
-          require(start != null) { "drag not started.." }
-          val current = Point2D(event.x, event.y)
+          control.addEventHandler(MouseEvent.MOUSE_PRESSED) { event ->
+            event.isDragDetect = true
+            dragStarted = Point2D(event.x, event.y)
+            println("node.width: ${node.layoutBounds.width}")
+            control.changedPrefWidth = 0.0
 
-          val localStart = control.sceneToLocal(start)
-          val localCurrent = control.sceneToLocal(current)
+            control.style {
+              borderColor += box(Color.GREEN)
+              padding = box(0.px, 5.px)
+            }
 
-          val diff = current - start
-
-          println("${control.node}: from $dragStarted to $current -> $diff (local)")
-
-          if (diff.x > 20.0 || diff.x < -20.0) {
-            println("###################################")
-            println("# WHAT                            #")
-            println("###################################")
+            event.consume()
           }
-          control.changedPrefWidth = control.changedPrefWidth!! + diff.x
-          control.requestLayout()
-          //node.prefWidth = node.layoutBounds.width + diff.x
-          event.consume()
-        }
-        control.addEventHandler(MouseEvent.MOUSE_RELEASED) { event ->
-          dragStarted = null
-          control.style {
-            borderColor += box(Color.BLUE)
-            padding = box(0.px, 5.px)
+          control.addEventHandler(MouseDragEvent.DRAG_DETECTED) { event ->
+            println("drag detected")
+            event.consume()
+            control.parent.startFullDrag()
           }
-          event.consume()
+          control.addEventHandler(MouseDragEvent.MOUSE_DRAGGED) { event ->
+            val start = dragStarted
+            require(start != null) { "drag not started.." }
+            val current = Point2D(event.x, event.y)
+
+            val localStart = control.sceneToLocal(start)
+            val localCurrent = control.sceneToLocal(current)
+
+            val diff = current - start
+
+            println("${control.node}: from $dragStarted to $current -> $diff (local)")
+
+            if (diff.x > 20.0 || diff.x < -20.0) {
+              println("###################################")
+              println("# WHAT                            #")
+              println("###################################")
+            }
+            control.changedPrefWidth = control.changedPrefWidth!! + diff.x
+            control.requestLayout()
+            //node.prefWidth = node.layoutBounds.width + diff.x
+            event.consume()
+          }
+          control.addEventHandler(MouseEvent.MOUSE_RELEASED) { event ->
+            dragStarted = null
+            control.style {
+              borderColor += box(Color.BLUE)
+              padding = box(0.px, 5.px)
+            }
+            event.consume()
+          }
         }
       }
     }
