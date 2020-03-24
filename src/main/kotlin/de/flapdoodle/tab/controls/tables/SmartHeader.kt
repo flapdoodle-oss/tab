@@ -1,5 +1,6 @@
 package de.flapdoodle.tab.controls.tables
 
+import de.flapdoodle.tab.controls.layout.BetterSplitPane
 import javafx.collections.ListChangeListener
 import javafx.collections.ObservableList
 import javafx.scene.control.Control
@@ -23,12 +24,11 @@ class SmartHeader<T : Any>(
   }
 
   override fun createDefaultSkin() = skin
-  fun headerColumns() = skin.headerColumns()
 
   class SmartHeaderSkin<T : Any>(
       private val src: SmartHeader<T>
   ) : SkinBase<SmartHeader<T>>(src) {
-    private val header = SplitPane().apply {
+    private val header = BetterSplitPane().apply {
 //      addClass(TabStyle.styledSplitPane)
 //      prefWidth = 200.0
     }
@@ -37,18 +37,19 @@ class SmartHeader<T : Any>(
 
     internal fun columnsChanged() {
 //      header.items.bind(src.columns) { SmartHeaderColumn(it) }
-      header.items.setAll(src.columns + Label("   ").apply { maxWidth = Double.MAX_VALUE })
-      header.items.addListener(ListChangeListener {
-        val size = it.list.size
-        if (size > 0) {
-          val offset = 1.0 / (size + 1)
-          (0 until size).forEach { index ->
-            if (false) {
-              header.setDividerPosition(index, offset * (index + 1))
-            }
-          }
-        }
-      })
+      header.nodes().setAll(src.columns/* + Label("   ").apply { maxWidth = Double.MAX_VALUE }*/)
+
+//      header.nodes().addListener(ListChangeListener {
+//        val size = it.list.size
+//        if (size > 0) {
+//          val offset = 1.0 / (size + 1)
+//          (0 until size).forEach { index ->
+//            if (false) {
+//              header.setDividerPosition(index, offset * (index + 1))
+//            }
+//          }
+//        }
+//      })
 
 //      headerColumns.setAll(src.columns.map { ColumnHeader(it) })
 //      header.items.setAll(headerColumns)
@@ -64,9 +65,6 @@ class SmartHeader<T : Any>(
       children.add(header)
 //      columnsChanged()
     }
-
-    @Suppress("UNCHECKED_CAST")
-    fun headerColumns() = header.items.asUnmodifiable() as ObservableList<SmartColumn<T, out Any>>
   }
 
 }

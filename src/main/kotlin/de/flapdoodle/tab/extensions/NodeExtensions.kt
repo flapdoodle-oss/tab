@@ -2,7 +2,9 @@ package de.flapdoodle.tab.extensions
 
 import javafx.scene.Node
 import javafx.scene.Parent
+import tornadofx.*
 import kotlin.reflect.KClass
+import kotlin.reflect.full.safeCast
 
 fun <T : Any> Node.property(scope: KClass<out Any>, key: KClass<T>, value: T?): T? {
   return ObservableMapExtensions.set(this.properties, scope,key, value)
@@ -41,4 +43,12 @@ fun Node.parentPath(child: Node): List<Node> {
     val parentOfChild = child.parent
     return this.parentPath(parentOfChild) + child
   }
+}
+
+
+fun <T: Node> Node.parentOfType(type: KClass<T>): T? {
+  println("parent of $this -> $parent (search $type)")
+  if (parent == null) return null
+  type.safeCast(parent)?.also { return it }
+  return parent?.parentOfType(type)
 }

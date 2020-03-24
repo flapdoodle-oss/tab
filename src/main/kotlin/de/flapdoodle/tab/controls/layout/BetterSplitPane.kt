@@ -5,18 +5,20 @@ import javafx.collections.ListChangeListener
 import javafx.geometry.HPos
 import javafx.geometry.Point2D
 import javafx.geometry.VPos
+import javafx.scene.Cursor
 import javafx.scene.Node
 import javafx.scene.control.Control
-import javafx.scene.control.Label
-import javafx.scene.control.Skin
 import javafx.scene.control.SkinBase
 import javafx.scene.input.MouseDragEvent
 import javafx.scene.input.MouseEvent
-import javafx.scene.layout.Region
+import javafx.scene.layout.StackPane
 import javafx.scene.paint.Color
-import javafx.scene.shape.Rectangle
+import javafx.scene.paint.CycleMethod
+import javafx.scene.paint.LinearGradient
+import javafx.scene.paint.Stop
 import tornadofx.*
 import java.lang.Double.max
+import java.lang.Double.min
 
 class BetterSplitPane(
 
@@ -26,16 +28,22 @@ class BetterSplitPane(
   private val skin = Skin(this)
 
   init {
-    style {
-      borderColor += box(Color.GREEN)
-      borderWidth += box(1.px)
-    }
+//    style {
+//      borderColor += box(Color.GREEN)
+//      borderWidth += box(1.px)
+//    }
+    addClass(Style.betterSplitPane)
   }
 
+  override fun getUserAgentStylesheet() = Style().base64URL.toExternalForm()
+
   override fun createDefaultSkin() = skin
+
   fun add(node: Node) {
     nodes.add(node)
   }
+
+  fun nodes() = nodes
 
   class Skin(
       private val control: BetterSplitPane
@@ -45,6 +53,7 @@ class BetterSplitPane(
 
     init {
       control.nodes.addListener(ListChangeListener {
+        println("changed: $it")
         handles.setAll(control.nodes.map {
           SplitHandle(this, it)
         })
@@ -96,7 +105,7 @@ class BetterSplitPane(
 //              println("# WHAT                            #")
 //              println("###################################")
 //            }
-            start.handle.changedPrefWidth = start.currentWith + diff.x
+            start.handle.prefWidthOffset(control.height, start.currentWith + diff.x)
             start.handle.requestLayout()
             //        //node.prefWidth = node.layoutBounds.width + diff.x
             event.consume()
@@ -148,26 +157,49 @@ class BetterSplitPane(
     }
   }
 
-  data class DragStart(
+  private data class DragStart(
       val pos: Point2D,
       val handle: SplitHandle,
-      val currentWith: Double = handle.changedPrefWidth ?: 0.0
+      val currentWith: Double = handle.prefWidthOffset()
   )
 
-  class SplitHandle(
+  private class SplitHandle(
       internal val parentSkin: BetterSplitPane.Skin,
       internal val node: Node
   ) : Control() {
     private val skin = Skin(this)
     var changedPrefWidth: Double? = null
 
+    init {
+      isFocusTraversable = false
+      addClass(Style.betterSplitPaneHandle)
+    }
+
     override fun createDefaultSkin() = skin
 
+    fun prefWidthOffset(currentHeight: Double, offset: Double) {
+      val pref = node.prefWidth(currentHeight)
+      val min = node.minWidth(currentHeight)
+      val max = node.maxWidth(currentHeight)
+
+      val w = pref + offset
+      changedPrefWidth = when  {
+        (w < min) -> min - pref
+        (w > max) -> max - pref
+        else -> offset
+      }
+    }
+
+    fun prefWidthOffset(): Double {
+      return changedPrefWidth ?: 0.0
+    }
+
     fun prefWidthOfNode(height: Double): Double {
-      val ret = node.prefWidth(height) + (changedPrefWidth ?: 0.0)
       val min = node.minWidth(height)
-      //println("$node prefWidth -> $ret")
-      return max(min, ret)
+      val max = node.maxWidth(height)
+
+      val ret = node.prefWidth(height) + (changedPrefWidth ?: 0.0)
+      return min(max(min, ret), max)
     }
 
     fun isNodeManaged(): Boolean {
@@ -175,73 +207,61 @@ class BetterSplitPane(
     }
 
 
-    class Skin(control: SplitHandle) : SkinBase<SplitHandle>(control) {
+    internal class Skin(control: SplitHandle) : SkinBase<SplitHandle>(control) {
       init {
-        children.add(Label("|"))
+        children.add(StackPane().apply {
+          isMouseTransparent = true
+          addClass(Style.stackPane)
+//          minWidth = 1.0
+//          style {
+//            backgroundColor += Color.BLACK
+//          }
+        })
 
-        control.style {
-          borderWidth += box(1.px)
-          borderColor += box(Color.RED)
-          padding = box(0.px, 5.px)
-        }
-
-        if (false) {
-          var dragStarted: DragStart? = null
-
-          control.addEventFilter(MouseEvent.ANY) { event ->
-            println("--> $event")
-          }
-
-          control.addEventHandler(MouseEvent.MOUSE_PRESSED) { event ->
-            event.isDragDetect = true
-            dragStarted = DragStart(Point2D(event.x, event.y), control)
-            println("node.width: ${node.layoutBounds.width}")
-            control.changedPrefWidth = 0.0
-
-            control.style {
-              borderColor += box(Color.GREEN)
-              padding = box(0.px, 5.px)
-            }
-
-            event.consume()
-          }
-          control.addEventHandler(MouseDragEvent.DRAG_DETECTED) { event ->
-            println("drag detected")
-            event.consume()
-            control.parent.startFullDrag()
-          }
-          control.addEventHandler(MouseDragEvent.MOUSE_DRAGGED) { event ->
-            val start = dragStarted
-            require(start != null) { "drag not started.." }
-            val current = Point2D(event.x, event.y)
-
-            val localStart = control.sceneToLocal(start.pos)
-            val localCurrent = control.sceneToLocal(current)
-
-            val diff = current - start.pos
-
-            println("${control.node}: from $dragStarted to $current -> $diff (local)")
-
-            if (diff.x > 20.0 || diff.x < -20.0) {
-              println("###################################")
-              println("# WHAT                            #")
-              println("###################################")
-            }
-            control.changedPrefWidth = start.currentWith + diff.x
-            control.requestLayout()
-            //node.prefWidth = node.layoutBounds.width + diff.x
-            event.consume()
-          }
-          control.addEventHandler(MouseEvent.MOUSE_RELEASED) { event ->
-            dragStarted = null
-            control.style {
-              borderColor += box(Color.BLUE)
-              padding = box(0.px, 5.px)
-            }
-            event.consume()
-          }
-        }
+//        control.style {
+//          borderWidth += box(1.px)
+//          borderColor += box(Color.RED)
+//          padding = box(0.px, 5.px)
+//          cursor = Cursor.H_RESIZE
+//        }
       }
     }
+  }
+
+  class Style : Stylesheet() {
+
+    companion object {
+      val betterSplitPane by cssclass()
+      val betterSplitPaneHandle by cssclass()
+      val stackPane by cssclass()
+    }
+
+    init {
+      betterSplitPane {
+        backgroundColor += Color.valueOf("#f4f4f4")
+      }
+
+      betterSplitPaneHandle {
+        padding = box(0.px, 5.px)
+        cursor = Cursor.H_RESIZE
+
+        child(stackPane) {
+          minWidth = 1.0.px
+          backgroundColor += LinearGradient(0.0, 0.0, 0.0, 1.0, true,
+              CycleMethod.NO_CYCLE,
+              Stop(0.0, Color(0.0,0.0,0.0,0.05)),
+              Stop(0.5, Color(0.0,0.0,0.0,0.2)),
+              Stop(1.0, Color(0.0,0.0,0.0,0.05))
+          )
+        }
+      }
+
+      if (false) {
+        println("-----------------------------")
+        println(this.render())
+        println("-----------------------------")
+      }
+    }
+
   }
 }

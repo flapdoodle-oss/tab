@@ -9,6 +9,8 @@ import javafx.scene.control.SkinBase
 import javafx.scene.layout.Priority
 import javafx.scene.layout.VBox
 import tornadofx.*
+import java.lang.Integer.max
+import java.lang.Math.min
 
 
 class SmartTable<T : Any>(
@@ -32,9 +34,10 @@ class SmartTable<T : Any>(
   fun columns() = columns
 
   class SmartTableSkin<T : Any>(
-      control: SmartTable<T>
+      private val control: SmartTable<T>
   ) : SkinBase<SmartTable<T>>(control) {
 
+    private var currentCursor: Cursor<T>? = null
 
     private val header = SmartHeader(control.columns)
     private val rowsPane = SmartRows(control.rows, control.columns).apply {
@@ -59,25 +62,65 @@ class SmartTable<T : Any>(
       children.add(all)
       columnsChanged()
       rowsChanged()
+
+      control.addEventFilter(Events.TABLE) { event ->
+        when (event) {
+          is Events.ChangeCursor<out Any> -> {
+            if (control.columns.contains(event.cursor.column)) {
+              event.consume()
+
+              println("cursor changed from $currentCursor to ${event.cursor}")
+              @Suppress("UNCHECKED_CAST")
+              currentCursor = event.cursor as Cursor<T>
+            }
+          }
+          is Events.MoveCursor -> {
+            event.consume()
+
+            currentCursor = currentCursor?.let {
+              val row = min(max(0, (it.row + event.deltaRow)), control.rows.size - 1)
+              val colIndex = control.columns.indexOf(it.column)
+              if (colIndex != -1) {
+                val column = min(max(0, colIndex + event.deltaColumn), control.columns.size - 1)
+                Cursor(control.columns[column], row)
+              } else it
+            }
+
+            //control.fireEvent(Events.C)
+            println("cursor changed to $currentCursor")
+            currentCursor?.let {
+              println("fire set-cursor to $currentCursor")
+              rowsPane.setCursor(it)
+              //control.fireEventToChildren(Events.SetCursor(it))
+            }
+          }
+          else -> println("what? -> $event")
+        }
+      }
     }
 
     internal fun rowsChanged() {
       rowsPane.rowsChanged()
+      currentCursor?.let {
+        rowsPane.setCursor(it)
+      }
     }
 
     internal fun columnsChanged() {
       header.columnsChanged()
       rowsPane.columnsChanged()
       footer.columnsChanged()
+      currentCursor?.let {
+        rowsPane.setCursor(it)
+      }
     }
-    internal fun headerColumns() = header.headerColumns()
 
-    override fun computePrefWidth(height: Double, topInset: Double, rightInset: Double, bottomInset: Double, leftInset: Double): Double {
-      val ret = super.computePrefWidth(height, topInset, rightInset, bottomInset, leftInset)
-      println("-------------------------------------------")
-      println("pref width: $ret -> ${all.prefWidth}")
-      println("-------------------------------------------")
-      return ret
-    }
+//    override fun computePrefWidth(height: Double, topInset: Double, rightInset: Double, bottomInset: Double, leftInset: Double): Double {
+//      val ret = super.computePrefWidth(height, topInset, rightInset, bottomInset, leftInset)
+//      println("-------------------------------------------")
+//      println("pref width: $ret -> ${all.prefWidth}")
+//      println("-------------------------------------------")
+//      return ret
+//    }
   }
 }

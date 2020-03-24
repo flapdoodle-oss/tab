@@ -15,6 +15,7 @@ class SmartRows<T : Any>(
 
   init {
     addClass(SmartTableStyles.smartRows)
+
   }
 
   override fun createDefaultSkin() = skin
@@ -26,12 +27,19 @@ class SmartRows<T : Any>(
     skin.columnsChanged()
   }
 
+  internal fun setCursor(cursor: Cursor<T>) {
+    skin.setCursor(cursor)
+  }
+
   class SmartRowsSkin<T : Any>(
       private val control: SmartRows<T>
   ) : SkinBase<SmartRows<T>>(control) {
     private val rowPane = VBox()
 
     init {
+      // TODO what?
+      consumeMouseEvents(false)
+
       children.add(rowPane)
 
       rowsChanged()
@@ -39,17 +47,19 @@ class SmartRows<T : Any>(
 
     internal fun rowsChanged() {
       rowPane.children.setAll(control.rows.mapIndexed { index, t ->
-        SmartRow(control.columns, t, index % 2 == 0)
+        SmartRow(control.columns, t, index)
       })
-//      rowPane.children.clear()
-//      control.rows.forEachIndexed { index, it ->
-//        rowPane.add(SmartRow(control.columns, it, index % 2 == 0))
-//      }
     }
 
     fun columnsChanged() {
       rowPane.children.forEach {
         (it as SmartRow<T>).columnsChanged()
+      }
+    }
+
+    internal fun setCursor(cursor: Cursor<T>) {
+      rowPane.children.forEach {
+        (it as SmartRow<T>).setCursor(cursor)
       }
     }
   }

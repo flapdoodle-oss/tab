@@ -1,5 +1,6 @@
 package de.flapdoodle.tab.controls.tables
 
+import de.flapdoodle.tab.extensions.property
 import javafx.collections.ObservableList
 import javafx.scene.control.Control
 import javafx.scene.control.Skin
@@ -10,14 +11,15 @@ import tornadofx.*
 class SmartRow<T : Any>(
     internal val columns: ObservableList<out SmartColumn<T, out Any>>,
     internal val value: T,
-    internal val even: Boolean
+    internal val index: Int
 ) : Control() {
 
   private val skin = SmartRowSkin(this)
 
   init {
+    isFocusTraversable = false
     addClass(SmartTableStyles.smartRow)
-    if (even) {
+    if (index % 2 == 0) {
       addClass(Stylesheet.even)
     } else {
       addClass(Stylesheet.odd)
@@ -30,6 +32,10 @@ class SmartRow<T : Any>(
 
   fun columnsChanged() {
     skin.columnsChanged()
+  }
+
+  internal fun setCursor(cursor: Cursor<T>) {
+    skin.setCursor(cursor)
   }
 
 
@@ -45,10 +51,48 @@ class SmartRow<T : Any>(
     init {
       children.add(rowContainer)
       columnsChanged()
+
+      row.addEventFilter(Events.ALL) { event ->
+        when (event) {
+          is Events.EditDone -> {
+            event.consume()
+            println("Row: EditDone in ${event.cell}")
+            row.fireEvent(Events.MoveCursor(deltaRow = 1))
+          }
+          is Events.CellFocused -> {
+            event.consume()
+            println("Cell focused: ${event.cell}")
+
+            val column = event.cell.property(SmartColumn::class)
+            val matchingColumn = row.columns.find { it == column }
+            require(matchingColumn!=null) {"column not found: $column -> ${row.columns}"}
+            row.fireEvent(Events.ChangeCursor(Cursor(matchingColumn, row.index)))
+          }
+          else -> println("$event")
+        }
+//        event.consume()
+      }
+    }
+
+    fun setCursor(cursor: Cursor<T>) {
+      if (cursor.row==row.index) {
+        println("set cursor ${cursor} matches")
+        val cell = rowContainer.children.find {
+          val cellColumn = it.property(SmartColumn::class)
+          println("$cellColumn ? ${cursor.column} -> ${it.properties}")
+          cellColumn == cursor.column
+        }
+        println("request focus for ${cursor} -> $cell (${cell?.isFocused})")
+        if (cell!=null && !cell.isFocused) {
+          println("do it for ${cell}")
+          cell.requestFocus()
+        }
+      }
     }
 
     private fun <T : Any, C : Any> cell(c: SmartColumn<T, C>, row: T): SmartCell<T, C> {
       return c.cell(row).apply {
+        property(SmartColumn::class, c)
         prefWidthProperty().bind(c.widthProperty())
       }
 
@@ -66,6 +110,7 @@ class SmartRow<T : Any>(
 //        prefWidthProperty().bind(c.widthProperty())
 //      }
     }
+
   }
 
 }

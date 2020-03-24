@@ -16,11 +16,13 @@ import de.flapdoodle.tab.graph.nodes.renderer.events.ExplainEvent
 import de.flapdoodle.tab.lazy.LazyValue
 import de.flapdoodle.tab.lazy.asAObservable
 import de.flapdoodle.tab.lazy.asListBinding
+import de.flapdoodle.tab.lazy.bindFrom
 import de.flapdoodle.tab.lazy.map
 import de.flapdoodle.tab.lazy.mapList
 import de.flapdoodle.tab.lazy.merge
 import de.flapdoodle.tab.lazy.syncFrom
 import javafx.beans.property.SimpleObjectProperty
+import javafx.collections.FXCollections
 import javafx.scene.control.ContextMenu
 import javafx.scene.control.Control
 import javafx.scene.control.Label
@@ -88,9 +90,14 @@ class SmartColumnsNode<T>(
       contextmenu(menu)
     }
 
+
+//    val columns = columnList.mapList { tableColumn(it) }.asListBinding()
+    val c = FXCollections.observableArrayList<SmartColumn<Data.Row, Any>>()
+    c.bindFrom(columnList) { tableColumn(it) }
+
     val table = SmartTable(
         rows = rows,
-        columns = columnList.mapList { tableColumn(it) }.asListBinding()
+        columns = c
     ).apply {
 //      isEditable = editable
       vgrow = Priority.ALWAYS
@@ -118,7 +125,7 @@ class SmartColumnsNode<T>(
 //    }
 
     if (columnFooter != null) {
-      flowpane {
+      hbox {
 //        maxWidth = Control.USE_PREF_SIZE
         val factory = columnFooter
         children.syncFrom(table.columns()) {
@@ -129,6 +136,7 @@ class SmartColumnsNode<T>(
   }
 
   private fun <T : Any> tableColumn(namedColumn: NamedColumn<out T>): SmartColumn<Data.Row, T> {
+    println("tableColumn for $namedColumn")
     val header = if (columnHeader != null) {
       hbox {
         label(namedColumn.name)
@@ -178,17 +186,6 @@ class SmartColumnsNode<T>(
           }
         }
       }
-    }
-  }
-
-  class XFlowPane : FlowPane() {
-
-    override fun computePrefWidth(forHeight: Double): Double {
-      val ret = super.computePrefWidth(forHeight)
-      println("FlowPane.computePrefWidth -> $ret")
-
-      println("-> ${minWidth}, ${maxWidth}")
-      return ret
     }
   }
 }

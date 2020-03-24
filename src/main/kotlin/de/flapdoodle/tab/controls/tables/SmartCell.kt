@@ -1,6 +1,8 @@
 package de.flapdoodle.tab.controls.tables
 
+import de.flapdoodle.tab.extensions.parentOfType
 import javafx.event.ActionEvent
+import javafx.event.Event
 import javafx.event.EventHandler
 import javafx.scene.control.Control
 import javafx.scene.control.Label
@@ -10,8 +12,9 @@ import javafx.scene.input.KeyCode
 import javafx.scene.input.KeyEvent
 import javafx.util.StringConverter
 import tornadofx.*
+import java.lang.RuntimeException
 
-open class SmartCell<T: Any, C : Any>(
+open class SmartCell<T : Any, C : Any>(
     val value: C?,
     val editable: Boolean,
     val converter: StringConverter<C>
@@ -43,9 +46,48 @@ open class SmartCell<T: Any, C : Any>(
       prefWidth = Double.MAX_VALUE
       text = control.converter.toString(control.value)
       if (control.editable) {
-        addEventHandler(javafx.scene.input.MouseEvent.MOUSE_RELEASED) {
+        control.addEventHandler(javafx.scene.input.MouseEvent.MOUSE_RELEASED) {
+          if (it.clickCount == 1) {
+            control.requestFocus()
+          }
           if (it.clickCount == 2) {
-            _edit()
+            _startEdit()
+          }
+          it.consume()
+        }
+
+        control.addEventHandler(KeyEvent.KEY_RELEASED) {
+          if (!it.isShortcutDown) {
+            println("#############################")
+            println("event $it -> ${it.isConsumed} --> ${it.target} ? $control")
+            println("#############################")
+
+            if (it.code == KeyCode.LEFT) {
+              it.consume()
+              fireEvent(Events.MoveCursor(deltaColumn = -1))
+            }
+            if (it.code == KeyCode.RIGHT) {
+              it.consume()
+              fireEvent(Events.MoveCursor(deltaColumn = 1))
+            }
+            if (it.code == KeyCode.UP) {
+              it.consume()
+              fireEvent(Events.MoveCursor(deltaRow = -1))
+            }
+            if (it.code == KeyCode.DOWN) {
+              it.consume()
+              fireEvent(Events.MoveCursor(deltaRow = 1))
+            }
+            if (it.code == KeyCode.ENTER) {
+              it.consume()
+              _startEdit()
+            }
+          }
+        }
+
+        control.focusedProperty().addListener { _, _, focused ->
+          if (focused) {
+            fireEvent(Events.CellFocused(control))
           }
         }
       }
@@ -56,8 +98,9 @@ open class SmartCell<T: Any, C : Any>(
         converter = control.converter,
         commitEdit = {
           label.text = control.converter.toString(it)
+          control.fireEvent(Events.EditDone(control))
           control.onChange(it)
-          _cancelEdit()
+          _editDone()
         },
         cancelEdit = this::_cancelEdit
     ).apply {
@@ -70,13 +113,39 @@ open class SmartCell<T: Any, C : Any>(
       }
     }
 
+//    enum class EVT: EventType<EVT> {
+//
+//    }
+//    object EditDone : Event() {
+//
+//    }
+
+    internal fun _editDone() {
+//      control.fireEvent(Events.EditDone(control))
+//      control.fireEvent(Events.EditDone(control))
+
+//      val parentTable = control.parentOfType(SmartTable::class)
+//      if (parentTable!=null) {
+//        println("----------------------------------")
+//        println("parent found: -> $parentTable")
+//        println("----------------------------------")
+//        Event.fireEvent(parentTable, Events.EditDone(control))
+//      } else {
+//        println("----------------------------------")
+//        println("parent NOT found: -> $parentTable")
+//        println("----------------------------------")
+//      }
+      _cancelEdit()
+    }
+
     internal fun _cancelEdit() {
       label.show()
       field.hide()
       field.text = label.text
     }
 
-    internal fun _edit() {
+    internal fun _startEdit() {
+      RuntimeException("startEdit called").printStackTrace()
       label.hide()
       field.show()
       field.requestFocus()
@@ -85,6 +154,8 @@ open class SmartCell<T: Any, C : Any>(
     init {
       children.add(field)
       children.add(label)
+
+      consumeMouseEvents(false)
 
 //      control.prefWidthProperty().bind(control.column.widthProperty())
     }
@@ -118,18 +189,21 @@ open class SmartCell<T: Any, C : Any>(
     ): TextField {
       val textField = TextField(converter.toString(value))
 
-      textField.onAction = EventHandler { event: ActionEvent ->
-        commitEdit(converter.fromString(textField.text))
-        event.consume()
-      }
+//      textField.onAction = EventHandler { event: ActionEvent ->
+//        event.consume()
+//        commitEdit(converter.fromString(textField.text))
+//      }
       textField.onKeyReleased = EventHandler { t: KeyEvent ->
-        if (t.code == KeyCode.ESCAPE) {
-          cancelEdit()
+        if (t.code == KeyCode.ENTER) {
           t.consume()
+          commitEdit(converter.fromString(textField.text))
+        }
+        if (t.code == KeyCode.ESCAPE) {
+          t.consume()
+          cancelEdit()
         }
       }
       return textField
     }
-
   }
 }

@@ -88,6 +88,11 @@ class SmartTableStyles : Stylesheet() {
       borderWidth += box(0.px).copy(left = 1.px)
       borderColor += box(moreBlack5)
       padding = box(2.px)
+
+      and(focused) {
+        borderWidth += box(1.px)
+        borderColor += box(Color.valueOf("#039ed3"))
+      }
     }
 
     if (false) {

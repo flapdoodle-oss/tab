@@ -4,6 +4,7 @@ import de.flapdoodle.tab.bindings.Registration
 import javafx.collections.ListChangeListener
 import javafx.collections.ObservableList
 import javafx.collections.WeakListChangeListener
+import java.lang.RuntimeException
 
 fun <S : Any, D : Any> ObservableList<D>.bindFrom(src: LazyValue<List<S>>, map: (S) -> D): Registration {
   return LazyBindings.bindFrom(src, this, map)
@@ -35,8 +36,8 @@ object LazyBindings {
   fun <S : Any, D : Any> syncFrom(src: LazyValue<List<S>>, children: ObservableList<D>, map: (S) -> D): Registration {
     children.setAll(src.value().map(map))
 
-    val listener = ChangedListener<List<S>> { _ ->
-      val mapped = src.value().map(map)
+    val listener = ChangedListener<List<S>> { s ->
+      val mapped = s.value().map(map)
       children.setAll(mapped)
     }
     val weakListener = WeakChangeListenerDelegate(listener)
