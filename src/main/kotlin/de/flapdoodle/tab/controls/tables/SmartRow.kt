@@ -52,21 +52,24 @@ class SmartRow<T : Any>(
       children.add(rowContainer)
       columnsChanged()
 
-      row.addEventFilter(Events.ALL) { event ->
+      row.addEventFilter(SmartEvents.ALL) { event ->
         when (event) {
-          is Events.EditDone -> {
+          is SmartEvents.EditDone -> {
             event.consume()
             println("Row: EditDone in ${event.cell}")
-            row.fireEvent(Events.MoveCursor(deltaRow = 1))
+            row.fireEvent(SmartEvents.MoveCursor(deltaRow = 1))
           }
-          is Events.CellFocused -> {
+          is SmartEvents.CellFocused -> {
             event.consume()
             println("Cell focused: ${event.cell}")
 
             val column = event.cell.property(SmartColumn::class)
             val matchingColumn = row.columns.find { it == column }
             require(matchingColumn!=null) {"column not found: $column -> ${row.columns}"}
-            row.fireEvent(Events.ChangeCursor(Cursor(matchingColumn, row.index)))
+            row.fireEvent(SmartEvents.ChangeCursor(Cursor(matchingColumn, row.index)))
+          }
+          is SmartEvents.SetCursor<out Any> -> {
+            setCursor(event.cursor as Cursor<T>)
           }
           else -> println("$event")
         }

@@ -25,6 +25,7 @@ import de.flapdoodle.tab.graph.nodes.renderer.events.UIEvent
 import de.flapdoodle.tab.graph.nodes.renderer.modals.AddNodeModalView
 import de.flapdoodle.tab.lazy.ChangeableValue
 import de.flapdoodle.tab.persist.TabModelIO
+import de.flapdoodle.tab.test.EventPropagation
 import de.flapdoodle.tab.test.LayoutSizeFun
 import javafx.stage.FileChooser
 import javafx.util.Duration
@@ -89,6 +90,11 @@ class StartView : View("My View") {
         button("Better SplitPane") {
           onLeftClick {
             BetterSplitPaneSampler.open()
+          }
+        }
+        button("Event Prop") {
+          onLeftClick {
+            EventPropagation.open()
           }
         }
       }

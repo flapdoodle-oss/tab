@@ -148,6 +148,10 @@
                         <option>javafx.controls/com.sun.javafx.scene.control=ALL-UNNAMED</option>
                         <option>--add-exports</option>
                         <option>javafx.base/com.sun.javafx.event=ALL-UNNAMED</option>
+                        <option>--add-exports</option>
+                        <option>javafx.graphics/com.sun.javafx.scene.traversal=ALL-UNNAMED</option>
+                        <option>--add-exports</option>
+                        <option>javafx.graphics/com.sun.javafx.scene=ALL-UNNAMED</option>
                     </options>
                     <mainClass>de.flapdoodle.tab.Tab</mainClass>
                 </configuration>

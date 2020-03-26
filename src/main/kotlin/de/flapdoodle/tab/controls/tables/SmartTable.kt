@@ -1,5 +1,6 @@
 package de.flapdoodle.tab.controls.tables
 
+import de.flapdoodle.tab.fx.events.fireEventToChildren
 import javafx.collections.ListChangeListener
 import javafx.collections.ObservableList
 import javafx.collections.WeakListChangeListener
@@ -63,9 +64,9 @@ class SmartTable<T : Any>(
       columnsChanged()
       rowsChanged()
 
-      control.addEventFilter(Events.TABLE) { event ->
+      control.addEventFilter(SmartEvents.TABLE) { event ->
         when (event) {
-          is Events.ChangeCursor<out Any> -> {
+          is SmartEvents.ChangeCursor<out Any> -> {
             if (control.columns.contains(event.cursor.column)) {
               event.consume()
 
@@ -74,7 +75,7 @@ class SmartTable<T : Any>(
               currentCursor = event.cursor as Cursor<T>
             }
           }
-          is Events.MoveCursor -> {
+          is SmartEvents.MoveCursor -> {
             event.consume()
 
             currentCursor = currentCursor?.let {
@@ -90,8 +91,8 @@ class SmartTable<T : Any>(
             println("cursor changed to $currentCursor")
             currentCursor?.let {
               println("fire set-cursor to $currentCursor")
-              rowsPane.setCursor(it)
-              //control.fireEventToChildren(Events.SetCursor(it))
+              if (false) rowsPane.setCursor(it)
+              else control.fireEventToChildren(SmartEvents.SetCursor(it))
             }
           }
           else -> println("what? -> $event")

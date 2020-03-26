@@ -1,8 +1,8 @@
 package de.flapdoodle.tab.controls.tables
 
-import de.flapdoodle.tab.extensions.parentOfType
-import javafx.event.ActionEvent
-import javafx.event.Event
+import com.sun.javafx.scene.NodeHelper
+import com.sun.javafx.scene.traversal.Direction
+import de.flapdoodle.tab.fx.events.handleEvent
 import javafx.event.EventHandler
 import javafx.scene.control.Control
 import javafx.scene.control.Label
@@ -56,38 +56,76 @@ open class SmartCell<T : Any, C : Any>(
           it.consume()
         }
 
-        control.addEventHandler(KeyEvent.KEY_RELEASED) {
-          if (!it.isShortcutDown) {
-            println("#############################")
-            println("event $it -> ${it.isConsumed} --> ${it.target} ? $control")
-            println("#############################")
+        val logEvent = { it: KeyEvent ->
+          println("#############################")
+          println("event $it -> ${it.isConsumed} --> ${it.target} ? $control")
+          println("#############################")
+        }
 
-            if (it.code == KeyCode.LEFT) {
-              it.consume()
-              fireEvent(Events.MoveCursor(deltaColumn = -1))
+        control.handleEvent(KeyEvent.KEY_RELEASED) {
+          matching { !it.isShortcutDown } then {
+            consume { it.code == KeyCode.LEFT } by {
+              logEvent(it)
+              NodeHelper.traverse(control, Direction.LEFT)
             }
-            if (it.code == KeyCode.RIGHT) {
-              it.consume()
-              fireEvent(Events.MoveCursor(deltaColumn = 1))
+            consume { it.code == KeyCode.RIGHT } by {
+              logEvent(it)
+              NodeHelper.traverse(control, Direction.RIGHT)
             }
-            if (it.code == KeyCode.UP) {
-              it.consume()
-              fireEvent(Events.MoveCursor(deltaRow = -1))
+            consume { it.code == KeyCode.UP } by {
+              logEvent(it)
+              NodeHelper.traverse(control, Direction.UP)
             }
-            if (it.code == KeyCode.DOWN) {
-              it.consume()
-              fireEvent(Events.MoveCursor(deltaRow = 1))
+            consume { it.code == KeyCode.DOWN } by {
+              logEvent(it)
+              NodeHelper.traverse(control, Direction.DOWN)
             }
-            if (it.code == KeyCode.ENTER) {
-              it.consume()
+
+            consume { it.code == KeyCode.ENTER } by {
+              logEvent(it)
               _startEdit()
+            }
+          }
+        }
+
+        if (false) {
+          control.addEventHandler(KeyEvent.KEY_RELEASED) {
+            if (!it.isShortcutDown) {
+              println("#############################")
+              println("event $it -> ${it.isConsumed} --> ${it.target} ? $control")
+              println("#############################")
+
+              if (it.code == KeyCode.LEFT) {
+                it.consume()
+                NodeHelper.traverse(control, Direction.LEFT)
+//              fireEvent(Events.MoveCursor(deltaColumn = -1))
+              }
+              if (it.code == KeyCode.RIGHT) {
+                it.consume()
+                NodeHelper.traverse(control, Direction.RIGHT)
+//              fireEvent(Events.MoveCursor(deltaColumn = 1))
+              }
+              if (it.code == KeyCode.UP) {
+                it.consume()
+                NodeHelper.traverse(control, Direction.UP)
+//              fireEvent(Events.MoveCursor(deltaRow = -1))
+              }
+              if (it.code == KeyCode.DOWN) {
+                it.consume()
+                NodeHelper.traverse(control, Direction.DOWN)
+//              fireEvent(Events.MoveCursor(deltaRow = 1))
+              }
+              if (it.code == KeyCode.ENTER) {
+                it.consume()
+                _startEdit()
+              }
             }
           }
         }
 
         control.focusedProperty().addListener { _, _, focused ->
           if (focused) {
-            fireEvent(Events.CellFocused(control))
+            fireEvent(SmartEvents.CellFocused(control))
           }
         }
       }
@@ -98,7 +136,7 @@ open class SmartCell<T : Any, C : Any>(
         converter = control.converter,
         commitEdit = {
           label.text = control.converter.toString(it)
-          control.fireEvent(Events.EditDone(control))
+          control.fireEvent(SmartEvents.EditDone(control))
           control.onChange(it)
           _editDone()
         },
