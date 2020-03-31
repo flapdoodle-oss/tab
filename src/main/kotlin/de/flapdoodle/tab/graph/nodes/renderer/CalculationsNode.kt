@@ -33,7 +33,11 @@ class CalculationsNode<T>(
     }
   }
 
-  class CalcNode<T : Any>(val mapping: CalculationMapping<T>, nodeIdSupplier: () -> NodeId<out ConnectableNode>, onFormulaChanged: (ModelEvent) -> Unit) : HBox() {
+  class CalcNode<T : Any>(
+      val mapping: CalculationMapping<T>,
+      nodeIdSupplier: () -> NodeId<out ConnectableNode>,
+      onFormulaChanged: (ModelEvent) -> Unit
+  ) : HBox() {
     init {
       alignment = Pos.CENTER_LEFT
 

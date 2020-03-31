@@ -26,6 +26,7 @@ import de.flapdoodle.tab.graph.nodes.renderer.modals.AddNodeModalView
 import de.flapdoodle.tab.lazy.ChangeableValue
 import de.flapdoodle.tab.persist.TabModelIO
 import de.flapdoodle.tab.test.EventPropagation
+import de.flapdoodle.tab.test.GridLayoutFun
 import de.flapdoodle.tab.test.LayoutSizeFun
 import javafx.stage.FileChooser
 import javafx.util.Duration
@@ -95,6 +96,11 @@ class StartView : View("My View") {
         button("Event Prop") {
           onLeftClick {
             EventPropagation.open()
+          }
+        }
+        button("Grid Layout") {
+          onLeftClick {
+            GridLayoutFun.open()
           }
         }
       }
