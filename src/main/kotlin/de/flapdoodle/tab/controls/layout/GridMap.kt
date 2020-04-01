@@ -9,6 +9,7 @@ data class GridMap<T : Any>(
 
   fun columns() = 0..maxColumn
   fun rows() = 0..maxRow
+  fun values() = map.values
 
   fun <D : Any> mapColumns(allColumnRows: (Collection<T>) -> D): List<D> {
     return columns().map { column ->

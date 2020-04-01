@@ -22,24 +22,15 @@ class WeightedGridPane() : Control() {
       column: Int,
       row: Int
   ) {
-    require(row >= 0) { "invalid row: $row" }
-    require(column >= 0) { "invalid column: $column" }
-
-    skin.nodes.add(node.apply {
-      property[Pos.KEY] = Pos(column, row)
-
-      property[Key.ofType(GridMap.Pos::class)] = GridMap.Pos(column, row)
-    })
+    skin.add(node,column,row)
   }
 
   fun setRowWeight(row: Int, weight: Int) {
-    require(row >= 0) { "invalid row: $row" }
-    skin.rowWeights.set(row, weight)
+    skin.setRowWeight(row, weight)
   }
 
   fun setColumnWeight(column: Int, weight: Int) {
-    require(column >= 0) { "invalid column: $column" }
-    skin.columnWeights.set(column, weight)
+    skin.setColumnWeight(column, weight)
   }
 
   class Skin(
@@ -88,6 +79,31 @@ class WeightedGridPane() : Control() {
 
         control.requestLayout()
       })
+    }
+
+    fun add(
+        node: Node,
+        column: Int,
+        row: Int
+    ) {
+      require(row >= 0) { "invalid row: $row" }
+      require(column >= 0) { "invalid column: $column" }
+
+      nodes.add(node.apply {
+        property[Pos.KEY] = Pos(column, row)
+
+        property[Key.ofType(GridMap.Pos::class)] = GridMap.Pos(column, row)
+      })
+    }
+
+    fun setRowWeight(row: Int, weight: Int) {
+      require(row >= 0) { "invalid row: $row" }
+      rowWeights.set(row, weight)
+    }
+
+    fun setColumnWeight(column: Int, weight: Int) {
+      require(column >= 0) { "invalid column: $column" }
+      columnWeights.set(column, weight)
     }
 
     override fun computeMinWidth(height: Double, topInset: Double, rightInset: Double, bottomInset: Double, leftInset: Double): Double {
