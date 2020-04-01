@@ -40,7 +40,7 @@ object EventBusExtensions {
         this.unsubscribe()
       }
     }
-    val oldRef = node.property(eventType, ActionRef::class, actionRef)
+    val oldRef = node.property(Key.ofType(eventType, ActionRef::class), actionRef)
     require(oldRef==null) { "action ref for $eventType already set to $oldRef"}
 
     @Suppress("UNCHECKED_CAST")

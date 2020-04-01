@@ -1,12 +1,8 @@
 package de.flapdoodle.tab.graph.nodes.renderer
 
-import de.flapdoodle.tab.controls.tables.SmartColumn
-import de.flapdoodle.tab.data.ColumnId
-import de.flapdoodle.tab.data.Data
 import de.flapdoodle.tab.data.NamedColumn
 import de.flapdoodle.tab.data.nodes.NodeId
 import de.flapdoodle.tab.extensions.fire
-import de.flapdoodle.tab.extensions.property
 import de.flapdoodle.tab.graph.nodes.renderer.events.ModelEvent
 import tornadofx.*
 

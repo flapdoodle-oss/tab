@@ -98,20 +98,6 @@ class SmartRow<T : Any>(
         property(SmartColumn::class, c)
         prefWidthProperty().bind(c.widthProperty())
       }
-
-//      return object : SmartCell<T,C>(
-//          value = c.column.valueFactory(row),
-//          editable = c.column.onChange!=null,
-//          converter = c.converter()
-//      ) {
-//        override fun onChange(value: C?) {
-//          c.column.onChange?.let {
-//            it(row,value)
-//          }
-//        }
-//      }.apply {
-//        prefWidthProperty().bind(c.widthProperty())
-//      }
     }
 
   }

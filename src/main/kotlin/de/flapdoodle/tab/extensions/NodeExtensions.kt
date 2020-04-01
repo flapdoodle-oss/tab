@@ -2,24 +2,23 @@ package de.flapdoodle.tab.extensions
 
 import javafx.scene.Node
 import javafx.scene.Parent
-import tornadofx.*
 import kotlin.reflect.KClass
 import kotlin.reflect.full.safeCast
 
-fun <T : Any> Node.property(scope: KClass<out Any>, key: KClass<T>, value: T?): T? {
-  return ObservableMapExtensions.set(this.properties, scope,key, value)
-}
-
-fun <T : Any> Node.property(scope: KClass<out Any>, key: KClass<T>): T? {
-  return ObservableMapExtensions.get(this.properties, scope, key)
-}
-
-fun <T : Any> Node.property(key: KClass<T>, value: T?): T? {
+fun <T : Any> Node.property(key: Key<T>, value: T?): T? {
   return ObservableMapExtensions.set(this.properties, key, value)
 }
 
-fun <T : Any> Node.property(key: KClass<T>): T? {
+fun <T : Any> Node.property(key: Key<T>): T? {
   return ObservableMapExtensions.get(this.properties, key)
+}
+
+fun <T : Any> Node.property(key: KClass<T>, value: T?): T? {
+  return property(Key.ofType(key), value)
+}
+
+fun <T : Any> Node.property(key: KClass<T>): T? {
+  return property(Key.ofType(key))
 }
 
 fun <T: Any> Parent.findAllInTree(type: KClass<T>): List<T> {
