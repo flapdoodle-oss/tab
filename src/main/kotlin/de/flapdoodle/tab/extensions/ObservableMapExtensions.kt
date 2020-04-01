@@ -13,4 +13,24 @@ object ObservableMapExtensions {
     @Suppress("UNCHECKED_CAST")
     return map.put(key,value) as T?
   }
+
+  class TypedMap(
+      private val map: ObservableMap<Any, Any>
+  ) {
+    operator fun <T: Any> set(key: Key<T>, value: T?): T? {
+      return set(map, key, value)
+    }
+
+    operator fun <T: Any> get(key: Key<T>): T? {
+      return get(map,key)
+    }
+
+    operator fun <T: Any> set(type: KClass<T>, value: T?): T? {
+      return set(map, Key.ofType(type), value)
+    }
+
+    operator fun <T: Any> get(type: KClass<T>): T? {
+      return get(map,Key.ofType(type))
+    }
+  }
 }

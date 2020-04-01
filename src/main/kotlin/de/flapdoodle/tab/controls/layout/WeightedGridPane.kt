@@ -22,9 +22,9 @@ class WeightedGridPane() : Control() {
 
   fun add(node: Node, row: Int, column: Int) {
     node.apply {
-      property(Row, row)
-      property(Column, column)
-      property(Weight, 1)
+      property[Row] = row
+      property[Column] = column
+      property[Weight] = 1
     }
   }
 

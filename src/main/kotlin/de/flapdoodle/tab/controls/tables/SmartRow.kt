@@ -1,5 +1,6 @@
 package de.flapdoodle.tab.controls.tables
 
+import de.flapdoodle.tab.extensions.Key
 import de.flapdoodle.tab.extensions.property
 import javafx.collections.ObservableList
 import javafx.scene.control.Control
@@ -81,7 +82,7 @@ class SmartRow<T : Any>(
       if (cursor.row==row.index) {
         println("set cursor ${cursor} matches")
         val cell = rowContainer.children.find {
-          val cellColumn = it.property(SmartColumn::class)
+          val cellColumn = it.property[SmartColumn::class]
           println("$cellColumn ? ${cursor.column} -> ${it.properties}")
           cellColumn == cursor.column
         }
@@ -95,7 +96,7 @@ class SmartRow<T : Any>(
 
     private fun <T : Any, C : Any> cell(c: SmartColumn<T, C>, row: T): SmartCell<T, C> {
       return c.cell(row).apply {
-        property(SmartColumn::class, c)
+        property[SmartColumn::class] = c
         prefWidthProperty().bind(c.widthProperty())
       }
     }
