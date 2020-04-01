@@ -50,7 +50,7 @@ class ModelRenderer(
  private val nodeLayerSyncReg2 = nodeLayer.children.bindFrom(idsP) { id ->
     debug("node for $id")
     nodeForP(id!!).root.apply {
-      this.property(NodeId::class, id!!)
+      this.property[NodeId::class] = id!!
     }
   }
 
@@ -66,7 +66,7 @@ class ModelRenderer(
     debug("XX ModelRenderer: connectorPositions - list: $list")
     val result = list.map {
       val parent = it as Parent
-      val id = parent.property(NodeId::class) ?: throw IllegalArgumentException("node id not set")
+      val id = parent.property[NodeId::class] ?: throw IllegalArgumentException("node id not set")
 
       val out = parent.findAllInTree(OutNode::class).map {
         it.out to parent.centerInTop(it)

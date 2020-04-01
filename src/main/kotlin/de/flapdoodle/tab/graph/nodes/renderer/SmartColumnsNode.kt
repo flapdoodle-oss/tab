@@ -151,7 +151,7 @@ class SmartColumnsNode<T>(
     return object : SmartColumn<Data.Row, T>(header) {
 
       init {
-        property(ColumnId::class, namedColumn.id)
+        property[ColumnId::class] = namedColumn.id
       }
 
       override fun cell(row: Data.Row): SmartCell<Data.Row, T> {

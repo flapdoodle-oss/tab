@@ -1,6 +1,5 @@
 package de.flapdoodle.tab.controls.tables
 
-import de.flapdoodle.tab.extensions.Key
 import de.flapdoodle.tab.extensions.property
 import javafx.collections.ObservableList
 import javafx.scene.control.Control
@@ -64,7 +63,7 @@ class SmartRow<T : Any>(
             event.consume()
             println("Cell focused: ${event.cell}")
 
-            val column = event.cell.property(SmartColumn::class)
+            val column = event.cell.property[SmartColumn::class]
             val matchingColumn = row.columns.find { it == column }
             require(matchingColumn!=null) {"column not found: $column -> ${row.columns}"}
             row.fireEvent(SmartEvents.ChangeCursor(Cursor(matchingColumn, row.index)))

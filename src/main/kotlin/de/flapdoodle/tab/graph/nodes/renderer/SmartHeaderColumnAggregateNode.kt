@@ -12,7 +12,7 @@ class SmartHeaderColumnAggregateNode(
     val tableColumn: SmartColumn<Data.Row, *>
 ) : Fragment() {
   override val root = group {
-    val columnId = tableColumn.property(ColumnId::class)
+    val columnId = tableColumn.property[ColumnId::class]
         ?: throw IllegalArgumentException("columnId not set")
 
     this += OutNode(Out.Aggregate(columnId)).apply {

@@ -10,22 +10,6 @@ import kotlin.reflect.full.safeCast
 val Node.property: ObservableMapExtensions.TypedMap
   get() = ObservableMapExtensions.TypedMap(this.properties)
 
-fun <T : Any> Node.property(key: Key<T>, value: T?): T? {
-  return ObservableMapExtensions.set(this.properties, key, value)
-}
-
-fun <T : Any> Node.property(key: Key<T>): T? {
-  return property[key]
-}
-
-fun <T : Any> Node.property(key: KClass<T>, value: T?): T? {
-  return property.set(Key.ofType(key), value)
-}
-
-fun <T : Any> Node.property(key: KClass<T>): T? {
-  return property[Key.ofType(key)]
-}
-
 fun <T : Any> Parent.findAllInTree(type: KClass<T>): List<T> {
   return childrenUnmodifiable.flatMap {
     val nodeAsList = if (type.isInstance(it)) {
