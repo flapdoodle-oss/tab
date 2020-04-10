@@ -4,8 +4,7 @@ import de.flapdoodle.tab.controls.SpreadSheet
 import de.flapdoodle.tab.controls.SpreadSheetPlayground
 import de.flapdoodle.tab.controls.layout.BetterSplitPaneSampler
 import de.flapdoodle.tab.controls.layout.LayoutFun
-import de.flapdoodle.tab.controls.layout.WeightedGridPane
-import de.flapdoodle.tab.controls.layout.WeightedGridPaneSampler
+import de.flapdoodle.tab.controls.layout.WeightGridPaneSampler
 import de.flapdoodle.tab.data.ColumnId
 import de.flapdoodle.tab.data.NamedColumn
 import de.flapdoodle.tab.data.NodePositions
@@ -107,7 +106,7 @@ class StartView : View("My View") {
         }
         button("Weighted Grid Layout") {
           onLeftClick {
-            WeightedGridPaneSampler.open()
+            WeightGridPaneSampler.open()
           }
         }
       }

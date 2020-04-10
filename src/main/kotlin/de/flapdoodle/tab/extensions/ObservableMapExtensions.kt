@@ -14,10 +14,10 @@ object ObservableMapExtensions {
     return map.put(key,value) as T?
   }
 
-  class TypedMap(
+  open class TypedMap(
       private val map: ObservableMap<Any, Any>
   ) {
-    operator fun <T: Any> set(key: Key<T>, value: T?): T? {
+    open operator fun <T: Any> set(key: Key<T>, value: T?): T? {
       return set(map, key, value)
     }
 
@@ -25,7 +25,7 @@ object ObservableMapExtensions {
       return get(map,key)
     }
 
-    operator fun <T: Any> set(type: KClass<T>, value: T?): T? {
+    open operator fun <T: Any> set(type: KClass<T>, value: T?): T? {
       return set(map, Key.ofType(type), value)
     }
 

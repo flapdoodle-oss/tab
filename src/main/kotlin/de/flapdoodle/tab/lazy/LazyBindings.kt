@@ -4,7 +4,6 @@ import de.flapdoodle.tab.bindings.Registration
 import javafx.collections.ListChangeListener
 import javafx.collections.ObservableList
 import javafx.collections.WeakListChangeListener
-import java.lang.RuntimeException
 
 fun <S : Any, D : Any> ObservableList<D>.bindFrom(src: LazyValue<List<S>>, map: (S) -> D): Registration {
   return LazyBindings.bindFrom(src, this, map)
@@ -12,6 +11,12 @@ fun <S : Any, D : Any> ObservableList<D>.bindFrom(src: LazyValue<List<S>>, map: 
 
 fun <S : Any, D : Any> ObservableList<D>.syncFrom(src: LazyValue<List<S>>, map: (S) -> D): Registration {
   return LazyBindings.syncFrom(src, this, map)
+}
+
+fun <S : Any, D : Any> ObservableList<D>.flatMapIndexedFrom(src: LazyValue<List<S>>, map: (Int, S) -> List<D>): Registration {
+  return LazyBindings.flatMapFrom(src, this) {
+    it.mapIndexed { index, s -> map(index, s) }.flatten()
+  }
 }
 
 fun <S: Any> ObservableList<S>.asAObservable(): LazyValue<List<S>> {
@@ -34,10 +39,14 @@ object LazyBindings {
   }
 
   fun <S : Any, D : Any> syncFrom(src: LazyValue<List<S>>, children: ObservableList<D>, map: (S) -> D): Registration {
-    children.setAll(src.value().map(map))
+    return flatMapFrom(src,children) { it.map(map)}
+  }
 
-    val listener = ChangedListener<List<S>> { s ->
-      val mapped = s.value().map(map)
+  fun <S : Any, D : Any> flatMapFrom(src: LazyValue<S>, children: ObservableList<D>, map: (S) -> List<D>): Registration {
+    children.setAll(map(src.value()))
+
+    val listener = ChangedListener<S> { s ->
+      val mapped = map(s.value())
       children.setAll(mapped)
     }
     val weakListener = WeakChangeListenerDelegate(listener)

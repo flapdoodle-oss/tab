@@ -1,26 +1,26 @@
 package de.flapdoodle.tab.controls.layout
 
+import de.flapdoodle.tab.extensions.constraint
 import de.flapdoodle.tab.extensions.heightLimits
 import de.flapdoodle.tab.extensions.widthLimits
+import javafx.collections.ListChangeListener
+import javafx.collections.ObservableList
 import javafx.geometry.HPos
 import javafx.geometry.VPos
 import javafx.scene.Node
 import javafx.scene.control.Control
 import javafx.scene.control.SkinBase
 
-class WeightedGridPane() : Control() {
+class WeightGridPane : Control() {
+
+  companion object{
+    fun setPosition(node: Node, column: Int, row: Int) {
+      node.constraint[GridMap.Pos::class] = GridMap.Pos(column, row)
+    }
+  }
 
   private val skin = Skin(this)
-
   override fun createDefaultSkin() = skin
-
-  fun add(
-      node: Node,
-      column: Int,
-      row: Int
-  ) {
-    skin.add(node, column, row)
-  }
 
   fun setRowWeight(row: Int, weight: Double) {
     skin.setRowWeight(row, weight)
@@ -30,57 +30,39 @@ class WeightedGridPane() : Control() {
     skin.setColumnWeight(column, weight)
   }
 
-  class Skin(
-      private val control: WeightedGridPane
-  ) : SkinBase<WeightedGridPane>(control) {
+  public override fun getChildren(): ObservableList<Node> {
+    return super.getChildren()
+  }
 
-    private var gridMap: GridMap<Node> = GridMap()
+  class Skin(
+      private val control: WeightGridPane
+  ) : SkinBase<WeightGridPane>(control) {
+
     private var rowWeights = AutoArray.empty<Double>()
     private var columnWeights = AutoArray.empty<Double>()
+    private var gridMap: GridMap<Node> = GridMap()
 
-//    private var columnSizes: List<WeightedSize> = emptyList()
-//    private var rowSizes: List<WeightedSize> = emptyList()
+    init {
+      children.addListener(ListChangeListener {
+        gridMap = gridMap()
+        updateState()
+      })
 
-//    private var minColumnWidth: List<Double> = emptyList()
-//    private var minRowHeight: List<Double> = emptyList()
+      control.needsLayoutProperty().addListener { observable, oldValue, newValue ->
+        gridMap = gridMap()
+      }
+    }
 
-//    private var rowWeightSum = 0
-//    private var columnWeightSum = 0
+    private fun gridMap(): GridMap<Node> {
+      return GridMap(children.map { it: Node ->
+        (it.constraint[GridMap.Pos::class] ?: GridMap.Pos(10, 10)) to it
+      }.toMap())
+    }
 
     private fun updateState() {
-      children.setAll(gridMap.values())
-
-//      columnSizes = gridMap.mapColumns { index, list ->
-//        val limits = list.map { it.widthLimits() }
-//        val min = limits.map { it.first }.max() ?: 0.0
-//        val max = limits.map { it.second }.min() ?: Double.MAX_VALUE
-//
-//        require(max >= min) {"invalid min/max for $list -> $min ? $max"}
-//        WeightedSize(columnWeights.get(index) ?: 1.0, min, max)
-//      }
-//
-//      rowSizes = gridMap.mapRows { index, list ->
-//        val limits = list.map { it.heightLimits() }
-//        val min = limits.map { it.first }.max() ?: 0.0
-//        val max = limits.map { it.second }.min() ?: Double.MAX_VALUE
-//
-//        require(max >= min) {"invalid min/max for $list -> $min ? $max"}
-//        WeightedSize(columnWeights.get(index) ?: 1.0, min, max)
-//      }
-
-//      minColumnWidth = gridMap.mapColumns { list ->
-//        list.map { it.minWidth(-1.0) }.max() ?: 0.0
-//      }
-//      minRowHeight = gridMap.mapRows { list ->
-//        list.map { it.minHeight(-1.0) }.max() ?: 0.0
-//      }
-
-//      rowWeightSum = rowWeights.mapNotNull { it }.sum()
-//
-//      columnWeightSum = columnWeights.mapNotNull { it }.sum()
-
       control.requestLayout()
     }
+
 
     private fun columnSizes() = gridMap.mapColumns { index, list ->
       val limits = list.map { it.widthLimits() }
@@ -99,20 +81,6 @@ class WeightedGridPane() : Control() {
 
       require(max >= min) { "invalid min/max for $list -> $min ? $max" }
       WeightedSize(columnWeights.get(index) ?: 1.0, min, max)
-    }
-
-
-    fun add(
-        node: Node,
-        column: Int,
-        row: Int
-    ) {
-      require(row >= 0) { "invalid row: $row" }
-      require(column >= 0) { "invalid column: $column" }
-
-      gridMap = gridMap.add(GridMap.Pos(column, row), node)
-
-      updateState()
     }
 
     fun setRowWeight(row: Int, weight: Double) {
@@ -144,15 +112,17 @@ class WeightedGridPane() : Control() {
     }
 
     override fun computePrefWidth(height: Double, topInset: Double, rightInset: Double, bottomInset: Double, leftInset: Double): Double {
-      return gridMap.mapColumns { _, list ->
-        list.map { it.prefWidth( -1.0) }.max() ?: 0.0
+      val ret = gridMap.mapColumns { _, list ->
+        list.map { it.prefWidth(-1.0) }.max() ?: 0.0
       }.sumByDouble { it }
+      return ret
     }
 
     override fun computePrefHeight(width: Double, topInset: Double, rightInset: Double, bottomInset: Double, leftInset: Double): Double {
-      return gridMap.mapRows { _, list ->
-        list.map { it.prefHeight( -1.0) }.max() ?: 0.0
+      val ret = gridMap.mapRows { _, list ->
+        list.map { it.prefHeight(-1.0) }.max() ?: 0.0
       }.sumByDouble { it }
+      return ret
     }
 
     override fun layoutChildren(contentX: Double, contentY: Double, contentWidth: Double, contentHeight: Double) {

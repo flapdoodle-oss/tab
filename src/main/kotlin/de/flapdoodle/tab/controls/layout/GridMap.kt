@@ -15,6 +15,11 @@ data class GridMap<T : Any>(
     return copy(map = map + (pos to value))
   }
 
+  fun remove(value: T): GridMap<T> {
+    val keysToRemove = map.filter { it.value == value }.keys
+    return copy(map = map - keysToRemove)
+  }
+
   fun <D : Any> mapColumns(allColumnRows: (Int, Collection<T>) -> D): List<D> {
     return columns().map { column ->
       val matchingColumns = map.filter { it.key.column == column }.values
