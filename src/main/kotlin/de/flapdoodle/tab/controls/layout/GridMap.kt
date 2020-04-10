@@ -11,16 +11,26 @@ data class GridMap<T : Any>(
   fun rows() = 0..maxRow
   fun values() = map.values
 
-  fun <D : Any> mapColumns(allColumnRows: (Collection<T>) -> D): List<D> {
+  fun add(pos: Pos, value: T): GridMap<T> {
+    return copy(map = map + (pos to value))
+  }
+
+  fun <D : Any> mapColumns(allColumnRows: (Int, Collection<T>) -> D): List<D> {
     return columns().map { column ->
-      allColumnRows(map.filter { it.key.column == column }.values)
+      val matchingColumns = map.filter { it.key.column == column }.values
+      allColumnRows(column, matchingColumns)
     }
   }
 
-  fun <D : Any> mapRows(allRowColumns: (Collection<T>) -> D): List<D> {
+  fun <D : Any> mapRows(allRowColumns: (Int, Collection<T>) -> D): List<D> {
     return rows().map { row ->
-      allRowColumns(map.filter { it.key.row == row }.values)
+      val matchingRows = map.filter { it.key.row == row }.values
+      allRowColumns(row, matchingRows)
     }
+  }
+
+  operator fun get(pos: Pos): T? {
+    return map[pos]
   }
 
   companion object {

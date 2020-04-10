@@ -8,6 +8,7 @@ import de.flapdoodle.tab.data.calculations.Calculation
 import de.flapdoodle.tab.data.calculations.CalculationMapping
 import de.flapdoodle.tab.data.values.Input
 
+// TODO Generator
 sealed class ConnectableNode {
   abstract val id: NodeId<out ConnectableNode>
   abstract val name: String

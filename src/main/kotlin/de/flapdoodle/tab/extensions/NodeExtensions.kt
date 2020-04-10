@@ -3,8 +3,6 @@ package de.flapdoodle.tab.extensions
 import javafx.scene.Node
 import javafx.scene.Parent
 import kotlin.reflect.KClass
-import kotlin.reflect.KMutableProperty
-import kotlin.reflect.KProperty
 import kotlin.reflect.full.safeCast
 
 val Node.property: ObservableMapExtensions.TypedMap
@@ -39,4 +37,24 @@ fun <T : Node> Node.parentOfType(type: KClass<T>): T? {
   if (parent == null) return null
   type.safeCast(parent)?.also { return it }
   return parent?.parentOfType(type)
+}
+
+fun Node.widthLimits(): Pair<Double, Double> {
+  val minW = this.minWidth(-1.0)
+  return if (isResizable) {
+    val maxW = maxWidth(-1.0)
+    Pair(minW, if (maxW>0.0) maxW else Double.MAX_VALUE)
+  } else {
+    Pair(minW, minW)
+  }
+}
+
+fun Node.heightLimits(): Pair<Double, Double> {
+  val minH = minHeight(-1.0)
+  return if (isResizable) {
+    val maxH = maxHeight(-1.0)
+    Pair(minH, if (maxH>0.0) maxH else Double.MAX_VALUE)
+  } else {
+    Pair(minH, minH)
+  }
 }
