@@ -1,4 +1,4 @@
-package de.flapdoodle.tab.controls.layout.weights
+package de.flapdoodle.tab.controls.layout
 
 data class WeightedSize(
     val weight: Double,
@@ -31,7 +31,7 @@ data class WeightedSize(
       }
 
       val sumOfWeights = items.sumByDouble { it.weight }
-      val sizedItems = items.map(::SizedItems)
+      val sizedItems = items.map(Companion::SizedItems)
 
       distribute(space, sumOfWeights, sizedItems)
 

@@ -1,6 +1,5 @@
 package de.flapdoodle.tab.controls.layout
 
-import de.flapdoodle.tab.controls.layout.weights.WeightedSize
 import de.flapdoodle.tab.extensions.heightLimits
 import de.flapdoodle.tab.extensions.widthLimits
 import javafx.geometry.HPos
@@ -144,13 +143,17 @@ class WeightedGridPane() : Control() {
       return ret
     }
 
-//    override fun computePrefWidth(height: Double, topInset: Double, rightInset: Double, bottomInset: Double, leftInset: Double): Double {
-//      return 10.0
-//    }
-//
-//    override fun computePrefHeight(width: Double, topInset: Double, rightInset: Double, bottomInset: Double, leftInset: Double): Double {
-//      return 10.0
-//    }
+    override fun computePrefWidth(height: Double, topInset: Double, rightInset: Double, bottomInset: Double, leftInset: Double): Double {
+      return gridMap.mapColumns { _, list ->
+        list.map { it.prefWidth( -1.0) }.max() ?: 0.0
+      }.sumByDouble { it }
+    }
+
+    override fun computePrefHeight(width: Double, topInset: Double, rightInset: Double, bottomInset: Double, leftInset: Double): Double {
+      return gridMap.mapRows { _, list ->
+        list.map { it.prefHeight( -1.0) }.max() ?: 0.0
+      }.sumByDouble { it }
+    }
 
     override fun layoutChildren(contentX: Double, contentY: Double, contentWidth: Double, contentHeight: Double) {
 //      println("-------------------------")

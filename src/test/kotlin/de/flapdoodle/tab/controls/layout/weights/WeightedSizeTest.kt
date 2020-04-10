@@ -1,5 +1,6 @@
 package de.flapdoodle.tab.controls.layout.weights
 
+import de.flapdoodle.tab.controls.layout.WeightedSize
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
