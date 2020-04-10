@@ -148,7 +148,7 @@ class NodeAdapterGraphNode(
             inputs = VariableInputsNode(
                 node = nodeProperty
             ),
-            configuration = CalculationsXNode(
+            configuration = CalculationsNode(
                 node = nodeProperty
             )
         )

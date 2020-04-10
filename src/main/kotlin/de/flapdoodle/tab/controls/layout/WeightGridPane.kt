@@ -67,9 +67,9 @@ class WeightGridPane : Control() {
     private fun columnSizes() = gridMap.mapColumns { index, list ->
       val limits = list.map { it.widthLimits() }
       val min = limits.map { it.first }.max() ?: 0.0
-      val max = limits.map { it.second }.min() ?: Double.MAX_VALUE
+      val max = Math.max(min, limits.map { it.second }.min() ?: Double.MAX_VALUE)
 
-      require(max >= min) { "invalid min/max for $list -> $min ? $max" }
+//      require(max >= min) { "invalid min/max for $list -> $min ? $max" }
       WeightedSize(columnWeights.get(index) ?: 1.0, min, max)
     }
 
@@ -77,9 +77,9 @@ class WeightGridPane : Control() {
     private fun rowSizes() = gridMap.mapRows { index, list ->
       val limits = list.map { it.heightLimits() }
       val min = limits.map { it.first }.max() ?: 0.0
-      val max = limits.map { it.second }.min() ?: Double.MAX_VALUE
+      val max = Math.max(min, limits.map { it.second }.min() ?: Double.MAX_VALUE)
 
-      require(max >= min) { "invalid min/max for $list -> $min ? $max" }
+//      require(max >= min) { "invalid min/max for $list -> $min ? $max" }
       WeightedSize(columnWeights.get(index) ?: 1.0, min, max)
     }
 

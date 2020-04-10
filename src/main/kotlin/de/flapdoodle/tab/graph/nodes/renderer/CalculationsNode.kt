@@ -1,16 +1,22 @@
 package de.flapdoodle.tab.graph.nodes.renderer
 
+import de.flapdoodle.tab.controls.layout.WeightGridPane
 import de.flapdoodle.tab.data.NamedColumn
 import de.flapdoodle.tab.data.calculations.CalculationMapping
 import de.flapdoodle.tab.data.calculations.EvalExCalculationAdapter
 import de.flapdoodle.tab.data.nodes.ConnectableNode
 import de.flapdoodle.tab.data.nodes.HasCalculations
 import de.flapdoodle.tab.data.nodes.NodeId
+import de.flapdoodle.tab.extensions.fire
 import de.flapdoodle.tab.graph.nodes.renderer.events.ModelEvent
 import de.flapdoodle.tab.lazy.LazyValue
+import de.flapdoodle.tab.lazy.flatMapIndexedFrom
 import de.flapdoodle.tab.lazy.map
-import de.flapdoodle.tab.lazy.syncFrom
 import javafx.geometry.Pos
+import javafx.scene.Node
+import javafx.scene.control.Button
+import javafx.scene.control.Label
+import javafx.scene.control.TextField
 import javafx.scene.layout.HBox
 import tornadofx.*
 import java.math.BigDecimal
@@ -25,12 +31,41 @@ class CalculationsNode<T>(
     it.calculations()
   }
 
-  override val root = vbox {
-    children.syncFrom(calculations) {
-      CalcNode(it!!, { node.value().id }) {
-        fire(it)
+  override val root = WeightGridPane().apply {
+    setColumnWeight(0,1.0)
+    setColumnWeight(1,4.0)
+    setColumnWeight(3,1.0)
+
+    children.flatMapIndexedFrom(calculations) { index, mapping ->
+      when (mapping.calculation) {
+        is EvalExCalculationAdapter -> {
+          val field = TextField(mapping.calculation.formula)
+              .withPosition(1, index)
+
+          listOf(
+              Label(mapping.column.name)
+                  .withPosition(0,index),
+              field,
+              Button("change").apply {
+                action {
+                  println("should change formula to ${field.text}")
+                  ModelEvent.EventData.FormulaChanged(
+                      nodeId = node.value().id,
+                      namedColumn = mapping.column as NamedColumn<BigDecimal>,
+                      newCalculation = EvalExCalculationAdapter(field.text)
+                  ).asEvent().fire()
+                }
+              }.withPosition(2,index)
+          )
+        }
+        else -> emptyList()
       }
     }
+  }
+
+  private fun <T: Node> T.withPosition(column: Int, row: Int): T {
+    WeightGridPane.setPosition(this,column,row)
+    return this
   }
 
   class CalcNode<T : Any>(
