@@ -32,6 +32,9 @@ class CalculationsNode<T>(
   }
 
   override val root = WeightGridPane().apply {
+    style {
+      padding = box(4.0.px)
+    }
     setColumnWeight(0,1.0)
     setColumnWeight(1,2.0)
     setColumnWeight(3,1.0)

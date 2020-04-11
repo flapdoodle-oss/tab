@@ -13,8 +13,14 @@ class WeightGridPaneSampler : View("Weighted Grid Pane") {
 //        borderWidth += box(1.0.px)
 //        borderColor += box(Color.RED)
 //      }
-      if (false) {
+      if (true) {
         this += WeightGridPane().apply {
+          stylesheet {
+            WeightGridPane.Style.clazz {
+              WeightGridPane.Style.horizontalSpace.value = 10.0
+              WeightGridPane.Style.verticalSpace.value = 10.0
+            }
+          }
           button("test") {
             minWidth = 20.0
             maxWidth = 100.0
