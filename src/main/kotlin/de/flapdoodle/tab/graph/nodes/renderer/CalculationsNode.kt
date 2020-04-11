@@ -33,7 +33,7 @@ class CalculationsNode<T>(
 
   override val root = WeightGridPane().apply {
     setColumnWeight(0,1.0)
-    setColumnWeight(1,4.0)
+    setColumnWeight(1,2.0)
     setColumnWeight(3,1.0)
 
     children.flatMapIndexedFrom(calculations) { index, mapping ->

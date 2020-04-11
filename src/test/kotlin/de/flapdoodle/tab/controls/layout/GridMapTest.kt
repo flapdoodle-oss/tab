@@ -15,7 +15,7 @@ internal class GridMapTest {
         GridMap.Pos(1, 1) to "(1,1)"
     ))
 
-    val result = testee.mapColumns { list -> list.joinToString(separator = "|") }
+    val result = testee.mapColumns { _, list -> list.joinToString(separator = "|") }
 
     assertThat(result)
         .containsExactly("(0,0)","(1,0)|(1,1)")
@@ -29,7 +29,7 @@ internal class GridMapTest {
         GridMap.Pos(1, 1) to "(1,1)"
     ))
 
-    val result = testee.mapRows { list -> list.joinToString(separator = "|") }
+    val result = testee.mapRows { _,list -> list.joinToString(separator = "|") }
 
     assertThat(result)
         .containsExactly("(0,0)|(1,0)","(1,1)")

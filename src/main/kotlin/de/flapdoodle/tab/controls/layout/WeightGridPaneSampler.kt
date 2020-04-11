@@ -13,46 +13,44 @@ class WeightGridPaneSampler : View("Weighted Grid Pane") {
 //        borderWidth += box(1.0.px)
 //        borderColor += box(Color.RED)
 //      }
+      if (false) {
+        this += WeightGridPane().apply {
+          button("test") {
+            minWidth = 20.0
+            maxWidth = 100.0
+            WeightGridPane.setPosition(this, 0, 0)
+          }
+          button("test-1") {
+            WeightGridPane.setPosition(this, 1, 0)
+          }
+          button("test-11") {
+            WeightGridPane.setPosition(this, 1, 1)
+            maxHeight = 100.0
+          }
 
-      this += WeightGridPane().apply {
-        button("test") {
-          minWidth = 20.0
-          maxWidth = 100.0
-          WeightGridPane.setPosition(this,0,0)
+          setColumnWeight(0, 1.0)
+          setColumnWeight(1, 2.0)
+          setRowWeight(0, 4.0)
+          setRowWeight(1, 1.0)
         }
-        button("test-1") {
-          WeightGridPane.setPosition(this,1,0)
-        }
-        button("test-11") {
-          WeightGridPane.setPosition(this,1,1)
-          maxHeight = 100.0
-        }
-
-        setColumnWeight(0, 1.0)
-        setColumnWeight(1, 2.0)
-        setRowWeight(0,4.0)
-        setRowWeight(1,1.0)
       }
 
     }
     bottom {
-      gridpane {
-        add(Button("test"), 0, 0)
-        add(Button("test-1"), 1, 0)
-        add(Button("X").apply {
-          maxWidth = Double.MAX_VALUE
-          maxHeight = Double.MAX_VALUE
-          style {
-            fill = Color.RED
-          }
-        }, 1, 1)
+      this += WeightGridPane().apply {
+        setColumnWeight(0,1.0)
+        setColumnWeight(1,4.0)
+        setColumnWeight(2,1.0)
 
-        columnConstraints.add(ColumnConstraints().apply {
-          percentWidth = 500.0
-        })
-        columnConstraints.add(ColumnConstraints().apply {
-          percentWidth = 250.0
-        })
+        label("label") {
+          WeightGridPane.setPosition(this,0,0)
+        }
+        textfield("text") {
+          WeightGridPane.setPosition(this,1,0)
+        }
+        button("change") {
+          WeightGridPane.setPosition(this,2,0)
+        }
       }
     }
   }
