@@ -1,6 +1,6 @@
 package de.flapdoodle.tab.graph.nodes.renderer
 
-import de.flapdoodle.tab.controls.layout.WeightGridPane
+import de.flapdoodle.tab.controls.layout.weightgrid.WeightGridPane
 import de.flapdoodle.tab.data.NamedColumn
 import de.flapdoodle.tab.data.calculations.CalculationMapping
 import de.flapdoodle.tab.data.calculations.EvalExCalculationAdapter

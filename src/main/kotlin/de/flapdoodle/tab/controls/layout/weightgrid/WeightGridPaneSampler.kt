@@ -1,9 +1,5 @@
-package de.flapdoodle.tab.controls.layout
+package de.flapdoodle.tab.controls.layout.weightgrid
 
-import javafx.geometry.Pos
-import javafx.scene.control.Button
-import javafx.scene.layout.ColumnConstraints
-import javafx.scene.paint.Color
 import tornadofx.*
 
 class WeightGridPaneSampler : View("Weighted Grid Pane") {
@@ -16,9 +12,9 @@ class WeightGridPaneSampler : View("Weighted Grid Pane") {
       if (true) {
         this += WeightGridPane().apply {
           stylesheet {
-            WeightGridPane.Style.clazz {
-              WeightGridPane.Style.horizontalSpace.value = 10.0
-              WeightGridPane.Style.verticalSpace.value = 10.0
+            WeightGridPaneStyle.clazz {
+              WeightGridPaneStyle.horizontalSpace.value = 10.0
+              WeightGridPaneStyle.verticalSpace.value = 10.0
             }
           }
           button("test") {
