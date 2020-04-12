@@ -12,7 +12,9 @@ import de.flapdoodle.tab.graph.nodes.renderer.events.ModelEvent
 import de.flapdoodle.tab.lazy.LazyValue
 import de.flapdoodle.tab.lazy.flatMapIndexedFrom
 import de.flapdoodle.tab.lazy.map
+import javafx.geometry.HPos
 import javafx.geometry.Pos
+import javafx.geometry.VPos
 import javafx.scene.Node
 import javafx.scene.control.Button
 import javafx.scene.control.Label
@@ -35,9 +37,9 @@ class CalculationsNode<T>(
     style {
       padding = box(4.0.px)
     }
-    setColumnWeight(0,1.0)
-    setColumnWeight(1,2.0)
-    setColumnWeight(3,1.0)
+    setColumnWeight(0, 1.0)
+    setColumnWeight(1, 2.0)
+    setColumnWeight(3, 1.0)
 
     children.flatMapIndexedFrom(calculations) { index, mapping ->
       when (mapping.calculation) {
@@ -47,7 +49,7 @@ class CalculationsNode<T>(
 
           listOf(
               Label(mapping.column.name)
-                  .withPosition(0,index),
+                  .withPosition(0, index, horizontalPosition = HPos.LEFT),
               field,
               Button("change").apply {
                 action {
@@ -58,7 +60,7 @@ class CalculationsNode<T>(
                       newCalculation = EvalExCalculationAdapter(field.text)
                   ).asEvent().fire()
                 }
-              }.withPosition(2,index)
+              }.withPosition(2, index)
           )
         }
         else -> emptyList()
@@ -66,8 +68,13 @@ class CalculationsNode<T>(
     }
   }
 
-  private fun <T: Node> T.withPosition(column: Int, row: Int): T {
-    WeightGridPane.setPosition(this,column,row)
+  private fun <T : Node> T.withPosition(
+      column: Int,
+      row: Int,
+      horizontalPosition: HPos? = null,
+      verticalPosition: VPos? = null
+  ): T {
+    WeightGridPane.setPosition(this, column, row, horizontalPosition, verticalPosition)
     return this
   }
 

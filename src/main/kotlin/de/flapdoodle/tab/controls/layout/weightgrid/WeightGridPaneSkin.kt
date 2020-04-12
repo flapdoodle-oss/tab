@@ -1,6 +1,5 @@
 package de.flapdoodle.tab.controls.layout.weightgrid
 
-import de.flapdoodle.tab.controls.layout.AutoArray
 import de.flapdoodle.tab.controls.layout.GridMap
 import de.flapdoodle.tab.controls.layout.WeightedSize
 import de.flapdoodle.tab.extensions.constraint
@@ -128,7 +127,10 @@ class WeightGridPaneSkin(
           val areaW = colWidths[c]
           val areaH = rowHeights[r]
 
-          layoutInArea(node, areaX, areaY, areaW, areaH, -1.0, HPos.CENTER, VPos.CENTER)
+          val hPos = node.constraint[HPos::class] ?: HPos.CENTER
+          val vPos = node.constraint[VPos::class] ?: VPos.CENTER
+
+          layoutInArea(node, areaX, areaY, areaW, areaH, -1.0, hPos, vPos)
         }
       }
     }

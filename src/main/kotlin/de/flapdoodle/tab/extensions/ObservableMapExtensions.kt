@@ -11,7 +11,10 @@ object ObservableMapExtensions {
 
   fun <T: Any> set(map: ObservableMap<Any, Any>, key: Key<T>, value: T?): T? {
     @Suppress("UNCHECKED_CAST")
-    return map.put(key,value) as T?
+    return if (value!=null)
+      map.put(key,value) as T?
+    else
+      map.remove(key) as T?
   }
 
   open class TypedMap(

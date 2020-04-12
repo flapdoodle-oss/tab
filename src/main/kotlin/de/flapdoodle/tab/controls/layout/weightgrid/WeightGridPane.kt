@@ -7,6 +7,8 @@ import javafx.collections.ObservableList
 import javafx.css.CssMetaData
 import javafx.css.SimpleStyleableDoubleProperty
 import javafx.css.Styleable
+import javafx.geometry.HPos
+import javafx.geometry.VPos
 import javafx.scene.Node
 import javafx.scene.control.Control
 import tornadofx.*
@@ -34,8 +36,16 @@ class WeightGridPane : Control() {
   }
 
   companion object {
-    fun setPosition(node: Node, column: Int, row: Int) {
+    fun setPosition(
+        node: Node,
+        column: Int,
+        row: Int,
+        horizontalPosition: HPos? = null,
+        verticalPosition: VPos? = null
+    ) {
       node.constraint[GridMap.Pos::class] = GridMap.Pos(column, row)
+      node.constraint[HPos::class] = horizontalPosition
+      node.constraint[VPos::class] = verticalPosition
     }
 
 //    @JvmStatic
