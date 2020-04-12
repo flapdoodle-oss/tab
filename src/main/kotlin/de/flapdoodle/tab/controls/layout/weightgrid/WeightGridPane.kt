@@ -13,8 +13,18 @@ import tornadofx.*
 
 class WeightGridPane : Control() {
 
-  internal val horizontalSpace = SimpleStyleableDoubleProperty(WeightGridPaneStyle.CSS_HSPACE, this, "hspace");
-  internal val verticalSpace = SimpleStyleableDoubleProperty(WeightGridPaneStyle.CSS_VSPACE, this, "vspace");
+  internal val horizontalSpace = object : SimpleStyleableDoubleProperty(WeightGridPaneStyle.CSS_HSPACE, this, "hspace") {
+    override fun invalidated() {
+      requestLayout()
+    }
+  }
+
+  internal val verticalSpace = object : SimpleStyleableDoubleProperty(WeightGridPaneStyle.CSS_VSPACE, this, "vspace") {
+    override fun invalidated() {
+      requestLayout()
+    }
+  }
+
   internal var rowWeights = AutoArray.empty<Double>()
   internal var columnWeights = AutoArray.empty<Double>()
 
@@ -55,6 +65,8 @@ class WeightGridPane : Control() {
     requestLayout()
   }
 
+  fun horizontalSpaceProperty() = horizontalSpace
+  fun verticalSpaceProperty() = verticalSpace
 
 //  override fun getUserAgentStylesheet(): String {
 //    //return Style().base64URL.toExternalForm()

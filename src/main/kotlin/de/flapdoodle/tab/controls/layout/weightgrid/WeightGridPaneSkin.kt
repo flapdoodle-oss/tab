@@ -16,8 +16,6 @@ class WeightGridPaneSkin(
     private val control: WeightGridPane
 ) : SkinBase<WeightGridPane>(control) {
 
-//  private var rowWeights = AutoArray.empty<Double>()
-//  private var columnWeights = AutoArray.empty<Double>()
   private var gridMap: GridMap<Node> = GridMap()
 
   init {

@@ -1,5 +1,7 @@
 package de.flapdoodle.tab.controls.layout.weightgrid
 
+import javafx.beans.Observable
+import javafx.beans.property.SimpleDoubleProperty
 import tornadofx.*
 
 class WeightGridPaneSampler : View("Weighted Grid Pane") {
@@ -52,6 +54,10 @@ class WeightGridPaneSampler : View("Weighted Grid Pane") {
         }
         button("change") {
           WeightGridPane.setPosition(this,2,0)
+          action {
+            println("v=${horizontalSpaceProperty().value}")
+            horizontalSpaceProperty().value = 10.0
+          }
         }
       }
     }
