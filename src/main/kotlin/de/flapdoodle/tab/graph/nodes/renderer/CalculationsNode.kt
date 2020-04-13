@@ -10,6 +10,7 @@ import de.flapdoodle.tab.data.nodes.NodeId
 import de.flapdoodle.tab.extensions.fire
 import de.flapdoodle.tab.graph.nodes.renderer.events.ModelEvent
 import de.flapdoodle.tab.lazy.LazyValue
+import de.flapdoodle.tab.lazy.bindFrom
 import de.flapdoodle.tab.lazy.flatMapIndexedFrom
 import de.flapdoodle.tab.lazy.map
 import javafx.geometry.HPos
@@ -41,7 +42,13 @@ class CalculationsNode<T>(
     setColumnWeight(1, 2.0)
     setColumnWeight(3, 1.0)
 
-    children.flatMapIndexedFrom(calculations) { index, mapping ->
+    children.bindFrom(calculations,
+        reIndex = { index, _, nodes ->
+          nodes.forEach {
+            it.updateRow(index)
+          }
+        })
+    { index, mapping ->
       when (mapping.calculation) {
         is EvalExCalculationAdapter -> {
           val field = TextField(mapping.calculation.formula)
@@ -76,6 +83,10 @@ class CalculationsNode<T>(
   ): T {
     WeightGridPane.setPosition(this, column, row, horizontalPosition, verticalPosition)
     return this
+  }
+
+  private fun <T : Node> T.updateRow(row: Int) {
+    WeightGridPane.updatePosition(this) { it.copy(row = row) }
   }
 
   class CalcNode<T : Any>(

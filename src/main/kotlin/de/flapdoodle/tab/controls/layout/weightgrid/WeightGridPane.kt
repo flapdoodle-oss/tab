@@ -48,6 +48,15 @@ class WeightGridPane : Control() {
       node.constraint[VPos::class] = verticalPosition
     }
 
+    fun updatePosition(
+        node: Node,
+        change: (GridMap.Pos) -> GridMap.Pos
+    ) {
+      val current = node.constraint[GridMap.Pos::class]
+      require(current != null) { "no position found for $node" }
+      node.constraint[GridMap.Pos::class] = change(current)
+    }
+
 //    @JvmStatic
 //    fun getClassCssMetaData(): MutableList<CssMetaData<out Styleable, *>?> {
 //      return Skin.ALL.toMutableList()
