@@ -9,11 +9,21 @@ fun <S : Any, D : Any> ObservableList<D>.bindFrom(src: LazyValue<List<S>>, map: 
   return LazyBindings.bindFrom(src, this, map)
 }
 
+@Deprecated("dont use")
 fun <S : Any, D : Any> ObservableList<D>.bindFrom(
     src: LazyValue<List<S>>,
     reIndex: (index: Int, source: S, mapped: List<D>) -> Unit,
     map: (index: Int, source: S) -> List<D>): Registration {
   return LazyBindings.bindFrom(src, this, reIndex, map)
+}
+
+fun <S : Any, K: Any, M: Any, D : Any> ObservableList<D>.bindFrom(
+    src: LazyValue<List<S>>,
+    keyOf: (source: S) -> K,
+    extract: (M) -> List<D>,
+    map: (index: Int, source: S, old: M?) -> M
+): Registration {
+  return LazyBindings.bindFrom(src, this, keyOf, extract, map)
 }
 
 fun <S : Any, D : Any> ObservableList<D>.syncFrom(src: LazyValue<List<S>>, map: (S) -> D): Registration {
@@ -56,6 +66,33 @@ object LazyBindings {
         children,
         map,
         reIndex
+    )
+
+    val weakListener = WeakChangeListenerDelegate(listener)
+    val keepReferenceListener = KeepReference<Any>(listener)
+
+    src.addListener(weakListener)
+    children.addListener(keepReferenceListener)
+
+    return Registration {
+      src.removeListener(weakListener)
+      children.removeListener(keepReferenceListener)
+    }
+  }
+
+  fun <S: Any, K: Any, M: Any, D: Any> bindFrom(
+      src: LazyValue<List<S>>,
+      children: ObservableList<D>,
+      keyOf: (source: S) -> K,
+      extract: (M) -> List<D>,
+      map: (index: Int, source: S, old: M?) -> M
+  ): Registration {
+    val listener = KeyTrackingChangeListener(
+        src,
+        children,
+        keyOf,
+        extract,
+        map
     )
 
     val weakListener = WeakChangeListenerDelegate(listener)
@@ -133,6 +170,7 @@ object LazyBindings {
     }
   }
 
+  @Deprecated("replace with TrackingChangeListener")
   class FlatMapTrackingChangeListener<S : Any, D : Any>(
       private val src: LazyValue<List<S>>,
       private val children: ObservableList<D>,

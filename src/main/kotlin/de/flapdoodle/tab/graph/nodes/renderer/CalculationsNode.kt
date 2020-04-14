@@ -43,34 +43,39 @@ class CalculationsNode<T>(
     setColumnWeight(3, 1.0)
 
     children.bindFrom(calculations,
-        reIndex = { index, _, nodes ->
-          nodes.forEach {
-            it.updateRow(index)
-          }
-        })
-    { index, mapping ->
-      when (mapping.calculation) {
-        is EvalExCalculationAdapter -> {
-          val field = TextField(mapping.calculation.formula)
-              .withPosition(1, index)
-
-          listOf(
-              Label(mapping.column.name)
-                  .withPosition(0, index, horizontalPosition = HPos.LEFT),
-              field,
-              Button("change").apply {
-                action {
-                  println("should change formula to ${field.text}")
-                  ModelEvent.EventData.FormulaChanged(
-                      nodeId = node.value().id,
-                      namedColumn = mapping.column as NamedColumn<BigDecimal>,
-                      newCalculation = EvalExCalculationAdapter(field.text)
-                  ).asEvent().fire()
-                }
-              }.withPosition(2, index)
-          )
+        keyOf = { it: CalculationMapping<out Any> -> it },
+        extract = { it: List<Node> -> it })
+    { index, mapping, nodes ->
+      if (nodes != null) {
+        nodes.forEach {
+          it.updateRow(index)
         }
-        else -> emptyList()
+
+        nodes
+      } else {
+        when (mapping.calculation) {
+          is EvalExCalculationAdapter -> {
+            val field = TextField(mapping.calculation.formula)
+                .withPosition(1, index)
+
+            listOf(
+                Label(mapping.column.name)
+                    .withPosition(0, index, horizontalPosition = HPos.LEFT),
+                field,
+                Button("change").apply {
+                  action {
+                    println("should change formula to ${field.text}")
+                    ModelEvent.EventData.FormulaChanged(
+                        nodeId = node.value().id,
+                        namedColumn = mapping.column as NamedColumn<BigDecimal>,
+                        newCalculation = EvalExCalculationAdapter(field.text)
+                    ).asEvent().fire()
+                  }
+                }.withPosition(2, index)
+            )
+          }
+          else -> emptyList()
+        }
       }
     }
   }
