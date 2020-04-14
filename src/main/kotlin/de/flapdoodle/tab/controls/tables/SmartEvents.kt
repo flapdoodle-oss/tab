@@ -14,9 +14,10 @@ sealed class SmartEvents(eventType: EventType<SmartEvents>) : Event(eventType) {
 
   data class EditDone(val cell: SmartCell<out Any, out Any>) : SmartEvents(EditDoneEvent)
 
-  data class ChangeCursor<T: Any>(val cursor: Cursor<T>) : SmartEvents(TABLE)
+  data class ChangeCursor<T: Any>(val cursor: Cursor<T>?) : SmartEvents(TABLE)
   data class MoveCursor(val deltaRow: Int = 0, val deltaColumn: Int = 0) : SmartEvents(TABLE)
 
   data class SetCursor<T: Any>(val cursor: Cursor<T>): SmartEvents(CELL)
   data class CellFocused(val cell: SmartCell<out Any, out Any>) : SmartEvents(CELL)
+  data class CellBlur(val cell: SmartCell<out Any, out Any>) : SmartEvents(CELL)
 }

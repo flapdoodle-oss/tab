@@ -67,12 +67,14 @@ class SmartTable<T : Any>(
       control.addEventFilter(SmartEvents.TABLE) { event ->
         when (event) {
           is SmartEvents.ChangeCursor<out Any> -> {
-            if (control.columns.contains(event.cursor.column)) {
-              event.consume()
-
+            event.consume()
+            if (event.cursor!=null && control.columns.contains(event.cursor.column)) {
               println("cursor changed from $currentCursor to ${event.cursor}")
               @Suppress("UNCHECKED_CAST")
               currentCursor = event.cursor as Cursor<T>
+            } else {
+              println("cursor changed from $currentCursor to null")
+              currentCursor = null
             }
           }
           is SmartEvents.MoveCursor -> {

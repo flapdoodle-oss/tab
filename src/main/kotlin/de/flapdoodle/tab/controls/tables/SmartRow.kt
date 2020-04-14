@@ -68,6 +68,11 @@ class SmartRow<T : Any>(
             require(matchingColumn!=null) {"column not found: $column -> ${row.columns}"}
             row.fireEvent(SmartEvents.ChangeCursor(Cursor(matchingColumn, row.index)))
           }
+          is SmartEvents.CellBlur -> {
+            event.consume()
+            println("Cell blur: ${event.cell}")
+            row.fireEvent(SmartEvents.ChangeCursor<T>(null))
+          }
           is SmartEvents.SetCursor<out Any> -> {
             setCursor(event.cursor as Cursor<T>)
           }

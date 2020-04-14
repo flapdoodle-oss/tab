@@ -123,9 +123,15 @@ open class SmartCell<T : Any, C : Any>(
           }
         }
 
-        control.focusedProperty().addListener { _, _, focused ->
-          if (focused) {
-            fireEvent(SmartEvents.CellFocused(control))
+        control.focusedProperty().addListener { _, old, focused ->
+          if (old!=focused) {
+            if (focused) {
+              fireEvent(SmartEvents.CellFocused(control))
+            } else {
+              if (!editInProgress) {
+                fireEvent(SmartEvents.CellBlur(control))
+              }
+            }
           }
         }
       }
@@ -176,14 +182,20 @@ open class SmartCell<T : Any, C : Any>(
       _cancelEdit()
     }
 
+    var editInProgress: Boolean = false
+
     internal fun _cancelEdit() {
+      editInProgress=false
+
       label.show()
       field.hide()
       field.text = label.text
     }
 
     internal fun _startEdit() {
-      RuntimeException("startEdit called").printStackTrace()
+//      RuntimeException("startEdit called").printStackTrace()
+      editInProgress=true
+
       label.hide()
       field.show()
       field.requestFocus()
