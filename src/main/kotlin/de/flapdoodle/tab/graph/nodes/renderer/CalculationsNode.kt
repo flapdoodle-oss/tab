@@ -2,6 +2,7 @@ package de.flapdoodle.tab.graph.nodes.renderer
 
 import de.flapdoodle.tab.controls.layout.weightgrid.WeightGridPane
 import de.flapdoodle.tab.data.NamedColumn
+import de.flapdoodle.tab.data.calculations.Calculation
 import de.flapdoodle.tab.data.calculations.CalculationMapping
 import de.flapdoodle.tab.data.calculations.EvalExCalculationAdapter
 import de.flapdoodle.tab.data.nodes.ConnectableNode
@@ -43,87 +44,134 @@ class CalculationsNode<T>(
     setColumnWeight(3, 1.0)
 
     children.bindFrom(calculations,
-        keyOf = { it: CalculationMapping<out Any> -> it },
-        extract = { it: List<Node> -> it })
-    { index, mapping, nodes ->
-      if (nodes != null) {
-        nodes.forEach {
-          it.updateRow(index)
-        }
+        keyOf = { it: CalculationMapping<out Any> -> it.column.id },
+        extract = { it: MappedNodes -> it.nodes() })
+    { index, mapping, mapped ->
+      if (mapped != null) {
+        mapped.update(index, mapping)
+//
+//        mapped.nodes().forEach {
+//          it.updateRow(index)
+//        }
 
-        nodes
+        mapped
       } else {
-        when (mapping.calculation) {
-          is EvalExCalculationAdapter -> {
-            val field = TextField(mapping.calculation.formula)
-                .withPosition(1, index)
+        MappedNodes.map(node, index, mapping)
+//        when (mapping.calculation) {
+//          is EvalExCalculationAdapter -> {
+//            val field = TextField(mapping.calculation.formula)
+//                .withPosition(1, index)
+//
+//            listOf(
+//                Label(mapping.column.name)
+//                    .withPosition(0, index, horizontalPosition = HPos.LEFT),
+//                field,
+//                Button("change").apply {
+//                  action {
+//                    println("should change formula to ${field.text}")
+//                    ModelEvent.EventData.FormulaChanged(
+//                        nodeId = node.value().id,
+//                        namedColumn = mapping.column as NamedColumn<BigDecimal>,
+//                        newCalculation = EvalExCalculationAdapter(field.text)
+//                    ).asEvent().fire()
+//                  }
+//                }.withPosition(2, index)
+//            )
+//          }
+//          else -> emptyList()
+      }
+    }
+  }
+}
 
-            listOf(
-                Label(mapping.column.name)
-                    .withPosition(0, index, horizontalPosition = HPos.LEFT),
-                field,
-                Button("change").apply {
-                  action {
-                    println("should change formula to ${field.text}")
-                    ModelEvent.EventData.FormulaChanged(
-                        nodeId = node.value().id,
-                        namedColumn = mapping.column as NamedColumn<BigDecimal>,
-                        newCalculation = EvalExCalculationAdapter(field.text)
-                    ).asEvent().fire()
-                  }
-                }.withPosition(2, index)
-            )
-          }
-          else -> emptyList()
-        }
+private fun <T : Node> T.withPosition(
+    column: Int,
+    row: Int,
+    horizontalPosition: HPos? = null,
+    verticalPosition: VPos? = null
+): T {
+  WeightGridPane.setPosition(this, column, row, horizontalPosition, verticalPosition)
+  return this
+}
+
+private fun <T : Node> T.updateRow(row: Int) {
+  WeightGridPane.updatePosition(this) { it.copy(row = row) }
+}
+
+sealed class MappedNodes() {
+  abstract fun nodes(): List<Node>
+  abstract fun update(index: Int, mapping: CalculationMapping<out Any>)
+
+  class EvalNodes(
+      val nodeId: () -> NodeId<out ConnectableNode>,
+      val index: Int,
+      calculation: EvalExCalculationAdapter,
+      column: NamedColumn<BigDecimal>
+  ) : MappedNodes() {
+    private var calculation = calculation
+    private var column = column
+
+    private val field = TextField(calculation.formula)
+        .withPosition(1, index)
+
+    private val label = Label(column.name)
+        .withPosition(0, index, horizontalPosition = HPos.LEFT)
+
+    private val button = Button("change").apply {
+      action {
+        println("should change formula to ${field.text}")
+        ModelEvent.EventData.FormulaChanged(
+            nodeId = nodeId(),
+            namedColumn = column,
+            newCalculation = EvalExCalculationAdapter(field.text)
+        ).asEvent().fire()
+      }
+    }.withPosition(2, index)
+
+    override fun nodes() = listOf(label, field, button)
+    override fun update(index: Int, mapping: CalculationMapping<out Any>) {
+      require(mapping.calculation is EvalExCalculationAdapter) { "update with wrong mapping: $mapping"}
+      calculation = mapping.calculation
+      column = mapping.column as NamedColumn<BigDecimal>
+
+      field.text = calculation.formula
+      label.text = column.name
+
+      nodes().forEach {
+        it.updateRow(index)
       }
     }
   }
 
-  private fun <T : Node> T.withPosition(
-      column: Int,
-      row: Int,
-      horizontalPosition: HPos? = null,
-      verticalPosition: VPos? = null
-  ): T {
-    WeightGridPane.setPosition(this, column, row, horizontalPosition, verticalPosition)
-    return this
-  }
-
-  private fun <T : Node> T.updateRow(row: Int) {
-    WeightGridPane.updatePosition(this) { it.copy(row = row) }
-  }
-
-  class CalcNode<T : Any>(
-      val mapping: CalculationMapping<T>,
-      nodeIdSupplier: () -> NodeId<out ConnectableNode>,
-      onFormulaChanged: (ModelEvent) -> Unit
-  ) : HBox() {
-    init {
-      alignment = Pos.CENTER_LEFT
-
-      when (mapping.calculation) {
-        is EvalExCalculationAdapter -> {
-          val formula = mapping.calculation.formula
-          label(mapping.column.name)
-          val field = textfield(formula)
-          button("change") {
-
-          }.action {
-            println("should change formula to ${field.text}")
-            onFormulaChanged(ModelEvent.EventData.FormulaChanged(
-                nodeId = nodeIdSupplier(),
-                namedColumn = mapping.column as NamedColumn<BigDecimal>,
-                newCalculation = EvalExCalculationAdapter(field.text)
-            ).asEvent())
-          }
-        }
-        else -> {
-          //label("not supported: ${mapping.calculation::class}")
-        }
-      }
-
+  class Unmapped() : MappedNodes() {
+    override fun nodes(): List<Node> = emptyList()
+    override fun update(index: Int, mapping: CalculationMapping<out Any>) {
+      println("can not updated unmapped: $mapping")
     }
   }
 
+  companion object {
+    private fun <T : Node> T.withPosition(
+        column: Int,
+        row: Int,
+        horizontalPosition: HPos? = null,
+        verticalPosition: VPos? = null
+    ): T {
+      WeightGridPane.setPosition(this, column, row, horizontalPosition, verticalPosition)
+      return this
+    }
+
+    fun <T, V : Any> map(
+        node: LazyValue<T>,
+        index: Int,
+        mapping: CalculationMapping<V>
+    ): MappedNodes
+        where T : HasCalculations,
+              T : ConnectableNode {
+      return when (mapping.calculation) {
+        is EvalExCalculationAdapter -> EvalNodes({ node.value().id }, index, mapping.calculation, mapping.column as NamedColumn<BigDecimal>)
+        else -> Unmapped()
+      }
+    }
+  }
 }

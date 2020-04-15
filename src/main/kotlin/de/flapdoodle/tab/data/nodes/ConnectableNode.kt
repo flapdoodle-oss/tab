@@ -70,8 +70,12 @@ sealed class ConnectableNode {
 
     fun <T : Any> changeCalculation(destination: NamedColumn<T>, calculation: Calculation<T>): Calculated {
       return copy(calculations = calculations.map {
-        if (it.column == destination) {
-          (it as CalculationMapping<T>).copy(calculation = calculation)
+        if (it.column.id == destination.id) {
+          (it as CalculationMapping<T>)
+              .copy(
+                  column = destination,
+                  calculation = calculation
+              )
         } else {
           it
         }
