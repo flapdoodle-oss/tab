@@ -86,5 +86,8 @@ sealed class ConnectableNode {
       return copy(calculations = calculations + CalculationMapping(calculation, column))
     }
 
+    fun <T : Any> delete(column: NamedColumn<T>): Calculated {
+      return copy(calculations = calculations.filter { m -> m.column != column })
+    }
   }
 }

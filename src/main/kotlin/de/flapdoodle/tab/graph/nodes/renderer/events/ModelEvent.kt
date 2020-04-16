@@ -97,6 +97,21 @@ data class ModelEvent(
       }
     }
 
+    data class DeleteCalculation<T : ConnectableNode>(
+        val nodeId: NodeId<T>,
+        val namedColumn: NamedColumn<BigDecimal>
+    ) : EventData() {
+
+      override fun applyTo(model: TabModel): TabModel {
+        return model.applyNodeChanges { nodes ->
+          nodes.changeNode(nodeId) {
+            require(it is ConnectableNode.Calculated) { "not supported: $it" }
+            it.delete(namedColumn)
+          }
+        }
+      }
+    }
+
     data class AddColumn(
         val nodeId: NodeId.TableId,
         val name: String,
