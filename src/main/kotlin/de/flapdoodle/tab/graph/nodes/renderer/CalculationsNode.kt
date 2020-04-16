@@ -51,6 +51,9 @@ class CalculationsNode<T>(
         is PositionedEntry.WithIndex -> mapped?.apply {
           update(entry.index, entry.value)
         } ?: MappedNodes.map(node, entry.index, entry.value)
+        is PositionedEntry.End -> mapped?.apply {
+          update(entry.index, null)
+        } ?: MappedNodes.AddEntry({ node.value().id }, entry.index)
         else -> MappedNodes.Unmapped()
       }
     }
@@ -63,7 +66,7 @@ private fun <T : Node> T.updateRow(row: Int) {
 
 sealed class MappedNodes() {
   abstract fun nodes(): List<Node>
-  abstract fun update(index: Int, mapping: CalculationMapping<out Any>)
+  abstract fun update(index: Int, mapping: CalculationMapping<out Any>?)
 
   class EvalNodes(
       val nodeId: () -> NodeId<out ConnectableNode>,
@@ -103,8 +106,8 @@ sealed class MappedNodes() {
 
     override fun nodes() = listOf(label, field, button, deleteButton)
 
-    override fun update(index: Int, mapping: CalculationMapping<out Any>) {
-      require(mapping.calculation is EvalExCalculationAdapter) { "update with wrong mapping: $mapping" }
+    override fun update(index: Int, mapping: CalculationMapping<out Any>?) {
+      require(mapping != null && mapping.calculation is EvalExCalculationAdapter) { "update with wrong mapping: $mapping" }
       calculation = mapping.calculation
       column = mapping.column as NamedColumn<BigDecimal>
 
@@ -117,9 +120,26 @@ sealed class MappedNodes() {
     }
   }
 
+  class AddEntry(
+      val nodeId: () -> NodeId<out ConnectableNode>,
+      val index: Int
+  ) : MappedNodes() {
+    private val button = Button("change").apply {
+      action {
+        println("add entry")
+      }
+    }.withPosition(2, index)
+
+    override fun nodes() = listOf(button)
+
+    override fun update(index: Int, mapping: CalculationMapping<out Any>?) {
+      button.updateRow(index)
+    }
+  }
+
   class Unmapped() : MappedNodes() {
     override fun nodes(): List<Node> = emptyList()
-    override fun update(index: Int, mapping: CalculationMapping<out Any>) {
+    override fun update(index: Int, mapping: CalculationMapping<out Any>?) {
       println("can not updated unmapped: $mapping")
     }
   }
