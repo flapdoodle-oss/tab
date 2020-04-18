@@ -10,7 +10,6 @@ import de.flapdoodle.tab.data.nodes.NodeId
 import de.flapdoodle.tab.extensions.fire
 import de.flapdoodle.tab.graph.nodes.renderer.events.ModelEvent
 import de.flapdoodle.tab.lazy.LazyValue
-import de.flapdoodle.tab.lazy.Position
 import de.flapdoodle.tab.lazy.bindFrom
 import de.flapdoodle.tab.lazy.map
 import javafx.geometry.HPos
@@ -42,16 +41,12 @@ class CalculationsNode<T>(
 
     children.bindFrom(calculations,
         keyOf = { it.column.id },
-        extract = MappedNodes::nodes) { entry, mapped ->
-      when (entry) {
-        is Position.IndexedEntry -> mapped?.apply {
-          update(entry.index, entry.value)
-        } ?: MappedNodes.map(node, entry.index, entry.value)
-//        is Position.After -> mapped?.apply {
-//          update(entry.index, null)
-//        } ?: MappedNodes.AddEntry({ node.value().id }, entry.index)
-        else -> MappedNodes.Unmapped()
-      }
+        extract = MappedNodes::nodes) { index, source, mapped ->
+      mapped?.apply {
+        update(index, source)
+      } ?: MappedNodes.map(node, index, source)
+
+
     }
 
     children.addAll(

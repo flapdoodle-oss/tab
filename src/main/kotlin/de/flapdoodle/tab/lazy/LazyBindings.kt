@@ -21,7 +21,7 @@ fun <S : Any, K: Any, M: Any, D : Any> ObservableList<D>.bindFrom(
     src: LazyValue<List<S>>,
     keyOf: (source: S) -> K,
     extract: (M) -> List<D>,
-    map: (entry: Position<S>, old: M?) -> M
+    map: (index: Int, source: S, old: M?) -> M
 ): Registration {
   return LazyBindings.bindFrom(src, this, keyOf, extract, map)
 }
@@ -85,7 +85,7 @@ object LazyBindings {
       children: ObservableList<D>,
       keyOf: (source: S) -> K,
       extract: (M) -> List<D>,
-      map: (entry: Position<S>, old: M?) -> M
+      map: (index: Int, source: S, old: M?) -> M
   ): Registration {
     val listener = KeyTrackingChangeListener(
         src,
