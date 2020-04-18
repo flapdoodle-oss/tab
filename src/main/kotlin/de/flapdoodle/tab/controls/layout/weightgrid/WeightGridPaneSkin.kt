@@ -117,15 +117,15 @@ class WeightGridPaneSkin(
 //      println("heights: $rowHeights")
 //      println("-------------------------")
 
-    gridMap.rows().forEach { r ->
-      gridMap.columns().forEach { c ->
+    gridMap.rows().forEachIndexed { r_idx, r ->
+      gridMap.columns().forEachIndexed { c_idx, c ->
         val node = gridMap[GridMap.Pos(c, r)]
         if (node != null && node.isManaged) {
-          val areaX = contentX + colWidths.subList(0, c).sumWithSpaceAfter(horizontalSpace()) { it }
-          val areaY = contentY + rowHeights.subList(0, r).sumWithSpaceAfter(verticalSpace()) { it }
+          val areaX = contentX + colWidths.subList(0, c_idx).sumWithSpaceAfter(horizontalSpace()) { it }
+          val areaY = contentY + rowHeights.subList(0, r_idx).sumWithSpaceAfter(verticalSpace()) { it }
 
-          val areaW = colWidths[c]
-          val areaH = rowHeights[r]
+          val areaW = colWidths[c_idx]
+          val areaH = rowHeights[r_idx]
 
           val hPos = node.constraint[HPos::class] ?: HPos.CENTER
           val vPos = node.constraint[VPos::class] ?: VPos.CENTER

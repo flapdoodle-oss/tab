@@ -2,7 +2,6 @@ package de.flapdoodle.tab.graph.nodes.renderer
 
 import de.flapdoodle.tab.controls.layout.weightgrid.WeightGridPane
 import de.flapdoodle.tab.data.NamedColumn
-import de.flapdoodle.tab.data.calculations.Calculation
 import de.flapdoodle.tab.data.calculations.CalculationMapping
 import de.flapdoodle.tab.data.calculations.EvalExCalculationAdapter
 import de.flapdoodle.tab.data.nodes.ConnectableNode
@@ -11,18 +10,15 @@ import de.flapdoodle.tab.data.nodes.NodeId
 import de.flapdoodle.tab.extensions.fire
 import de.flapdoodle.tab.graph.nodes.renderer.events.ModelEvent
 import de.flapdoodle.tab.lazy.LazyValue
-import de.flapdoodle.tab.lazy.PositionedEntry
+import de.flapdoodle.tab.lazy.Position
 import de.flapdoodle.tab.lazy.bindFrom
-import de.flapdoodle.tab.lazy.flatMapIndexedFrom
 import de.flapdoodle.tab.lazy.map
 import javafx.geometry.HPos
-import javafx.geometry.Pos
 import javafx.geometry.VPos
 import javafx.scene.Node
 import javafx.scene.control.Button
 import javafx.scene.control.Label
 import javafx.scene.control.TextField
-import javafx.scene.layout.HBox
 import tornadofx.*
 import java.math.BigDecimal
 
@@ -48,15 +44,19 @@ class CalculationsNode<T>(
         keyOf = { it.column.id },
         extract = MappedNodes::nodes) { entry, mapped ->
       when (entry) {
-        is PositionedEntry.WithIndex -> mapped?.apply {
+        is Position.IndexedEntry -> mapped?.apply {
           update(entry.index, entry.value)
         } ?: MappedNodes.map(node, entry.index, entry.value)
-        is PositionedEntry.End -> mapped?.apply {
-          update(entry.index, null)
-        } ?: MappedNodes.AddEntry({ node.value().id }, entry.index)
+//        is Position.After -> mapped?.apply {
+//          update(entry.index, null)
+//        } ?: MappedNodes.AddEntry({ node.value().id }, entry.index)
         else -> MappedNodes.Unmapped()
       }
     }
+
+    children.addAll(
+        MappedNodes.AddEntry({ node.value().id }, Int.MAX_VALUE).nodes()
+    )
   }
 }
 

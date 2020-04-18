@@ -4,11 +4,11 @@ data class GridMap<T : Any>(
     private val map: Map<Pos, T> = emptyMap()
 ) {
 
-  private val maxColumn = map.keys.map { it.column }.max() ?: 0
-  private val maxRow = map.keys.map { it.row }.max() ?: 0
+  private val columnSet = map.keys.map { it.column }.toSet().sorted()
+  private val rowSet = map.keys.map { it.row }.toSet().sorted()
 
-  fun columns() = 0..maxColumn
-  fun rows() = 0..maxRow
+  fun columns() = columnSet
+  fun rows() = rowSet
   fun values() = map.values
 
   fun add(pos: Pos, value: T): GridMap<T> {
@@ -21,14 +21,14 @@ data class GridMap<T : Any>(
   }
 
   fun <D : Any> mapColumns(allColumnRows: (Int, Collection<T>) -> D): List<D> {
-    return columns().map { column ->
+    return columnSet.map { column ->
       val matchingColumns = map.filter { it.key.column == column }.values
       allColumnRows(column, matchingColumns)
     }
   }
 
   fun <D : Any> mapRows(allRowColumns: (Int, Collection<T>) -> D): List<D> {
-    return rows().map { row ->
+    return rowSet.map { row ->
       val matchingRows = map.filter { it.key.row == row }.values
       allRowColumns(row, matchingRows)
     }

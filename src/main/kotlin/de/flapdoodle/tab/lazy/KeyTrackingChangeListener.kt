@@ -7,11 +7,11 @@ class KeyTrackingChangeListener<S: Any, K: Any, M: Any, D: Any>(
     private val children: ObservableList<D>,
     private val keyOf: (source: S) -> K,
     private val extract: (M) -> List<D>,
-    private val map: (entry: PositionedEntry<S>, old: M?) -> M
+    private val map: (entry: Position<S>, old: M?) -> M
 ) : ChangedListener<List<S>> {
-  private var start = map(PositionedEntry.Start(), null)
-  private var mapped = src.value().mapIndexed { index, it -> keyOf(it) to map(PositionedEntry.WithIndex(index, it), null) }
-  private var end = map(PositionedEntry.End(src.value().size), null)
+  private var start = map(Position.Before(), null)
+  private var mapped = src.value().mapIndexed { index, it -> keyOf(it) to map(Position.IndexedEntry(index, it), null) }
+  private var end = map(Position.After(src.value().size), null)
 
   init {
     children.addAll(mapped.flatMap { extract(it.second) })
@@ -22,13 +22,13 @@ class KeyTrackingChangeListener<S: Any, K: Any, M: Any, D: Any>(
 
     val current = mapped
 
-    val newStart = map(PositionedEntry.Start(), start)
+    val newStart = map(Position.Before(), start)
     val merged = new.mapIndexed { index, source ->
       val key = keyOf(source)
       val alreadyMapped = current.find { it.first == key }
-      key to map(PositionedEntry.WithIndex(index, source), alreadyMapped?.second)
+      key to map(Position.IndexedEntry(index, source), alreadyMapped?.second)
     }
-    val newEnd = map(PositionedEntry.End(new.size), end)
+    val newEnd = map(Position.After(new.size), end)
 
     val mergedKeys = merged.map { it.first }.toSet()
     val removed = current.filter { !mergedKeys.contains(it.first) }
