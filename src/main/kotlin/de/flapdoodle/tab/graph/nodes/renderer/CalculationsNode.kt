@@ -9,6 +9,7 @@ import de.flapdoodle.tab.data.nodes.HasCalculations
 import de.flapdoodle.tab.data.nodes.NodeId
 import de.flapdoodle.tab.extensions.fire
 import de.flapdoodle.tab.graph.nodes.renderer.events.ModelEvent
+import de.flapdoodle.tab.graph.nodes.renderer.modals.AddCalculationModalView
 import de.flapdoodle.tab.lazy.LazyValue
 import de.flapdoodle.tab.lazy.bindFrom
 import de.flapdoodle.tab.lazy.map
@@ -22,6 +23,7 @@ import tornadofx.*
 import java.math.BigDecimal
 
 class CalculationsNode<T>(
+    id: NodeId.CalculatedId,
     node: LazyValue<T>
 ) : Fragment()
     where T : HasCalculations,
@@ -51,7 +53,7 @@ class CalculationsNode<T>(
       }
 
       children.addAll(
-          MappedNodes.AddEntry({ node.value().id }, Int.MAX_VALUE).nodes()
+          MappedNodes.AddEntry(id, Int.MAX_VALUE).nodes()
       )
     }
   }
@@ -73,22 +75,30 @@ class CalculationsNode<T>(
       private var calculation = calculation
       private var column = column
 
-      private val field = TextField(calculation.formula)
-          .withPosition(1, index)
+      private val field = TextField(calculation.formula).apply {
+        action {
+          println("")
+          ModelEvent.EventData.FormulaChanged(
+              nodeId = nodeId(),
+              namedColumn = column,
+              newCalculation = EvalExCalculationAdapter(text)
+          ).asEvent().fire()
+        }
+      }.withPosition(1, index)
 
       private val label = Label(column.name)
           .withPosition(0, index, horizontalPosition = HPos.LEFT)
 
-      private val button = Button("change").apply {
-        action {
-          println("should change formula to ${field.text}")
-          ModelEvent.EventData.FormulaChanged(
-              nodeId = nodeId(),
-              namedColumn = column,
-              newCalculation = EvalExCalculationAdapter(field.text)
-          ).asEvent().fire()
-        }
-      }.withPosition(2, index)
+//      private val button = Button("change").apply {
+//        action {
+//          println("should change formula to ${field.text}")
+//          ModelEvent.EventData.FormulaChanged(
+//              nodeId = nodeId(),
+//              namedColumn = column,
+//              newCalculation = EvalExCalculationAdapter(field.text)
+//          ).asEvent().fire()
+//        }
+//      }.withPosition(2, index)
 
       private val deleteButton = Button("delete").apply {
         action {
@@ -98,9 +108,9 @@ class CalculationsNode<T>(
               namedColumn = column
           ).asEvent().fire()
         }
-      }.withPosition(3, index)
+      }.withPosition(2, index)
 
-      override fun nodes() = listOf(label, field, button, deleteButton)
+      override fun nodes() = listOf(label, field, deleteButton)
 
       override fun update(index: Int, mapping: CalculationMapping<out Any>?) {
         require(mapping != null && mapping.calculation is EvalExCalculationAdapter) { "update with wrong mapping: $mapping" }
@@ -117,12 +127,12 @@ class CalculationsNode<T>(
     }
 
     class AddEntry(
-        val nodeId: () -> NodeId<out ConnectableNode>,
+        val nodeId: NodeId.CalculatedId,
         val index: Int
     ) : MappedNodes() {
-      private val button = Button("change").apply {
+      private val button = Button("add").apply {
         action {
-          println("add entry")
+          AddCalculationModalView.openModalWith(nodeId)
         }
       }.withPosition(2, index)
 

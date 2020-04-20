@@ -4,6 +4,7 @@ import com.udojava.evalex.Expression
 import de.flapdoodle.tab.data.values.Input
 import de.flapdoodle.tab.extensions.Exceptions
 import java.math.BigDecimal
+import java.math.RoundingMode
 
 data class EvalExCalculationAdapter(
     val formula: String
@@ -19,14 +20,18 @@ data class EvalExCalculationAdapter(
         .map { it.scale() }
         .max() ?: 2
 
-    return Exceptions.returnOnException<BigDecimal, ArithmeticException>(null) {
+    return Exceptions.returnOnException<BigDecimal, ArithmeticException>(fallback = { ex ->
+      ex.printStackTrace()
+      null
+    }) {
+
       return Expression(formula).apply {
             variableMap.forEach { (name, value) ->
               setVariable(name, value)
             }
           }
           .eval().let {
-            it.setScale(maxScale)
+            it.setScale(maxScale, RoundingMode.HALF_DOWN)
           }
     }
   }

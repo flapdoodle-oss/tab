@@ -149,6 +149,7 @@ class NodeAdapterGraphNode(
                 node = nodeProperty
             ),
             configuration = CalculationsNode(
+                id = id,
                 node = nodeProperty
             )
         )

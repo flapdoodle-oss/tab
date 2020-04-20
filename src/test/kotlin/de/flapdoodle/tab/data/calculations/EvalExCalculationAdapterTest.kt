@@ -1,5 +1,6 @@
 package de.flapdoodle.tab.data.calculations
 
+import com.udojava.evalex.Expression
 import de.flapdoodle.tab.data.values.Input
 import de.flapdoodle.tab.data.values.ValueMap
 import org.assertj.core.api.Assertions.assertThat
@@ -32,5 +33,45 @@ internal class EvalExCalculationAdapterTest {
 
     assertThat(calculation.variables())
         .containsExactlyInAnyOrder(Input.Variable(BigDecimal::class,"a"), Input.Variable(BigDecimal::class,"b"))
+  }
+
+  @Test
+  fun `functions must work`() {
+    val calculation = EvalExCalculationAdapter("SIN(a)*2+b")
+
+    assertThat(calculation.variables())
+        .containsExactlyInAnyOrder(Input.Variable(BigDecimal::class,"a"), Input.Variable(BigDecimal::class,"b"))
+
+    val result = calculation.calculate(ValueMap().add("a", BigDecimal("10.0")).add("b", BigDecimal("5.0")))
+
+    assertThat(result).isEqualTo(BigDecimal("5.3"))
+  }
+
+  @Test
+  fun `from original doc`() {
+    // Using pre-created BigDecimals for variables
+    // Using pre-created BigDecimals for variables
+    val a = BigDecimal("2.4")
+    val b = BigDecimal("9.235")
+    val result = Expression("SQRT(a^2 + b^2)")
+        .with("a", a)
+        .and("b", b)
+        .eval() // 9.5591845
+
+    assertThat(result).isEqualTo(BigDecimal("9.5417618"))
+  }
+
+  @Test
+  fun `SIN must work`() {
+    // Using pre-created BigDecimals for variables
+    // Using pre-created BigDecimals for variables
+    val a = BigDecimal("2.4")
+    val b = BigDecimal("9.235")
+    val result = Expression("SIN(a)*b")
+        .with("a", a)
+        .and("b", b)
+        .eval() // 9.5591845
+
+    assertThat(result).isEqualTo(BigDecimal("0.3867216"))
   }
 }
