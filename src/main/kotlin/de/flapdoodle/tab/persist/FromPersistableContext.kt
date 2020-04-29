@@ -5,10 +5,20 @@ import de.flapdoodle.tab.data.nodes.NodeId
 import kotlin.reflect.KClass
 
 class FromPersistableContext {
+  private var constantsIds: Map<Int, NodeId.ConstantsId> = emptyMap()
   private var tableIds: Map<Int, NodeId.TableId> = emptyMap()
   private var calculatedIds: Map<Int, NodeId.CalculatedId> = emptyMap()
   private var aggregatedIds: Map<Int, NodeId.AggregatedId> = emptyMap()
   private var columnIds: Map<Pair<Int,KClass<out Any>>, ColumnId<out Any>> = emptyMap()
+
+  fun constantsIdFor(id: Int): NodeId.ConstantsId {
+    val ret = constantsIds[id]
+    return if (ret == null) {
+      val newId = NodeId.ConstantsId()
+      constantsIds = constantsIds + (id to newId)
+      newId
+    } else ret
+  }
 
   fun tableIdFor(id: Int): NodeId.TableId {
     val ret = tableIds[id]

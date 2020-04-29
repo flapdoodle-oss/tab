@@ -12,6 +12,7 @@ data class PersistableNodeId(
   enum class Type(
       override val type: KClass<out NodeId<out ConnectableNode>>
   ) : TypeClassEnum<Type, NodeId<out ConnectableNode>> {
+    Constants(NodeId.ConstantsId::class),
     Table(NodeId.TableId::class),
     Calculated(NodeId.CalculatedId::class),
     Aggregated(NodeId.AggregatedId::class)
@@ -27,6 +28,7 @@ data class PersistableNodeId(
 
     override fun from(context: FromPersistableContext, source: PersistableNodeId): NodeId<out ConnectableNode> {
       return when (source.type) {
+        Type.Constants -> FromConstantsId.from(context,source)
         Type.Table -> FromTableId.from(context,source)
         Type.Calculated -> FromCalculatedId.from(context,source)
         Type.Aggregated -> FromAggregatedId.from(context,source)
@@ -34,6 +36,12 @@ data class PersistableNodeId(
     }
   }
 
+  object FromConstantsId : FromPersistable<NodeId.ConstantsId, PersistableNodeId> {
+    override fun from(context: FromPersistableContext, source: PersistableNodeId): NodeId.ConstantsId {
+      require(source.type==Type.Constants) {"type mismatch: $source"}
+      return context.constantsIdFor(source.id)
+    }
+  }
   object FromTableId : FromPersistable<NodeId.TableId, PersistableNodeId> {
     override fun from(context: FromPersistableContext, source: PersistableNodeId): NodeId.TableId {
       require(source.type==Type.Table) {"type mismatch: $source"}

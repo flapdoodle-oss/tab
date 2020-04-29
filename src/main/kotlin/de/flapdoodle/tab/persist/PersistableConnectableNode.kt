@@ -12,6 +12,7 @@ data class PersistableConnectableNode(
 ) {
 
   enum class Type {
+    Constants,
     Table,
     Calculated,
     Aggregated
@@ -21,6 +22,12 @@ data class PersistableConnectableNode(
 
     override fun toPersistable(source: ConnectableNode): PersistableConnectableNode {
       return when (source) {
+        is ConnectableNode.Constants -> PersistableConnectableNode(
+            name = source.name,
+            type = Type.Constants,
+            id = PersistableNodeId.toPersistable(source.id),
+            columns = source.columns().map(PersistableNamedColumn.Companion::toPersistable)
+        )
         is ConnectableNode.Table -> PersistableConnectableNode(
             name = source.name,
             type = Type.Table,
@@ -44,6 +51,11 @@ data class PersistableConnectableNode(
 
     override fun from(context: FromPersistableContext, source: PersistableConnectableNode): ConnectableNode {
       return when (source.type) {
+        Type.Constants -> ConnectableNode.Constants(
+            name = source.name,
+            id = PersistableNodeId.FromConstantsId.from(context, source.id),
+            columns = source.columns.map { PersistableNamedColumn.from(context, it) }
+        )
         Type.Table -> ConnectableNode.Table(
             name = source.name,
             id = PersistableNodeId.FromTableId.from(context, source.id),

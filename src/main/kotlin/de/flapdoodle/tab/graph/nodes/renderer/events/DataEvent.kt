@@ -24,6 +24,15 @@ data class DataEvent(
         return data.change(id, row, value)
       }
     }
+
+    data class ValueChanged<T : Any>(
+        val id: ColumnId<out T>,
+        val value: T?
+    ) : EventData() {
+      override fun applyTo(data: Data): Data {
+        return data.change(id, value)
+      }
+    }
   }
 }
 

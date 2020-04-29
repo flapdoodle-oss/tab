@@ -10,6 +10,7 @@ import tornadofx.*
 
 class AddNodeModalView : View() {
   enum class NodeType {
+    Constants,
     Table,
     Calculation,
     Aggregation
@@ -43,6 +44,9 @@ class AddNodeModalView : View() {
                 println("create: $type")
 
                 val node: ConnectableNode = when (type) {
+                  NodeType.Constants -> ConnectableNode.Constants(
+                      name = model.name.value
+                  )
                   NodeType.Table -> ConnectableNode.Table(
                       name = model.name.value
                   )

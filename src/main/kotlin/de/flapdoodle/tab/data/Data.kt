@@ -49,6 +49,14 @@ data class Data(
     }
   }
 
+  fun values(columns: List<ColumnId<out Any>>): Row {
+    val knownColumns = columnValues.keys.intersect(columns)
+
+    require(singleValueColumns.containsAll(knownColumns)) { "not all known columns are single value: $knownColumns != $singleValueColumns" }
+
+    return Row(0, columns.map { it to get(it)[0] }.toMap())
+  }
+
   fun explain() {
     columnValues.forEach { columnId, values ->
       println("column $columnId -> $values")

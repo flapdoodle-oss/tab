@@ -13,6 +13,27 @@ sealed class ConnectableNode {
   abstract val id: NodeId<out ConnectableNode>
   abstract val name: String
 
+  data class Constants(
+      override val name: String,
+      override val id: NodeId.ConstantsId = NodeId.ConstantsId(),
+      private val columns: List<NamedColumn<out Any>> = listOf()
+  ) : ConnectableNode(), HasColumns {
+
+    override fun columns() = columns
+
+    fun add(id: ColumnId<*>, name: String): Constants {
+      require(!columns.any { it.id == id }) { "column already added" }
+
+      return copy(columns = columns + NamedColumn(name, id))
+    }
+
+    fun remove(id: ColumnId<*>): Constants {
+      require(columns.any { it.id == id }) { "column not found" }
+
+      return copy(columns = columns.filter { it.id != id })
+    }
+  }
+
   data class Table(
       override val name: String,
       override val id: NodeId.TableId = NodeId.TableId(),

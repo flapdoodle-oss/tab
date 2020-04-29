@@ -11,6 +11,7 @@ import de.flapdoodle.tab.graph.nodes.renderer.events.UIEvent
 import de.flapdoodle.tab.graph.nodes.renderer.modals.AddAggregationModalView
 import de.flapdoodle.tab.graph.nodes.renderer.modals.AddCalculationModalView
 import de.flapdoodle.tab.graph.nodes.renderer.modals.AddColumnModalView
+import de.flapdoodle.tab.graph.nodes.renderer.modals.AddConstantModalView
 import de.flapdoodle.tab.lazy.LazyValue
 import de.flapdoodle.tab.lazy.asBinding
 import de.flapdoodle.tab.lazy.map
@@ -40,6 +41,7 @@ class NodeAdapterGraphNode(
     ): NodeAdapterGraphNode {
       require(nodesProperty.value() != null) { "model is null" }
       val node = when (id) {
+        is NodeId.ConstantsId -> constantsNode(id, nodesProperty, dataProperty)
         is NodeId.TableId -> tableNode(id, nodesProperty, dataProperty)
         is NodeId.CalculatedId -> calculated(id, nodesProperty, dataProperty)
         is NodeId.AggregatedId -> aggregated(id, nodesProperty, dataProperty)
@@ -75,6 +77,41 @@ class NodeAdapterGraphNode(
       }
 
       return node
+    }
+
+    private fun constantsNode(
+        id: NodeId.ConstantsId,
+        nodesProperty: LazyValue<Nodes>,
+        dataProperty: LazyValue<Data>
+    ): NodeAdapterGraphNode {
+      val nodeProperty = nodesProperty.mapNonNull { m ->
+        debug("XX NodeAdapterGraphNode: node for $id")
+        m?.find(id)
+      }
+
+      return NodeAdapterGraphNode {
+        NodeAdapter(
+            content = ConstantsNode(
+                id = id,
+                node = nodeProperty,
+                data = dataProperty
+                //columnHeader = ColumnActionNode.factoryFor(id),
+                //columnFooter = ::SmartHeaderColumnAggregateNode,
+//                editable = true,
+//                menu = {
+//                  item("Add Column").action {
+//                    AddConstantModalView.openModalWith(id)
+//                  }
+//                  item("Delete Table").action {
+//                    ModelEvent.deleteTable(id).fire()
+//                  }
+//                }
+            ),
+            outputs = ColumnOutputsNode(
+                node = nodeProperty
+            )
+        )
+      }
     }
 
     private fun tableNode(

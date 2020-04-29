@@ -61,6 +61,10 @@ data class ModelEvent(
       return EventData.DeleteTable(nodeId).asEvent()
     }
 
+    fun addConstant(nodeId: NodeId.ConstantsId, name: String, type: KClass<out Any>): ModelEvent {
+      return EventData.AddConstant(nodeId, name, type).asEvent()
+    }
+
     fun addColumn(nodeId: NodeId.TableId, name: String, type: KClass<out Any>): ModelEvent {
       return EventData.AddColumn(nodeId, name, type).asEvent()
     }
@@ -111,6 +115,34 @@ data class ModelEvent(
         }
       }
     }
+
+    data class AddConstant(
+        val nodeId: NodeId.ConstantsId,
+        val name: String,
+        val type: KClass<out Any>
+    ) : EventData() {
+      override fun applyTo(model: TabModel): TabModel {
+        return model.applyNodeChanges { nodes ->
+          nodes.changeNode(nodeId) { table ->
+            table.add(ColumnId.create(type), name)
+          }
+        }
+      }
+    }
+
+    data class DeleteConstant<T : Any>(
+        val nodeId: NodeId.ConstantsId,
+        val columnId: ColumnId<T>
+    ) : EventData() {
+      override fun applyTo(model: TabModel): TabModel {
+        return model.applyNodeChanges { nodes ->
+          nodes.changeNode(nodeId) {
+            it.remove(columnId)
+          }
+        }
+      }
+    }
+
 
     data class AddColumn(
         val nodeId: NodeId.TableId,

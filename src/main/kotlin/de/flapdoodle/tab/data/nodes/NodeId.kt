@@ -7,6 +7,10 @@ import kotlin.reflect.KClass
 sealed class NodeId<T : ConnectableNode> {
   internal abstract val id: Int
 
+  data class ConstantsId(
+      override val id: Int = nextIdFor(ConnectableNode.Constants::class)
+  ) : NodeId<ConnectableNode.Constants>()
+
   data class TableId(
       override val id: Int = nextIdFor(ConnectableNode.Table::class)
   ) : NodeId<ConnectableNode.Table>()

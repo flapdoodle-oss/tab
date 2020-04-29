@@ -16,6 +16,7 @@ object Calculation {
     val columns = graph.columnsStartToEnd()
     val nodeOfColumns = nodes.nodes().flatMap { node ->
       when (node) {
+        is ConnectableNode.Constants -> node.columns().map { it.id to node }
         is ConnectableNode.Table -> node.columns().map { it.id to node }
         is ConnectableNode.Calculated -> node.calculations().map { it.column.id to node }
         is ConnectableNode.Aggregated -> node.columns().map { it.id to node }
@@ -33,6 +34,9 @@ object Calculation {
               ?.calculate(currentData,variableMap) ?: currentData
         }
         is ConnectableNode.Table -> {
+          // data already there
+        }
+        is ConnectableNode.Constants -> {
           // data already there
         }
         is ConnectableNode.Aggregated -> {
