@@ -1,6 +1,6 @@
 package de.flapdoodle.tab.data
 
-import de.flapdoodle.tab.data.calculation.Calculation
+import de.flapdoodle.tab.data.calculation.Calculator
 import de.flapdoodle.tab.data.nodes.ColumnConnection
 import de.flapdoodle.tab.data.nodes.ConnectableNode
 import de.flapdoodle.tab.data.nodes.Connection
@@ -92,7 +92,7 @@ data class TabModel(
       //val filtered = data.clear()
       val allColumns = nodes.allColumnIds()
       val filtered = data.filterUnused(allColumns)
-      val changed = Calculation.calculate(nodes, nodeConnections, filtered)
+      val changed = Calculator.calculate(nodes, nodeConnections, filtered)
       return if (changed != data) changed else data
     }
 

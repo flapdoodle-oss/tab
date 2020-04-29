@@ -8,7 +8,7 @@ import de.flapdoodle.tab.data.calculations.VariableMap
 import de.flapdoodle.tab.data.graph.ColumnGraph
 import de.flapdoodle.tab.data.nodes.ConnectableNode
 
-object Calculation {
+object Calculator {
   fun calculate(nodes: Nodes, nodeConnections: NodeConnections, data: Data): Data {
     var currentData = data
 
