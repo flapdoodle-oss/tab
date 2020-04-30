@@ -1,6 +1,6 @@
 package de.flapdoodle.tab.persist
 
-import de.flapdoodle.tab.data.values.Values
+import de.flapdoodle.tab.data.values.ValueContainer
 import java.math.BigDecimal
 import kotlin.reflect.KClass
 
@@ -9,12 +9,12 @@ data class PersistableValues(
     val values: List<String?>
 ) {
 
-  companion object : ToPersistable<Values<out Any>, PersistableValues> {
-    override fun toPersistable(source: Values<out Any>): PersistableValues {
+  companion object : ToPersistable<ValueContainer<out Any>, PersistableValues> {
+    override fun toPersistable(source: ValueContainer<out Any>): PersistableValues {
       @Suppress("UNCHECKED_CAST")
       return when (source.type) {
-        BigDecimal::class -> bigDecimalToPersistable(source as Values<BigDecimal>)
-        String::class -> stringToPersistable(source as Values<String>)
+        BigDecimal::class -> bigDecimalToPersistable(source as ValueContainer<BigDecimal>)
+        String::class -> stringToPersistable(source as ValueContainer<String>)
         else -> throw IllegalArgumentException("not implemented: $source")
       }
     }
@@ -26,19 +26,19 @@ data class PersistableValues(
 //      }
 //    }
 
-    fun <T: Any> forType(type: KClass<T>): FromPersistable<Values<T>, PersistableValues> {
+    fun <T: Any> forType(type: KClass<T>): FromPersistable<ValueContainer<T>, PersistableValues> {
       return FromPersistable { context, source ->
         require(type == source.type.type) {"type mismatch: $type != ${source.type.type}"}
         @Suppress("UNCHECKED_CAST")
         when (source.type) {
-          VariableOrColumnType.Number -> fromMapped(source, ::BigDecimal) as Values<T>
-          VariableOrColumnType.Text -> fromMapped(source) { it} as Values<T>
+          VariableOrColumnType.Number -> fromMapped(source, ::BigDecimal) as ValueContainer<T>
+          VariableOrColumnType.Text -> fromMapped(source) { it} as ValueContainer<T>
         }
       }
     }
 
-    inline private fun <reified T: Any> fromMapped(source: PersistableValues, map: (String) -> T): Values<T> {
-      return Values(
+    inline private fun <reified T: Any> fromMapped(source: PersistableValues, map: (String) -> T): ValueContainer<T> {
+      return ValueContainer(
           type = T::class,
           rows = source.values.mapIndexedNotNull { index, value ->
             if (value!=null) {
@@ -50,14 +50,14 @@ data class PersistableValues(
       )
     }
 
-    private fun stringToPersistable(source: Values<String>): PersistableValues {
+    private fun stringToPersistable(source: ValueContainer<String>): PersistableValues {
       return PersistableValues(
           type = TypeClassEnum.typeOf(VariableOrColumnType::class, source.type),
           values = source.asList()
       )
     }
 
-    private fun bigDecimalToPersistable(source: Values<BigDecimal>): PersistableValues {
+    private fun bigDecimalToPersistable(source: ValueContainer<BigDecimal>): PersistableValues {
       return PersistableValues(
           type = TypeClassEnum.typeOf(VariableOrColumnType::class, source.type),
           values = source.asList().map { it?.toString() }

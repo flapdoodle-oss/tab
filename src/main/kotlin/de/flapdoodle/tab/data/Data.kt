@@ -1,22 +1,22 @@
 package de.flapdoodle.tab.data
 
-import de.flapdoodle.tab.data.values.Values
+import de.flapdoodle.tab.data.values.ValueContainer
 import kotlin.reflect.KClass
 
 data class Data(
-    val columnValues: Map<ColumnId<out Any>, Values<out Any>> = emptyMap(),
+    val columnValues: Map<ColumnId<out Any>, ValueContainer<out Any>> = emptyMap(),
     val singleValueColumns: Set<ColumnId<out Any>> = emptySet()
 ) {
 
 
-  operator fun <T: Any> get(columnId: ColumnId<out T>): Values<T> {
+  operator fun <T: Any> get(columnId: ColumnId<out T>): ValueContainer<T> {
     return getOrCreate(columnId)
   }
 
-  private fun <T : Any> getOrCreate(columnId: ColumnId<out T>): Values<T> {
+  private fun <T : Any> getOrCreate(columnId: ColumnId<out T>): ValueContainer<T> {
     @Suppress("UNCHECKED_CAST")
-    return columnValues[columnId] as Values<T>?
-        ?: Values(columnId.type as KClass<T>)
+    return columnValues[columnId] as ValueContainer<T>?
+        ?: ValueContainer(columnId.type as KClass<T>)
   }
 
   fun <T : Any> change(id: ColumnId<out T>, row: Int, value: T?): Data {

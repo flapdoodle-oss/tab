@@ -4,10 +4,10 @@ import de.flapdoodle.tab.data.Data
 import de.flapdoodle.tab.data.nodes.ColumnConnection
 import de.flapdoodle.tab.data.nodes.VariableMapping
 import de.flapdoodle.tab.data.values.Input
-import de.flapdoodle.tab.data.values.Values
+import de.flapdoodle.tab.data.values.ValueContainer
 
 data class ListMap(
-    private val map: Map<Input.List<out Any>, Values<Any>>
+    private val map: Map<Input.List<out Any>, ValueContainer<Any>>
 ) {
 
   fun isValidFor(variable: Input.List<out Any>): Boolean {
@@ -18,7 +18,7 @@ data class ListMap(
     return object : Aggregation.VariableLookup {
       override fun <T : Any> get(variable: Input.List<T>): List<T?>? {
         @Suppress("UNCHECKED_CAST")
-        val values = map[variable] as Values<T>
+        val values = map[variable] as ValueContainer<T>
         return values.asList()
       }
     }

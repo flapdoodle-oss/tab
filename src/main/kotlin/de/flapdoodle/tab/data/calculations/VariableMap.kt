@@ -4,10 +4,10 @@ import de.flapdoodle.tab.data.Data
 import de.flapdoodle.tab.data.nodes.ColumnConnection
 import de.flapdoodle.tab.data.nodes.VariableMapping
 import de.flapdoodle.tab.data.values.Input
-import de.flapdoodle.tab.data.values.Values
+import de.flapdoodle.tab.data.values.ValueContainer
 
 data class VariableMap(
-    private val map: Map<Input.Variable<out Any>, Values<Any>>,
+    private val map: Map<Input.Variable<out Any>, ValueContainer<Any>>,
     private val isSingleValue: Set<Input.Variable<out Any>>
 ) {
 
@@ -30,7 +30,7 @@ data class VariableMap(
     return object : Calculation.VariableLookup {
       override fun <T : Any> get(variable: Input.Variable<T>): T? {
         @Suppress("UNCHECKED_CAST")
-        val values = map[variable] as Values<T>
+        val values = map[variable] as ValueContainer<T>
         return if (isSingleValue.contains(variable))
           values[0]
         else
