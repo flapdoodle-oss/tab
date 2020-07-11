@@ -1,12 +1,9 @@
 package de.flapdoodle.tab.controls.tables
 
-import de.flapdoodle.tab.controls.layout.BetterSplitPane
-import javafx.collections.ListChangeListener
+import de.flapdoodle.fx.layout.splitpane.BetterSplitPane
 import javafx.collections.ObservableList
 import javafx.scene.control.Control
-import javafx.scene.control.Label
 import javafx.scene.control.SkinBase
-import javafx.scene.control.SplitPane
 import tornadofx.*
 
 class SmartHeader<T : Any>(

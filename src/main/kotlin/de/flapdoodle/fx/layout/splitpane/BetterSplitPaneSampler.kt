@@ -1,9 +1,6 @@
-package de.flapdoodle.tab.controls.layout
+package de.flapdoodle.fx.layout.splitpane
 
-import de.flapdoodle.tab.test.LayoutSizeFun
-import javafx.scene.control.Control
 import javafx.scene.control.Label
-import javafx.scene.paint.Color
 import tornadofx.*
 
 class BetterSplitPaneSampler : View("Better Split Pane") {

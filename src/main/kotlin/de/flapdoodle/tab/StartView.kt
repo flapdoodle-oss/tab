@@ -2,7 +2,7 @@ package de.flapdoodle.tab
 
 import de.flapdoodle.tab.controls.SpreadSheet
 import de.flapdoodle.tab.controls.SpreadSheetPlayground
-import de.flapdoodle.tab.controls.layout.BetterSplitPaneSampler
+import de.flapdoodle.fx.layout.splitpane.BetterSplitPaneSampler
 import de.flapdoodle.tab.controls.layout.LayoutFun
 import de.flapdoodle.fx.layout.weightgrid.WeightGridPaneSampler
 import de.flapdoodle.tab.data.ColumnId

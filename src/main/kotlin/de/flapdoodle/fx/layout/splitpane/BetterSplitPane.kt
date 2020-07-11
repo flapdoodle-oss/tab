@@ -1,4 +1,4 @@
-package de.flapdoodle.tab.controls.layout
+package de.flapdoodle.fx.layout.splitpane
 
 import javafx.collections.FXCollections
 import javafx.collections.ListChangeListener
@@ -158,14 +158,14 @@ class BetterSplitPane(
   }
 
   private data class DragStart(
-      val pos: Point2D,
-      val handle: SplitHandle,
-      val currentWith: Double = handle.prefWidthOffset()
+          val pos: Point2D,
+          val handle: SplitHandle,
+          val currentWith: Double = handle.prefWidthOffset()
   )
 
   private class SplitHandle(
-      internal val parentSkin: BetterSplitPane.Skin,
-      internal val node: Node
+          internal val parentSkin: BetterSplitPane.Skin,
+          internal val node: Node
   ) : Control() {
     private val skin = Skin(this)
     var changedPrefWidth: Double? = null
