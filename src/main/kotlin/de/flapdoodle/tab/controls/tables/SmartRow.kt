@@ -1,6 +1,6 @@
 package de.flapdoodle.tab.controls.tables
 
-import de.flapdoodle.tab.extensions.property
+import de.flapdoodle.fx.extensions.property
 import javafx.collections.ObservableList
 import javafx.scene.control.Control
 import javafx.scene.control.Skin

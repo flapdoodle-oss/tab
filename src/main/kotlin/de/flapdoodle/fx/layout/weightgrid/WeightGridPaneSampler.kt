@@ -1,7 +1,5 @@
-package de.flapdoodle.tab.controls.layout.weightgrid
+package de.flapdoodle.fx.layout.weightgrid
 
-import javafx.beans.Observable
-import javafx.beans.property.SimpleDoubleProperty
 import javafx.geometry.HPos
 import tornadofx.*
 

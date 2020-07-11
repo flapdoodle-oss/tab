@@ -1,4 +1,4 @@
-package de.flapdoodle.tab.extensions
+package de.flapdoodle.fx.extensions
 
 import javafx.collections.ObservableMap
 import kotlin.reflect.KClass
@@ -25,7 +25,7 @@ object ObservableMapExtensions {
     }
 
     operator fun <T: Any> get(key: Key<T>): T? {
-      return get(map,key)
+      return get(map, key)
     }
 
     open operator fun <T: Any> set(type: KClass<T>, value: T?): T? {
@@ -33,7 +33,7 @@ object ObservableMapExtensions {
     }
 
     operator fun <T: Any> get(type: KClass<T>): T? {
-      return get(map,Key.ofType(type))
+      return get(map, Key.ofType(type))
     }
   }
 }

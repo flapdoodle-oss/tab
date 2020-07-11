@@ -7,8 +7,8 @@ import de.flapdoodle.tab.data.nodes.ConnectableNode
 import de.flapdoodle.tab.data.nodes.NodeId
 import de.flapdoodle.tab.data.values.Input
 import de.flapdoodle.tab.extensions.centerInTop
-import de.flapdoodle.tab.extensions.findAllInTree
-import de.flapdoodle.tab.extensions.property
+import de.flapdoodle.fx.extensions.findAllInTree
+import de.flapdoodle.fx.extensions.property
 import de.flapdoodle.tab.graph.nodes.connections.InNode
 import de.flapdoodle.tab.graph.nodes.connections.Out
 import de.flapdoodle.tab.graph.nodes.connections.OutNode

@@ -1,5 +1,6 @@
 package de.flapdoodle.tab.extensions
 
+import de.flapdoodle.fx.extensions.parentPath
 import javafx.beans.binding.Binding
 import javafx.beans.binding.ObjectBinding
 import javafx.beans.value.ChangeListener

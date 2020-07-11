@@ -1,6 +1,5 @@
-package de.flapdoodle.tab.controls.layout.weights
+package de.flapdoodle.fx.layout
 
-import de.flapdoodle.tab.controls.layout.WeightedSize
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -9,8 +8,8 @@ internal class WeightedSizeTest {
   @Test
   fun `same weights must share space equal`() {
     val src = listOf(
-        WeightedSize(weight = 1.0, min = 0.0, max = Double.MAX_VALUE),
-        WeightedSize(weight = 1.0, min = 0.0, max = Double.MAX_VALUE)
+            WeightedSize(weight = 1.0, min = 0.0, max = Double.MAX_VALUE),
+            WeightedSize(weight = 1.0, min = 0.0, max = Double.MAX_VALUE)
     )
 
     val result = WeightedSize.distribute(100.0, src)
@@ -21,8 +20,8 @@ internal class WeightedSizeTest {
   @Test
   fun `same weights must share space equal if enough space left`() {
     val src = listOf(
-        WeightedSize(weight = 1.0, min = 75.0, max = Double.MAX_VALUE),
-        WeightedSize(weight = 1.0, min = 0.0, max = Double.MAX_VALUE)
+            WeightedSize(weight = 1.0, min = 75.0, max = Double.MAX_VALUE),
+            WeightedSize(weight = 1.0, min = 0.0, max = Double.MAX_VALUE)
     )
 
     val result = WeightedSize.distribute(100.0, src)
@@ -33,8 +32,8 @@ internal class WeightedSizeTest {
   @Test
   fun `same weights must share space equal if not too much space left`() {
     val src = listOf(
-        WeightedSize(weight = 1.0, min = 0.0, max = 25.0),
-        WeightedSize(weight = 1.0, min = 0.0, max = Double.MAX_VALUE)
+            WeightedSize(weight = 1.0, min = 0.0, max = 25.0),
+            WeightedSize(weight = 1.0, min = 0.0, max = Double.MAX_VALUE)
     )
 
     val result = WeightedSize.distribute(100.0, src)
@@ -45,9 +44,9 @@ internal class WeightedSizeTest {
   @Test
   fun `sample`() {
     val src = listOf(
-        WeightedSize(weight = 1.0, min = 20.0, max = 30.0),
-        WeightedSize(weight = 4.0, min = 10.0, max = Double.MAX_VALUE),
-        WeightedSize(weight = 1.0, min = 10.0, max = 60.0)
+            WeightedSize(weight = 1.0, min = 20.0, max = 30.0),
+            WeightedSize(weight = 4.0, min = 10.0, max = Double.MAX_VALUE),
+            WeightedSize(weight = 1.0, min = 10.0, max = 60.0)
     )
 
 //    assertThat(WeightedSize.distribute(400.0, src)).containsExactly(30.0, 310.0, 60.0)

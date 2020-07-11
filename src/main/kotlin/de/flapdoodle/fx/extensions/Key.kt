@@ -1,4 +1,4 @@
-package de.flapdoodle.tab.extensions
+package de.flapdoodle.fx.extensions
 
 import kotlin.reflect.KClass
 

@@ -1,8 +1,8 @@
-package de.flapdoodle.tab.controls.layout.weightgrid
+package de.flapdoodle.fx.layout.weightgrid
 
-import de.flapdoodle.tab.controls.layout.AutoArray
-import de.flapdoodle.tab.controls.layout.GridMap
-import de.flapdoodle.tab.extensions.constraint
+import de.flapdoodle.fx.layout.AutoArray
+import de.flapdoodle.fx.layout.GridMap
+import de.flapdoodle.fx.extensions.constraint
 import javafx.collections.ObservableList
 import javafx.css.CssMetaData
 import javafx.css.SimpleStyleableDoubleProperty

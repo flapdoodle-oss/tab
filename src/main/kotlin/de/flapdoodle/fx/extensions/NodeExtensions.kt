@@ -1,4 +1,4 @@
-package de.flapdoodle.tab.extensions
+package de.flapdoodle.fx.extensions
 
 import javafx.scene.Node
 import javafx.scene.Parent

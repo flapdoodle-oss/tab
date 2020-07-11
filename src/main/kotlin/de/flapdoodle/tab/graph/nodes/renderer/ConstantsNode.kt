@@ -1,23 +1,17 @@
 package de.flapdoodle.tab.graph.nodes.renderer
 
-import de.flapdoodle.tab.controls.layout.weightgrid.WeightGridPane
+import de.flapdoodle.fx.layout.weightgrid.WeightGridPane
 import de.flapdoodle.tab.converter.Converters
 import de.flapdoodle.tab.data.Data
 import de.flapdoodle.tab.data.NamedColumn
-import de.flapdoodle.tab.data.calculations.CalculationMapping
-import de.flapdoodle.tab.data.calculations.EvalExCalculationAdapter
 import de.flapdoodle.tab.data.nodes.ConnectableNode
-import de.flapdoodle.tab.data.nodes.HasCalculations
-import de.flapdoodle.tab.data.nodes.HasColumns
 import de.flapdoodle.tab.data.nodes.NodeId
 import de.flapdoodle.tab.extensions.fire
 import de.flapdoodle.tab.graph.nodes.renderer.events.DataEvent
 import de.flapdoodle.tab.graph.nodes.renderer.events.ModelEvent
-import de.flapdoodle.tab.graph.nodes.renderer.modals.AddCalculationModalView
 import de.flapdoodle.tab.graph.nodes.renderer.modals.AddConstantModalView
 import de.flapdoodle.tab.lazy.LazyValue
 import de.flapdoodle.tab.lazy.bindFrom
-import de.flapdoodle.tab.lazy.map
 import de.flapdoodle.tab.lazy.merge
 import javafx.geometry.HPos
 import javafx.geometry.VPos
@@ -26,7 +20,6 @@ import javafx.scene.control.Button
 import javafx.scene.control.Label
 import javafx.scene.control.TextField
 import tornadofx.*
-import java.math.BigDecimal
 
 class ConstantsNode(
     id: NodeId.ConstantsId,

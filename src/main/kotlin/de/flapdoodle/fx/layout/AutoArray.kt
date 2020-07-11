@@ -1,4 +1,4 @@
-package de.flapdoodle.tab.controls.layout
+package de.flapdoodle.fx.layout
 
 data class AutoArray<T : Any> private constructor(
     val map: Map<Int, T> = emptyMap()

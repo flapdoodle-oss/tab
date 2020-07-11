@@ -1,4 +1,4 @@
-package de.flapdoodle.tab.controls.layout.weightgrid
+package de.flapdoodle.fx.layout.weightgrid
 
 import javafx.css.CssMetaData
 import javafx.css.StyleablePropertyFactory

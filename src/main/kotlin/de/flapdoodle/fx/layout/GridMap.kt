@@ -1,4 +1,4 @@
-package de.flapdoodle.tab.controls.layout
+package de.flapdoodle.fx.layout
 
 data class GridMap<T : Any>(
     private val map: Map<Pos, T> = emptyMap()

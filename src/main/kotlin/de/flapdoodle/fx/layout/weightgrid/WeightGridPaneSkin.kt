@@ -1,10 +1,10 @@
-package de.flapdoodle.tab.controls.layout.weightgrid
+package de.flapdoodle.fx.layout.weightgrid
 
-import de.flapdoodle.tab.controls.layout.GridMap
-import de.flapdoodle.tab.controls.layout.WeightedSize
-import de.flapdoodle.tab.extensions.constraint
-import de.flapdoodle.tab.extensions.heightLimits
-import de.flapdoodle.tab.extensions.widthLimits
+import de.flapdoodle.fx.layout.GridMap
+import de.flapdoodle.fx.layout.WeightedSize
+import de.flapdoodle.fx.extensions.constraint
+import de.flapdoodle.fx.extensions.heightLimits
+import de.flapdoodle.fx.extensions.widthLimits
 import javafx.collections.ListChangeListener
 import javafx.geometry.HPos
 import javafx.geometry.VPos
@@ -30,11 +30,11 @@ class WeightGridPaneSkin(
 
   private fun gridMap(): GridMap<Node> {
     return GridMap(children
-        .filter { it.isManaged }
-        .map { it: Node ->
-          (it.constraint[GridMap.Pos::class]
-              ?: GridMap.Pos(10, 10)) to it
-        }.toMap())
+            .filter { it.isManaged }
+            .map { it: Node ->
+              (it.constraint[GridMap.Pos::class]
+                      ?: GridMap.Pos(10, 10)) to it
+            }.toMap())
   }
 
   private fun updateState() {

@@ -3,7 +3,7 @@ package de.flapdoodle.tab.graph.nodes.renderer
 import de.flapdoodle.tab.controls.tables.SmartColumn
 import de.flapdoodle.tab.data.ColumnId
 import de.flapdoodle.tab.data.Data
-import de.flapdoodle.tab.extensions.property
+import de.flapdoodle.fx.extensions.property
 import de.flapdoodle.tab.graph.nodes.connections.Out
 import de.flapdoodle.tab.graph.nodes.connections.OutNode
 import tornadofx.*
