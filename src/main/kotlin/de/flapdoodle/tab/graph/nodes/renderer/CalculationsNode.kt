@@ -10,9 +10,9 @@ import de.flapdoodle.tab.data.nodes.NodeId
 import de.flapdoodle.tab.extensions.fire
 import de.flapdoodle.tab.graph.nodes.renderer.events.ModelEvent
 import de.flapdoodle.tab.graph.nodes.renderer.modals.AddCalculationModalView
-import de.flapdoodle.tab.lazy.LazyValue
-import de.flapdoodle.tab.lazy.bindFrom
-import de.flapdoodle.tab.lazy.map
+import de.flapdoodle.fx.lazy.LazyValue
+import de.flapdoodle.fx.lazy.bindFrom
+import de.flapdoodle.fx.lazy.map
 import javafx.geometry.HPos
 import javafx.geometry.VPos
 import javafx.scene.Node

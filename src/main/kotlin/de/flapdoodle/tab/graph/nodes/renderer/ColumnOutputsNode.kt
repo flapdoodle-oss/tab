@@ -4,9 +4,9 @@ import de.flapdoodle.tab.data.nodes.ConnectableNode
 import de.flapdoodle.tab.data.nodes.HasColumns
 import de.flapdoodle.tab.graph.nodes.connections.Out
 import de.flapdoodle.tab.graph.nodes.connections.OutNode
-import de.flapdoodle.tab.lazy.LazyValue
-import de.flapdoodle.tab.lazy.map
-import de.flapdoodle.tab.lazy.syncFrom
+import de.flapdoodle.fx.lazy.LazyValue
+import de.flapdoodle.fx.lazy.map
+import de.flapdoodle.fx.lazy.syncFrom
 import tornadofx.*
 
 class ColumnOutputsNode<T>(

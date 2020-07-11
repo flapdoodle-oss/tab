@@ -1,4 +1,4 @@
-package de.flapdoodle.tab.bindings
+package de.flapdoodle.fx.bindings
 
 import javafx.beans.binding.ObjectBinding
 import javafx.beans.value.ChangeListener

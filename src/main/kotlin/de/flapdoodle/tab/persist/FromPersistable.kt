@@ -1,6 +1,6 @@
 package de.flapdoodle.tab.persist
 
-import de.flapdoodle.tab.annotations.KotlinCompilerFix_SAM_Helper
+import de.flapdoodle.fx.annotations.KotlinCompilerFix_SAM_Helper
 
 interface FromPersistable<T: Any, S: Any> {
   fun from(context: FromPersistableContext, source: S): T

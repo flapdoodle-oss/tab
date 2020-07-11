@@ -1,4 +1,4 @@
-package de.flapdoodle.tab.lazy
+package de.flapdoodle.fx.lazy
 
 abstract class AbstractLazy<T: Any> : LazyValue<T>{
   protected var changeListener: List<ChangedListener<T>> = emptyList()

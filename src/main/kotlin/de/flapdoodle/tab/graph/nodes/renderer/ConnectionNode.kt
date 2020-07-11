@@ -1,6 +1,6 @@
 package de.flapdoodle.tab.graph.nodes.renderer
 
-import de.flapdoodle.tab.bindings.mapNullable
+import de.flapdoodle.fx.bindings.mapNullable
 import javafx.beans.value.ObservableValue
 import javafx.geometry.Point2D
 import javafx.scene.paint.Color

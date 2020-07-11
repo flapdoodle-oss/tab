@@ -1,4 +1,4 @@
-package de.flapdoodle.tab.annotations
+package de.flapdoodle.fx.annotations
 
 /**
  * marker for helper method which trying to reduce boilerplate code

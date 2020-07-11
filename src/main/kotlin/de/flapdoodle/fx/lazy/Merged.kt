@@ -1,4 +1,4 @@
-package de.flapdoodle.tab.lazy
+package de.flapdoodle.fx.lazy
 
 class Merged<A : Any, B : Any, T : Any>(
     private val sourceA: LazyValue<A>,

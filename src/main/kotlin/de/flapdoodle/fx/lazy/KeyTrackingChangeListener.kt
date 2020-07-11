@@ -1,4 +1,4 @@
-package de.flapdoodle.tab.lazy
+package de.flapdoodle.fx.lazy
 
 import javafx.collections.ObservableList
 

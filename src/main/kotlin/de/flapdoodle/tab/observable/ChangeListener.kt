@@ -1,6 +1,6 @@
 package de.flapdoodle.tab.observable
 
-import de.flapdoodle.tab.annotations.KotlinCompilerFix_SAM_Helper
+import de.flapdoodle.fx.annotations.KotlinCompilerFix_SAM_Helper
 
 interface ChangeListener<T : Any> {
   fun changed(src: AObservable<T>, old: T, new: T)

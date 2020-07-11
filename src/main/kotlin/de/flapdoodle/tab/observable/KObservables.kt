@@ -1,6 +1,6 @@
 package de.flapdoodle.tab.observable
 
-import de.flapdoodle.tab.bindings.Bindings
+import de.flapdoodle.fx.bindings.Bindings
 import javafx.beans.binding.ObjectBinding
 import javafx.collections.FXCollections
 import javafx.collections.ObservableList

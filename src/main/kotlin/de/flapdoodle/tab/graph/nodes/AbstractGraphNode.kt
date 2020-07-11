@@ -1,6 +1,6 @@
 package de.flapdoodle.tab.graph.nodes
 
-import de.flapdoodle.tab.bindings.Registration
+import de.flapdoodle.fx.bindings.Registration
 import de.flapdoodle.tab.graph.events.marker
 import javafx.beans.value.ChangeListener
 import javafx.geometry.Dimension2D

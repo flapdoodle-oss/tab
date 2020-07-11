@@ -1,4 +1,4 @@
-package de.flapdoodle.tab.bindings
+package de.flapdoodle.fx.bindings
 
 class Registration(private val action: () -> Unit) {
   fun remove() {

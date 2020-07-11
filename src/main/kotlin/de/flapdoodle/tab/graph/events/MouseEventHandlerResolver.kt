@@ -1,6 +1,6 @@
 package de.flapdoodle.tab.graph.events
 
-import de.flapdoodle.tab.annotations.KotlinCompilerFix_SAM_Helper
+import de.flapdoodle.fx.annotations.KotlinCompilerFix_SAM_Helper
 
 interface MouseEventHandlerResolver {
   fun onEnter(marker: Any): MouseEventHandler?

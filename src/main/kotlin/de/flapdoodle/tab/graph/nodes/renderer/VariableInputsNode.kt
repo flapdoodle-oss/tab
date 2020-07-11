@@ -5,10 +5,10 @@ import de.flapdoodle.tab.data.nodes.HasInputs
 import de.flapdoodle.tab.data.values.Input
 import de.flapdoodle.tab.graph.nodes.connections.In
 import de.flapdoodle.tab.graph.nodes.connections.InNode
-import de.flapdoodle.tab.lazy.ChangedListener
-import de.flapdoodle.tab.lazy.LazyValue
-import de.flapdoodle.tab.lazy.map
-import de.flapdoodle.tab.lazy.syncFrom
+import de.flapdoodle.fx.lazy.ChangedListener
+import de.flapdoodle.fx.lazy.LazyValue
+import de.flapdoodle.fx.lazy.map
+import de.flapdoodle.fx.lazy.syncFrom
 import tornadofx.*
 
 class VariableInputsNode<T>(

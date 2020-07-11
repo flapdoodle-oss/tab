@@ -1,4 +1,4 @@
-package de.flapdoodle.tab.lazy
+package de.flapdoodle.fx.lazy
 
 class Mapped<S : Any, T : Any>(
     private val source: LazyValue<S>,

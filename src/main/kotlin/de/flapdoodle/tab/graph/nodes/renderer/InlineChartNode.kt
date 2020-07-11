@@ -4,10 +4,10 @@ import de.flapdoodle.tab.data.Data
 import de.flapdoodle.tab.data.NamedColumn
 import de.flapdoodle.tab.data.nodes.ConnectableNode
 import de.flapdoodle.tab.data.nodes.HasColumns
-import de.flapdoodle.tab.lazy.LazyValue
-import de.flapdoodle.tab.lazy.asListBinding
-import de.flapdoodle.tab.lazy.map
-import de.flapdoodle.tab.lazy.merge
+import de.flapdoodle.fx.lazy.LazyValue
+import de.flapdoodle.fx.lazy.asListBinding
+import de.flapdoodle.fx.lazy.map
+import de.flapdoodle.fx.lazy.merge
 import javafx.scene.chart.CategoryAxis
 import javafx.scene.chart.LineChart
 import javafx.scene.chart.NumberAxis

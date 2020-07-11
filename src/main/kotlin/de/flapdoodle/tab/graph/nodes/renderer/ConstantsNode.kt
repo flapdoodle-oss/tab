@@ -10,9 +10,9 @@ import de.flapdoodle.tab.extensions.fire
 import de.flapdoodle.tab.graph.nodes.renderer.events.DataEvent
 import de.flapdoodle.tab.graph.nodes.renderer.events.ModelEvent
 import de.flapdoodle.tab.graph.nodes.renderer.modals.AddConstantModalView
-import de.flapdoodle.tab.lazy.LazyValue
-import de.flapdoodle.tab.lazy.bindFrom
-import de.flapdoodle.tab.lazy.merge
+import de.flapdoodle.fx.lazy.LazyValue
+import de.flapdoodle.fx.lazy.bindFrom
+import de.flapdoodle.fx.lazy.merge
 import javafx.geometry.HPos
 import javafx.geometry.VPos
 import javafx.scene.Node

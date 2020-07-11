@@ -11,11 +11,10 @@ import de.flapdoodle.tab.graph.nodes.renderer.events.UIEvent
 import de.flapdoodle.tab.graph.nodes.renderer.modals.AddAggregationModalView
 import de.flapdoodle.tab.graph.nodes.renderer.modals.AddCalculationModalView
 import de.flapdoodle.tab.graph.nodes.renderer.modals.AddColumnModalView
-import de.flapdoodle.tab.graph.nodes.renderer.modals.AddConstantModalView
-import de.flapdoodle.tab.lazy.LazyValue
-import de.flapdoodle.tab.lazy.asBinding
-import de.flapdoodle.tab.lazy.map
-import de.flapdoodle.tab.lazy.mapNonNull
+import de.flapdoodle.fx.lazy.LazyValue
+import de.flapdoodle.fx.lazy.asBinding
+import de.flapdoodle.fx.lazy.map
+import de.flapdoodle.fx.lazy.mapNonNull
 import javafx.scene.Node
 import tornadofx.*
 

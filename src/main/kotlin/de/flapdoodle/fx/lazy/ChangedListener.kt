@@ -1,6 +1,6 @@
-package de.flapdoodle.tab.lazy
+package de.flapdoodle.fx.lazy
 
-import de.flapdoodle.tab.annotations.KotlinCompilerFix_SAM_Helper
+import de.flapdoodle.fx.annotations.KotlinCompilerFix_SAM_Helper
 
 interface ChangedListener<T: Any> {
   fun hasChanged(value: LazyValue<T>)

@@ -24,7 +24,7 @@ import de.flapdoodle.tab.graph.nodes.renderer.events.IOEvent
 import de.flapdoodle.tab.graph.nodes.renderer.events.ModelEvent
 import de.flapdoodle.tab.graph.nodes.renderer.events.UIEvent
 import de.flapdoodle.tab.graph.nodes.renderer.modals.AddNodeModalView
-import de.flapdoodle.tab.lazy.ChangeableValue
+import de.flapdoodle.fx.lazy.ChangeableValue
 import de.flapdoodle.tab.persist.TabModelIO
 import de.flapdoodle.tab.test.EventPropagation
 import de.flapdoodle.tab.test.GridLayoutFun

@@ -1,6 +1,6 @@
-package de.flapdoodle.tab.lazy
+package de.flapdoodle.fx.lazy
 
-import de.flapdoodle.tab.bindings.Registration
+import de.flapdoodle.fx.bindings.Registration
 import javafx.collections.ListChangeListener
 import javafx.collections.ObservableList
 import javafx.collections.WeakListChangeListener

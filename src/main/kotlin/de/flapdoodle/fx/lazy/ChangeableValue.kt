@@ -1,4 +1,4 @@
-package de.flapdoodle.tab.lazy
+package de.flapdoodle.fx.lazy
 
 class ChangeableValue<T : Any>(
     initialValue: T
