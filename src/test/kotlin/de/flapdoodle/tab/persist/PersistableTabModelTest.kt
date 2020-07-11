@@ -54,6 +54,6 @@ internal class PersistableTabModelTest {
     assertThat(persistableTabModel).isEqualTo(readBack)
 
     val readBackModel = from(FromPersistableContext(), readBack!!)
-//    assertThat(json).isEqualTo("{\"name\":\"test\"}")
+    //assertThat(readBackModel).isEqualTo(model)
   }
 }
