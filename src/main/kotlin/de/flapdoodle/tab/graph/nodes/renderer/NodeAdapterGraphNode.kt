@@ -3,8 +3,8 @@ package de.flapdoodle.tab.graph.nodes.renderer
 import de.flapdoodle.tab.data.Data
 import de.flapdoodle.tab.data.Nodes
 import de.flapdoodle.tab.data.nodes.NodeId
-import de.flapdoodle.tab.extensions.fire
-import de.flapdoodle.tab.extensions.subscribeEvent
+import de.flapdoodle.fx.extensions.fire
+import de.flapdoodle.fx.extensions.subscribeEvent
 import de.flapdoodle.tab.graph.nodes.AbstractGraphNode
 import de.flapdoodle.tab.graph.nodes.renderer.events.ModelEvent
 import de.flapdoodle.tab.graph.nodes.renderer.events.UIEvent

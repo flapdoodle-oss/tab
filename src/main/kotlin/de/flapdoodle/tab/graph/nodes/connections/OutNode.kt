@@ -1,12 +1,10 @@
 package de.flapdoodle.tab.graph.nodes.connections
 
-import de.flapdoodle.tab.extensions.subscribeEvent
+import de.flapdoodle.fx.extensions.subscribeEvent
 import de.flapdoodle.tab.graph.events.marker
 import de.flapdoodle.tab.graph.nodes.renderer.events.ConnectEvent
 import javafx.scene.control.Control
-import javafx.scene.control.Skin
 import javafx.scene.control.SkinBase
-import javafx.scene.layout.StackPane
 import javafx.scene.paint.Color
 import javafx.scene.shape.Circle
 import tornadofx.*

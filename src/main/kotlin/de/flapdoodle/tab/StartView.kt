@@ -15,8 +15,8 @@ import de.flapdoodle.tab.data.calculations.EvalExCalculationAdapter
 import de.flapdoodle.tab.data.nodes.ColumnConnection
 import de.flapdoodle.tab.data.nodes.ConnectableNode
 import de.flapdoodle.tab.data.values.Input
-import de.flapdoodle.tab.extensions.fire
-import de.flapdoodle.tab.extensions.subscribeEvent
+import de.flapdoodle.fx.extensions.fire
+import de.flapdoodle.fx.extensions.subscribeEvent
 import de.flapdoodle.tab.graph.ZoomablePane
 import de.flapdoodle.tab.graph.nodes.renderer.ModelRenderer
 import de.flapdoodle.tab.graph.nodes.renderer.events.DataEvent

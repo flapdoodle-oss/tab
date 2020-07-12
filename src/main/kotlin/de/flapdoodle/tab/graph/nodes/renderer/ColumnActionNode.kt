@@ -2,7 +2,7 @@ package de.flapdoodle.tab.graph.nodes.renderer
 
 import de.flapdoodle.tab.data.NamedColumn
 import de.flapdoodle.tab.data.nodes.NodeId
-import de.flapdoodle.tab.extensions.fire
+import de.flapdoodle.fx.extensions.fire
 import de.flapdoodle.tab.graph.nodes.renderer.events.ModelEvent
 import tornadofx.*
 

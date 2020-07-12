@@ -10,7 +10,7 @@ import de.flapdoodle.tab.data.NamedColumn
 import de.flapdoodle.tab.data.nodes.ConnectableNode
 import de.flapdoodle.tab.data.nodes.HasColumns
 import de.flapdoodle.fx.extensions.property
-import de.flapdoodle.tab.extensions.subscribeEvent
+import de.flapdoodle.fx.extensions.subscribeEvent
 import de.flapdoodle.tab.graph.nodes.renderer.events.DataEvent
 import de.flapdoodle.tab.graph.nodes.renderer.events.ExplainEvent
 import de.flapdoodle.fx.lazy.LazyValue

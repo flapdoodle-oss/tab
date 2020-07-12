@@ -1,6 +1,6 @@
 package de.flapdoodle.tab.graph.nodes.renderer
 
-import de.flapdoodle.tab.extensions.fire
+import de.flapdoodle.fx.extensions.fire
 import de.flapdoodle.tab.graph.events.IsMarker
 import de.flapdoodle.tab.graph.events.MappedMouseEvent
 import de.flapdoodle.tab.graph.events.MouseEventHandler

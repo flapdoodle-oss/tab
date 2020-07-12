@@ -7,7 +7,7 @@ import de.flapdoodle.tab.data.calculations.EvalExCalculationAdapter
 import de.flapdoodle.tab.data.nodes.ConnectableNode
 import de.flapdoodle.tab.data.nodes.HasCalculations
 import de.flapdoodle.tab.data.nodes.NodeId
-import de.flapdoodle.tab.extensions.fire
+import de.flapdoodle.fx.extensions.fire
 import de.flapdoodle.tab.graph.nodes.renderer.events.ModelEvent
 import de.flapdoodle.tab.graph.nodes.renderer.modals.AddCalculationModalView
 import de.flapdoodle.fx.lazy.LazyValue

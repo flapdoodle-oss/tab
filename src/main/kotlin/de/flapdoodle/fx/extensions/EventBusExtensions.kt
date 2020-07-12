@@ -1,7 +1,5 @@
-package de.flapdoodle.tab.extensions
+package de.flapdoodle.fx.extensions
 
-import de.flapdoodle.fx.extensions.Key
-import de.flapdoodle.fx.extensions.property
 import javafx.scene.Node
 import tornadofx.*
 import java.lang.ref.WeakReference

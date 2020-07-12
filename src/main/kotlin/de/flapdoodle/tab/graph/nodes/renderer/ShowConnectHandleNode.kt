@@ -1,6 +1,6 @@
 package de.flapdoodle.tab.graph.nodes.renderer
 
-import de.flapdoodle.tab.extensions.subscribeEvent
+import de.flapdoodle.fx.extensions.subscribeEvent
 import de.flapdoodle.tab.graph.nodes.renderer.events.ConnectEvent
 import javafx.beans.property.SimpleObjectProperty
 import javafx.geometry.Point2D
