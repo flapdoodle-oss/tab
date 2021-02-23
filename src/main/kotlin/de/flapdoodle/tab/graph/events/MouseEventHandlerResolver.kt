@@ -1,8 +1,6 @@
 package de.flapdoodle.tab.graph.events
 
-import de.flapdoodle.fx.annotations.KotlinCompilerFix_SAM_Helper
-
-interface MouseEventHandlerResolver {
+fun interface MouseEventHandlerResolver {
   fun onEnter(marker: Any): MouseEventHandler?
 
   fun andThen(next: MouseEventHandlerResolver): MouseEventHandlerResolver {
@@ -13,15 +11,12 @@ interface MouseEventHandlerResolver {
   }
 
   companion object {
-    @KotlinCompilerFix_SAM_Helper
     inline fun <reified T : IsMarker> forType(crossinline delegate: (T) -> MouseEventHandler): MouseEventHandlerResolver {
-      return object : MouseEventHandlerResolver {
-        override fun onEnter(marker: Any): MouseEventHandler? {
-          return if (marker is T)
-            delegate(marker)
-          else
-            null
-        }
+      return MouseEventHandlerResolver { marker ->
+        if (marker is T)
+          delegate(marker)
+        else
+          null
       }
     }
   }
