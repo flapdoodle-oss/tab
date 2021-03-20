@@ -10,7 +10,7 @@
     <version>1.0-SNAPSHOT</version>
 
     <properties>
-        <kotlin.version>1.4.21</kotlin.version>
+        <kotlin.version>1.4.30</kotlin.version>
         <junit.version>4.12</junit.version>
         <java.version>11</java.version>
         <poi.version>4.1.1</poi.version>
@@ -54,25 +54,33 @@
                     </toolchains>
                 </configuration>
             </plugin>
-
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.22.2</version>
-                <configuration>
-                    <argLine>
-                        --illegal-access=permit
-                    </argLine>
-                </configuration>
+                <artifactId>maven-enforcer-plugin</artifactId>
+                <version>3.0.0-M3</version>
+                <executions>
+                    <execution>
+                        <id>enforce-maven</id>
+                        <goals>
+                            <goal>enforce</goal>
+                        </goals>
+                        <configuration>
+                            <rules>
+                                <requireMavenVersion>
+                                    <version>3.1.0</version>
+                                </requireMavenVersion>
+                            </rules>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
+
+            <!-- Compile java -->
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-failsafe-plugin</artifactId>
-                <version>2.22.2</version>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.8.1</version>
                 <configuration>
-                    <argLine>
-                        --illegal-access=permit
-                    </argLine>
+                    <release>${java.version}</release>
                 </configuration>
             </plugin>
 
@@ -113,6 +121,47 @@
                 </configuration>
             </plugin>
             
+            <plugin>
+                <groupId>org.openjfx</groupId>
+                <artifactId>javafx-maven-plugin</artifactId>
+                <version>0.0.5</version>
+                <configuration>
+                    <options>
+                        <option>--add-opens</option>
+                        <option>javafx.graphics/javafx.scene=ALL-UNNAMED</option>
+                        <option>--add-exports</option>
+                        <option>javafx.controls/com.sun.javafx.scene.control=ALL-UNNAMED</option>
+                        <option>--add-exports</option>
+                        <option>javafx.base/com.sun.javafx.event=ALL-UNNAMED</option>
+                        <option>--add-exports</option>
+                        <option>javafx.graphics/com.sun.javafx.scene.traversal=ALL-UNNAMED</option>
+                        <option>--add-exports</option>
+                        <option>javafx.graphics/com.sun.javafx.scene=ALL-UNNAMED</option>
+                    </options>
+                    <mainClass>de.flapdoodle.tab.Tab</mainClass>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.22.2</version>
+                <configuration>
+                    <argLine>
+                        --illegal-access=permit
+                    </argLine>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <version>2.22.2</version>
+                <configuration>
+                    <argLine>
+                        --illegal-access=permit
+                    </argLine>
+                </configuration>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -166,26 +215,6 @@
                 </executions>
             </plugin>
 
-            <plugin>
-                <groupId>org.openjfx</groupId>
-                <artifactId>javafx-maven-plugin</artifactId>
-                <version>0.0.4</version>
-                <configuration>
-                    <options>
-                        <option>--add-opens</option>
-                        <option>javafx.graphics/javafx.scene=ALL-UNNAMED</option>
-                        <option>--add-exports</option>
-                        <option>javafx.controls/com.sun.javafx.scene.control=ALL-UNNAMED</option>
-                        <option>--add-exports</option>
-                        <option>javafx.base/com.sun.javafx.event=ALL-UNNAMED</option>
-                        <option>--add-exports</option>
-                        <option>javafx.graphics/com.sun.javafx.scene.traversal=ALL-UNNAMED</option>
-                        <option>--add-exports</option>
-                        <option>javafx.graphics/com.sun.javafx.scene=ALL-UNNAMED</option>
-                    </options>
-                    <mainClass>de.flapdoodle.tab.Tab</mainClass>
-                </configuration>
-            </plugin>
         </plugins>
     </build>
 
@@ -225,9 +254,16 @@
         </dependency>
         <dependency>
             <groupId>org.jetbrains.kotlin</groupId>
+            <artifactId>kotlin-reflect</artifactId>
+            <version>${kotlin.version}</version>
+        </dependency>
+<!--
+        <dependency>
+            <groupId>org.jetbrains.kotlin</groupId>
             <artifactId>kotlin-stdlib-jdk8</artifactId>
             <version>${kotlin.version}</version>
         </dependency>
+-->
         <!--
         <dependency>
             <groupId>org.jetbrains.kotlin</groupId>
