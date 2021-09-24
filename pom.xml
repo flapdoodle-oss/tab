@@ -48,7 +48,7 @@
         <junit.version>4.12</junit.version>
         <java.version>11</java.version>
         <poi.version>4.1.1</poi.version>
-        <kotlin.version>1.4.32</kotlin.version>
+        <kotlin.version>1.5.31</kotlin.version>
         <main.class>kotlin.KotlinHelloKt</main.class>
         <kotlin.compiler.incremental>true</kotlin.compiler.incremental>
         <kotlin.compiler.languageVersion>1.4</kotlin.compiler.languageVersion>
@@ -326,6 +326,24 @@
                 </plugins>
             </build>
         </profile>
+        <profile>
+            <id>testfx-tests</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-failsafe-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>integration-test</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
     </profiles>
 
     <dependencies>
@@ -403,7 +421,22 @@
                 </exclusion>
             </exclusions>
         </dependency>
-
+        <dependency>
+            <groupId>org.testfx</groupId>
+            <artifactId>testfx-core</artifactId>
+            <version>4.0.16-alpha</version>
+        </dependency>
+        <dependency>
+            <groupId>org.testfx</groupId>
+            <artifactId>testfx-junit5</artifactId>
+            <version>4.0.16-alpha</version>
+        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>org.testfx</groupId>-->
+<!--            <artifactId>openjfx-monocle</artifactId>-->
+<!--            <version>jdk-11+26</version> &lt;!&ndash; jdk-9+181 for Java 9, jdk-11+26 for Java 11 &ndash;&gt;-->
+<!--            <scope>test</scope>-->
+<!--        </dependency>-->
         <!--
         <dependency>
             <groupId>org.openjfx</groupId>
