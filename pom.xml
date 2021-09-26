@@ -101,6 +101,10 @@
                         <configuration>
                             <rules>
                                 <banDuplicateClasses>
+                                    <scopes>
+                                        <scope>compile</scope>
+                                        <scope>provided</scope>
+                                    </scopes>
                                     <ignoreClasses>
                                         <!-- example of ignoring one specific class -->
                                         <!-- <ignoreClass>com.xyz.i18n.Messages</ignoreClass> -->
@@ -216,10 +220,20 @@
                 <artifactId>maven-failsafe-plugin</artifactId>
                 <version>2.22.2</version>
                 <configuration>
+                    <forkCount>1</forkCount>
+                    <reuseForks>false</reuseForks>
+                    <threadCount>1</threadCount>
                     <argLine>
                         --illegal-access=permit
                     </argLine>
                 </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>integration-test</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
 
             <plugin>
@@ -328,6 +342,9 @@
         </profile>
         <profile>
             <id>testfx-tests</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
             <build>
                 <plugins>
                     <plugin>
@@ -340,6 +357,16 @@
                                 </goals>
                             </execution>
                         </executions>
+                        <configuration>
+                            <forkCount>1</forkCount>
+                            <reuseForks>false</reuseForks>
+                            <threadCount>1</threadCount>
+                            <systemPropertyVariables>
+                                <glass.platform>Monocle</glass.platform>
+                                <monocle.platform>Headless</monocle.platform>
+                                <prism.order>sw</prism.order>
+                            </systemPropertyVariables>
+                        </configuration>
                     </plugin>
                 </plugins>
             </build>
@@ -431,12 +458,12 @@
             <artifactId>testfx-junit5</artifactId>
             <version>4.0.16-alpha</version>
         </dependency>
-<!--        <dependency>-->
-<!--            <groupId>org.testfx</groupId>-->
-<!--            <artifactId>openjfx-monocle</artifactId>-->
-<!--            <version>jdk-11+26</version> &lt;!&ndash; jdk-9+181 for Java 9, jdk-11+26 for Java 11 &ndash;&gt;-->
-<!--            <scope>test</scope>-->
-<!--        </dependency>-->
+        <dependency>
+            <groupId>org.testfx</groupId>
+            <artifactId>openjfx-monocle</artifactId>
+            <version>jdk-12.0.1+2</version> <!-- jdk-9+181 for Java 9, jdk-11+26 for Java 11 -->
+            <scope>test</scope>
+        </dependency>
         <!--
         <dependency>
             <groupId>org.openjfx</groupId>

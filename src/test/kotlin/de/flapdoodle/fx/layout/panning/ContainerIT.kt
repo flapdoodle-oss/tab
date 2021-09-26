@@ -4,7 +4,9 @@ import javafx.scene.Scene
 import javafx.scene.control.Button
 import javafx.scene.layout.StackPane
 import javafx.stage.Stage
+import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.testfx.api.FxRobot
@@ -15,6 +17,26 @@ import org.testfx.framework.junit5.Start
 
 @ExtendWith(ApplicationExtension::class)
 internal class ContainerIT {
+
+    companion object {
+        var oldValue: String? = null
+
+        @BeforeAll
+        @JvmStatic
+        fun woohoo() {
+            println("before all")
+//            oldValue = System.setProperty("java.awt.headless","true")
+        }
+
+        @AfterAll
+        @JvmStatic
+        fun woohooEnd() {
+            oldValue.let {
+//                if (it!=null) System.setProperty("java.awt.headless", it)
+            }
+            println("after all")
+        }
+    }
 
     @Test
     fun testMee() {
