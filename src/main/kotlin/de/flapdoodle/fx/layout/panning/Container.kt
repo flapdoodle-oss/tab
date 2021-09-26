@@ -1,11 +1,13 @@
 package de.flapdoodle.fx.layout.panning
 
+import javafx.scene.layout.Pane
 import javafx.scene.layout.Region
 import javafx.scene.layout.StackPane
 
-class Container : StackPane() {
+class Container : Region() {
     init {
-        isMouseTransparent=true
+        //isMouseTransparent=false
+        isPickOnBounds = false
     }
     
     private var content: Region?=null
@@ -19,27 +21,27 @@ class Container : StackPane() {
         }
     }
 
-//    override fun computePrefWidth(height: Double): Double {
-//        return content?.prefWidth(height) ?: 0.0
-//    }
-//
-//    override fun computePrefHeight(width: Double): Double {
-//        return content?.prefHeight(height) ?: 0.0
-//    }
-//
-//    override fun computeMinWidth(height: Double): Double {
-//        return content?.minWidth(height) ?: 0.0
-//    }
-//
-//    override fun computeMinHeight(width: Double): Double {
-//        return content?.minHeight(height) ?: 0.0
-//    }
-//
-//    override fun computeMaxWidth(height: Double): Double {
-//        return content?.minWidth(height) ?: 0.0
-//    }
-//
-//    override fun computeMaxHeight(width: Double): Double {
-//        return content?.minHeight(height) ?: 0.0
-//    }
+    override fun computePrefWidth(height: Double): Double {
+        return content?.prefWidth(height) ?: 0.0
+    }
+
+    override fun computePrefHeight(width: Double): Double {
+        return content?.prefHeight(height) ?: 0.0
+    }
+
+    override fun computeMinWidth(height: Double): Double {
+        return content?.minWidth(height) ?: 0.0
+    }
+
+    override fun computeMinHeight(width: Double): Double {
+        return content?.minHeight(height) ?: 0.0
+    }
+
+    override fun computeMaxWidth(height: Double): Double {
+        return content?.minWidth(height) ?: 0.0
+    }
+
+    override fun computeMaxHeight(width: Double): Double {
+        return content?.minHeight(height) ?: 0.0
+    }
 }
