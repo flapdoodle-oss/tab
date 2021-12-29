@@ -32,7 +32,7 @@ class InlineChartNode<T>(
   }
 
   private val chartData = columnValues.map { list ->
-    val max = list.map { (column, values) -> values.size() }.max() ?: 0
+    val max = list.map { (column, values) -> values.size() }.maxOrNull() ?: 0
     list.mapNotNull { (column, values) ->
       val v = (0 until max).map { values[it] }
       val notNull = v.mapNotNull { it }

@@ -33,9 +33,9 @@ class LayoutFun : Region() {
     val width = getWidth()
 
     val minHeight = group.children.map { node -> node.prefHeight(width) }
-        .max() ?: 0.0
+        .maxOrNull() ?: 0.0
     val minWidth = group.children.map { node -> node.prefWidth(minHeight) }
-        .max() ?: 0.0
+        .maxOrNull() ?: 0.0
 
     group.children.forEachIndexed { index, node ->
       println("node: $node")

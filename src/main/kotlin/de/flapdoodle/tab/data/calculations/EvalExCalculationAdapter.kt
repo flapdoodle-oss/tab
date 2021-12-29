@@ -18,7 +18,7 @@ data class EvalExCalculationAdapter(
     val variableMap = variables.map { it.name to lookup[it] }
     val maxScale = variableMap.mapNotNull { it.second }
         .map { it.scale() }
-        .max() ?: 2
+        .maxOrNull() ?: 2
 
     return Exceptions.returnOnException<BigDecimal, ArithmeticException>(fallback = { ex ->
       ex.printStackTrace()

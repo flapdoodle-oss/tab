@@ -42,7 +42,7 @@ data class Data(
 
   fun rows(columns: List<ColumnId<out Any>>): List<Row> {
     val columnValues = columns.map { it to get(it) }
-    val size = columnValues.map { it.second.size() }.max() ?: 0
+    val size = columnValues.map { it.second.size() }.maxOrNull() ?: 0
 
     return (0 until size).mapIndexed { idx, row ->
       Row(idx, columnValues.map { it.first to it.second[row] }.toMap())

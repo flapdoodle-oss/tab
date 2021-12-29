@@ -3,7 +3,7 @@ package de.flapdoodle.fx.layout
 data class AutoArray<T : Any> private constructor(
     val map: Map<Int, T> = emptyMap()
 ) {
-  private val maxIndex = map.keys.max()
+  private val maxIndex = map.keys.maxOrNull()
 
   fun set(index: Int, value: T?): AutoArray<T> {
     return if (value != null)

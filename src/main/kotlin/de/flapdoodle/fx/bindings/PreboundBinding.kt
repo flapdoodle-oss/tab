@@ -13,7 +13,7 @@ abstract class PreboundBinding<T>(
     private vararg val dependencies: ObservableValue<*>
 ) : ObjectBinding<T>(), MonadicBinding<T> {
 
-  private val changeToInvalidListener = ChangeListener<Any> { _,_,new ->
+  private val changeToInvalidListener = ChangeListener<Any> { _, _, _ ->
     invalidate()
   }
 

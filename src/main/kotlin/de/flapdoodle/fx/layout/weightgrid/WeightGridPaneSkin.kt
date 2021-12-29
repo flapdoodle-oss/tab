@@ -54,8 +54,8 @@ class WeightGridPaneSkin(
 
   private fun columnSizes() = gridMap.mapColumns { index, list ->
     val limits = list.map { it.widthLimits() }
-    val min = limits.map { it.first }.max() ?: 0.0
-    val max = Math.max(min, limits.map { it.second }.max() ?: Double.MAX_VALUE)
+    val min = limits.map { it.first }.maxOrNull() ?: 0.0
+    val max = Math.max(min, limits.map { it.second }.maxOrNull() ?: Double.MAX_VALUE)
 
 //      require(max >= min) { "invalid min/max for $list -> $min ? $max" }
     WeightedSize(control.columnWeights.get(index) ?: 1.0, min, max)
@@ -64,8 +64,8 @@ class WeightGridPaneSkin(
 
   private fun rowSizes() = gridMap.mapRows { index, list ->
     val limits = list.map { it.heightLimits() }
-    val min = limits.map { it.first }.max() ?: 0.0
-    val max = Math.max(min, limits.map { it.second }.max() ?: Double.MAX_VALUE)
+    val min = limits.map { it.first }.maxOrNull() ?: 0.0
+    val max = Math.max(min, limits.map { it.second }.maxOrNull() ?: Double.MAX_VALUE)
 
 //      require(max >= min) { "invalid min/max for $list -> $min ? $max" }
     WeightedSize(control.columnWeights.get(index) ?: 1.0, min, max)
@@ -83,14 +83,14 @@ class WeightGridPaneSkin(
 
   override fun computePrefWidth(height: Double, topInset: Double, rightInset: Double, bottomInset: Double, leftInset: Double): Double {
     val ret = gridMap.mapColumns { _, list ->
-      list.map { it.prefWidth(-1.0) }.max() ?: 0.0
+      list.map { it.prefWidth(-1.0) }.maxOrNull() ?: 0.0
     }.sumWithSpaceBetween(horizontalSpace()) { it }
     return ret + leftInset + rightInset
   }
 
   override fun computePrefHeight(width: Double, topInset: Double, rightInset: Double, bottomInset: Double, leftInset: Double): Double {
     val ret = gridMap.mapRows { _, list ->
-      list.map { it.prefHeight(-1.0) }.max() ?: 0.0
+      list.map { it.prefHeight(-1.0) }.maxOrNull() ?: 0.0
     }.sumWithSpaceBetween(verticalSpace()) { it }
     return ret + topInset + bottomInset
   }

@@ -7,7 +7,7 @@ data class ValueContainer<T: Any>(
     private val rows: Map<Int, T> = emptyMap()
 ) {
   fun size(): Int {
-    return rows.keys.max()?.let { it + 1 } ?: 0
+    return rows.keys.maxOrNull()?.let { it + 1 } ?: 0
   }
 
   operator fun set(index: Int, value: T?): ValueContainer<T> {

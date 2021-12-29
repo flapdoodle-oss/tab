@@ -51,7 +51,7 @@
         <kotlin.version>1.5.31</kotlin.version>
         <main.class>kotlin.KotlinHelloKt</main.class>
         <kotlin.compiler.incremental>true</kotlin.compiler.incremental>
-        <kotlin.compiler.languageVersion>1.4</kotlin.compiler.languageVersion>
+        <kotlin.compiler.languageVersion>1.5</kotlin.compiler.languageVersion>
         <kotlin.compiler.jvmTarget>1.8</kotlin.compiler.jvmTarget>
         <javafx.version>13.0.2</javafx.version>
     </properties>

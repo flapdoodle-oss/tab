@@ -23,7 +23,7 @@ data class VariableMap(
     require(map.keys.containsAll(variables)) { "not all variables are mapped: ${map.keys} < $variables" }
     return map.filterKeys { variables.contains(it) }
         .values.map { it.size() }
-        .max() ?: 0
+        .maxOrNull() ?: 0
   }
 
   fun lookupFor(index: Int): Calculation.VariableLookup {
