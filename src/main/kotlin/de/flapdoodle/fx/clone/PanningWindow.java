@@ -370,12 +370,16 @@ public class PanningWindow extends Region {
 
     private static double constrainZoom(final double pZoom)
     {
+        System.out.println("Zoom(1): "+pZoom);
         final double zoom = Math.round(pZoom * 100.0) / 100.0;
+        System.out.println("Zoom(2): "+zoom);
         if (zoom <= 1.02 && zoom >= 0.98)
         {
             return 1.0;
         }
-        return Math.min(Math.max(zoom, SCALE_MIN), SCALE_MAX);
+        double ret = Math.min(Math.max(zoom, SCALE_MIN), SCALE_MAX);
+        System.out.println("Zoom(3): "+ret);
+        return ret;
     }
 
     /**
@@ -559,8 +563,13 @@ public class PanningWindow extends Region {
         {
             try
             {
-                final double modifier = pEvent.getDeltaY() > 1 ? 0.06 : -0.06;
-                setZoomAt(getZoom() + modifier, pEvent.getX(), pEvent.getY());
+                if (pEvent.getDeltaY()!=0.0) {
+                    System.out.println("handle scroll(1): " + pEvent.getDeltaY());
+                    final double modifier = pEvent.getDeltaY() > 1 ? 0.06 : -0.06;
+                    System.out.println("handle scroll(2): " + modifier);
+                    System.out.println("handle scroll(3): " + getZoom());
+                    setZoomAt(getZoom() + modifier, pEvent.getX(), pEvent.getY());
+                }
                 pEvent.consume();
             }
             finally
@@ -599,7 +608,10 @@ public class PanningWindow extends Region {
         }
         else if (pEvent.getEventType() == ZoomEvent.ZOOM && properties.activateGesture(GraphInputGesture.ZOOM, pEvent, this))
         {
+            System.out.println("ZoomFactor: "+pEvent.getZoomFactor());
             final double newZoomLevel = getZoom() * pEvent.getZoomFactor();
+            System.out.println("getZoom: "+getZoom());
+            System.out.println("newZoomLevel: "+newZoomLevel);
             setZoomAt(newZoomLevel, pEvent.getX(), pEvent.getY());
             pEvent.consume();
         }

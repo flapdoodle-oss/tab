@@ -38,7 +38,7 @@ class NodeEditorView : View("Node Editor") {
         graphEditorView.add(BoxFactory.sampleBox(graphEditorProperties))
 
 //        val scrollPane = Pane() //de.flapdoodle.fx.clone.PanningWindow()
-        val scrollPane = object : de.flapdoodle.fx.clone.PanningWindow() {
+        val scrollPane = object : de.flapdoodle.fx.clone.AutoScrollingWindow() {
             init {
                 setContent(graphEditorView)
                 setEditorProperties(graphEditorProperties)
