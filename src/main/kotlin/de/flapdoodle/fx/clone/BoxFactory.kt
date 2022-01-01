@@ -8,8 +8,8 @@ object BoxFactory {
     fun sampleProperties(): GraphEditorProperties {
         val graphEditorProperties = GraphEditorProperties()
         graphEditorProperties.snapToGridProperty().set(false)
-        graphEditorProperties.westBoundValue = -200.0
-        graphEditorProperties.eastBoundValue = 200.0
+        graphEditorProperties.westBoundValue = 0.0
+        graphEditorProperties.eastBoundValue = 100.0
         graphEditorProperties.northBoundValue= 0.0
         graphEditorProperties.southBoundValue= 100.0
         return graphEditorProperties

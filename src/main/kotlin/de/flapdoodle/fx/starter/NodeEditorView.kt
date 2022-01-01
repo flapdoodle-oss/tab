@@ -1,9 +1,6 @@
 package de.flapdoodle.fx.starter
 
-import de.flapdoodle.fx.clone.BoxFactory
-import de.flapdoodle.fx.clone.EditorElement
-import de.flapdoodle.fx.clone.GraphEditorProperties
-import de.flapdoodle.fx.clone.ResizableBox
+import de.flapdoodle.fx.clone.*
 import de.flapdoodle.fx.graph.Content
 import de.flapdoodle.fx.graph.GraphView
 import de.flapdoodle.fx.graph.PanningWindow
@@ -30,20 +27,28 @@ class NodeEditorView : View("Node Editor") {
             }
         }
 
-        children+= window
-        children+= VirtualPane().apply {
-            setContent(Content())
-        }
+//        children+= window
+//        children+= VirtualPane().apply {
+//            setContent(Content())
+//        }
 
 
         val graphEditorProperties = BoxFactory.sampleProperties()
+        val graphEditorView = GraphEditorView(graphEditorProperties)
+        graphEditorView.add(BoxFactory.sampleBox(graphEditorProperties))
 
-        val scrollPane = Pane() //de.flapdoodle.fx.clone.PanningWindow()
+//        val scrollPane = Pane() //de.flapdoodle.fx.clone.PanningWindow()
+        val scrollPane = object : de.flapdoodle.fx.clone.PanningWindow() {
+            init {
+                setContent(graphEditorView)
+                setEditorProperties(graphEditorProperties)
+            }
+        }
         scrollPane.setPrefSize(600.0, 600.0)
-        //scrollPane.setEditorProperties(graphEditorProperties)
+//        scrollPane.setEditorProperties(graphEditorProperties)
 
 
-        scrollPane.children.add(BoxFactory.sampleBox(graphEditorProperties))
+//        scrollPane.children.add(BoxFactory.sampleBox(graphEditorProperties))
 
         children+=scrollPane
 
@@ -54,5 +59,7 @@ class NodeEditorView : View("Node Editor") {
         }
 
         VBox.setVgrow(graphView, Priority.SOMETIMES)
+
+//        scene.getStylesheets().add(graphEditorView.styleResource);
     }
 }
