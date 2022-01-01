@@ -478,10 +478,12 @@ public class DraggableBox extends StackPane
         if (editorProperties != null && newLayoutX < minLayoutX)
         {
             newLayoutX = minLayoutX;
+            System.out.println("minLayoutX: "+minLayoutX);
         }
         else if (newLayoutX > maxLayoutX)
         {
             newLayoutX = maxLayoutX;
+            System.out.println("maxLayoutX: "+maxLayoutX);
         }
 
         System.out.println("new X(3): "+newLayoutX);

@@ -42,6 +42,8 @@ class NodeEditorView : View("Node Editor") {
             init {
                 setContent(graphEditorView)
                 setEditorProperties(graphEditorProperties)
+                graphEditorView.resize(800.0, 800.0)
+                checkWindowBounds()
             }
         }
         scrollPane.setPrefSize(600.0, 600.0)

@@ -3,15 +3,19 @@ package de.flapdoodle.fx.clone
 import javafx.event.EventHandler
 import javafx.scene.input.MouseEvent
 import javafx.scene.shape.Rectangle
+import tornadofx.move
 
 object BoxFactory {
     fun sampleProperties(): GraphEditorProperties {
         val graphEditorProperties = GraphEditorProperties()
         graphEditorProperties.snapToGridProperty().set(false)
-        graphEditorProperties.westBoundValue = 0.0
-        graphEditorProperties.eastBoundValue = 100.0
-        graphEditorProperties.northBoundValue= 0.0
-        graphEditorProperties.southBoundValue= 100.0
+        graphEditorProperties.isGridVisible=true
+        graphEditorProperties.gridSpacing = 10.0
+
+//        graphEditorProperties.westBoundValue = 0.0
+//        graphEditorProperties.eastBoundValue = 100.0
+//        graphEditorProperties.northBoundValue= 0.0
+//        graphEditorProperties.southBoundValue= 100.0
         return graphEditorProperties
     }
     
@@ -39,8 +43,8 @@ object BoxFactory {
             )
             this.setPrefSize(40.0, 40.0)
             this.resize(60.0, 60.0)
-//            this.layoutX = 20.0
-//            this.layoutY = 30.0
+            this.layoutX = 20.0
+            this.layoutY = 30.0
 
             background.addEventFilter<MouseEvent>(
                 MouseEvent.MOUSE_DRAGGED,
@@ -49,7 +53,6 @@ object BoxFactory {
                         event.consume()
                     }
                 })
-
 
             this.setEditorProperties(graphEditorProperties)
         }
