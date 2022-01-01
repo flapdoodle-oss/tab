@@ -1,15 +1,24 @@
 package de.flapdoodle.fx.starter
 
+import de.flapdoodle.fx.clone.BoxFactory
+import de.flapdoodle.fx.clone.EditorElement
+import de.flapdoodle.fx.clone.GraphEditorProperties
+import de.flapdoodle.fx.clone.ResizableBox
 import de.flapdoodle.fx.graph.Content
 import de.flapdoodle.fx.graph.GraphView
 import de.flapdoodle.fx.graph.PanningWindow
 import de.flapdoodle.fx.layout.panning.VirtualPane
+import javafx.event.EventHandler
+import javafx.scene.control.ScrollPane
+import javafx.scene.input.MouseEvent
+import javafx.scene.layout.Pane
 import javafx.scene.layout.Priority
+import javafx.scene.layout.Region
 import javafx.scene.layout.VBox
-import tornadofx.View
-import tornadofx.button
-import tornadofx.onLeftClick
-import tornadofx.vbox
+import javafx.scene.paint.Color
+import javafx.scene.shape.Rectangle
+import javafx.util.Duration
+import tornadofx.*
 
 class NodeEditorView : View("Node Editor") {
     override val root = vbox {
@@ -25,6 +34,18 @@ class NodeEditorView : View("Node Editor") {
         children+= VirtualPane().apply {
             setContent(Content())
         }
+
+
+        val graphEditorProperties = BoxFactory.sampleProperties()
+
+        val scrollPane = Pane() //de.flapdoodle.fx.clone.PanningWindow()
+        scrollPane.setPrefSize(600.0, 600.0)
+        //scrollPane.setEditorProperties(graphEditorProperties)
+
+
+        scrollPane.children.add(BoxFactory.sampleBox(graphEditorProperties))
+
+        children+=scrollPane
 
         button("click me") {
             onLeftClick {

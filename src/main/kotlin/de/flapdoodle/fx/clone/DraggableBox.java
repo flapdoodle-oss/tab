@@ -301,6 +301,8 @@ public class DraggableBox extends StackPane
             return;
         }
 
+        System.out.println("---> mouse pressed");
+
         final Point2D cursorPosition = GeometryUtils.getCursorPosition(pEvent, getContainer(this));
         storeClickValuesForDrag(cursorPosition.getX(), cursorPosition.getY());
         pEvent.consume();
@@ -313,10 +315,13 @@ public class DraggableBox extends StackPane
      */
     protected void handleMouseDragged(final MouseEvent pEvent)
     {
+//        System.out.println("---> mouse dragged button: "+pEvent.getButton()+", editable: "+isEditable());
         if (pEvent.getButton() != MouseButton.PRIMARY || !isEditable() || !activateGesture(GraphInputGesture.MOVE, pEvent))
         {
             return;
         }
+
+        System.out.println("---> mouse dragged");
 
         final Point2D cursorPosition = GeometryUtils.getCursorPosition(pEvent, getContainer(this));
         handleDrag(cursorPosition.getX(), cursorPosition.getY());
@@ -452,6 +457,8 @@ public class DraggableBox extends StackPane
 
         double newLayoutX = lastLayoutX + (pX - lastMouseX) / scaleFactor;
 
+        System.out.println("new X: "+newLayoutX);
+
         if (isSnapToGrid())
         {
             newLayoutX = roundToGridSpacing(newLayoutX - snapToGridOffset.getX()) + snapToGridOffset.getX();
@@ -466,6 +473,7 @@ public class DraggableBox extends StackPane
                 newLayoutX = align(newLayoutX, alignmentTargetsX);
             }
         }
+        System.out.println("new X(2): "+newLayoutX);
 
         if (editorProperties != null && newLayoutX < minLayoutX)
         {
@@ -476,6 +484,8 @@ public class DraggableBox extends StackPane
             newLayoutX = maxLayoutX;
         }
 
+        System.out.println("new X(3): "+newLayoutX);
+        
         setLayoutX(newLayoutX);
         if (dependencyX != null)
         {

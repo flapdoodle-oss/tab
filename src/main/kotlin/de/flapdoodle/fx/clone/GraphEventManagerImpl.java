@@ -20,12 +20,15 @@ public class GraphEventManagerImpl implements GraphEventManager
     @Override
     public boolean activateGesture(final GraphInputGesture pGesture, final Event pEvent, final Object pOwner)
     {
+        System.out.println("activateGesture gesture: "+pGesture+", owner: "+pOwner);
         if (!canOverwrite(owner, pOwner))
         {
+            System.out.println("!canOverwrite");
             return false;
         }
         if (canActivate(pGesture, pEvent))
         {
+            System.out.println("canActivate");
             gesture = pGesture;
             owner = pOwner;
             return true;
