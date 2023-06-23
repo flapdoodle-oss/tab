@@ -23,6 +23,9 @@ class GraphNodeResizeHandler(
       }
       is MappedMouseEvent.Release -> dragStarted = null
       is MappedMouseEvent.Exit -> exited = exited || marker == resizeMarker
+        else -> {
+            
+        }
     }
 
     return if (exited && dragStarted == null) {
@@ -33,7 +36,8 @@ class GraphNodeResizeHandler(
   }
 
   companion object {
-    val resolver = MouseEventHandlerResolver.forType(::GraphNodeResizeHandler)
+//      val resolver = MouseEventHandlerResolver.forType(::GraphNodeResizeHandler)
+      val resolver = MouseEventHandlerResolver.forInstance(Resize::class.java, ::GraphNodeResizeHandler)
   }
 
 }

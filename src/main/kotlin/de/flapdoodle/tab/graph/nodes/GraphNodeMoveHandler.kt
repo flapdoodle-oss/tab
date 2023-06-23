@@ -23,6 +23,9 @@ class GraphNodeMoveHandler(
       }
       is MappedMouseEvent.Release -> dragStarted = null
       is MappedMouseEvent.Exit -> exited = exited || marker == moveMarker
+        else -> {
+
+        }
     }
 
     return if (exited && dragStarted == null) {
@@ -33,6 +36,7 @@ class GraphNodeMoveHandler(
   }
 
   companion object {
-    val resolver = MouseEventHandlerResolver.forType(::GraphNodeMoveHandler)
+//    val resolver = MouseEventHandlerResolver.forType(::GraphNodeMoveHandler)
+    val resolver = MouseEventHandlerResolver.forInstance(Move::class.java, ::GraphNodeMoveHandler)
   }
 }

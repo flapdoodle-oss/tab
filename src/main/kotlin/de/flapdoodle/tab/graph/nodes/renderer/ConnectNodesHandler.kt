@@ -55,6 +55,8 @@ object ConnectNodesHandler {
                   is Out.ColumnValues<*> -> {
                     ModelEvent.connect(input, marker)?.fire()
                   }
+
+                  else -> {}
                 }
               }
               is In.List -> {
@@ -62,6 +64,8 @@ object ConnectNodesHandler {
                   is Out.Aggregate<*> -> {
                     ModelEvent.connect(input, marker)?.fire()
                   }
+
+                  else -> {}
                 }
               }
             }
@@ -71,6 +75,9 @@ object ConnectNodesHandler {
         }
         is MappedMouseEvent.Exit -> {
           exited = dragStarted == null
+        }
+        else -> {
+          throw IllegalStateException("unexpected: ${mouseEvent}")
         }
       }
 
@@ -122,11 +129,13 @@ object ConnectNodesHandler {
               is Out.ColumnValues -> {
                 when (marker) {
                   is In.Value<*> -> ModelEvent.connect(marker, output)?.fire()
+                  else -> {}
                 }
               }
               is Out.Aggregate -> {
                 when (marker) {
                   is In.List<*> -> ModelEvent.connect(marker, output)?.fire()
+                  else -> {}
                 }
               }
             }
@@ -137,6 +146,10 @@ object ConnectNodesHandler {
         is MappedMouseEvent.Exit -> {
           exited = dragStarted == null
           ExplainEvent.noColumnSelected().fire()
+        }
+
+        else -> {
+            throw IllegalStateException("unexpected: ${mouseEvent}")
         }
       }
       return if (dragStarted == null && exited) {

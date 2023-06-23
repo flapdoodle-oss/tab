@@ -129,7 +129,7 @@ class SmartColumnsNode<T>(
         return object : SmartCell<Data.Row, T>(row[namedColumn.id], editable, Converters.converterFor(namedColumn.id.type)) {
 
           init {
-            subscribeEvent<ExplainEvent> { event ->
+            subscribeEvent<ExplainEvent>(ExplainEvent::class) { event ->
               when (event.data) {
                 is ExplainEvent.EventData.ColumnSelected<out Any> -> {
                   if (event.data.id == namedColumn.id) {

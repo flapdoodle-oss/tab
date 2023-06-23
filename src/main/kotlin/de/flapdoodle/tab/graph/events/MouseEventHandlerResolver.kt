@@ -19,5 +19,14 @@ fun interface MouseEventHandlerResolver {
           null
       }
     }
+
+    fun <T: IsMarker> forInstance(type: Class<T>, delegate: (T) -> MouseEventHandler): MouseEventHandlerResolver {
+      return MouseEventHandlerResolver { marker ->
+        if (type.isInstance(marker))
+          delegate(type.cast(marker))
+        else
+          null
+      }
+    }
   }
 }

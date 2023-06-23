@@ -42,7 +42,7 @@ class OutNode(
     }
 
     init {
-      control.subscribeEvent<ConnectEvent> { event ->
+      control.subscribeEvent<ConnectEvent>(ConnectEvent::class) { event ->
         when (event.data) {
           is ConnectEvent.EventData.StartConnectTo<out Any> -> {
             if (control.out is Out.ColumnValues<out Any> && control.out.columnId.type == event.data.variable.type) {
@@ -58,6 +58,9 @@ class OutNode(
             }
             handle.radius = 4.0
           }
+            else -> {
+                throw IllegalStateException("unexpected: ${event.data}")
+            }
         }
       }
     }

@@ -16,7 +16,7 @@ class ShowConnectHandleNode : Fragment() {
       root.isVisible = false
     }
 
-    subscribeEvent<ConnectEvent> {
+    subscribeEvent<ConnectEvent>(ConnectEvent::class) {
       when (it.data) {
         is ConnectEvent.EventData.StartConnectTo<out Any> -> {
           start.value = it.data.toCoord

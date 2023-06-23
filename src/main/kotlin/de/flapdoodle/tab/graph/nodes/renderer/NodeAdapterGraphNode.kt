@@ -61,7 +61,7 @@ class NodeAdapterGraphNode(
         UIEvent.nodeMoved(id,pos,size).fire()
       }
       node.apply {
-        subscribeEvent<UIEvent> {event ->
+        subscribeEvent<UIEvent>(UIEvent::class) {event ->
           debug("XX NodeAdapterGraphNode -> got $event")
           if (event.eventData is UIEvent.EventData.MoveNode) {
             if (event.eventData.id == id) {

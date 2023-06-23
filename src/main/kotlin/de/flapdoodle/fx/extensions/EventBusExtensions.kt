@@ -5,16 +5,24 @@ import tornadofx.*
 import java.lang.ref.WeakReference
 import kotlin.reflect.KClass
 
-inline fun <reified T : FXEvent> Node.subscribeEvent(noinline action: EventContext.(T) -> Unit) {
+inline fun <reified T : FXEvent> Node.subscribeEventInline(noinline action: EventContext.(T) -> Unit) {
   EventBusExtensions.subscribe(this, T::class, action)
+}
+
+fun <T : FXEvent> Node.subscribeEvent(type: KClass<T>, action: EventContext.(T) -> Unit) {
+  EventBusExtensions.subscribe(this, type, action)
 }
 
 fun Node.fire(event: FXEvent) {
   FX.eventbus.fire(event)
 }
 
-inline fun <reified T : FXEvent> UIComponent.subscribeEvent(noinline action: EventContext.(T) -> Unit) {
+inline fun <reified T : FXEvent> UIComponent.subscribeEventInline(noinline action: EventContext.(T) -> Unit) {
   EventBusExtensions.subscribe(this.root, T::class, action)
+}
+
+fun <T : FXEvent> UIComponent.subscribeEvent(type: KClass<T>, action: EventContext.(T) -> Unit) {
+  EventBusExtensions.subscribe(this.root, type, action)
 }
 
 fun FXEvent.fire() {

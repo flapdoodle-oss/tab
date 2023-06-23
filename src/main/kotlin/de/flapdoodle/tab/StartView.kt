@@ -157,7 +157,7 @@ class StartView : View("My View") {
         data.change(fooColumnId, 4, "Klaus")
       }
 
-      subscribeEvent<ModelEvent> { event ->
+      subscribeEvent<ModelEvent>(ModelEvent::class) { event ->
         println("got message: $event")
 
         when (event.data) {
@@ -187,7 +187,7 @@ class StartView : View("My View") {
 //        }
       }
 
-      subscribeEvent<DataEvent> { event ->
+      subscribeEvent<DataEvent>(DataEvent::class) { event ->
         println("change data: ${event.data}")
 
         renderer.changeData { data ->
@@ -195,7 +195,7 @@ class StartView : View("My View") {
         }
       }
 
-      subscribeEvent<IOEvent> { event ->
+      subscribeEvent<IOEvent>(IOEvent::class) { event ->
         when (event.action) {
           IOEvent.Action.Load -> {
             val fileChooser = fileChooser()
@@ -229,7 +229,7 @@ class StartView : View("My View") {
         }
       }
 
-      subscribeEvent<UIEvent> { event ->
+      subscribeEvent<UIEvent>(UIEvent::class) { event ->
         if (event.eventData is UIEvent.EventData.NodeMoved) {
           nodePositions = nodePositions.set(event.eventData.id, event.eventData.position, event.eventData.size)
         }
