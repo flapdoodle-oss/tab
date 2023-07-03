@@ -12,7 +12,7 @@ data class ColumnId<T: Any>(
     private val idGeneratorMap = ConcurrentHashMap<KClass<out Any>, AtomicInteger>()
 
     private fun nextIdFor(type: KClass<out Any>): Int {
-      return idGeneratorMap.getOrPut(type, { AtomicInteger() }).incrementAndGet()
+      return idGeneratorMap.getOrPut(type) { AtomicInteger() }.incrementAndGet()
     }
 
     fun <T : Any> create(type: KClass<T>): ColumnId<T> {
