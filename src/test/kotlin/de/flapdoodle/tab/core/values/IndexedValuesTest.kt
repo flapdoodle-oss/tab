@@ -28,6 +28,9 @@ class IndexedValuesTest {
             columnB,
             now.plusDays(3) to BigDecimal.valueOf(123)
         )
+
+        assertThat(testee.get(columnA, now, now.plusDays(2), now.plusDays(1)))
+            .containsExactly("Why?", null, "One")
         
         assertThat(result.columns())
             .containsExactlyInAnyOrder(columnA, columnB)

@@ -38,14 +38,14 @@ data class IndexedValues<I : Any>(
         return put(column, listOf(*values))
     }
 
-    operator fun <C: Any> get(
+    fun <C: Any> get(
         column: Column<C>,
         indexList: List<I>
     ): List<C?> {
         return indexList.map { values[it to column] as C? }
     }
 
-    operator fun <C: Any> get(
+    fun <C: Any> get(
         column: Column<C>,
         vararg index: I
     ): List<C?> {
