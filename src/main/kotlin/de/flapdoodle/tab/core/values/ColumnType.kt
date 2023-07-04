@@ -1,4 +1,4 @@
-package de.flapdoodle.tab.core
+package de.flapdoodle.tab.core.values
 
 import java.math.BigDecimal
 import java.time.LocalDateTime

@@ -1,4 +1,6 @@
-package de.flapdoodle.tab.core
+package de.flapdoodle.tab.core.values
+
+import de.flapdoodle.tab.types.TypeCounter
 
 data class Column<T : Any>(
     val type: ColumnType<T>,

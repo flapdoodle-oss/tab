@@ -1,4 +1,4 @@
-package de.flapdoodle.tab.core
+package de.flapdoodle.tab.types
 
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicInteger

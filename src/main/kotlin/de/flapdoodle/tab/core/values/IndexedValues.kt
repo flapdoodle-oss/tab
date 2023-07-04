@@ -1,4 +1,4 @@
-package de.flapdoodle.tab.core
+package de.flapdoodle.tab.core.values
 
 // list of Columns
 // Column -> list of Index -> Value
@@ -36,6 +36,20 @@ data class IndexedValues<I : Any>(
         vararg values: Pair<I, C?>
     ): IndexedValues<I> {
         return put(column, listOf(*values))
+    }
+
+    operator fun <C: Any> get(
+        column: Column<C>,
+        indexList: List<I>
+    ): List<C?> {
+        return indexList.map { values[it to column] as C? }
+    }
+
+    operator fun <C: Any> get(
+        column: Column<C>,
+        vararg index: I
+    ): List<C?> {
+        return get(column, listOf(*index))
     }
 
     fun indexList() = indexList
