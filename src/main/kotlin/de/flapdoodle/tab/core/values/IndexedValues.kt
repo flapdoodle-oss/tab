@@ -15,7 +15,7 @@ data class IndexedValues<I : Any>(
         .map(Pair<I, Column<out Any>>::second)
         .toSet()
 
-    fun <C : Any> put(
+    fun <C : Any> change(
         column: Column<C>,
         changes: List<Pair<I, C?>>
     ): IndexedValues<I> {
@@ -31,11 +31,11 @@ data class IndexedValues<I : Any>(
         return copy(values = copy)
     }
 
-    fun <C : Any> put(
+    fun <C : Any> change(
         column: Column<C>,
         vararg values: Pair<I, C?>
     ): IndexedValues<I> {
-        return put(column, listOf(*values))
+        return change(column, listOf(*values))
     }
 
     fun <C: Any> get(
