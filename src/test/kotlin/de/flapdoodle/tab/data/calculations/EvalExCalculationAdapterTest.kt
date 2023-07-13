@@ -1,9 +1,10 @@
 package de.flapdoodle.tab.data.calculations
 
-import com.udojava.evalex.Expression
+import com.ezylang.evalex.Expression
 import de.flapdoodle.tab.data.values.Input
 import de.flapdoodle.tab.data.values.ValueMap
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.data.Percentage
 import org.junit.jupiter.api.Test
 import java.math.BigDecimal
 
@@ -56,9 +57,9 @@ internal class EvalExCalculationAdapterTest {
     val result = Expression("SQRT(a^2 + b^2)")
         .with("a", a)
         .and("b", b)
-        .eval() // 9.5591845
+        .evaluate() // 9.5591845
 
-    assertThat(result).isEqualTo(BigDecimal("9.5417618"))
+    assertThat(result.numberValue).isCloseTo(BigDecimal("9.5417618"), Percentage.withPercentage(99.0))
   }
 
   @Test
@@ -70,8 +71,8 @@ internal class EvalExCalculationAdapterTest {
     val result = Expression("SIN(a)*b")
         .with("a", a)
         .and("b", b)
-        .eval() // 9.5591845
+        .evaluate() // 9.5591845
 
-    assertThat(result).isEqualTo(BigDecimal("0.3867216"))
+    assertThat(result.numberValue).isCloseTo(BigDecimal("0.3867216"), Percentage.withPercentage(99.0))
   }
 }

@@ -1,6 +1,6 @@
 package de.flapdoodle.tab.data.calculations
 
-import com.udojava.evalex.Expression
+import com.ezylang.evalex.Expression
 import de.flapdoodle.tab.data.values.Input
 import de.flapdoodle.tab.extensions.Exceptions
 import java.math.BigDecimal
@@ -27,11 +27,11 @@ data class EvalExCalculationAdapter(
 
       return Expression(formula).apply {
             variableMap.forEach { (name, value) ->
-              setVariable(name, value)
+                with(name, value)
             }
           }
-          .eval().let {
-            it.setScale(maxScale, RoundingMode.HALF_DOWN)
+          .evaluate().let {
+              it.numberValue.setScale(maxScale, RoundingMode.HALF_DOWN)
           }
     }
   }
