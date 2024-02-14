@@ -4,7 +4,7 @@ import de.flapdoodle.tab.core.values.Column
 
 data class ColumnValues(
     val values: Set<ColumnValue<out Any>>
-) {
+): ColumnValueLookup {
     constructor(vararg values: ColumnValue<out Any>): this(setOf(*values))
     
     init {
@@ -12,7 +12,7 @@ data class ColumnValues(
         require(columns.size == values.size) { "columns used more than once: $values" }
     }
 
-    operator fun <C : Any> get(column: Column<C>): C? {
+    override operator fun <C : Any> get(column: Column<C>): C? {
         val c: ColumnValue<C> = (values.singleOrNull { it.column == column }
             ?: throw IllegalArgumentException("column $column not expected: $values")) as ColumnValue<C>
 

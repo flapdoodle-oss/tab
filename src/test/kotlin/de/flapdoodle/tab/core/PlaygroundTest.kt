@@ -1,6 +1,6 @@
 package de.flapdoodle.tab.core
 
-import de.flapdoodle.tab.core.calculation.Calculation
+import de.flapdoodle.tab.core.calculation.CalculationNode
 import de.flapdoodle.tab.core.calculation.ColumnValue
 import de.flapdoodle.tab.core.calculation.ColumnValues
 import de.flapdoodle.tab.core.values.Column
@@ -17,7 +17,7 @@ class PlaygroundTest {
         val a = Column(ColumnType.Numeric)
         val b = Column(ColumnType.Numeric)
 
-        val calculation = Calculation(
+        val calculationNode = CalculationNode(
             indexType = IndexType.Numeric,
             columnType = ColumnType.Numeric,
             sources = setOf(a, b),
@@ -29,7 +29,7 @@ class PlaygroundTest {
             ColumnValue(b, BigDecimal.valueOf(1.5)),
         )
 
-        val result = calculation.function(columnValues)
+        val result = calculationNode.function.calculate(columnValues)
 
         assertThat(result)
             .isEqualTo(BigDecimal.valueOf(2.5))
