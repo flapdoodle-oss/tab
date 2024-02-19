@@ -1,20 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
-    xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
-
     <groupId>de.flapdoodle</groupId>
     <artifactId>tab</artifactId>
+    <name>tab project</name>
     <version>1.0-SNAPSHOT</version>
 
-    <name>tab project</name>
+    <description>tab project</description>
     <url>http://github.com/flapdoodle-oss/tab</url>
     <licenses>
         <license>
             <name>The Apache Software License, Version 2.0</name>
             <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
         </license>
     </licenses>
     <developers>
@@ -25,6 +23,8 @@
             <organizationUrl>http://github.com/flapdoodle-oss</organizationUrl>
         </developer>
     </developers>
+
+
     <scm>
         <connection>scm:git:git@github.com:flapdoodle-oss/tab.git</connection>
         <developerConnection>scm:git:git@github.com:flapdoodle-oss/tab.git</developerConnection>
@@ -43,25 +43,6 @@
         </repository>
     </distributionManagement>
 
-    <properties>
-        <java.version>11</java.version>
-        <maven.compiler.release>11</maven.compiler.release>
-        <javafx.version>16</javafx.version>
-
-        <kotlin.version>1.9.0</kotlin.version>
-        <main.class>kotlin.KotlinHelloKt</main.class>
-        <kotlin.compiler.incremental>true</kotlin.compiler.incremental>
-        <kotlin.compiler.languageVersion>1.8</kotlin.compiler.languageVersion>
-        <kotlin.compiler.jvmTarget>11</kotlin.compiler.jvmTarget>
-
-        <junit.version>5.9.2</junit.version>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.source>11</maven.compiler.source>
-        <maven.compiler.target>11</maven.compiler.target>
-
-        <poi.version>5.2.3</poi.version>
-    </properties>
-
     <!-- see https://kotlinlang.org/docs/reference/using-maven.html -->
     <!-- see https://winterbe.com/posts/2018/08/29/migrate-maven-projects-to-java-11-jigsaw/ -->
 
@@ -70,7 +51,7 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>versions-maven-plugin</artifactId>
-                <version>2.8.1</version>
+                <version>2.16.2</version>
                 <configuration>
                     <generateBackupPoms>false</generateBackupPoms>
                 </configuration>
@@ -78,7 +59,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-toolchains-plugin</artifactId>
-                <version>3.0.0</version>
+                <version>3.1.0</version>
                 <executions>
                     <execution>
                         <goals>
@@ -89,11 +70,103 @@
                 <configuration>
                     <toolchains>
                         <jdk>
-                            <version>[11,)</version>
+                            <version>[17,)</version>
                         </jdk>
                     </toolchains>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.jetbrains.kotlin</groupId>
+                <artifactId>kotlin-maven-plugin</artifactId>
+                <version>${kotlin.version}</version>
+                <executions>
+                    <execution>
+                        <id>compile</id>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>compile</goal>
+                        </goals>
+                        <configuration>
+                            <sourceDirs>
+<!--                                <source>src/main/java</source>-->
+                                <source>src/main/kotlin</source>
+                                <source>target/generated-sources/annotations</source>
+                            </sourceDirs>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>test-compile</id>
+                        <phase>test-compile</phase>
+                        <goals>
+                            <goal>test-compile</goal>
+                        </goals>
+                        <configuration>
+                            <sourceDirs>
+                                <source>src/test/java</source>
+                                <source>src/test/kotlin</source>
+                                <source>target/generated-test-sources/test-annotations</source>
+                            </sourceDirs>
+                        </configuration>
+                    </execution>
+                </executions>
+                <configuration>
+                    <languageVersion>${kotlin.compiler.languageVersion}</languageVersion>
+                    <jvmTarget>${maven.compiler.target}</jvmTarget>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.12.1</version>
+                <executions>
+                    <!-- Replacing default-compile as it is treated specially by maven -->
+                    <execution>
+                        <id>default-compile</id>
+                        <phase>none</phase>
+                    </execution>
+                    <!-- Replacing default-testCompile as it is treated specially by maven -->
+                    <execution>
+                        <id>default-testCompile</id>
+                        <phase>none</phase>
+                    </execution>
+                    <execution>
+                        <id>java-compile</id>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>compile</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>java-test-compile</id>
+                        <phase>test-compile</phase>
+                        <goals>
+                            <goal>testCompile</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <compilerVersion>17</compilerVersion>
+                    <source>17</source>
+                    <target>17</target>
+                    <encoding>UTF-8</encoding>
+                    <showWarnings>true</showWarnings>
+                    <showDeprecation>true</showDeprecation>
+                    <fork>true</fork>
+                    <compilerArgs>
+                        <arg>-Xlint</arg>
+                    </compilerArgs>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>3.2.0</version>
+                <configuration>
+                    <encoding>UTF-8</encoding>
+                </configuration>
+            </plugin>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-enforcer-plugin</artifactId>
@@ -121,7 +194,7 @@
                                     <findAllDuplicates>true</findAllDuplicates>
                                 </banDuplicateClasses>
                                 <requireMavenVersion>
-                                    <version>3.1.0</version>
+                                    <version>3.5.0</version>
                                 </requireMavenVersion>
                             </rules>
                             <fail>true</fail>
@@ -137,74 +210,16 @@
                 </dependencies>
             </plugin>
 
-            <!-- Compile java -->
-
-            <plugin>
-                <groupId>org.jetbrains.kotlin</groupId>
-                <artifactId>kotlin-maven-plugin</artifactId>
-                <version>${kotlin.version}</version>
-                <executions>
-                    <execution>
-                        <id>compile</id>
-                        <phase>compile</phase>
-                        <goals>
-                            <goal>compile</goal>
-                        </goals>
-                        <configuration>
-                            <sourceDirs>
-                                <source>src/main/kotlin</source>
-                                <source>target/generated-sources/annotations</source>
-                            </sourceDirs>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>test-compile</id>
-                        <phase>test-compile</phase>
-                        <goals>
-                            <goal>test-compile</goal>
-                        </goals>
-                        <configuration>
-                            <sourceDirs>
-                                <source>src/test/kotlin</source>
-                                <source>target/generated-test-sources/test-annotations</source>
-                            </sourceDirs>
-                        </configuration>
-                    </execution>
-                </executions>                
-                <configuration>
-                    <jvmTarget>1.8</jvmTarget>
-                </configuration>
-            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.1</version>
-                <configuration>
-                    <release>${java.version}</release>
-                    <source>${java.version}</source>
-                    <target>${java.version}</target>
-                </configuration>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>3.2.1</version>
                 <executions>
                     <execution>
-                        <id>default-compile</id>
-                        <phase>none</phase>
-                    </execution>
-                    <execution>
-                        <id>default-testCompile</id>
-                        <phase>none</phase>
-                    </execution>
-                    <execution>
-                        <id>java-compile</id>
-                        <phase>compile</phase>
+                        <id>attach-sources</id>
+                        <phase>verify</phase>
                         <goals>
-                            <goal>compile</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>java-test-compile</id>
-                        <phase>test-compile</phase>
-                        <goals>
-                            <goal>testCompile</goal>
+                            <goal>jar</goal>
                         </goals>
                     </execution>
                 </executions>
@@ -213,26 +228,23 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.22.2</version>
                 <configuration>
-                    <argLine>
-                        --illegal-access=permit
-                    </argLine>
-                    <forkCount>0</forkCount>
+                    <systemPropertyVariables>
+                        <de.flapdoodle.testdoc.destination>${project.basedir}</de.flapdoodle.testdoc.destination>
+                    </systemPropertyVariables>
+<!--                    <argLine>-->
+<!--                        &#45;&#45;illegal-access=permit-->
+<!--                    </argLine>-->
+<!--                    <forkCount>0</forkCount>-->
+<!--                    <argLine>-->
+<!--                        &#45;&#45;add-exports javafx.graphics/com.sun.javafx.application=ALL-UNNAMED,org.testfx-->
+<!--                    </argLine>-->
                 </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-failsafe-plugin</artifactId>
-                <version>2.22.2</version>
-                <configuration>
-                    <forkCount>1</forkCount>
-                    <reuseForks>false</reuseForks>
-                    <threadCount>1</threadCount>
-                    <argLine>
-                        --illegal-access=permit
-                    </argLine>
-                </configuration>
+                <version>3.2.5</version>
                 <executions>
                     <execution>
                         <goals>
@@ -240,12 +252,105 @@
                         </goals>
                     </execution>
                 </executions>
+                <configuration>
+<!--                    <forkCount>1</forkCount>-->
+<!--                    <reuseForks>false</reuseForks>-->
+<!--                    <threadCount>1</threadCount>-->
+<!--                    <argLine>-->
+<!--                        &#45;&#45;illegal-access=permit-->
+<!--                    </argLine>-->
+                    <jdkToolchain>
+                        <version>[17,)</version>
+                    </jdkToolchain>
+                </configuration>
             </plugin>
 
             <plugin>
+                <groupId>com.mycila</groupId>
+                <artifactId>license-maven-plugin</artifactId>
+                <version>3.0</version>
+                <configuration>
+                    <!-- <basedir>${basedir}</basedir> -->
+                    <header>${basedir}/src/etc/header.txt</header>
+                    <!-- <validHeaders> <validHeader>/otherSupportedHeader.txt</validHeader> 
+                    <validHeader>http://www.company.com/yetAnotherSupportedHeader.txt</validHeader> 
+                    </validHeaders> -->
+                    <quiet>false</quiet>
+                    <!-- TODO enable for first release -->
+                    <failIfMissing>false</failIfMissing>
+<!--                    <strictCheck>true</strictCheck>-->
+                    <aggregate>false</aggregate>
+                    <includes>
+                        <include>src/**</include>
+                        <include>**/test/**</include>
+                    </includes>
+                    <excludes>
+                        <exclude>**/*.txt</exclude>
+                        <exclude>**/*.properties</exclude>
+                        <exclude>**/*.tgz</exclude>
+                        <exclude>**/*.tbz2</exclude>
+                    </excludes>
+                    <useDefaultExcludes>true</useDefaultExcludes>
+                    <!-- <excludes> <exclude>target/**</exclude> <exclude>.clover/**</exclude> 
+                    </excludes>  -->
+                    <!-- <mapping> <jwc>XML_STYLE</jwc> <application>XML_STYLE</application> 
+                    <myFileExtension>JAVADOC_STYLE</myFileExtension> </mapping> <useDefaultMapping>true</useDefaultMapping> -->
+                    <properties>
+                        <lic.year>2022</lic.year>
+                        <lic.email>michael@mosmann.de</lic.email>
+                        <lic.username>Michael Mosmann</lic.username>
+                        <lic.email2 />
+                        <lic.username2 />
+                        <lic.developers />
+                    </properties>
+                    <encoding>UTF-8</encoding>
+                    <!-- <headerDefinitions> <headerDefinition>def1.xml</headerDefinition> 
+                    <headerDefinition>def2.xml</headerDefinition> </headerDefinitions> -->
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>0.8.11</version>
+                <executions>
+                    <execution>
+                        <id>prepare-agent</id>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>report</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                    </execution>
+                    <!-- <execution> <id>check</id> <goals> <goal>check</goal> </goals> 
+                    <configuration> <check> <classRatio>100</classRatio> <instructionRatio>90</instructionRatio> 
+                    <methodRatio>95</methodRatio> <branchRatio>85</branchRatio> <complexityRatio>85</complexityRatio> 
+                    <lineRatio>90</lineRatio> </check> </configuration> </execution> -->
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.openjfx</groupId>
+                <artifactId>javafx-maven-plugin</artifactId>
+                <version>${javafx.maven.plugin.version}</version>
+<!--                <configuration>-->
+<!--                    <mainClass>de.flapdoodle.kfx.App</mainClass>-->
+<!--                </configuration>-->
+            </plugin>
+            <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-                <version>2.5.0</version>
+                <version>2.7.5</version>
                 <executions>
                     <execution>
                         <id>extract</id>
@@ -268,11 +373,18 @@
                 <plugin>
                     <groupId>org.openjfx</groupId>
                     <artifactId>javafx-maven-plugin</artifactId>
-                    <version>0.0.6</version>
+                    <version>${javafx.maven.plugin.version}</version>
                     <configuration>
                         <options>
                             <option>--add-opens</option>
                             <option>javafx.graphics/javafx.scene=ALL-UNNAMED</option>
+                            <option>--add-opens</option>
+                            <option>javafx.base/com.sun.javafx.binding=ALL-UNNAMED</option>
+                            <option>--add-opens</option>
+                            <option>javafx.controls/javafx.scene.control.skin=ALL-UNNAMED</option>
+                            <!-- <option>javafx.controls/javafx.scene.control.skin=org.controlsfx.controls</option>-->
+                            <option>--add-exports</option>
+                            <option>javafx.controls/com.sun.javafx.scene=ALL-UNNAMED</option>
                             <option>--add-exports</option>
                             <option>javafx.controls/com.sun.javafx.scene.control=ALL-UNNAMED</option>
                             <option>--add-exports</option>
@@ -347,7 +459,30 @@
             </build>
         </profile>
         <profile>
-            <id>testfx-tests</id>
+            <id>download-dependency-sources</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-dependency-plugin</artifactId>
+                        <version>3.6.1</version>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>sources</goal>
+                                    <goal>resolve</goal>
+                                </goals>
+                                <configuration>
+                                    <classifier>sources</classifier>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>headless-testfx-tests</id>
             <activation>
                 <activeByDefault>true</activeByDefault>
             </activation>
@@ -355,14 +490,21 @@
                 <plugins>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <configuration>
+                            <forkCount>1</forkCount>
+                            <reuseForks>false</reuseForks>
+                            <threadCount>1</threadCount>
+                            <systemPropertyVariables>
+                                <glass.platform>Monocle</glass.platform>
+                                <monocle.platform>Headless</monocle.platform>
+                                <prism.order>sw</prism.order>
+                            </systemPropertyVariables>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-failsafe-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <goals>
-                                    <goal>integration-test</goal>
-                                </goals>
-                            </execution>
-                        </executions>
                         <configuration>
                             <forkCount>1</forkCount>
                             <reuseForks>false</reuseForks>
@@ -378,6 +520,25 @@
             </build>
         </profile>
     </profiles>
+
+    <properties>
+        <maven.compiler.release>17</maven.compiler.release>
+        <javafx.version>21</javafx.version>
+        <javafx.maven.plugin.version>0.0.8</javafx.maven.plugin.version>
+
+        <kotlin.version>1.9.22</kotlin.version>
+        <main.class>kotlin.KotlinHelloKt</main.class>
+        <kotlin.compiler.incremental>true</kotlin.compiler.incremental>
+        <kotlin.compiler.languageVersion>1.9</kotlin.compiler.languageVersion>
+        <kotlin.compiler.jvmTarget>11</kotlin.compiler.jvmTarget>
+
+        <junit.version>5.10.0</junit.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
+
+        <poi.version>5.2.3</poi.version>
+    </properties>
 
     <dependencies>
         <!-- testing -->
@@ -457,35 +618,45 @@
         <dependency>
             <groupId>org.testfx</groupId>
             <artifactId>testfx-core</artifactId>
-            <version>4.0.16-alpha</version>
+            <version>4.0.17</version>
         </dependency>
         <dependency>
             <groupId>org.testfx</groupId>
             <artifactId>testfx-junit5</artifactId>
-            <version>4.0.16-alpha</version>
+            <version>4.0.17</version>
         </dependency>
+<!--        <dependency>-->
+<!--            <groupId>org.testfx</groupId>-->
+<!--            <artifactId>openjfx-monocle</artifactId>-->
+<!--            <version>jdk-12.0.1+2</version> &lt;!&ndash; jdk-9+181 for Java 9, jdk-11+26 for Java 11 &ndash;&gt;-->
+<!--            <scope>test</scope>-->
+<!--        </dependency>-->
         <dependency>
-            <groupId>org.testfx</groupId>
-            <artifactId>openjfx-monocle</artifactId>
-            <version>jdk-12.0.1+2</version> <!-- jdk-9+181 for Java 9, jdk-11+26 for Java 11 -->
+            <groupId>de.flapdoodle.fx21</groupId>
+            <artifactId>openjfx-monocle-java17</artifactId>
+            <version>1.0.1</version>
             <scope>test</scope>
         </dependency>
-        <!--
-        <dependency>
-            <groupId>org.openjfx</groupId>
-            <artifactId>javafx</artifactId>
-            <version>11.0.2</version>
-        </dependency>
-        -->
-        <dependency>
-            <groupId>org.openjfx</groupId>
-            <artifactId>javafx-base</artifactId>
-            <version>${javafx.version}</version>
-        </dependency>
+
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-controls</artifactId>
             <version>${javafx.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-fxml</artifactId>
+            <version>${javafx.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-swing</artifactId>
+            <version>${javafx.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>de.flapdoodle.kfx</groupId>
+            <artifactId>de.flapdoodle.kfx</artifactId>
+            <version>1.1.2-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.fxmisc.easybind</groupId>
@@ -496,7 +667,7 @@
         <dependency>
             <groupId>org.controlsfx</groupId>
             <artifactId>controlsfx</artifactId>
-            <version>8.40.16</version>
+            <version>11.2.0</version>
         </dependency>
         -->
 
@@ -553,21 +724,9 @@
         </dependency>
         <dependency>
             <groupId>org.jetbrains.kotlin</groupId>
-            <artifactId>kotlin-stdlib</artifactId>
-            <version>${kotlin.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jetbrains.kotlin</groupId>
             <artifactId>kotlin-test</artifactId>
             <version>${kotlin.version}</version>
             <scope>test</scope>
         </dependency>
-
-        <dependency>
-            <groupId>de.flapdoodle.kfx</groupId>
-            <artifactId>de.flapdoodle.kfx</artifactId>
-            <version>1.1.2-SNAPSHOT</version>
-        </dependency>
-
     </dependencies>
 </project>

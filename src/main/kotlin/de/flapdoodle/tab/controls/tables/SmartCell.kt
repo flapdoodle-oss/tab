@@ -2,6 +2,7 @@ package de.flapdoodle.tab.controls.tables
 
 import com.sun.javafx.scene.NodeHelper
 import com.sun.javafx.scene.traversal.Direction
+import com.sun.javafx.scene.traversal.TraversalMethod
 import de.flapdoodle.tab.fx.events.handleEvent
 import javafx.event.EventHandler
 import javafx.scene.control.Control
@@ -66,19 +67,19 @@ open class SmartCell<T : Any, C : Any>(
           matching { !it.isShortcutDown } then {
             consume { it.code == KeyCode.LEFT } by {
               logEvent(it)
-              NodeHelper.traverse(control, Direction.LEFT)
+              NodeHelper.traverse(control, Direction.LEFT, TraversalMethod.DEFAULT)
             }
             consume { it.code == KeyCode.RIGHT } by {
               logEvent(it)
-              NodeHelper.traverse(control, Direction.RIGHT)
+              NodeHelper.traverse(control, Direction.RIGHT, TraversalMethod.DEFAULT)
             }
             consume { it.code == KeyCode.UP } by {
               logEvent(it)
-              NodeHelper.traverse(control, Direction.UP)
+              NodeHelper.traverse(control, Direction.UP, TraversalMethod.DEFAULT)
             }
             consume { it.code == KeyCode.DOWN } by {
               logEvent(it)
-              NodeHelper.traverse(control, Direction.DOWN)
+              NodeHelper.traverse(control, Direction.DOWN, TraversalMethod.DEFAULT)
             }
 
             consume { it.code == KeyCode.ENTER } by {
@@ -97,22 +98,22 @@ open class SmartCell<T : Any, C : Any>(
 
               if (it.code == KeyCode.LEFT) {
                 it.consume()
-                NodeHelper.traverse(control, Direction.LEFT)
+                NodeHelper.traverse(control, Direction.LEFT, TraversalMethod.DEFAULT)
 //              fireEvent(Events.MoveCursor(deltaColumn = -1))
               }
               if (it.code == KeyCode.RIGHT) {
                 it.consume()
-                NodeHelper.traverse(control, Direction.RIGHT)
+                NodeHelper.traverse(control, Direction.RIGHT, TraversalMethod.DEFAULT)
 //              fireEvent(Events.MoveCursor(deltaColumn = 1))
               }
               if (it.code == KeyCode.UP) {
                 it.consume()
-                NodeHelper.traverse(control, Direction.UP)
+                NodeHelper.traverse(control, Direction.UP, TraversalMethod.DEFAULT)
 //              fireEvent(Events.MoveCursor(deltaRow = -1))
               }
               if (it.code == KeyCode.DOWN) {
                 it.consume()
-                NodeHelper.traverse(control, Direction.DOWN)
+                NodeHelper.traverse(control, Direction.DOWN, TraversalMethod.DEFAULT)
 //              fireEvent(Events.MoveCursor(deltaRow = 1))
               }
               if (it.code == KeyCode.ENTER) {

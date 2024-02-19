@@ -35,7 +35,7 @@ class BetterSplitPane(
     addClass(Style.betterSplitPane)
   }
 
-  override fun getUserAgentStylesheet() = Style().base64URL.toExternalForm()
+//  override fun getUserAgentStylesheet() = Style().base64URL.toExternalForm()
 
   override fun createDefaultSkin() = skin
 

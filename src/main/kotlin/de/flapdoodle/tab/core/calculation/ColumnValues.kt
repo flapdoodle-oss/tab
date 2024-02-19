@@ -12,6 +12,7 @@ data class ColumnValues(
         require(columns.size == values.size) { "columns used more than once: $values" }
     }
 
+    @Suppress("UNCHECKED_CAST")
     override operator fun <C : Any> get(column: Column<C>): C? {
         val c: ColumnValue<C> = (values.singleOrNull { it.column == column }
             ?: throw IllegalArgumentException("column $column not expected: $values")) as ColumnValue<C>

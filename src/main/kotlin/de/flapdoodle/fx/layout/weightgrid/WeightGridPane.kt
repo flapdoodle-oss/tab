@@ -32,7 +32,7 @@ class WeightGridPane : Control() {
 
   init {
     addClass(WeightGridPaneStyle.clazz)
-    stylesheets += WeightGridPaneStyle().base64URL.toExternalForm()
+//    stylesheets += WeightGridPaneStyle().base64URL.toExternalForm()
   }
 
   companion object {
