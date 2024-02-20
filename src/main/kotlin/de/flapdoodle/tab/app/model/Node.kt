@@ -8,21 +8,31 @@ sealed class Node {
     abstract val name: String
     abstract val id: Id<out Node>
 
+    interface HasColumns<K: Comparable<K>> {
+        val columns: Columns<K>
+    }
+
+    interface HasValues {
+        val values: SingleValues
+    }
+
     data class Constants(
         override val name: String,
-        val values: SingleValues = SingleValues(),
+        override val values: SingleValues = SingleValues(),
         override val id: Id<Constants> = Id.nextId(Constants::class)
-    ) : Node()
+    ) : Node(), HasValues
 
-    data class Table<K: Comparable<K>>(
+    data class Table<K: Comparable<K>> (
         override val name: String,
-        val columns: Columns<K> = Columns<K>(),
+        override val columns: Columns<K> = Columns(),
         override val id: Id<Table<*>> = Id.nextId(Table::class)
-    ) : Node()
+    ) : Node(), HasColumns<K>
 
     data class Calculated<K: Comparable<K>>(
         override val name: String,
-        val columns: Columns<K> = Columns<K>(),
+        val inputs: Inputs = Inputs(),
+        override val columns: Columns<K> = Columns(),
+        override val values: SingleValues = SingleValues(),
         override val id: Id<Calculated<*>> = Id.nextId(Calculated::class)
-    ): Node()
+    ): Node(), HasColumns<K>, HasValues
 }
