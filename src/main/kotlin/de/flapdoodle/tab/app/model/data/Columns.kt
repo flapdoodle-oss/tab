@@ -1,9 +1,6 @@
 package de.flapdoodle.tab.app.model.data
 
-import java.util.SortedSet
-
 data class Columns<K: Comparable<K>>(
-    val index: Set<K> = emptySet(),
     val columns: List<Column<K, *>> = emptyList()
 ) {
     init {
@@ -12,23 +9,27 @@ data class Columns<K: Comparable<K>>(
             .keys
         require(collisions.isEmpty()) { "same column id used more than once: $collisions"}
     }
-    private val columnIdMap = columns.associateBy { it.id }
+    private val columnIdMap by lazy { columns.associateBy { it.id } }
+    private val index by lazy { columns.flatMap { it.values.keys }.toSortedSet() }
+
+    fun index() = index
 
     fun addColumn(column: Column<K, *>): Columns<K> {
         return copy(columns = columns + column)
     }
 
-    fun addIndex(entry: K): Columns<K> {
-        require(!index.contains(entry)) { "index already set: $entry"}
-        return copy(index = index + entry)
+    fun <V : Any> column(columnId: ColumnId<K, V>): Column<K, V> {
+        return requireNotNull(columnIdMap[columnId]) { "column $columnId not found" } as Column<K, V>
     }
 
     fun <V: Any> add(columnId: ColumnId<K, V>, key: K, value: V?): Columns<K> {
-        require(columnIdMap.containsKey(columnId)) { "column $columnId not found" }
+        val column = column(columnId).add(key, value)
         return copy(columns = columns.map {
-            if (it.id == columnId) {
-                (it as Column<K, V>).add(key, value)
-            } else it
+            if (it.id == column.id) column else it
         })
+    }
+
+    fun <V: Any> get(columnId: ColumnId<K, V>, key: K): V? {
+        return column(columnId)[key]
     }
 }

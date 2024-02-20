@@ -13,4 +13,7 @@ data class Column<K : Any, V : Any>(
         return copy(values = if (value != null) values + (index to value) else values - index)
     }
 
+    operator fun get(index: K): V? {
+        return values[index]
+    }
 }
