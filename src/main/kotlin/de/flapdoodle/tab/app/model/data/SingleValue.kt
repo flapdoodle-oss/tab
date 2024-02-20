@@ -1,6 +1,7 @@
 package de.flapdoodle.tab.app.model.data
 
-class SingleValue<T : Any>(
-    val type: NamedType<T>,
-    val value: T?
+data class SingleValue<T : Any>(
+    val name: String,
+    val id: SingleValueId<T>,
+    val value: T? = null,
 )
