@@ -16,14 +16,6 @@ sealed class Connection {
         override val id: Id<ColumnConnection<*,*>> = Id.nextId(ColumnConnection::class)
     ) : Connection()
 
-    data class AggregateConnection<K: Any, V: Any>(
-        override val name: String,
-        val source: Id<out Node>,
-        val columnId: ColumnId<K, V>,
-        val destination: Id<Input>,
-        override val id: Id<ColumnConnection<*,*>> = Id.nextId(ColumnConnection::class)
-    ) : Connection()
-
     data class ValueConnection<V: Any>(
         override val name: String,
         val source: Id<out Node>,
