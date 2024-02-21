@@ -8,11 +8,11 @@ data class EvalAdapter(
     val expression: Expression = expressionFactory.parse(formula),
     val variablesWithHash: List<Pair<Variable, Int>> = expression.usedVariablesWithHash()
         .map { Variable(it.key) to it.value }
-) {
+): Formula {
 
     private val variables = variablesWithHash.map { it.first }.toCollection(linkedSetOf())
 
-    fun variables(): Set<Variable> = variables
+    override fun variables(): Set<Variable> = variables
 
     fun changeFormula(changed: String): EvalAdapter {
         return if (changed != formula) {

@@ -4,21 +4,17 @@ import de.flapdoodle.tab.app.model.data.ColumnId
 import de.flapdoodle.tab.app.model.data.SingleValueId
 
 sealed class Calculation {
-    abstract fun variableNames(): Set<String>
+    abstract val formula: Formula
 
     data class Aggregation<V : Any>(
+        override val formula: Formula,
         val destination: SingleValueId<V>
     ) : Calculation() {
-        override fun variableNames(): Set<String> {
-            return emptySet()
-        }
     }
 
     data class Tabular<K : Any, V : Any>(
+        override val formula: Formula,
         val destination: ColumnId<K, V>
     ) : Calculation() {
-        override fun variableNames(): Set<String> {
-            return emptySet()
-        }
     }
 }
