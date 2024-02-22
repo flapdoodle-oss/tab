@@ -16,12 +16,12 @@ class EvalAdapterTest {
         assertThat(X.name).isEqualTo("X")
         assertThat(c.name).isEqualTo("c")
 
-        val changeName = testee.changeFormula("b*2+X-c")
+        val changeName = testee.change("b*2+X-c")
 
         assertThat(changeName.variables())
             .containsExactly(a.copy(name = "b"), X, c)
 
-        val changePositionAndFormula = changeName.changeFormula("2*b+X*d")
+        val changePositionAndFormula = changeName.change("2*b+X*d")
 
         assertThat(changePositionAndFormula.variables())
             .hasSize(3)

@@ -3,6 +3,8 @@ package de.flapdoodle.tab.app.model.data
 import de.flapdoodle.kfx.types.Key
 import kotlin.reflect.KClass
 
+// remove valueType from Id, because calculation results may
+// vary in type
 data class ColumnId<K: Any, V: Any>(
     val keyType: KClass<K>,
     val valueType: KClass<V>,

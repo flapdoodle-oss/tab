@@ -5,8 +5,8 @@ import de.flapdoodle.eval.example.Defaults
 
 data class EvalAdapter(
     val formula: String,
-    val expression: Expression = expressionFactory.parse(formula),
-    val variablesWithHash: List<Pair<Variable, Int>> = expression.usedVariablesWithHash()
+    private val expression: Expression = expressionFactory.parse(formula),
+    private val variablesWithHash: List<Pair<Variable, Int>> = expression.usedVariablesWithHash()
         .map { Variable(it.key) to it.value }
 ): Formula {
 
@@ -14,9 +14,9 @@ data class EvalAdapter(
 
     override fun variables(): Set<Variable> = variables
 
-    fun changeFormula(changed: String): EvalAdapter {
-        return if (changed != formula) {
-            val changedExpression = expressionFactory.parse(changed)
+    override fun change(newFormula: String): EvalAdapter {
+        return if (newFormula != formula) {
+            val changedExpression = expressionFactory.parse(newFormula)
             val byId = variablesWithHash.associateBy { it.second }
             val byName = variablesWithHash.associateBy { it.first.name }
             val changedVariables = changedExpression.usedVariablesWithHash().map {
@@ -38,7 +38,7 @@ data class EvalAdapter(
                 }
             }
             copy(
-                formula = changed,
+                formula = newFormula,
                 expression = changedExpression,
                 variablesWithHash = changedVariables
             )
