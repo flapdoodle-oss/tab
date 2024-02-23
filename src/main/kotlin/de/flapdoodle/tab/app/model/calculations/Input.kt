@@ -1,7 +1,6 @@
-package de.flapdoodle.tab.app.model
+package de.flapdoodle.tab.app.model.calculations
 
 import de.flapdoodle.kfx.types.Id
-import kotlin.reflect.KClass
 
 data class Input(
     val name: String,

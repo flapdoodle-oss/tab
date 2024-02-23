@@ -8,6 +8,10 @@ data class Diff<T>(
 ) {
 
     companion object {
+        fun <T> diff(old: Collection<out T>, new: Collection<out T>): Diff<T> {
+            return diff(old,new) { it }
+        }
+
         fun <T, K> diff(old: Collection<out T>, new: Collection<out T>, keyOf: (T) -> K): Diff<T> {
             val oldByKey = old.associateBy(keyOf)
             val newByKey = new.associateBy(keyOf)

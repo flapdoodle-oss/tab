@@ -1,47 +1,46 @@
 package de.flapdoodle.tab.app.model.calculations
 
 import de.flapdoodle.kfx.types.Id
-import de.flapdoodle.tab.app.model.Input
 
-// variablen über formeln hinweg zusammenführen??
-// pures mappen auf den Namen?
-// wenn in einer formel sich der name ändert, ändert man ihn dann auch in allen anderen Formeln?
 data class Calculations(
     val list: List<Calculation> = emptyList(),
-    private val inputVariableMap: Map<Input, Set<Variable>> = inputVariableMap(list)
+    val inputs: List<InputSlot> = inputSlots(list)
 ) {
-//    private val variableToCalculationMap = list.flatMap { it.formula.variables().map { v -> v to it } }.toMap()
-//    private val inputToVariableNames = variableToCalculationMap.keys.groupBy { it.name }
-
-    init {
-    }
-    fun inputs() = inputVariableMap.keys
-
     fun changeFormula(id: Id<Calculation>, newFormula: String): Calculations {
         val changedList = list.map { if (it.id==id) it.changeFormula(newFormula) else it  }
-        return copy(list = changedList, inputVariableMap = inputVariableMap(list, changedList))
+        return copy(list = changedList, inputs = merge(inputs, inputSlots(changedList)))
     }
 
     companion object {
-        fun inputVariableMap(base: List<Calculation>, changed: List<Calculation>): Map<Input, Set<Variable>> {
-            val a = groupByName(base)
-            val b = groupByName(changed)
+        fun merge(old: List<InputSlot>, new: List<InputSlot>): List<InputSlot> {
+            val oldByName = old.associateBy { it.name }
 
+            val oldByVarId = old.flatMap { it.mapTo.map { v -> v.id to it } }.toMap()
 
-            println("A: $a")
-            println("B: $b")
-            return emptyMap()
+            val copyFromOldIfVarsAreAsSubset = new.map { input ->
+                val old = oldByName[input.name]
+                if (old!=null && old.mapTo.containsAll(input.mapTo)) {
+                    old.copy(mapTo = input.mapTo)
+                } else {
+                    val singleOldInputForAllVars = input.mapTo.mapNotNull { oldByVarId[it.id] }.toSet().firstOrNull()
+                    if (singleOldInputForAllVars!=null) {
+                        input.copy(source = singleOldInputForAllVars.source)
+                    }
+                    else input
+                }
+            }
+            return copyFromOldIfVarsAreAsSubset.sortedBy { it.name }
         }
 
-        fun inputVariableMap(list: List<Calculation>): Map<Input, Set<Variable>> {
+        fun inputSlots(list: List<Calculation>): List<InputSlot> {
             val nameMap = groupByName(list)
-            return nameMap.map { Input(it.key) to it.value.toSet() }
-                .sortedBy { it.first.name }
-                .toMap(linkedMapOf())
+            return nameMap.map { InputSlot(name = it.key, mapTo = it.value.toSet()) }
+                .sortedBy { it.name }
         }
 
         private fun groupByName(list: List<Calculation>) =
             list.flatMap { it.formula.variables() }.groupBy { it.name }
     }
 }
+
 
