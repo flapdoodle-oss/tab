@@ -1,5 +1,6 @@
 package de.flapdoodle.tab.app.model.calculations
 
+import de.flapdoodle.kfx.types.Id
 import de.flapdoodle.tab.app.model.data.ColumnId
 import de.flapdoodle.tab.app.model.data.SingleValueId
 
@@ -10,18 +11,31 @@ import de.flapdoodle.tab.app.model.data.SingleValueId
 sealed class Calculation {
     abstract val name: String
     abstract val formula: Formula
+    abstract val id: Id<Calculation>
+
+    abstract fun changeFormula(newFormula: String): Calculation
 
     data class Aggregation<V : Any>(
         override val name: String,
         override val formula: Formula,
-        val destination: SingleValueId<V>
+        val destination: SingleValueId<V>,
+        override val id: Id<Calculation> = Id.Companion.nextId(Calculation::class)
     ) : Calculation() {
+
+        override fun changeFormula(newFormula: String): Aggregation<V> {
+            return copy(formula = formula.change(newFormula))
+        }
     }
 
     data class Tabular<K : Any, V : Any>(
         override val name: String,
         override val formula: Formula,
-        val destination: ColumnId<K, V>
+        val destination: ColumnId<K, V>,
+        override val id: Id<Calculation> = Id.Companion.nextId(Calculation::class)
     ) : Calculation() {
+
+        override fun changeFormula(newFormula: String): Tabular<K, V> {
+            return copy(formula = formula.change(newFormula))
+        }
     }
 }
