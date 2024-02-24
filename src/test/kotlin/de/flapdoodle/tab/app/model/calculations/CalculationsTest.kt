@@ -112,6 +112,30 @@ class CalculationsTest {
             assertThat(b.name).isEqualTo("b")
             assertThat(b.source).isEqualTo(sourceA)
         }
+
+        @Test
+        fun removeVar() {
+            val sourceA = Source.ValueSource(Id.Companion.nextId(Node::class), SingleValueId(String::class))
+
+            val testee = calculations(
+                aggregate("1", "a+1", BigDecimal::class),
+                tabular("2", "a+b", Int::class, BigDecimal::class)
+            ).let { it.copy(inputs = it.inputs.map { input -> input.copy(source = sourceA) }) }
+
+            assertThat(testee.inputs).hasSize(2)
+            val (a, b) = testee.inputs
+            assertThat(a.mapTo).hasSize(2)
+            assertThat(b.name).isEqualTo("b")
+            assertThat(b.source).isEqualTo(sourceA)
+
+            val changed = testee.changeFormula(testee.list[1].id, "a*2")
+
+            assertThat(changed.inputs).hasSize(1)
+            val (a2) = changed.inputs
+
+            assertThat(a2).isEqualTo(a)
+            assertThat(a2.source).isEqualTo(sourceA)
+        }
     }
 
     private fun calculations(vararg calculation: Calculation): Calculations {
