@@ -18,9 +18,9 @@ data class Calculations(
             val oldByVarId = old.flatMap { it.mapTo.map { v -> v.id to it } }.toMap()
 
             val copyFromOldIfVarsAreAsSubset = new.map { input ->
-                val old = oldByName[input.name]
-                if (old!=null && old.mapTo.containsAll(input.mapTo)) {
-                    old.copy(mapTo = input.mapTo)
+                val oldInput = oldByName[input.name]
+                if (oldInput!=null && oldInput.mapTo.containsAll(input.mapTo)) {
+                    oldInput.copy(mapTo = input.mapTo)
                 } else {
                     val singleOldInputForAllVars = input.mapTo.mapNotNull { oldByVarId[it.id] }.toSet().firstOrNull()
                     if (singleOldInputForAllVars!=null) {
