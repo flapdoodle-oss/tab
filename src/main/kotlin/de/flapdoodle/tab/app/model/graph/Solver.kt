@@ -1,5 +1,6 @@
 package de.flapdoodle.tab.app.model.graph
 
+import de.flapdoodle.graph.GraphAsDot
 import de.flapdoodle.graph.Graphs
 import de.flapdoodle.tab.app.model.Node
 import de.flapdoodle.tab.app.model.Tab2Model
@@ -73,6 +74,15 @@ object Solver {
                     }
                 }
             }
+        val dot = GraphAsDot.builder<Vertex> { it ->
+            when (it) {
+                is Vertex.Column<*> -> "column(${it.node}:${it.columnId})"
+                is Vertex.SingleValue -> "value(${it.node}:${it.valueId})"
+            }
+        }
+            .build().asDot(graph)
+        println("----------------------------")
+        println(dot)
         return model
     }
 }

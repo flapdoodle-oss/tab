@@ -1,6 +1,7 @@
 package de.flapdoodle.tab.app.model.calculations
 
 import de.flapdoodle.kfx.types.Id
+import de.flapdoodle.tab.app.model.connections.Source
 import de.flapdoodle.tab.app.model.data.DataId
 
 data class Calculations(
@@ -22,6 +23,10 @@ data class Calculations(
     fun changeFormula(id: Id<Calculation>, newFormula: String): Calculations {
         val changedList = list.map { if (it.id==id) it.changeFormula(newFormula) else it  }
         return copy(list = changedList, inputs = merge(inputs, inputSlots(changedList)))
+    }
+
+    fun connect(input: Id<InputSlot>, source: Source): Calculations {
+        return copy(inputs = inputs.map { if (it.id == input) it.copy(source = source) else it })
     }
 
     fun forEach(action: (Calculation) -> Unit) {
