@@ -15,10 +15,10 @@ sealed class Source {
         override val id: Id<ColumnSource<*>> = Id.nextId(ColumnSource::class)
     ) : Source()
 
-    data class ValueSource<V: Any>(
+    data class ValueSource(
         override val node: Id<out Node>,
-        val valueId: SingleValueId<V>,
-        override val id: Id<ValueSource<*>> = Id.nextId(ValueSource::class)
+        val valueId: SingleValueId,
+        override val id: Id<ValueSource> = Id.nextId(ValueSource::class)
     ) : Source()
 
 }

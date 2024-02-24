@@ -23,7 +23,7 @@ class CalculationsTest {
     @Test
     fun singleCalculationsWithoutAnyInput() {
         val testee = calculations(
-            aggregate("x", "a*2", BigDecimal::class),
+            aggregate("x", "a*2"),
             tabular("y", "a*b", Int::class, BigDecimal::class)
         )
 
@@ -38,7 +38,7 @@ class CalculationsTest {
     @Test
     fun changeFormulaShouldChangeOnlyChangedInput() {
         val testee = calculations(
-            aggregate("x", "a*2-c", BigDecimal::class),
+            aggregate("x", "a*2-c"),
             tabular("y", "a*b", Int::class, BigDecimal::class)
         )
 
@@ -66,10 +66,10 @@ class CalculationsTest {
 
         @Test
         fun addNewVar() {
-            val sourceA = Source.ValueSource(Id.Companion.nextId(Node::class), SingleValueId(String::class))
+            val sourceA = Source.ValueSource(Id.Companion.nextId(Node::class), SingleValueId())
 
             val testee = calculations(
-                aggregate("1", "a+1", BigDecimal::class),
+                aggregate("1", "a+1"),
                 tabular("2", "a*2", Int::class, BigDecimal::class)
             ).let { it.copy(inputs = it.inputs.map { input -> input.copy(source = sourceA) }) }
 
@@ -90,10 +90,10 @@ class CalculationsTest {
 
         @Test
         fun renameOneVariable() {
-            val sourceA = Source.ValueSource(Id.Companion.nextId(Node::class), SingleValueId(String::class))
+            val sourceA = Source.ValueSource(Id.Companion.nextId(Node::class), SingleValueId())
 
             val testee = calculations(
-                aggregate("1", "a+1", BigDecimal::class),
+                aggregate("1", "a+1"),
                 tabular("2", "a*2", Int::class, BigDecimal::class)
             ).let { it.copy(inputs = it.inputs.map { input -> input.copy(source = sourceA) }) }
 
@@ -115,10 +115,10 @@ class CalculationsTest {
 
         @Test
         fun removeVar() {
-            val sourceA = Source.ValueSource(Id.Companion.nextId(Node::class), SingleValueId(String::class))
+            val sourceA = Source.ValueSource(Id.Companion.nextId(Node::class), SingleValueId())
 
             val testee = calculations(
-                aggregate("1", "a+1", BigDecimal::class),
+                aggregate("1", "a+1"),
                 tabular("2", "a+b", Int::class, BigDecimal::class)
             ).let { it.copy(inputs = it.inputs.map { input -> input.copy(source = sourceA) }) }
 
@@ -142,8 +142,8 @@ class CalculationsTest {
         return Calculations(listOf(*calculation))
     }
 
-    private fun <T : Any> aggregate(name: String, formula: String, type: KClass<T>): Calculation.Aggregation<T> {
-        return Calculation.Aggregation(name, EvalAdapter(formula), SingleValueId(type))
+    private fun aggregate(name: String, formula: String): Calculation.Aggregation {
+        return Calculation.Aggregation(name, EvalAdapter(formula), SingleValueId())
     }
 
     private fun <K : Any, V : Any> tabular(

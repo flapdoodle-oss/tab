@@ -15,14 +15,14 @@ sealed class Calculation {
 
     abstract fun changeFormula(newFormula: String): Calculation
 
-    data class Aggregation<V : Any>(
+    data class Aggregation(
         override val name: String,
         override val formula: Formula,
-        val destination: SingleValueId<V>,
+        val destination: SingleValueId,
         override val id: Id<Calculation> = Id.Companion.nextId(Calculation::class)
     ) : Calculation() {
 
-        override fun changeFormula(newFormula: String): Aggregation<V> {
+        override fun changeFormula(newFormula: String): Aggregation {
             return copy(formula = formula.change(newFormula))
         }
     }

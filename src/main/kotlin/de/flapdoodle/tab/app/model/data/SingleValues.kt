@@ -1,7 +1,9 @@
 package de.flapdoodle.tab.app.model.data
 
+import kotlin.reflect.KClass
+
 data class SingleValues(
-    val values: List<SingleValue<*>> = emptyList()
+    val values: List<SingleValue<out Any>> = emptyList()
 ) {
     init {
         val collisions = values.groupBy { it.id }
@@ -15,18 +17,20 @@ data class SingleValues(
         return copy(values = values + value)
     }
 
-    fun <V : Any> value(id: SingleValueId<V>): SingleValue<V> {
-        return requireNotNull(valueIdMap[id]) { "value $id not found" } as SingleValue<V>
+    fun value(id: SingleValueId): SingleValue<out Any> {
+        return requireNotNull(valueIdMap[id]) { "value $id not found" }
     }
 
-    fun <V: Any> add(id: SingleValueId<V>, value: V?): SingleValues {
-        val singleValue = value(id).copy(value = value)
+    fun <V: Any> add(id: SingleValueId, valueType: KClass<V>, value: V?): SingleValues {
+        val v = value(id)
+        require(v.valueType == valueType) { "valueType mismatch: $valueType != ${v.valueType}"}
+        val singleValue = (v as SingleValue<V>).copy(value = value)
         return copy(values = values.map {
             if (it.id==singleValue.id) singleValue else it
         })
     }
 
-    operator fun <V: Any> get(id: SingleValueId<V>): V? {
+    operator fun get(id: SingleValueId): Any? {
         return value(id).value
     }
 

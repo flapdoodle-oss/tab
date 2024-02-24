@@ -8,11 +8,11 @@ import org.junit.jupiter.api.Test
 class SingleValuesTest {
     @Test
     fun addColumnIndexAndValue() {
-        val value = SingleValue("a", SingleValueId(Int::class))
+        val value = SingleValue("a", Int::class)
 
         val testee = SingleValues()
             .addValue(value)
-            .add(value.id, 2)
+            .add(value.id, Int::class,2)
 
         assertThat(testee.values)
             .hasSize(1)
