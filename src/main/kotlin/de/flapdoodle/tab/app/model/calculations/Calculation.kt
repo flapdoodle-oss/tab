@@ -30,7 +30,7 @@ sealed class Calculation {
     data class Tabular<K : Any, V : Any>(
         override val name: String,
         override val formula: Formula,
-        val destination: ColumnId<K, V>,
+        val destination: ColumnId<K>,
         override val id: Id<Calculation> = Id.Companion.nextId(Calculation::class)
     ) : Calculation() {
 

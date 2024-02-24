@@ -9,10 +9,10 @@ sealed class Source {
     abstract val node: Id<out Node>
     abstract val id: Id<out Source>
 
-    data class ColumnSource<K: Any, V: Any>(
+    data class ColumnSource<K: Any>(
         override val node: Id<out Node>,
-        val columnId: ColumnId<K, V>,
-        override val id: Id<ColumnSource<*, *>> = Id.nextId(ColumnSource::class)
+        val columnId: ColumnId<K>,
+        override val id: Id<ColumnSource<*>> = Id.nextId(ColumnSource::class)
     ) : Source()
 
     data class ValueSource<V: Any>(

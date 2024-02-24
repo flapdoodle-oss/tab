@@ -6,11 +6,11 @@ import org.junit.jupiter.api.Test
 class ColumnsTest {
     @Test
     fun addColumnIndexAndValue() {
-        val column = Column("a", ColumnId(String::class, Int::class))
+        val column = Column("a", ColumnId(String::class), Int::class)
 
         val testee = Columns<String>()
             .addColumn(column)
-            .add(column.id, "A", 2)
+            .add(column.id, "A", Int::class, 2)
 
         assertThat(testee.columns)
             .hasSize(1)
@@ -30,14 +30,14 @@ class ColumnsTest {
 
     @Test
     fun sortedIndex() {
-        val a = Column("a", ColumnId(Int::class, Int::class))
-        val b = Column("b", ColumnId(Int::class, String::class))
+        val a = Column("a", ColumnId(Int::class), Int::class)
+        val b = Column("b", ColumnId(Int::class), String::class)
 
         val testee = Columns<Int>()
             .addColumn(a)
             .addColumn(b)
-            .add(a.id, 2, 2)
-            .add(b.id, 1, "Foo")
+            .add(a.id, 2, Int::class, 2)
+            .add(b.id, 1, String::class, "Foo")
 
         assertThat(testee.index())
             .containsExactly(1,2)

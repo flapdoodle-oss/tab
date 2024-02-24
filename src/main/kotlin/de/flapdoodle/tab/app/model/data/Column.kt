@@ -1,8 +1,11 @@
 package de.flapdoodle.tab.app.model.data
 
+import kotlin.reflect.KClass
+
 data class Column<K : Any, V : Any>(
     val name: String,
-    val id: ColumnId<K, V>,
+    val id: ColumnId<K>,
+    val valueType: KClass<V>,
     val values: Map<K, V> = emptyMap()
 ) {
     fun add(index: K, value: V?): Column<K, V> {

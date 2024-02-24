@@ -1,7 +1,9 @@
 package de.flapdoodle.tab.app.model.data
 
+import kotlin.reflect.KClass
+
 data class Columns<K: Comparable<K>>(
-    val columns: List<Column<K, *>> = emptyList()
+    val columns: List<Column<K, out Any>> = emptyList()
 ) {
     init {
         val collisions = columns.groupBy { it.id }
@@ -18,18 +20,20 @@ data class Columns<K: Comparable<K>>(
         return copy(columns = columns + column)
     }
 
-    fun <V : Any> column(columnId: ColumnId<K, V>): Column<K, V> {
-        return requireNotNull(columnIdMap[columnId]) { "column $columnId not found" } as Column<K, V>
+    fun column(columnId: ColumnId<K>): Column<K, out Any> {
+        return requireNotNull(columnIdMap[columnId]) { "column $columnId not found" }
     }
 
-    fun <V: Any> add(columnId: ColumnId<K, V>, key: K, value: V?): Columns<K> {
-        val column = column(columnId).add(key, value)
+    fun <V: Any> add(columnId: ColumnId<K>, key: K, valueType: KClass<V>, value: V?): Columns<K> {
+        val c: Column<K, out Any> = column(columnId)
+        require(c.valueType == valueType) {"value type mismatch: $valueType != ${c.valueType}"}
+        val column = (c as Column<K, V>).add(key, value)
         return copy(columns = columns.map {
             if (it.id == column.id) column else it
         })
     }
 
-    fun <V: Any> get(columnId: ColumnId<K, V>, key: K): V? {
+    fun get(columnId: ColumnId<K>, key: K): Any? {
         return column(columnId)[key]
     }
 }

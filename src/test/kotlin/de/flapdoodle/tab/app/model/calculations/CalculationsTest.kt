@@ -152,6 +152,6 @@ class CalculationsTest {
         indexType: KClass<K>,
         type: KClass<V>
     ): Calculation.Tabular<K, V> {
-        return Calculation.Tabular(name, EvalAdapter(formula), ColumnId(indexType, type))
+        return Calculation.Tabular(name, EvalAdapter(formula), ColumnId(indexType))
     }
 }

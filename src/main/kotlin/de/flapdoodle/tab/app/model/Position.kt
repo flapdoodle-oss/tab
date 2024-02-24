@@ -1,4 +1,3 @@
 package de.flapdoodle.tab.app.model
 
-class Position {
-}
+data class Position(val x: Double, val y: Double)
