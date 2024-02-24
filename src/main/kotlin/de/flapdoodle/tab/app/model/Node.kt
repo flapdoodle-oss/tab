@@ -33,12 +33,9 @@ sealed class Node {
     data class Calculated<K: Comparable<K>>(
         override val name: String,
         val calculations: Calculations,
-//        val inputs: Inputs = Inputs(),
         // result
         override val columns: Columns<K> = Columns(),
         override val values: SingleValues = SingleValues(),
         override val id: Id<Calculated<*>> = Id.nextId(Calculated::class)
-    ): Node(), HasColumns<K>, HasValues {
-
-    }
+    ): Node(), HasColumns<K>, HasValues
 }
