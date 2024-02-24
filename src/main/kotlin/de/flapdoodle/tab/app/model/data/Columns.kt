@@ -36,4 +36,8 @@ data class Columns<K: Comparable<K>>(
     fun get(columnId: ColumnId<K>, key: K): Any? {
         return column(columnId)[key]
     }
+
+    fun forEach(action: (Column<K, out Any>) -> Unit) {
+        columns.forEach(action)
+    }
 }

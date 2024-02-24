@@ -9,4 +9,4 @@ data class ColumnId<K: Any>(
     val indexType: KClass<K>,
 //    val valueType: KClass<V>,
     val id: Int = Key.Companion.nextId(ColumnId::class)
-)
+): DataId()

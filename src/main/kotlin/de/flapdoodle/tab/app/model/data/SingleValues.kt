@@ -34,4 +34,7 @@ data class SingleValues(
         return value(id).value
     }
 
+    fun forEach(action: (SingleValue<out Any>) -> Unit) {
+        values.forEach(action)
+    }
 }

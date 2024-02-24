@@ -1,15 +1,34 @@
 package de.flapdoodle.tab.app.model.calculations
 
 import de.flapdoodle.kfx.types.Id
+import de.flapdoodle.tab.app.model.data.DataId
 
 data class Calculations(
     val list: List<Calculation> = emptyList(),
     val inputs: List<InputSlot> = inputSlots(list)
 ) {
+    val input2destinations: Map<InputSlot, List<DataId>> by lazy {
+        val destinationMap: Map<Variable, DataId> = list.flatMap {
+            it.formula.variables().map { v ->
+                when (it) {
+                    is Calculation.Tabular<*, *> -> v to it.destination
+                    is Calculation.Aggregation -> v to it.destination
+                }
+            }
+        }.toMap()
+        inputs.associateWith { it.mapTo.mapNotNull { v -> destinationMap[v] } }
+    }
+
     fun changeFormula(id: Id<Calculation>, newFormula: String): Calculations {
         val changedList = list.map { if (it.id==id) it.changeFormula(newFormula) else it  }
         return copy(list = changedList, inputs = merge(inputs, inputSlots(changedList)))
     }
+
+    fun forEach(action: (Calculation) -> Unit) {
+        list.forEach(action)
+    }
+
+    fun destinations(inputSlot: InputSlot) = input2destinations[inputSlot]
 
     companion object {
         fun merge(old: List<InputSlot>, new: List<InputSlot>): List<InputSlot> {
