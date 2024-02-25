@@ -9,9 +9,7 @@ import de.flapdoodle.tab.app.model.calculations.Calculation
 import de.flapdoodle.tab.app.model.calculations.InputSlot
 import de.flapdoodle.tab.app.model.calculations.Variable
 import de.flapdoodle.tab.app.model.connections.Source
-import de.flapdoodle.tab.app.model.data.ColumnId
-import de.flapdoodle.tab.app.model.data.Data
-import de.flapdoodle.tab.app.model.data.SingleValueId
+import de.flapdoodle.tab.app.model.data.*
 import de.flapdoodle.tab.types.one
 import org.jgrapht.graph.DefaultEdge
 
@@ -99,6 +97,21 @@ object Solver {
     ): Tab2Model {
         println("calculate ${calculation.formula} with $variableDataMap")
         var updated = model
+        when (calculation) {
+            is Calculation.Aggregation -> {
+                val valueMap: Map<Variable, Any?> = variableDataMap.map { (v, data) ->
+                    v to when (data) {
+                        is SingleValue<*> -> data.value
+                        else -> throw IllegalArgumentException("not implemented: $data")
+                    }
+                }.toMap()
+                val result = calculation.formula.evaluate(valueMap)
+                println("--> $result")
+            }
+            else -> {
+                throw IllegalArgumentException("not implemented")
+            }
+        }
         return updated
     }
 

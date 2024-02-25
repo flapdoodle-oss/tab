@@ -1,6 +1,7 @@
 package de.flapdoodle.tab.app.model.calculations
 
 import de.flapdoodle.eval.core.Expression
+import de.flapdoodle.eval.core.VariableResolver
 import de.flapdoodle.eval.example.Defaults
 
 data class EvalAdapter(
@@ -13,6 +14,14 @@ data class EvalAdapter(
     private val variables = variablesWithHash.map { it.first }.toCollection(linkedSetOf())
 
     override fun variables(): Set<Variable> = variables
+
+    override fun evaluate(values: Map<Variable, Any?>): Any? {
+        var resolver = VariableResolver.empty()
+        values.forEach { variable, value -> 
+            resolver = resolver.with(variable.name, value)
+        }
+        return expression.evaluate(resolver)
+    }
 
     override fun change(newFormula: String): EvalAdapter {
         return if (newFormula != formula) {
