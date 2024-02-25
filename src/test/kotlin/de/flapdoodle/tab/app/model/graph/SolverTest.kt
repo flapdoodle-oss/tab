@@ -31,7 +31,7 @@ class SolverTest {
 
     @Test
     fun singleConnecton() {
-        val x = SingleValue("x", Int::class)
+        val x = SingleValue("x", Int::class, 1)
 
         val constants = Node.Constants("const", SingleValues(
             listOf(x)

@@ -1,8 +1,18 @@
 package de.flapdoodle.tab.app.model.calculations
 
+import de.flapdoodle.eval.core.EvaluationContext
 import de.flapdoodle.eval.core.Expression
+import de.flapdoodle.eval.core.ExpressionFactory
 import de.flapdoodle.eval.core.VariableResolver
-import de.flapdoodle.eval.example.Defaults
+import de.flapdoodle.eval.core.evaluables.TypedEvaluable
+import de.flapdoodle.eval.core.evaluables.TypedEvaluableMap
+import de.flapdoodle.eval.core.evaluables.TypedEvaluables
+import de.flapdoodle.eval.core.parser.Token
+import de.flapdoodle.eval.example.Defaults.*
+import de.flapdoodle.eval.example.Value
+import java.math.BigDecimal
+import java.math.BigInteger
+import java.math.MathContext
 
 data class EvalAdapter(
     val formula: String,
@@ -17,8 +27,12 @@ data class EvalAdapter(
 
     override fun evaluate(values: Map<Variable, Any?>): Any? {
         var resolver = VariableResolver.empty()
-        values.forEach { variable, value -> 
-            resolver = resolver.with(variable.name, value)
+        values.forEach { variable, value ->
+            resolver = if (value != null) {
+                resolver.with(variable.name, value)
+            } else {
+                resolver
+            }
         }
         return expression.evaluate(resolver)
     }
@@ -57,6 +71,54 @@ data class EvalAdapter(
     }
 
     companion object {
-        private val expressionFactory = Defaults.expressionFactory()
+        private val expressionFactory = ExpressionFactory.builder()
+            .constants(constants())
+            .evaluatables(TypedEvaluableMap.builder()
+                .putMap("sum", Plus())
+                .build())
+            .arrayAccess(arrayAccess())
+            .propertyAccess(propertyAccess())
+            .numberAsValue { value: String?, mathContext: MathContext? -> numFromString(value!!, mathContext) }
+            .stringAsValue { s: String? -> valueFromString(s) }
+            .operatorMap(operatorMap())
+            .exceptionMapper(exceptionMapper())
+            .build()
+
+        fun numFromString(value: String, mathContext: MathContext?): Any {
+            if (value.startsWith("0x") || value.startsWith("0X")) {
+                val hexToInteger = BigInteger(value.substring(2), 16)
+                //return Value.of(BigDecimal(hexToInteger, mathContext))
+            } else {
+                //return Value.of(BigDecimal(value, mathContext))
+            }
+
+            return Integer.valueOf(value)
+        }
+
+
+        class Plus : TypedEvaluables.Wrapper(
+            TypedEvaluables.builder()
+                .addList(
+                    TypedEvaluable.of(
+                        java.lang.Integer::class.java,
+                        java.lang.Integer::class.java,
+                        java.lang.Integer::class.java, PlusInt()
+                    )
+                )
+                .build()) {
+        }
+
+        class PlusInt : TypedEvaluable.Arg2<Integer, Integer, Integer> {
+            override fun evaluate(
+                variableResolver: VariableResolver?,
+                evaluationContext: EvaluationContext?,
+                token: Token?,
+                first: Integer,
+                second: Integer
+            ): Integer? {
+                return Integer.valueOf(first.toInt() + second.toInt()) as Integer
+            }
+
+        }
     }
 }
