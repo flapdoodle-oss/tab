@@ -7,9 +7,12 @@ import de.flapdoodle.tab.app.model.Node
 import de.flapdoodle.tab.app.model.Tab2Model
 import de.flapdoodle.tab.app.model.calculations.Calculation
 import de.flapdoodle.tab.app.model.calculations.InputSlot
+import de.flapdoodle.tab.app.model.calculations.Variable
 import de.flapdoodle.tab.app.model.connections.Source
 import de.flapdoodle.tab.app.model.data.ColumnId
+import de.flapdoodle.tab.app.model.data.Data
 import de.flapdoodle.tab.app.model.data.SingleValueId
+import de.flapdoodle.tab.types.one
 import org.jgrapht.graph.DefaultEdge
 
 object Solver {
@@ -35,25 +38,22 @@ object Solver {
 
     private fun update(model: Tab2Model, vertex: Vertex): Tab2Model {
         var updated = model
-        val node = model.node(vertex.node)
-        when (node) {
+        when (val node = model.node(vertex.node)) {
             is Node.Calculated<*> -> {
                 val matching = when (vertex) {
                     is Vertex.Column<*> -> {
-                        node.calculations.list.filter { c ->
+                        node.calculations.list.one { c ->
                             c is Calculation.Tabular<*,*> && c.destination == vertex.columnId
                         }
                     }
                     is Vertex.SingleValue -> {
-                        node.calculations.list.filter { c ->
+                        node.calculations.list.one { c ->
                             c is Calculation.Aggregation && c.destination == vertex.valueId
                         }
                     }
                 }
-                require(matching.size==1) {"more or less then one matching calculation for $vertex: $matching"}
-                val calculation = matching.first()
 
-                updated = update(updated, node, calculation)
+                updated = update(updated, node, matching)
             }
             else -> {
                 println("can skip $node")
@@ -63,17 +63,43 @@ object Solver {
     }
 
     private fun <K: Comparable<K>> update(model: Tab2Model, node: Node.Calculated<K>, calculation: Calculation): Tab2Model {
+        var updated = model
         val sourceVariables = calculation.formula.variables()
         val neededInputs = node.calculations.inputs.filter { it.mapTo.intersect(sourceVariables).isNotEmpty() }
         val missingSources = neededInputs.filter { it.source==null }
         if (missingSources.isEmpty()) {
             val sources = neededInputs.associateBy { it.source!! }
-            
+            val input2data = sources.map { (source, input) ->
+                val data = when (source) {
+                    is Source.ColumnSource<*> -> {
+                        updated.node(source.node).data(source.columnId)
+                    }
+                    is Source.ValueSource -> {
+                        updated.node(source.node).data(source.valueId)
+                    }
+                }
+                input to data
+            }
+            val variableDataMap = input2data.flatMap { (input, data) ->
+                input.mapTo.map { v -> v to data }
+            }.toMap()
+            updated = calculate(updated, node, calculation, variableDataMap)
         } else {
             println("missing sources: $missingSources")
         }
 
-        return model
+        return updated
+    }
+
+    private fun <K: Comparable<K>> calculate(
+        model: Tab2Model,
+        node: Node.Calculated<K>,
+        calculation: Calculation,
+        variableDataMap: Map<Variable, Data>
+    ): Tab2Model {
+        println("calculate ${calculation.formula} with $variableDataMap")
+        var updated = model
+        return updated
     }
 
     private fun verticesAndEdges(

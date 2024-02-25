@@ -7,7 +7,7 @@ data class Column<K : Any, V : Any>(
     val id: ColumnId<K>,
     val valueType: KClass<V>,
     val values: Map<K, V> = emptyMap()
-) {
+): Data() {
     fun add(index: K, value: V?): Column<K, V> {
         return copy(values = if (value != null) values + (index to value) else values - index)
     }

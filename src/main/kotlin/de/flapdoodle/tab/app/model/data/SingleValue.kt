@@ -7,4 +7,4 @@ data class SingleValue<T : Any>(
     val valueType: KClass<T>,
     val value: T? = null,
     val id: SingleValueId = SingleValueId(),
-)
+): Data()
