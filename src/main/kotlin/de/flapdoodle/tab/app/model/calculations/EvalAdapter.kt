@@ -8,8 +8,10 @@ import de.flapdoodle.eval.core.evaluables.TypedEvaluable
 import de.flapdoodle.eval.core.evaluables.TypedEvaluableMap
 import de.flapdoodle.eval.core.evaluables.TypedEvaluables
 import de.flapdoodle.eval.core.parser.Token
+import de.flapdoodle.eval.example.Defaults
 import de.flapdoodle.eval.example.Defaults.*
 import de.flapdoodle.eval.example.Value
+import de.flapdoodle.eval.example.Value.NumberValue
 import java.math.BigDecimal
 import java.math.BigInteger
 import java.math.MathContext
@@ -29,12 +31,24 @@ data class EvalAdapter(
         var resolver = VariableResolver.empty()
         values.forEach { variable, value ->
             resolver = if (value != null) {
-                resolver.with(variable.name, value)
+                resolver.with(variable.name, mapToValue(value))
             } else {
-                resolver
+                resolver.with(variable.name, Value.ofNull())
             }
         }
-        return expression.evaluate(resolver)
+        return mapBack(expression.evaluate(resolver))
+    }
+
+    private fun mapToValue(value: Any): Value<out Any> {
+        return when (value) {
+            is Int -> Value.of(value.toBigDecimal())
+            else -> throw IllegalArgumentException("not implemented: $value")
+        }
+    }
+
+    private fun mapBack(value: Any?): Any? {
+        if (value is Value<out Any>) return value.wrapped()
+        return value
     }
 
     override fun change(newFormula: String): EvalAdapter {
@@ -71,7 +85,9 @@ data class EvalAdapter(
     }
 
     companion object {
-        private val expressionFactory = ExpressionFactory.builder()
+        private val expressionFactory = Defaults.expressionFactory()
+        
+        private val expressionFactoryC = ExpressionFactory.builder()
             .constants(constants())
             .evaluatables(TypedEvaluableMap.builder()
                 .putMap("sum", Plus())

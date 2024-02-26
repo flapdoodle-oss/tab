@@ -4,7 +4,7 @@ import kotlin.reflect.KClass
 
 data class SingleValue<T : Any>(
     val name: String,
-    val valueType: KClass<T>,
+    val valueType: KClass<out T>,
     val value: T? = null,
     val id: SingleValueId = SingleValueId(),
 ): Data()

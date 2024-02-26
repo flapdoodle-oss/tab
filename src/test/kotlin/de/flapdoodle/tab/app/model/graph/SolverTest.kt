@@ -9,10 +9,9 @@ import de.flapdoodle.tab.app.model.connections.Source
 import de.flapdoodle.tab.app.model.data.SingleValue
 import de.flapdoodle.tab.app.model.data.SingleValueId
 import de.flapdoodle.tab.app.model.data.SingleValues
-import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
+import java.math.BigDecimal
 
 class SolverTest {
     @Test
@@ -33,16 +32,21 @@ class SolverTest {
     fun singleConnecton() {
         val x = SingleValue("x", Int::class, 1)
 
-        val constants = Node.Constants("const", SingleValues(
-            listOf(x)
-        ))
+        val constants = Node.Constants(
+            "const", SingleValues(
+                listOf(x)
+            )
+        )
+        val destination = SingleValueId()
         val formula = Node.Calculated<String>("calc", Calculations(
-            listOf(Calculation.Aggregation("x+2", EvalAdapter("x+2"), SingleValueId()))
+            listOf(Calculation.Aggregation("y", EvalAdapter("x+2"), destination))
         ).let { c -> c.connect(c.inputs[0].id, Source.ValueSource(constants.id, x.id)) })
 
         val source = Tab2Model(listOf(constants, formula))
         val changed = Solver.solve(source)
 
-        
+        assertThat(changed.node(formula.id).data(destination))
+            .isEqualTo(SingleValue("y", BigDecimal::class, BigDecimal.valueOf(3), destination))
+
     }
 }

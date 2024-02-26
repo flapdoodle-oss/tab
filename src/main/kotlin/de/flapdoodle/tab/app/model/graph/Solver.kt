@@ -95,7 +95,7 @@ object Solver {
         calculation: Calculation,
         variableDataMap: Map<Variable, Data>
     ): Tab2Model {
-        println("calculate ${calculation.formula} with $variableDataMap")
+//        println("calculate ${calculation.formula} with $variableDataMap")
         var updated = model
         when (calculation) {
             is Calculation.Aggregation -> {
@@ -106,7 +106,14 @@ object Solver {
                     }
                 }.toMap()
                 val result = calculation.formula.evaluate(valueMap)
-                println("--> $result")
+//                println("--> $result")
+                val changedNode: Node.Calculated<K> = setValue(node, calculation, result)
+
+//                val changedNode = if (result != null)
+//                    node.copy(values = node.values.changeWithType(calculation.destination, result))
+//                else
+//                    node.copy(values = node.values.change(calculation.destination, null))
+                updated = updated.copy(nodes = model.nodes.map { if (it.id == changedNode.id) changedNode else it  })
             }
             else -> {
                 throw IllegalArgumentException("not implemented")
@@ -114,6 +121,31 @@ object Solver {
         }
         return updated
     }
+
+    private fun <K: Comparable<K>> setValue(
+        node: Node.Calculated<K>,
+        calculation: Calculation.Aggregation,
+        result: Any?
+    ): Node.Calculated<K> {
+        val changedNode = if (node.values.find(calculation.destination)==null) {
+            val newSingleValue = if (result!=null) {
+                SingleValue(calculation.name, result::class, result, calculation.destination)
+            } else {
+                SingleValue(calculation.name, Unit::class, result, calculation.destination)
+            }
+            node.copy(values = node.values.addValue(newSingleValue))
+        } else {
+            node.copy(values = node.values.change(calculation.destination) { old ->
+                if (result!=null) {
+                    SingleValue(old.name, result::class, result, old.id)
+                } else {
+                    old.copy(value = null)
+                }
+            })
+        }
+        return changedNode
+    }
+
 
     private fun verticesAndEdges(
         model: Tab2Model
