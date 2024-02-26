@@ -12,7 +12,7 @@ data class Calculations(
         val destinationMap: Map<Variable, DataId> = list.flatMap {
             it.formula.variables().map { v ->
                 when (it) {
-                    is Calculation.Tabular<*, *> -> v to it.destination
+                    is Calculation.Tabular -> v to it.destination
                     is Calculation.Aggregation -> v to it.destination
                 }
             }

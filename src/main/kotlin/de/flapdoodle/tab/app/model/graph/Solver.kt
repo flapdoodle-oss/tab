@@ -6,7 +6,6 @@ import de.flapdoodle.graph.VerticesAndEdges
 import de.flapdoodle.tab.app.model.Node
 import de.flapdoodle.tab.app.model.Tab2Model
 import de.flapdoodle.tab.app.model.calculations.Calculation
-import de.flapdoodle.tab.app.model.calculations.InputSlot
 import de.flapdoodle.tab.app.model.calculations.Variable
 import de.flapdoodle.tab.app.model.connections.Source
 import de.flapdoodle.tab.app.model.data.*
@@ -39,9 +38,9 @@ object Solver {
         when (val node = model.node(vertex.node)) {
             is Node.Calculated<*> -> {
                 val matching = when (vertex) {
-                    is Vertex.Column<*> -> {
+                    is Vertex.Column -> {
                         node.calculations.list.one { c ->
-                            c is Calculation.Tabular<*,*> && c.destination == vertex.columnId
+                            c is Calculation.Tabular && c.destination == vertex.columnId
                         }
                     }
                     is Vertex.SingleValue -> {
@@ -69,7 +68,7 @@ object Solver {
             val sources = neededInputs.associateBy { it.source!! }
             val input2data = sources.map { (source, input) ->
                 val data = when (source) {
-                    is Source.ColumnSource<*> -> {
+                    is Source.ColumnSource -> {
                         updated.node(source.node).data(source.columnId)
                     }
                     is Source.ValueSource -> {
@@ -106,18 +105,38 @@ object Solver {
                     }
                 }.toMap()
                 val result = calculation.formula.evaluate(valueMap)
-//                println("--> $result")
                 val changedNode: Node.Calculated<K> = setValue(node, calculation, result)
-
-//                val changedNode = if (result != null)
-//                    node.copy(values = node.values.changeWithType(calculation.destination, result))
-//                else
-//                    node.copy(values = node.values.change(calculation.destination, null))
                 updated = updated.copy(nodes = model.nodes.map { if (it.id == changedNode.id) changedNode else it  })
             }
-            else -> {
-                throw IllegalArgumentException("not implemented")
+            is Calculation.Tabular -> {
+//                val valueMap: Map<Variable, Any?> = variableDataMap.map { (v, data) ->
+//                    v to when (data) {
+//                        is Column<*,*> -> data.values
+//                        else -> throw IllegalArgumentException("not implemented: $data")
+//                    }
+//                }.toMap()
+//
+//                println("valueMap: $valueMap")
+                updated = calculateTabular(updated, calculation, variableDataMap)
             }
+        }
+        return updated
+    }
+
+    private fun calculateTabular(
+        updated: Tab2Model,
+        calculation: Calculation.Tabular,
+        variableDataMap: Map<Variable, Data>
+    ): Tab2Model {
+        val (columns, values) = variableDataMap.entries.partition { it.value is Column<*,*> }
+        val columns2var = columns.map { it.value as Column<Any, Any> to it.key }
+        val singleValueMap = values.map { it.key to (it.value as SingleValue<Any>).value }
+        val groupedByIndex = columns2var.associateBy { it.first.indexType }
+        if (groupedByIndex.size == 1) {
+//            return calculate(updated, calculation)
+            println("index type: ${groupedByIndex.keys}")
+        } else {
+            println("different index types used: ${groupedByIndex.keys}")
         }
         return updated
     }
@@ -169,7 +188,7 @@ object Solver {
                         is Node.Calculated<*> -> {
                             node.calculations.forEach { calculation ->
                                 when (calculation) {
-                                    is Calculation.Tabular<*, *> -> {
+                                    is Calculation.Tabular -> {
                                         builder.addVertex(Vertex.Column(node.id, calculation.destination))
                                     }
 
@@ -180,12 +199,12 @@ object Solver {
                             }
                             node.calculations.inputs.forEach { input ->
                                 when (input.source) {
-                                    is Source.ColumnSource<*> -> {
+                                    is Source.ColumnSource -> {
                                         val sourceVertex = Vertex.Column(input.source.node, input.source.columnId)
                                         builder.addVertex(sourceVertex)
                                         node.calculations.destinations(input)?.forEach { d ->
                                             val destVertex = when (d) {
-                                                is ColumnId<*> -> Vertex.Column(node.id, d)
+                                                is ColumnId -> Vertex.Column(node.id, d)
                                                 is SingleValueId -> Vertex.SingleValue(node.id, d)
                                             }
                                             builder.addVertex(destVertex)
@@ -198,7 +217,7 @@ object Solver {
                                         builder.addVertex(sourceVertex)
                                         node.calculations.destinations(input)?.forEach { d ->
                                             val destVertex = when (d) {
-                                                is ColumnId<*> -> Vertex.Column(node.id, d)
+                                                is ColumnId -> Vertex.Column(node.id, d)
                                                 is SingleValueId -> Vertex.SingleValue(node.id, d)
                                             }
                                             builder.addVertex(destVertex)
@@ -217,7 +236,7 @@ object Solver {
             }
         val dot = GraphAsDot.builder<Vertex> { it ->
             when (it) {
-                is Vertex.Column<*> -> "column(${it.node}:${it.columnId})"
+                is Vertex.Column -> "column(${it.node}:${it.columnId})"
                 is Vertex.SingleValue -> "value(${it.node}:${it.valueId})"
             }
         }

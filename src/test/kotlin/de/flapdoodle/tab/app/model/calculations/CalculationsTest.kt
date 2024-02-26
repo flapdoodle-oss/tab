@@ -8,8 +8,6 @@ import de.flapdoodle.tab.app.model.data.SingleValueId
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
-import java.math.BigDecimal
-import kotlin.reflect.KClass
 
 class CalculationsTest {
     @Test
@@ -24,7 +22,7 @@ class CalculationsTest {
     fun singleCalculationsWithoutAnyInput() {
         val testee = calculations(
             aggregate("x", "a*2"),
-            tabular("y", "a*b", Int::class, BigDecimal::class)
+            tabular("y", "a*b")
         )
 
         assertThat(testee.inputs)
@@ -39,7 +37,7 @@ class CalculationsTest {
     fun changeFormulaShouldChangeOnlyChangedInput() {
         val testee = calculations(
             aggregate("x", "a*2-c"),
-            tabular("y", "a*b", Int::class, BigDecimal::class)
+            tabular("y", "a*b")
         )
 
         assertThat(testee.inputs)
@@ -70,7 +68,7 @@ class CalculationsTest {
 
             val testee = calculations(
                 aggregate("1", "a+1"),
-                tabular("2", "a*2", Int::class, BigDecimal::class)
+                tabular("2", "a*2")
             ).let { it.copy(inputs = it.inputs.map { input -> input.copy(source = sourceA) }) }
 
             assertThat(testee.inputs).hasSize(1)
@@ -94,7 +92,7 @@ class CalculationsTest {
 
             val testee = calculations(
                 aggregate("1", "a+1"),
-                tabular("2", "a*2", Int::class, BigDecimal::class)
+                tabular("2", "a*2")
             ).let { it.copy(inputs = it.inputs.map { input -> input.copy(source = sourceA) }) }
 
             assertThat(testee.inputs).hasSize(1)
@@ -119,7 +117,7 @@ class CalculationsTest {
 
             val testee = calculations(
                 aggregate("1", "a+1"),
-                tabular("2", "a+b", Int::class, BigDecimal::class)
+                tabular("2", "a+b")
             ).let { it.copy(inputs = it.inputs.map { input -> input.copy(source = sourceA) }) }
 
             assertThat(testee.inputs).hasSize(2)
@@ -146,12 +144,10 @@ class CalculationsTest {
         return Calculation.Aggregation(name, EvalAdapter(formula), SingleValueId())
     }
 
-    private fun <K : Any, V : Any> tabular(
+    private fun tabular(
         name: String,
-        formula: String,
-        indexType: KClass<K>,
-        type: KClass<V>
-    ): Calculation.Tabular<K, V> {
-        return Calculation.Tabular(name, EvalAdapter(formula), ColumnId(indexType))
+        formula: String
+    ): Calculation.Tabular {
+        return Calculation.Tabular(name, EvalAdapter(formula), ColumnId())
     }
 }

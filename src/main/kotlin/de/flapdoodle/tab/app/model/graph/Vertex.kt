@@ -8,9 +8,9 @@ import de.flapdoodle.tab.app.model.data.SingleValueId
 sealed class Vertex {
     abstract val node: Id<out Node>
 
-    data class Column<K: Any>(
+    data class Column(
         override val node: Id<out Node>,
-        val columnId: ColumnId<K>,
+        val columnId: ColumnId,
     ) : Vertex()
 
     data class SingleValue(

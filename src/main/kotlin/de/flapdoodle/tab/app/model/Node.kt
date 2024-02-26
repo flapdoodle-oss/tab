@@ -12,7 +12,7 @@ sealed class Node {
 
     fun data(id: DataId): Data {
         return when (id) {
-            is ColumnId<out Any> -> {
+            is ColumnId -> {
                 require(this is HasColumns<*>) { "mismatch"}
                 this.column(id)
             }
@@ -26,7 +26,7 @@ sealed class Node {
     interface HasColumns<K: Comparable<K>> {
         val columns: Columns<K>
 
-        fun column(id: ColumnId<out Any>): Column<K, out Any> {
+        fun column(id: ColumnId): Column<K, out Any> {
             return columns.columns.one { it.id == id }
         }
     }

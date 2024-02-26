@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test
 class ColumnsTest {
     @Test
     fun addColumnIndexAndValue() {
-        val column = Column("a", ColumnId(String::class), Int::class)
+        val column = Column("a", String::class, Int::class, id = ColumnId())
 
         val testee = Columns<String>()
             .addColumn(column)
@@ -30,8 +30,8 @@ class ColumnsTest {
 
     @Test
     fun sortedIndex() {
-        val a = Column("a", ColumnId(Int::class), Int::class)
-        val b = Column("b", ColumnId(Int::class), String::class)
+        val a = Column("a", Int::class, Int::class, id = ColumnId())
+        val b = Column("b", Int::class, String::class, id = ColumnId())
 
         val testee = Columns<Int>()
             .addColumn(a)

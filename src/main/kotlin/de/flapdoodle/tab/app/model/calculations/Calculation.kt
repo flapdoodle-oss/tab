@@ -18,7 +18,7 @@ sealed class Calculation {
     data class Aggregation(
         override val name: String,
         override val formula: Formula,
-        val destination: SingleValueId,
+        val destination: SingleValueId = SingleValueId(),
         override val id: Id<Calculation> = Id.Companion.nextId(Calculation::class)
     ) : Calculation() {
 
@@ -27,14 +27,14 @@ sealed class Calculation {
         }
     }
 
-    data class Tabular<K : Any, V : Any>(
+    data class Tabular(
         override val name: String,
         override val formula: Formula,
-        val destination: ColumnId<K>,
+        val destination: ColumnId = ColumnId(),
         override val id: Id<Calculation> = Id.Companion.nextId(Calculation::class)
     ) : Calculation() {
 
-        override fun changeFormula(newFormula: String): Tabular<K, V> {
+        override fun changeFormula(newFormula: String): Tabular {
             return copy(formula = formula.change(newFormula))
         }
     }

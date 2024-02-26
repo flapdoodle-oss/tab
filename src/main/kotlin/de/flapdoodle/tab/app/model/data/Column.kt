@@ -4,9 +4,10 @@ import kotlin.reflect.KClass
 
 data class Column<K : Any, V : Any>(
     val name: String,
-    val id: ColumnId<K>,
+    val indexType: KClass<K>,
     val valueType: KClass<V>,
-    val values: Map<K, V> = emptyMap()
+    val values: Map<K, V> = emptyMap(),
+    val id: ColumnId = ColumnId()
 ): Data() {
     fun add(index: K, value: V?): Column<K, V> {
         return copy(values = if (value != null) values + (index to value) else values - index)

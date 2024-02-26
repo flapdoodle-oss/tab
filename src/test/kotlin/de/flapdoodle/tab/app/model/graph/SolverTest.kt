@@ -6,9 +6,7 @@ import de.flapdoodle.tab.app.model.calculations.Calculation
 import de.flapdoodle.tab.app.model.calculations.Calculations
 import de.flapdoodle.tab.app.model.calculations.EvalAdapter
 import de.flapdoodle.tab.app.model.connections.Source
-import de.flapdoodle.tab.app.model.data.SingleValue
-import de.flapdoodle.tab.app.model.data.SingleValueId
-import de.flapdoodle.tab.app.model.data.SingleValues
+import de.flapdoodle.tab.app.model.data.*
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import java.math.BigDecimal
@@ -47,6 +45,29 @@ class SolverTest {
 
         assertThat(changed.node(formula.id).data(destination))
             .isEqualTo(SingleValue("y", BigDecimal::class, BigDecimal.valueOf(3), destination))
+
+    }
+
+    @Test
+    fun singleTableConnecton() {
+        val x = Column("x", Int::class, Int::class, id = ColumnId())
+            .add(0, 1)
+            .add(1,2)
+
+        val constants = Node.Table<Int>(
+            "table", Columns(listOf(x))
+        )
+        val destination = ColumnId()
+        val formula = Node.Calculated<String>("calc", Calculations(
+            listOf(Calculation.Tabular("y", EvalAdapter("x+2"), destination))
+        ).let { c -> c.connect(c.inputs[0].id, Source.ColumnSource(constants.id, x.id)) })
+
+        val source = Tab2Model(listOf(constants, formula))
+        val changed = Solver.solve(source)
+
+        val data = changed.node(formula.id).data(destination)
+        assertThat(data)
+            .isInstanceOf(Columns::class.java)
 
     }
 }
