@@ -2,7 +2,7 @@ package de.flapdoodle.tab.app.model.data
 
 import kotlin.reflect.KClass
 
-data class Column<K : Any, V : Any>(
+data class Column<K : Comparable<K>, V : Any>(
     val name: String,
     val indexType: KClass<K>,
     val valueType: KClass<V>,
@@ -16,4 +16,6 @@ data class Column<K : Any, V : Any>(
     operator fun get(index: K): V? {
         return values[index]
     }
+
+    fun index() = values.keys
 }

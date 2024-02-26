@@ -24,6 +24,10 @@ data class Columns<K: Comparable<K>>(
         return requireNotNull(columnIdMap[columnId]) { "column $columnId not found" }
     }
 
+    fun find(id: ColumnId): Column<K, out Any>? {
+        return columnIdMap[id]
+    }
+
     fun <V: Any> add(columnId: ColumnId, key: K, valueType: KClass<V>, value: V?): Columns<K> {
         val c: Column<K, out Any> = column(columnId)
         require(c.valueType == valueType) {"value type mismatch: $valueType != ${c.valueType}"}
