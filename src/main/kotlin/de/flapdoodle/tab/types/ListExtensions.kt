@@ -5,3 +5,7 @@ fun <T> List<T>.one(predicate: (T) -> Boolean): T {
     require(filtered.size==1) { "more or less then one match for $predicate($this): $filtered "}
     return filtered[0]
 }
+
+fun <T> List<T>.change(predicate: (T) -> Boolean, change: (T) -> T): List<T> {
+    return map { if (predicate(it)) change(it) else it }
+}

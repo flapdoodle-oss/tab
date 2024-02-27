@@ -60,7 +60,7 @@ class SolverTest {
         )
         val destination = ColumnId(Int::class)
         val formula = Node.Calculated("calc", Calculations(
-            listOf(Calculation.Tabular("y", EvalAdapter("x+2"), destination))
+            tabular = listOf(Calculation.Tabular("y", EvalAdapter("x+2"), destination))
         ).let { c -> c.connect(c.inputs[0].id, Source.ColumnSource(table.id, x.id)) })
 
         val source = Tab2Model(listOf(table, formula))
@@ -101,7 +101,7 @@ class SolverTest {
         )
         val destination = ColumnId(Int::class)
         val formula = Node.Calculated("calc", Calculations(
-            listOf(Calculation.Tabular("y", EvalAdapter("x+b+c"), destination))
+            tabular = listOf(Calculation.Tabular("y", EvalAdapter("x+b+c"), destination))
         ).let { c ->
             c.connect(c.inputs[0].id, Source.ColumnSource(table.id, a.id))
                 .connect(c.inputs[1].id, Source.ColumnSource(table.id, b.id))

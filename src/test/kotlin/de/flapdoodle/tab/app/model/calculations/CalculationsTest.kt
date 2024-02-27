@@ -48,7 +48,7 @@ class CalculationsTest {
         assertThat(b.name).isEqualTo("b")
         assertThat(c.name).isEqualTo("c")
 
-        val changed = testee.changeFormula(testee.list[0].id, "a*2-x")
+        val changed = testee.changeFormula(testee.aggregations[0].id, "a*2-x")
 
         assertThat(changed.inputs)
             .hasSize(3)
@@ -75,7 +75,7 @@ class CalculationsTest {
             val (a) = testee.inputs
             assertThat(a.mapTo).hasSize(2)
 
-            val changed = testee.changeFormula(testee.list[0].id, "a+b")
+            val changed = testee.changeFormula(testee.aggregations[0].id, "a+b")
 
             assertThat(changed.inputs).hasSize(2)
             val (a2, b) = changed.inputs
@@ -99,7 +99,7 @@ class CalculationsTest {
             val (a) = testee.inputs
             assertThat(a.mapTo).hasSize(2)
 
-            val changed = testee.changeFormula(testee.list[1].id, "b*2")
+            val changed = testee.changeFormula(testee.tabular[0].id, "b*2")
 
             assertThat(changed.inputs).hasSize(2)
             val (a2, b) = changed.inputs
@@ -126,7 +126,7 @@ class CalculationsTest {
             assertThat(b.name).isEqualTo("b")
             assertThat(b.source).isEqualTo(sourceA)
 
-            val changed = testee.changeFormula(testee.list[1].id, "a*2")
+            val changed = testee.changeFormula(testee.tabular[1].id, "a*2")
 
             assertThat(changed.inputs).hasSize(1)
             val (a2) = changed.inputs
@@ -137,7 +137,9 @@ class CalculationsTest {
     }
 
     private fun <K: Comparable<K>> calculations(vararg calculation: Calculation<K>): Calculations<K> {
-        return Calculations(listOf(*calculation))
+        val agg = calculation.filterIsInstance<Calculation.Aggregation<K>>()
+        val tab = calculation.filterIsInstance<Calculation.Tabular<K>>()
+        return Calculations(aggregations = agg, tabular = tab)
     }
 
     private fun <K: Comparable<K>> aggregate(name: String, formula: String): Calculation.Aggregation<K> {

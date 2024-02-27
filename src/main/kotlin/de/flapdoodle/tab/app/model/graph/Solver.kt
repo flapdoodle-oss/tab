@@ -53,14 +53,14 @@ object Solver {
     ): Tab2Model {
         val matching = when (vertex) {
             is Vertex.Column<*> -> {
-                node.calculations.list.one { c ->
-                    c is Calculation.Tabular<*> && c.destination == vertex.columnId
+                node.calculations.tabular.one { c ->
+                    c.destination == vertex.columnId
                 }
             }
 
             is Vertex.SingleValue -> {
-                node.calculations.list.one { c ->
-                    c is Calculation.Aggregation && c.destination == vertex.valueId
+                node.calculations.aggregations.one { c ->
+                    c.destination == vertex.valueId
                 }
             }
         }

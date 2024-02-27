@@ -3,26 +3,20 @@ package de.flapdoodle.tab.app.model.calculations
 import de.flapdoodle.kfx.types.Id
 import de.flapdoodle.tab.app.model.connections.Source
 import de.flapdoodle.tab.app.model.data.DataId
+import de.flapdoodle.tab.extensions.change
+import de.flapdoodle.tab.types.change
 
 data class Calculations<K: Comparable<K>>(
-    val list: List<Calculation<K>> = emptyList(),
-    val inputs: List<InputSlot<K>> = inputSlots(list)
+//    val list: List<Calculation<K>> = emptyList(),
+    val aggregations: List<Calculation.Aggregation<K>> = emptyList(),
+    val tabular: List<Calculation.Tabular<K>> = emptyList(),
+    val inputs: List<InputSlot<K>> = inputSlots(aggregations + tabular)
 ) {
-    val input2destinations: Map<InputSlot<K>, List<DataId>> by lazy {
-        val destinationMap: Map<Variable, DataId> = list.flatMap {
-            it.formula.variables().map { v ->
-                when (it) {
-                    is Calculation.Tabular<*> -> v to it.destination
-                    is Calculation.Aggregation -> v to it.destination
-                }
-            }
-        }.toMap()
-        inputs.associateWith { it.mapTo.mapNotNull { v -> destinationMap[v] } }
-    }
 
     fun changeFormula(id: Id<Calculation<*>>, newFormula: String): Calculations<K> {
-        val changedList = list.map { if (it.id==id) it.changeFormula(newFormula) else it  }
-        return copy(list = changedList, inputs = merge(inputs, inputSlots(changedList)))
+        val agg = aggregations.change({ it.id == id}) { it.changeFormula(newFormula) }
+        val tab = tabular.change({ it.id == id}) { it.changeFormula(newFormula) }
+        return copy(aggregations = agg, tabular = tab, inputs = merge(inputs, inputSlots(agg + tab)))
     }
 
     fun connect(input: Id<InputSlot<*>>, source: Source): Calculations<K> {
@@ -30,10 +24,9 @@ data class Calculations<K: Comparable<K>>(
     }
 
     fun forEach(action: (Calculation<K>) -> Unit) {
-        list.forEach(action)
+        aggregations.forEach(action)
+        tabular.forEach(action)
     }
-
-    fun destinations(inputSlot: InputSlot<K>) = input2destinations[inputSlot]
 
     companion object {
         fun <K: Comparable<K>> merge(old: List<InputSlot<K>>, new: List<InputSlot<K>>): List<InputSlot<K>> {
