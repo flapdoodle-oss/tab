@@ -6,9 +6,9 @@ import de.flapdoodle.tab.app.model.data.DataId
 
 data class Calculations<K: Comparable<K>>(
     val list: List<Calculation<K>> = emptyList(),
-    val inputs: List<InputSlot> = inputSlots(list)
+    val inputs: List<InputSlot<K>> = inputSlots(list)
 ) {
-    val input2destinations: Map<InputSlot, List<DataId>> by lazy {
+    val input2destinations: Map<InputSlot<K>, List<DataId>> by lazy {
         val destinationMap: Map<Variable, DataId> = list.flatMap {
             it.formula.variables().map { v ->
                 when (it) {
@@ -25,7 +25,7 @@ data class Calculations<K: Comparable<K>>(
         return copy(list = changedList, inputs = merge(inputs, inputSlots(changedList)))
     }
 
-    fun connect(input: Id<InputSlot>, source: Source): Calculations<K> {
+    fun connect(input: Id<InputSlot<*>>, source: Source): Calculations<K> {
         return copy(inputs = inputs.map { if (it.id == input) it.copy(source = source) else it })
     }
 
@@ -33,10 +33,10 @@ data class Calculations<K: Comparable<K>>(
         list.forEach(action)
     }
 
-    fun destinations(inputSlot: InputSlot) = input2destinations[inputSlot]
+    fun destinations(inputSlot: InputSlot<K>) = input2destinations[inputSlot]
 
     companion object {
-        fun merge(old: List<InputSlot>, new: List<InputSlot>): List<InputSlot> {
+        fun <K: Comparable<K>> merge(old: List<InputSlot<K>>, new: List<InputSlot<K>>): List<InputSlot<K>> {
             val oldByName = old.associateBy { it.name }
 
             val oldByVarId = old.flatMap { it.mapTo.map { v -> v.id to it } }.toMap()
@@ -56,9 +56,9 @@ data class Calculations<K: Comparable<K>>(
             return copyFromOldIfVarsAreAsSubset.sortedBy { it.name }
         }
 
-        fun inputSlots(list: List<Calculation<*>>): List<InputSlot> {
+        fun <K: Comparable<K>> inputSlots(list: List<Calculation<K>>): List<InputSlot<K>> {
             val nameMap = groupByName(list)
-            return nameMap.map { InputSlot(name = it.key, mapTo = it.value.toSet()) }
+            return nameMap.map { InputSlot<K>(name = it.key, mapTo = it.value.toSet()) }
                 .sortedBy { it.name }
         }
 

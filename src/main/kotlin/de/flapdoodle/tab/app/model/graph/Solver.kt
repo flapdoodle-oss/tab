@@ -281,7 +281,7 @@ object Solver {
                             }
                         }
 
-                        is Node.Calculated<*> -> {
+                        is Node.Calculated<out Comparable<*>> -> {
                             node.calculations.forEach { calculation ->
                                 when (calculation) {
                                     is Calculation.Tabular -> {
@@ -298,10 +298,14 @@ object Solver {
                                     is Source.ColumnSource<*> -> {
                                         val sourceVertex = Vertex.Column(input.source.node, input.source.columnId)
                                         builder.addVertex(sourceVertex)
-                                        node.calculations.destinations(input)?.forEach { d ->
-                                            val destVertex = when (d) {
-                                                is ColumnId<*> -> Vertex.Column(node.id, d)
-                                                is SingleValueId -> Vertex.SingleValue(node.id, d)
+                                        node.calculations.forEach { c ->
+                                            val destVertex = when (c) {
+                                                is Calculation.Tabular -> {
+                                                    Vertex.Column(node.id, c.destination)
+                                                }
+                                                is Calculation.Aggregation -> {
+                                                    Vertex.SingleValue(node.id, c.destination)
+                                                }
                                             }
                                             builder.addVertex(destVertex)
                                             builder.addEdge(sourceVertex, destVertex)
@@ -311,10 +315,14 @@ object Solver {
                                     is Source.ValueSource -> {
                                         val sourceVertex = Vertex.SingleValue(input.source.node, input.source.valueId)
                                         builder.addVertex(sourceVertex)
-                                        node.calculations.destinations(input)?.forEach { d ->
-                                            val destVertex = when (d) {
-                                                is ColumnId<*> -> Vertex.Column(node.id, d)
-                                                is SingleValueId -> Vertex.SingleValue(node.id, d)
+                                        node.calculations.forEach { c ->
+                                            val destVertex = when (c) {
+                                                is Calculation.Tabular -> {
+                                                    Vertex.Column(node.id, c.destination)
+                                                }
+                                                is Calculation.Aggregation -> {
+                                                    Vertex.SingleValue(node.id, c.destination)
+                                                }
                                             }
                                             builder.addVertex(destVertex)
                                             builder.addEdge(sourceVertex, destVertex)
