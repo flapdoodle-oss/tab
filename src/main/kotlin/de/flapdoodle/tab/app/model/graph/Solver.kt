@@ -8,7 +8,9 @@ import de.flapdoodle.tab.app.model.Tab2Model
 import de.flapdoodle.tab.app.model.calculations.Calculation
 import de.flapdoodle.tab.app.model.calculations.Variable
 import de.flapdoodle.tab.app.model.connections.Source
-import de.flapdoodle.tab.app.model.data.*
+import de.flapdoodle.tab.app.model.data.Column
+import de.flapdoodle.tab.app.model.data.Data
+import de.flapdoodle.tab.app.model.data.SingleValue
 import de.flapdoodle.tab.types.one
 import org.jgrapht.graph.DefaultEdge
 
@@ -34,67 +36,55 @@ object Solver {
     }
 
     private fun update(model: Tab2Model, vertex: Vertex): Tab2Model {
-        var updated = model
-        when (val node = model.node(vertex.node)) {
-            is Node.Calculated<*> -> {
-                updated = xyz(vertex, node, updated)
-            }
-            else -> {
-                println("can skip $node")
-            }
+        val node = model.node(vertex.node)
+        return if (node is Node.Calculated<*>) {
+            update(vertex, node, model)
+        } else {
+            model
         }
-        return updated
     }
 
-    private fun <K: Comparable<K>> xyz(
+    private fun <K : Comparable<K>> update(
         vertex: Vertex,
         node: Node.Calculated<K>,
-        updated: Tab2Model
+        model: Tab2Model
     ): Tab2Model {
-        val matching = when (vertex) {
-            is Vertex.Column<*> -> {
-                node.calculations.tabular.one { c ->
-                    c.destination == vertex.columnId
-                }
+        return update(model, node, when (vertex) {
+                is Vertex.Column<*> -> node.calculations.tabular(vertex.columnId)
+                is Vertex.SingleValue -> node.calculations.aggregation(vertex.valueId)
             }
-
-            is Vertex.SingleValue -> {
-                node.calculations.aggregations.one { c ->
-                    c.destination == vertex.valueId
-                }
-            }
-        }
-
-        return update(updated, node, matching)
+        )
     }
 
-    private fun <K: Comparable<K>> update(model: Tab2Model, node: Node.Calculated<K>, calculation: Calculation<K>): Tab2Model {
-        var updated = model
+    private fun <K : Comparable<K>> update(
+        model: Tab2Model,
+        node: Node.Calculated<K>,
+        calculation: Calculation<K>
+    ): Tab2Model {
         val sourceVariables = calculation.formula.variables()
-        val neededInputs = node.calculations.inputs.filter { it.mapTo.intersect(sourceVariables).isNotEmpty() }
-        val missingSources = neededInputs.filter { it.source==null }
+        val neededInputs = node.calculations.inputSlots(sourceVariables)
+        val missingSources = neededInputs.filter { it.source == null }
         if (missingSources.isEmpty()) {
             val sources = neededInputs.associateBy { it.source!! }
             val input2data = sources.map { (source, input) ->
-                val data = dataOf(source, updated)
-                input to data
+                input to dataOf(source, model)
             }
             val variableDataMap = input2data.flatMap { (input, data) ->
                 input.mapTo.map { v -> v to data }
             }.toMap()
-            updated = calculate(updated, node, calculation, variableDataMap)
+            return calculate(model, node, calculation, variableDataMap)
         } else {
             println("missing sources: $missingSources")
         }
 
-        return updated
+        return model
     }
 
     private fun dataOf(
         source: Source,
-        updated: Tab2Model
+        model: Tab2Model
     ): Data {
-        val node = updated.node(source.node)
+        val node = model.node(source.node)
         val data = when (source) {
             is Source.ColumnSource<*> -> {
                 when (node) {
@@ -112,54 +102,47 @@ object Solver {
                         throw IllegalArgumentException("mismatch")
                     }
                 }
-//                updated.node(source.node).data(source.valueId)
             }
         }
         return data
     }
 
-    private fun <K: Comparable<K>> calculate(
+    private fun <K : Comparable<K>> calculate(
         model: Tab2Model,
         node: Node.Calculated<K>,
         calculation: Calculation<K>,
         variableDataMap: Map<Variable, Data>
     ): Tab2Model {
-//        println("calculate ${calculation.formula} with $variableDataMap")
-        var updated = model
-        when (calculation) {
-            is Calculation.Aggregation<K> -> {
-                val valueMap: Map<Variable, Any?> = variableDataMap.map { (v, data) ->
-                    v to when (data) {
-                        is SingleValue<*> -> data.value
-                        else -> throw IllegalArgumentException("not implemented: $data")
-                    }
-                }.toMap()
-                val result = calculation.formula.evaluate(valueMap)
-                val changedNode: Node.Calculated<K> = setValue(node, calculation, result)
-                updated = updated.copy(nodes = model.nodes.map { if (it.id == changedNode.id) changedNode else it  })
-            }
-            is Calculation.Tabular<K> -> {
-//                val valueMap: Map<Variable, Any?> = variableDataMap.map { (v, data) ->
-//                    v to when (data) {
-//                        is Column<*,*> -> data.values
-//                        else -> throw IllegalArgumentException("not implemented: $data")
-//                    }
-//                }.toMap()
-//
-//                println("valueMap: $valueMap")
-                updated = calculateTabular(updated, node, calculation, variableDataMap)
-            }
+        return when (calculation) {
+            is Calculation.Aggregation<K> -> calculateAggregate(model, node, calculation, variableDataMap)
+            is Calculation.Tabular<K> -> calculateTabular(model, node, calculation, variableDataMap)
         }
-        return updated
     }
 
-    private fun <K: Comparable<K>> calculateTabular(
+    private fun <K : Comparable<K>> calculateAggregate(
+        model: Tab2Model,
+        node: Node.Calculated<K>,
+        calculation: Calculation.Aggregation<K>,
+        variableDataMap: Map<Variable, Data>
+    ): Tab2Model {
+        val valueMap: Map<Variable, Any?> = variableDataMap.map { (v, data) ->
+            v to when (data) {
+                is SingleValue<*> -> data.value
+                else -> throw IllegalArgumentException("not implemented: $data")
+            }
+        }.toMap()
+        val result = calculation.formula.evaluate(valueMap)
+        val changedNode: Node.Calculated<K> = setValue(node, calculation, result)
+        return model.copy(nodes = model.nodes.map { if (it.id == changedNode.id) changedNode else it })
+    }
+
+    private fun <K : Comparable<K>> calculateTabular(
         updated: Tab2Model,
         node: Node.Calculated<K>,
         calculation: Calculation.Tabular<K>,
         variableDataMap: Map<Variable, Data>
     ): Tab2Model {
-        val (columns, values) = variableDataMap.entries.partition { it.value is Column<*,*> }
+        val (columns, values) = variableDataMap.entries.partition { it.value is Column<*, *> }
         val columns2var = columns.map { it.value as Column<K, Any> to it.key }
         val singleValueMap = values.map { it.key to (it.value as SingleValue<Any>).value }
         val groupedByIndex = columns2var.groupBy { it.first.indexType }
@@ -172,7 +155,7 @@ object Solver {
         return updated
     }
 
-    private fun <K: Comparable<K>> calculateTabular(
+    private fun <K : Comparable<K>> calculateTabular(
         updated: Tab2Model,
         node: Node.Calculated<K>,
         calculation: Calculation.Tabular<K>,
@@ -182,20 +165,20 @@ object Solver {
         val interpolated = sortAndInterpolate(columns2var)
         val result = interpolated.index.mapNotNull {
             val result = calculation.formula.evaluate(interpolated.variablesAt(it) + singleValueMap.toMap())
-            if (result!=null) it to result else null
+            if (result != null) it to result else null
         }.toMap()
 
         val changedNode: Node.Calculated<K> = setTable(node, calculation, result)
-        return updated.copy(nodes = updated.nodes.map { if (it.id == changedNode.id) changedNode else it  })
+        return updated.copy(nodes = updated.nodes.map { if (it.id == changedNode.id) changedNode else it })
     }
 
-    private fun <K: Comparable<K>> sortAndInterpolate(columns: List<Pair<Column<K, Any>, Variable>>): InterpolatedColumns<K> {
+    private fun <K : Comparable<K>> sortAndInterpolate(columns: List<Pair<Column<K, Any>, Variable>>): InterpolatedColumns<K> {
         val index = columns.flatMap { it.first.index() }.toSet()
         val map2vars = columns.map { Interpolator.valueAtOffset(it.first.values).interpolatedAt(index) to it.second }
-        return InterpolatedColumns(index,map2vars)
+        return InterpolatedColumns(index, map2vars)
     }
 
-    data class InterpolatedColumns<K: Any>(
+    data class InterpolatedColumns<K : Any>(
         val index: Set<K>,
         val map2vars: List<Pair<Map<K, Any?>, Variable>>
     ) {
@@ -204,13 +187,13 @@ object Solver {
         }
     }
 
-    private fun <K: Comparable<K>> setValue(
+    private fun <K : Comparable<K>> setValue(
         node: Node.Calculated<K>,
         calculation: Calculation.Aggregation<K>,
         result: Any?
     ): Node.Calculated<K> {
-        val changedNode = if (node.values.find(calculation.destination)==null) {
-            val newSingleValue = if (result!=null) {
+        val changedNode = if (node.values.find(calculation.destination) == null) {
+            val newSingleValue = if (result != null) {
                 SingleValue(calculation.name, result::class, result, calculation.destination)
             } else {
                 SingleValue(calculation.name, Unit::class, result, calculation.destination)
@@ -218,7 +201,7 @@ object Solver {
             node.copy(values = node.values.addValue(newSingleValue))
         } else {
             node.copy(values = node.values.change(calculation.destination) { old ->
-                if (result!=null) {
+                if (result != null) {
                     SingleValue(old.name, result::class, result, old.id)
                 } else {
                     old.copy(value = null)
@@ -228,12 +211,12 @@ object Solver {
         return changedNode
     }
 
-    private fun <K: Comparable<K>> setTable(
+    private fun <K : Comparable<K>> setTable(
         node: Node.Calculated<K>,
         calculation: Calculation.Tabular<K>,
         result: Map<K, Any>
     ): Node.Calculated<K> {
-        val changedNode = if (node.columns.find(calculation.destination)==null) {
+        val changedNode = if (node.columns.find(calculation.destination) == null) {
             val newColumn = column(result, calculation)
             node.copy(columns = node.columns.addColumn(newColumn))
         } else {
@@ -303,6 +286,7 @@ object Solver {
                                                 is Calculation.Tabular -> {
                                                     Vertex.Column(node.id, c.destination)
                                                 }
+
                                                 is Calculation.Aggregation -> {
                                                     Vertex.SingleValue(node.id, c.destination)
                                                 }
@@ -320,6 +304,7 @@ object Solver {
                                                 is Calculation.Tabular -> {
                                                     Vertex.Column(node.id, c.destination)
                                                 }
+
                                                 is Calculation.Aggregation -> {
                                                     Vertex.SingleValue(node.id, c.destination)
                                                 }
