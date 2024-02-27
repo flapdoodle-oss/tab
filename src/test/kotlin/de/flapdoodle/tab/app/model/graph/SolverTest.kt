@@ -53,6 +53,7 @@ class SolverTest {
         val x = Column("x", Int::class, Int::class)
             .add(0, 1)
             .add(1,2)
+            .add(3,10)
 
         val constants = Node.Table<Int>(
             "table", Columns(listOf(x))
@@ -69,7 +70,8 @@ class SolverTest {
         assertThat(data.values)
             .isEqualTo(mapOf(
                 0 to BigDecimal.valueOf(3),
-                1 to BigDecimal.valueOf(3)
+                1 to BigDecimal.valueOf(4),
+                3 to BigDecimal.valueOf(12)
             ))
 
     }

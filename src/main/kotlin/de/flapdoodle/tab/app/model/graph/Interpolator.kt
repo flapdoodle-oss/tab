@@ -11,7 +11,7 @@ fun interface Interpolator<K: Any, V: Any> {
         fun <K: Comparable<K>, V: Any> valueAtOffset(values: Map<K, V>): Interpolator<K, V> {
             val index = values.keys.toSortedSet()
             return Interpolator { offset ->
-                val firstIndex = index.firstOrNull {
+                val firstIndex = index.lastOrNull {
                     it <= offset
                 }
                 if (firstIndex!=null) values[firstIndex] else null
