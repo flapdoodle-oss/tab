@@ -10,23 +10,23 @@ sealed class Node {
     abstract val id: Id<out Node>
     abstract val position: Position
 
-    fun data(id: DataId): Data {
-        return when (id) {
-            is ColumnId -> {
-                require(this is HasColumns<*>) { "mismatch"}
-                this.column(id)
-            }
-            is SingleValueId -> {
-                require(this is HasValues) {"mismatch"}
-                this.value(id)
-            }
-        }
-    }
+//    fun data(id: DataId): Data {
+//        return when (id) {
+//            is ColumnId<*> -> {
+//                require(this is HasColumns<*>) { "mismatch"}
+//                this.column(id)
+//            }
+//            is SingleValueId -> {
+//                require(this is HasValues) {"mismatch"}
+//                this.value(id)
+//            }
+//        }
+//    }
 
     interface HasColumns<K: Comparable<K>> {
         val columns: Columns<K>
 
-        fun column(id: ColumnId): Column<K, out Any> {
+        fun column(id: ColumnId<*>): Column<K, out Any> {
             return columns.columns.one { it.id == id }
         }
     }
@@ -55,7 +55,7 @@ sealed class Node {
 
     data class Calculated<K: Comparable<K>>(
         override val name: String,
-        val calculations: Calculations,
+        val calculations: Calculations<K>,
         // result
         override val columns: Columns<K> = Columns(),
         override val values: SingleValues = SingleValues(),

@@ -10,4 +10,8 @@ data class Tab2Model(
     fun node(id: Id<out Node>): Node {
         return nodes.one { it.id == id }
     }
+
+    fun node(id: Id<out Node.Calculated<*>>): Node.Calculated<*> {
+        return nodes.one { it.id == id } as Node.Calculated<*>
+    }
 }

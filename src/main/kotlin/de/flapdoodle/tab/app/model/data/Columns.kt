@@ -20,15 +20,15 @@ data class Columns<K: Comparable<K>>(
         return copy(columns = columns + column)
     }
 
-    fun column(columnId: ColumnId): Column<K, out Any> {
+    fun column(columnId: ColumnId<K>): Column<K, out Any> {
         return requireNotNull(columnIdMap[columnId]) { "column $columnId not found" }
     }
 
-    fun find(id: ColumnId): Column<K, out Any>? {
+    fun find(id: ColumnId<K>): Column<K, out Any>? {
         return columnIdMap[id]
     }
 
-    fun <V: Any> add(columnId: ColumnId, key: K, valueType: KClass<V>, value: V?): Columns<K> {
+    fun <V: Any> add(columnId: ColumnId<K>, key: K, valueType: KClass<V>, value: V?): Columns<K> {
         val c: Column<K, out Any> = column(columnId)
         require(c.valueType == valueType) {"value type mismatch: $valueType != ${c.valueType}"}
         val column = (c as Column<K, V>).add(key, value)
@@ -37,7 +37,7 @@ data class Columns<K: Comparable<K>>(
         })
     }
 
-    fun get(columnId: ColumnId, key: K): Any? {
+    fun get(columnId: ColumnId<K>, key: K): Any? {
         return column(columnId)[key]
     }
 

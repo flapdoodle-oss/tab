@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test
 class CalculationsTest {
     @Test
     fun emptyCalculationsWithoutAnyInput() {
-        val testee = calculations()
+        val testee = calculations<String>()
 
         assertThat(testee.inputs)
             .isEmpty()
@@ -22,7 +22,7 @@ class CalculationsTest {
     fun singleCalculationsWithoutAnyInput() {
         val testee = calculations(
             aggregate("x", "a*2"),
-            tabular("y", "a*b")
+            tabular("y", "a*b", ColumnId(Int::class))
         )
 
         assertThat(testee.inputs)
@@ -37,7 +37,7 @@ class CalculationsTest {
     fun changeFormulaShouldChangeOnlyChangedInput() {
         val testee = calculations(
             aggregate("x", "a*2-c"),
-            tabular("y", "a*b")
+            tabular("y", "a*b", ColumnId(Int::class))
         )
 
         assertThat(testee.inputs)
@@ -68,7 +68,7 @@ class CalculationsTest {
 
             val testee = calculations(
                 aggregate("1", "a+1"),
-                tabular("2", "a*2")
+                tabular("2", "a*2", ColumnId(Int::class))
             ).let { it.copy(inputs = it.inputs.map { input -> input.copy(source = sourceA) }) }
 
             assertThat(testee.inputs).hasSize(1)
@@ -92,7 +92,7 @@ class CalculationsTest {
 
             val testee = calculations(
                 aggregate("1", "a+1"),
-                tabular("2", "a*2")
+                tabular("2", "a*2", ColumnId(Int::class))
             ).let { it.copy(inputs = it.inputs.map { input -> input.copy(source = sourceA) }) }
 
             assertThat(testee.inputs).hasSize(1)
@@ -117,7 +117,7 @@ class CalculationsTest {
 
             val testee = calculations(
                 aggregate("1", "a+1"),
-                tabular("2", "a+b")
+                tabular("2", "a+b", ColumnId(Int::class))
             ).let { it.copy(inputs = it.inputs.map { input -> input.copy(source = sourceA) }) }
 
             assertThat(testee.inputs).hasSize(2)
@@ -136,18 +136,19 @@ class CalculationsTest {
         }
     }
 
-    private fun calculations(vararg calculation: Calculation): Calculations {
+    private fun <K: Comparable<K>> calculations(vararg calculation: Calculation<K>): Calculations<K> {
         return Calculations(listOf(*calculation))
     }
 
-    private fun aggregate(name: String, formula: String): Calculation.Aggregation {
+    private fun <K: Comparable<K>> aggregate(name: String, formula: String): Calculation.Aggregation<K> {
         return Calculation.Aggregation(name, EvalAdapter(formula), SingleValueId())
     }
 
-    private fun tabular(
+    private fun <K: Comparable<K>> tabular(
         name: String,
-        formula: String
-    ): Calculation.Tabular {
-        return Calculation.Tabular(name, EvalAdapter(formula), ColumnId())
+        formula: String,
+        columnId: ColumnId<K>
+    ): Calculation.Tabular<K> {
+        return Calculation.Tabular(name, EvalAdapter(formula), columnId)
     }
 }

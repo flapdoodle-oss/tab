@@ -4,15 +4,15 @@ import de.flapdoodle.kfx.types.Id
 import de.flapdoodle.tab.app.model.connections.Source
 import de.flapdoodle.tab.app.model.data.DataId
 
-data class Calculations(
-    val list: List<Calculation> = emptyList(),
+data class Calculations<K: Comparable<K>>(
+    val list: List<Calculation<K>> = emptyList(),
     val inputs: List<InputSlot> = inputSlots(list)
 ) {
     val input2destinations: Map<InputSlot, List<DataId>> by lazy {
         val destinationMap: Map<Variable, DataId> = list.flatMap {
             it.formula.variables().map { v ->
                 when (it) {
-                    is Calculation.Tabular -> v to it.destination
+                    is Calculation.Tabular<*> -> v to it.destination
                     is Calculation.Aggregation -> v to it.destination
                 }
             }
@@ -20,16 +20,16 @@ data class Calculations(
         inputs.associateWith { it.mapTo.mapNotNull { v -> destinationMap[v] } }
     }
 
-    fun changeFormula(id: Id<Calculation>, newFormula: String): Calculations {
+    fun changeFormula(id: Id<Calculation<*>>, newFormula: String): Calculations<K> {
         val changedList = list.map { if (it.id==id) it.changeFormula(newFormula) else it  }
         return copy(list = changedList, inputs = merge(inputs, inputSlots(changedList)))
     }
 
-    fun connect(input: Id<InputSlot>, source: Source): Calculations {
+    fun connect(input: Id<InputSlot>, source: Source): Calculations<K> {
         return copy(inputs = inputs.map { if (it.id == input) it.copy(source = source) else it })
     }
 
-    fun forEach(action: (Calculation) -> Unit) {
+    fun forEach(action: (Calculation<K>) -> Unit) {
         list.forEach(action)
     }
 
@@ -56,13 +56,13 @@ data class Calculations(
             return copyFromOldIfVarsAreAsSubset.sortedBy { it.name }
         }
 
-        fun inputSlots(list: List<Calculation>): List<InputSlot> {
+        fun inputSlots(list: List<Calculation<*>>): List<InputSlot> {
             val nameMap = groupByName(list)
             return nameMap.map { InputSlot(name = it.key, mapTo = it.value.toSet()) }
                 .sortedBy { it.name }
         }
 
-        private fun groupByName(list: List<Calculation>) =
+        private fun groupByName(list: List<Calculation<*>>) =
             list.flatMap { it.formula.variables() }.groupBy { it.name }
     }
 }

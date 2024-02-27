@@ -8,33 +8,33 @@ import de.flapdoodle.tab.app.model.data.SingleValueId
 // Input -> Variable.name machen
 // und immer, wenn eine Variable umbenannt wird, den Input mit neuem Namen
 // erzeugen, aber wenn es eine Connection dahin gibt, diese ebenfalls kopieren
-sealed class Calculation {
+sealed class Calculation<K: Comparable<K>> {
     abstract val name: String
     abstract val formula: Formula
-    abstract val id: Id<Calculation>
+    abstract val id: Id<Calculation<*>>
 
-    abstract fun changeFormula(newFormula: String): Calculation
+    abstract fun changeFormula(newFormula: String): Calculation<K>
 
-    data class Aggregation(
+    data class Aggregation<K: Comparable<K>>(
         override val name: String,
         override val formula: Formula,
         val destination: SingleValueId = SingleValueId(),
-        override val id: Id<Calculation> = Id.Companion.nextId(Calculation::class)
-    ) : Calculation() {
+        override val id: Id<Calculation<*>> = Id.Companion.nextId(Calculation::class)
+    ) : Calculation<K>() {
 
-        override fun changeFormula(newFormula: String): Aggregation {
+        override fun changeFormula(newFormula: String): Aggregation<K> {
             return copy(formula = formula.change(newFormula))
         }
     }
 
-    data class Tabular(
+    data class Tabular<K: Comparable<K>>(
         override val name: String,
         override val formula: Formula,
-        val destination: ColumnId = ColumnId(),
-        override val id: Id<Calculation> = Id.Companion.nextId(Calculation::class)
-    ) : Calculation() {
+        val destination: ColumnId<K>,
+        override val id: Id<Calculation<*>> = Id.Companion.nextId(Calculation::class)
+    ) : Calculation<K>() {
 
-        override fun changeFormula(newFormula: String): Tabular {
+        override fun changeFormula(newFormula: String): Tabular<K> {
             return copy(formula = formula.change(newFormula))
         }
     }

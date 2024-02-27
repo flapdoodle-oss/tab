@@ -37,35 +37,35 @@ class SolverTest {
         )
         val destination = SingleValueId()
         val formula = Node.Calculated<String>("calc", Calculations(
-            listOf(Calculation.Aggregation("y", EvalAdapter("x+2"), destination))
+            listOf(Calculation.Aggregation<String>("y", EvalAdapter("x+2"), destination))
         ).let { c -> c.connect(c.inputs[0].id, Source.ValueSource(constants.id, x.id)) })
 
         val source = Tab2Model(listOf(constants, formula))
         val changed = Solver.solve(source)
 
-        assertThat(changed.node(formula.id).data(destination))
+        assertThat(changed.node(formula.id).value(destination))
             .isEqualTo(SingleValue("y", BigDecimal::class, BigDecimal.valueOf(3), destination))
 
     }
 
     @Test
     fun singleTableConnecton() {
-        val x = Column("x", Int::class, Int::class, id = ColumnId())
+        val x = Column("x", Int::class, Int::class)
             .add(0, 1)
             .add(1,2)
 
         val constants = Node.Table<Int>(
             "table", Columns(listOf(x))
         )
-        val destination = ColumnId()
-        val formula = Node.Calculated<String>("calc", Calculations(
+        val destination = ColumnId(Int::class)
+        val formula = Node.Calculated("calc", Calculations(
             listOf(Calculation.Tabular("y", EvalAdapter("x+2"), destination))
         ).let { c -> c.connect(c.inputs[0].id, Source.ColumnSource(constants.id, x.id)) })
 
         val source = Tab2Model(listOf(constants, formula))
         val changed = Solver.solve(source)
 
-        val data = changed.node(formula.id).data(destination)
+        val data = changed.node(formula.id).column(destination)
         assertThat(data)
             .isInstanceOf(Columns::class.java)
 

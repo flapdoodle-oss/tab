@@ -37,20 +37,7 @@ object Solver {
         var updated = model
         when (val node = model.node(vertex.node)) {
             is Node.Calculated<*> -> {
-                val matching = when (vertex) {
-                    is Vertex.Column -> {
-                        node.calculations.list.one { c ->
-                            c is Calculation.Tabular && c.destination == vertex.columnId
-                        }
-                    }
-                    is Vertex.SingleValue -> {
-                        node.calculations.list.one { c ->
-                            c is Calculation.Aggregation && c.destination == vertex.valueId
-                        }
-                    }
-                }
-
-                updated = update(updated, node, matching)
+                updated = xyz(vertex, node, updated)
             }
             else -> {
                 println("can skip $node")
@@ -59,7 +46,29 @@ object Solver {
         return updated
     }
 
-    private fun <K: Comparable<K>> update(model: Tab2Model, node: Node.Calculated<K>, calculation: Calculation): Tab2Model {
+    private fun <K: Comparable<K>> xyz(
+        vertex: Vertex,
+        node: Node.Calculated<K>,
+        updated: Tab2Model
+    ): Tab2Model {
+        val matching = when (vertex) {
+            is Vertex.Column<*> -> {
+                node.calculations.list.one { c ->
+                    c is Calculation.Tabular<*> && c.destination == vertex.columnId
+                }
+            }
+
+            is Vertex.SingleValue -> {
+                node.calculations.list.one { c ->
+                    c is Calculation.Aggregation && c.destination == vertex.valueId
+                }
+            }
+        }
+
+        return update(updated, node, matching)
+    }
+
+    private fun <K: Comparable<K>> update(model: Tab2Model, node: Node.Calculated<K>, calculation: Calculation<K>): Tab2Model {
         var updated = model
         val sourceVariables = calculation.formula.variables()
         val neededInputs = node.calculations.inputs.filter { it.mapTo.intersect(sourceVariables).isNotEmpty() }
@@ -67,14 +76,7 @@ object Solver {
         if (missingSources.isEmpty()) {
             val sources = neededInputs.associateBy { it.source!! }
             val input2data = sources.map { (source, input) ->
-                val data = when (source) {
-                    is Source.ColumnSource -> {
-                        updated.node(source.node).data(source.columnId)
-                    }
-                    is Source.ValueSource -> {
-                        updated.node(source.node).data(source.valueId)
-                    }
-                }
+                val data = dataOf(source, updated)
                 input to data
             }
             val variableDataMap = input2data.flatMap { (input, data) ->
@@ -88,16 +90,44 @@ object Solver {
         return updated
     }
 
+    private fun dataOf(
+        source: Source,
+        updated: Tab2Model
+    ): Data {
+        val node = updated.node(source.node)
+        val data = when (source) {
+            is Source.ColumnSource<*> -> {
+                when (node) {
+                    is Node.HasColumns<*> -> node.column(source.columnId)
+                    else -> {
+                        throw IllegalArgumentException("mismatch")
+                    }
+                }
+            }
+
+            is Source.ValueSource -> {
+                when (node) {
+                    is Node.HasValues -> node.value(source.valueId)
+                    else -> {
+                        throw IllegalArgumentException("mismatch")
+                    }
+                }
+//                updated.node(source.node).data(source.valueId)
+            }
+        }
+        return data
+    }
+
     private fun <K: Comparable<K>> calculate(
         model: Tab2Model,
         node: Node.Calculated<K>,
-        calculation: Calculation,
+        calculation: Calculation<K>,
         variableDataMap: Map<Variable, Data>
     ): Tab2Model {
 //        println("calculate ${calculation.formula} with $variableDataMap")
         var updated = model
         when (calculation) {
-            is Calculation.Aggregation -> {
+            is Calculation.Aggregation<K> -> {
                 val valueMap: Map<Variable, Any?> = variableDataMap.map { (v, data) ->
                     v to when (data) {
                         is SingleValue<*> -> data.value
@@ -108,7 +138,7 @@ object Solver {
                 val changedNode: Node.Calculated<K> = setValue(node, calculation, result)
                 updated = updated.copy(nodes = model.nodes.map { if (it.id == changedNode.id) changedNode else it  })
             }
-            is Calculation.Tabular -> {
+            is Calculation.Tabular<K> -> {
 //                val valueMap: Map<Variable, Any?> = variableDataMap.map { (v, data) ->
 //                    v to when (data) {
 //                        is Column<*,*> -> data.values
@@ -123,14 +153,14 @@ object Solver {
         return updated
     }
 
-    private fun calculateTabular(
+    private fun <K: Comparable<K>> calculateTabular(
         updated: Tab2Model,
 //        node: Node.Calculated<K>,
-        calculation: Calculation.Tabular,
+        calculation: Calculation.Tabular<K>,
         variableDataMap: Map<Variable, Data>
     ): Tab2Model {
         val (columns, values) = variableDataMap.entries.partition { it.value is Column<*,*> }
-        val columns2var = columns.map { it.value as Column<String, Any> to it.key }
+        val columns2var = columns.map { it.value as Column<K, Any> to it.key }
         val singleValueMap = values.map { it.key to (it.value as SingleValue<Any>).value }
         val groupedByIndex = columns2var.groupBy { it.first.indexType }
         if (groupedByIndex.size == 1) {
@@ -145,7 +175,7 @@ object Solver {
     private fun <K: Comparable<K>> calculateTabular(
         updated: Tab2Model,
 //        node: Node.Calculated<K>,
-        calculation: Calculation.Tabular,
+        calculation: Calculation.Tabular<K>,
         columns2var: List<Pair<Column<K, Any>, Variable>>,
         singleValueMap: List<Pair<Variable, Any?>>
     ): Tab2Model {
@@ -177,7 +207,7 @@ object Solver {
 
     private fun <K: Comparable<K>> setValue(
         node: Node.Calculated<K>,
-        calculation: Calculation.Aggregation,
+        calculation: Calculation.Aggregation<K>,
         result: Any?
     ): Node.Calculated<K> {
         val changedNode = if (node.values.find(calculation.destination)==null) {
@@ -257,12 +287,12 @@ object Solver {
                             }
                             node.calculations.inputs.forEach { input ->
                                 when (input.source) {
-                                    is Source.ColumnSource -> {
+                                    is Source.ColumnSource<*> -> {
                                         val sourceVertex = Vertex.Column(input.source.node, input.source.columnId)
                                         builder.addVertex(sourceVertex)
                                         node.calculations.destinations(input)?.forEach { d ->
                                             val destVertex = when (d) {
-                                                is ColumnId -> Vertex.Column(node.id, d)
+                                                is ColumnId<*> -> Vertex.Column(node.id, d)
                                                 is SingleValueId -> Vertex.SingleValue(node.id, d)
                                             }
                                             builder.addVertex(destVertex)
@@ -275,7 +305,7 @@ object Solver {
                                         builder.addVertex(sourceVertex)
                                         node.calculations.destinations(input)?.forEach { d ->
                                             val destVertex = when (d) {
-                                                is ColumnId -> Vertex.Column(node.id, d)
+                                                is ColumnId<*> -> Vertex.Column(node.id, d)
                                                 is SingleValueId -> Vertex.SingleValue(node.id, d)
                                             }
                                             builder.addVertex(destVertex)
@@ -294,7 +324,7 @@ object Solver {
             }
         val dot = GraphAsDot.builder<Vertex> { it ->
             when (it) {
-                is Vertex.Column -> "column(${it.node}:${it.columnId})"
+                is Vertex.Column<*> -> "column(${it.node}:${it.columnId})"
                 is Vertex.SingleValue -> "value(${it.node}:${it.valueId})"
             }
         }
