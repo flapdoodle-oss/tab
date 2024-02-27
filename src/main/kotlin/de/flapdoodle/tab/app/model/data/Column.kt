@@ -18,4 +18,16 @@ data class Column<K : Comparable<K>, V : Any>(
     }
 
     fun index() = values.keys
+
+    fun set(newValues: Map<K, out Any>): Column<K, V> {
+        var map = values
+        newValues.forEach { k, v ->
+            if (valueType.isInstance(v)) {
+                map = (map - k) + (k to (v as V))
+            } else {
+                throw IllegalArgumentException("can not set $k:$v to $this")
+            }
+        }
+        return copy(values = map)
+    }
 }

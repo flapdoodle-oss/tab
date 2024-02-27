@@ -16,7 +16,7 @@ data class Columns<K: Comparable<K>>(
 
     fun index() = index
 
-    fun addColumn(column: Column<K, *>): Columns<K> {
+    fun addColumn(column: Column<K, out Any>): Columns<K> {
         return copy(columns = columns + column)
     }
 
@@ -35,6 +35,10 @@ data class Columns<K: Comparable<K>>(
         return copy(columns = columns.map {
             if (it.id == column.id) column else it
         })
+    }
+
+    fun change(id: ColumnId<K>, map: (Column<K, out Any>) -> Column<K, out Any>): Columns<K> {
+        return copy(columns = columns.map { if (it.id==id) map(it) else it })
     }
 
     fun get(columnId: ColumnId<K>, key: K): Any? {

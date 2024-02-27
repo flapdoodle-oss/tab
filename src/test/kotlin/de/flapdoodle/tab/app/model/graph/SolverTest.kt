@@ -66,8 +66,11 @@ class SolverTest {
         val changed = Solver.solve(source)
 
         val data = changed.node(formula.id).column(destination)
-        assertThat(data)
-            .isInstanceOf(Columns::class.java)
+        assertThat(data.values)
+            .isEqualTo(mapOf(
+                0 to BigDecimal.valueOf(3),
+                1 to BigDecimal.valueOf(3)
+            ))
 
     }
 }

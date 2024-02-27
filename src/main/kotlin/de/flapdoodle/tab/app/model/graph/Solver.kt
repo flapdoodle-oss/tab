@@ -147,7 +147,7 @@ object Solver {
 //                }.toMap()
 //
 //                println("valueMap: $valueMap")
-                updated = calculateTabular(updated, calculation, variableDataMap)
+                updated = calculateTabular(updated, node, calculation, variableDataMap)
             }
         }
         return updated
@@ -155,7 +155,7 @@ object Solver {
 
     private fun <K: Comparable<K>> calculateTabular(
         updated: Tab2Model,
-//        node: Node.Calculated<K>,
+        node: Node.Calculated<K>,
         calculation: Calculation.Tabular<K>,
         variableDataMap: Map<Variable, Data>
     ): Tab2Model {
@@ -165,7 +165,7 @@ object Solver {
         val groupedByIndex = columns2var.groupBy { it.first.indexType }
         if (groupedByIndex.size == 1) {
             println("index type: ${groupedByIndex.keys}")
-            return calculateTabular(updated, calculation, columns2var, singleValueMap)
+            return calculateTabular(updated, node, calculation, columns2var, singleValueMap)
         } else {
             println("different index types used: ${groupedByIndex.keys}")
         }
@@ -174,20 +174,19 @@ object Solver {
 
     private fun <K: Comparable<K>> calculateTabular(
         updated: Tab2Model,
-//        node: Node.Calculated<K>,
+        node: Node.Calculated<K>,
         calculation: Calculation.Tabular<K>,
         columns2var: List<Pair<Column<K, Any>, Variable>>,
         singleValueMap: List<Pair<Variable, Any?>>
     ): Tab2Model {
         val interpolated = sortAndInterpolate(columns2var)
-        val result = interpolated.index.map {
+        val result = interpolated.index.mapNotNull {
             val result = calculation.formula.evaluate(interpolated.variablesAt(it) + singleValueMap.toMap())
-            it to result
+            if (result!=null) it to result else null
         }.toMap()
 
-//        val changedNode: Node.Calculated<K> = setTable(node, calculation, result)
-//        return updated.copy(nodes = updated.nodes.map { if (it.id == changedNode.id) changedNode else it  })
-        return updated
+        val changedNode: Node.Calculated<K> = setTable(node, calculation, result)
+        return updated.copy(nodes = updated.nodes.map { if (it.id == changedNode.id) changedNode else it  })
     }
 
     private fun <K: Comparable<K>> sortAndInterpolate(columns: List<Pair<Column<K, Any>, Variable>>): InterpolatedColumns<K> {
@@ -229,29 +228,38 @@ object Solver {
         return changedNode
     }
 
-//    private fun <K: Comparable<K>> setTable(
-//        node: Node.Calculated<K>,
-//        calculation: Calculation.Tabular,
-//        result: Map<K, Any?>
-//    ): Node.Calculated<K> {
-//        val changedNode = if (node.columns.find(calculation.destination)==null) {
-//            val newSingleValue = if (result!=null) {
-//                SingleValue(calculation.name, result::class, result, calculation.destination)
-//            } else {
-//                SingleValue(calculation.name, Unit::class, result, calculation.destination)
-//            }
-//            node.copy(values = node.values.addValue(newSingleValue))
-//        } else {
-//            node.copy(values = node.values.change(calculation.destination) { old ->
-//                if (result!=null) {
-//                    SingleValue(old.name, result::class, result, old.id)
-//                } else {
-//                    old.copy(value = null)
-//                }
-//            })
-//        }
-//        return changedNode
-//    }
+    private fun <K: Comparable<K>> setTable(
+        node: Node.Calculated<K>,
+        calculation: Calculation.Tabular<K>,
+        result: Map<K, Any>
+    ): Node.Calculated<K> {
+        val changedNode = if (node.columns.find(calculation.destination)==null) {
+            val newColumn = column(result, calculation)
+            node.copy(columns = node.columns.addColumn(newColumn))
+        } else {
+            node.copy(columns = node.columns.change(calculation.destination) { old ->
+                old.copy(name = calculation.name)
+            })
+        }
+        return changedNode
+    }
+
+    private fun <K : Comparable<K>> column(
+        result: Map<K, Any>,
+        calculation: Calculation.Tabular<K>
+    ): Column<K, out Any> {
+        val valueTypes = result.values.map { it::class }.toSet()
+        val valueType = valueTypes.toList().one { true }
+
+        val column = Column(
+            calculation.name,
+            calculation.destination.indexType,
+            valueType,
+            emptyMap(),
+            calculation.destination
+        )
+        return column.set(result)
+    }
 
 
     private fun verticesAndEdges(
