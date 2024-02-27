@@ -9,3 +9,7 @@ fun <T> List<T>.one(predicate: (T) -> Boolean): T {
 fun <T> List<T>.change(predicate: (T) -> Boolean, change: (T) -> T): List<T> {
     return map { if (predicate(it)) change(it) else it }
 }
+
+fun <T, K> List<T>.change(keyOf: (T) -> K, match: K, change: (T) -> T): List<T> {
+    return map { if (keyOf(it) == match) change(it) else it }
+}

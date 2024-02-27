@@ -2,21 +2,18 @@ package de.flapdoodle.tab.app.model.calculations
 
 import de.flapdoodle.kfx.types.Id
 import de.flapdoodle.tab.app.model.connections.Source
-import de.flapdoodle.tab.app.model.data.DataId
-import de.flapdoodle.tab.extensions.change
 import de.flapdoodle.tab.types.change
 
 data class Calculations<K: Comparable<K>>(
-//    val list: List<Calculation<K>> = emptyList(),
     val aggregations: List<Calculation.Aggregation<K>> = emptyList(),
     val tabular: List<Calculation.Tabular<K>> = emptyList(),
     val inputs: List<InputSlot<K>> = inputSlots(aggregations + tabular)
 ) {
 
     fun changeFormula(id: Id<Calculation<*>>, newFormula: String): Calculations<K> {
-        val agg = aggregations.change({ it.id == id}) { it.changeFormula(newFormula) }
-        val tab = tabular.change({ it.id == id}) { it.changeFormula(newFormula) }
-        return copy(aggregations = agg, tabular = tab, inputs = merge(inputs, inputSlots(agg + tab)))
+        val changedAggregations = aggregations.change(Calculation.Aggregation<K>::id, id) { it.changeFormula(newFormula) }
+        val changedTabular = tabular.change(Calculation.Tabular<K>::id, id) { it.changeFormula(newFormula) }
+        return copy(aggregations = changedAggregations, tabular = changedTabular, inputs = merge(inputs, inputSlots(changedAggregations + changedTabular)))
     }
 
     fun connect(input: Id<InputSlot<*>>, source: Source): Calculations<K> {
