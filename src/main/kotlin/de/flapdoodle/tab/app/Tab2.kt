@@ -22,7 +22,7 @@ class Tab2 : Application() {
                     })
                 })
             }
-            center = Main()
+            center = Main2()
         }
 
         stage.scene= Scene(root, 800.0, 600.0)

@@ -1,6 +1,6 @@
 package de.flapdoodle.tab
 
-import de.flapdoodle.kfx.usecase.tab2.Tab2
+import de.flapdoodle.tab.app.Tab2
 import javafx.application.Application
 
 object Tab2Sampler {
