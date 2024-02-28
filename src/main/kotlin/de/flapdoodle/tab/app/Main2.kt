@@ -4,6 +4,8 @@ import de.flapdoodle.kfx.controls.graphmodeleditor.model.*
 import de.flapdoodle.kfx.controls.graphmodeleditor.types.VertexId
 import de.flapdoodle.kfx.extensions.withAnchors
 import de.flapdoodle.kfx.layout.grid.WeightGridPane
+import de.flapdoodle.tab.app.model.Node
+import de.flapdoodle.tab.app.model.Position
 import de.flapdoodle.tab.app.model.Tab2Model
 import de.flapdoodle.tab.app.ui.Tab2ModelAdapter
 import de.flapdoodle.tab.app.ui.commands.Command
@@ -81,10 +83,10 @@ class Main2() : BorderPane() {
       }
     bottom = FlowPane().also { flowPane ->
       flowPane.children.addAll(
-        Button("+").also { button ->
+        Button("+C").also { button ->
           button.onAction = EventHandler {
             adapter.execute(Command.AskForPosition(onSuccess = { pos ->
-              //model.set(model.get().add(Vertex("Name#"+vertexCounter.incrementAndGet(), "X", position = pos)))
+              model.set(model.get().addNode(Node.Constants("Values#"+vertexCounter.incrementAndGet(), position = Position(pos.x, pos.y))))
             }))
           }
         }
