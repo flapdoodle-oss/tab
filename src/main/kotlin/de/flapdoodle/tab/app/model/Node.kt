@@ -4,6 +4,7 @@ import de.flapdoodle.kfx.types.Id
 import de.flapdoodle.tab.app.model.calculations.Calculations
 import de.flapdoodle.tab.app.model.data.*
 import de.flapdoodle.tab.types.one
+import kotlin.reflect.KClass
 
 sealed class Node {
     abstract val name: String
@@ -48,6 +49,7 @@ sealed class Node {
 
     data class Table<K: Comparable<K>> (
         override val name: String,
+        val indexType: KClass<K>,
         override val columns: Columns<K> = Columns(),
         override val id: Id<Table<*>> = Id.nextId(Table::class),
         override val position: Position = Position(0.0, 0.0)
@@ -55,8 +57,8 @@ sealed class Node {
 
     data class Calculated<K: Comparable<K>>(
         override val name: String,
+        val indexType: KClass<K>,
         val calculations: Calculations<K>,
-        // result
         override val columns: Columns<K> = Columns(),
         override val values: SingleValues = SingleValues(),
         override val id: Id<Calculated<*>> = Id.nextId(Calculated::class),

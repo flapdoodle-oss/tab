@@ -36,7 +36,7 @@ class SolverTest {
             )
         )
         val destination = SingleValueId()
-        val formula = Node.Calculated<String>("calc", Calculations(
+        val formula = Node.Calculated("calc", String::class, Calculations(
             listOf(Calculation.Aggregation<String>("y", EvalAdapter("x+2"), destination))
         ).let { c -> c.connect(c.inputs[0].id, Source.ValueSource(constants.id, x.id)) })
 
@@ -55,11 +55,11 @@ class SolverTest {
             .add(1,2)
             .add(3,10)
 
-        val table = Node.Table<Int>(
-            "table", Columns(listOf(x))
+        val table = Node.Table(
+            "table", Int::class, Columns(listOf(x))
         )
         val destination = ColumnId(Int::class)
-        val formula = Node.Calculated("calc", Calculations(
+        val formula = Node.Calculated("calc", Int::class, Calculations(
             tabular = listOf(Calculation.Tabular("y", EvalAdapter("x+2"), destination))
         ).let { c -> c.connect(c.inputs[0].id, Source.ColumnSource(table.id, x.id)) })
 
@@ -96,11 +96,11 @@ class SolverTest {
             )
         )
 
-        val table = Node.Table<Int>(
-            "table", Columns(listOf(a, b))
+        val table = Node.Table(
+            "table", Int::class, Columns(listOf(a, b))
         )
         val destination = ColumnId(Int::class)
-        val formula = Node.Calculated("calc", Calculations(
+        val formula = Node.Calculated("calc", Int::class, Calculations(
             tabular = listOf(Calculation.Tabular("y", EvalAdapter("x+b+c"), destination))
         ).let { c ->
             c.connect(c.inputs[0].id, Source.ColumnSource(table.id, a.id))
