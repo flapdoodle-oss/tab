@@ -145,14 +145,7 @@ object Solver {
         val (columns, values) = variableDataMap.entries.partition { it.value is Column<*, *> }
         val columns2var = columns.map { it.value as Column<K, Any> to it.key }
         val singleValueMap = values.map { it.key to (it.value as SingleValue<Any>).value }
-        val groupedByIndex = columns2var.groupBy { it.first.indexType }
-        if (groupedByIndex.size == 1) {
-            println("index type: ${groupedByIndex.keys}")
-            return calculateTabular(updated, node, calculation, columns2var, singleValueMap)
-        } else {
-            println("different index types used: ${groupedByIndex.keys}")
-        }
-        return updated
+        return calculateTabular(updated, node, calculation, columns2var, singleValueMap)
     }
 
     private fun <K : Comparable<K>> calculateTabular(
