@@ -7,6 +7,7 @@ import de.flapdoodle.kfx.types.Id
 import de.flapdoodle.tab.app.model.Node
 import de.flapdoodle.tab.app.model.Position
 import de.flapdoodle.tab.app.model.Tab2Model
+import de.flapdoodle.tab.app.model.data.SingleValue
 import de.flapdoodle.tab.app.ui.Tab2ModelAdapter
 import de.flapdoodle.tab.app.ui.commands.Command
 import javafx.beans.property.SimpleObjectProperty
@@ -93,7 +94,10 @@ class Main2() : BorderPane() {
         Button("+C").also { button ->
           button.onAction = EventHandler {
             adapter.execute(Command.AskForPosition(onSuccess = { pos ->
-              model.set(model.get().addNode(Node.Constants("Values#"+vertexCounter.incrementAndGet(), position = Position(pos.x, pos.y))))
+              val node = Node.Constants("Values#" + vertexCounter.incrementAndGet(), position = Position(pos.x, pos.y)).let {
+                it.copy(values = it.values.addValue(SingleValue("x", Int::class)))
+              }
+              model.set(model.get().addNode(node))
             }))
           }
         },

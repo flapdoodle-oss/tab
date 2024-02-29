@@ -7,6 +7,7 @@ import de.flapdoodle.tab.app.model.calculations.InputSlot
 import de.flapdoodle.tab.app.model.connections.Source
 import de.flapdoodle.tab.app.model.data.Data
 import de.flapdoodle.tab.app.model.data.DataId
+import de.flapdoodle.tab.types.Change
 
 sealed class Action {
     data class AddNode(val node: Node) : Action()
@@ -19,6 +20,11 @@ sealed class Action {
         val id: Id<out Node>,
         val input: Id<InputSlot<*>>,
         val change: InputSlot<out Comparable<*>>
+    ) : Action()
+    data class ChangeOutput(
+        val id: Id<out Node>,
+        val output: DataId,
+        val change: Data
     ) : Action()
 
     data class RemoveConnection(val source: Source, val id: Id<out Node>, val input: Id<InputSlot<*>>) : Action()
@@ -41,6 +47,20 @@ sealed class Action {
                     } + listOf(RemoveNode(n.id))
                 }
 
+                actions = actions + nodeChanges.modified.flatMap { (old, current) ->
+                    val inputChanges = inputChanges(old, current)
+                    val outputChanges = outputChanges(old, current)
+
+                    emptyList<Action>() +
+                            inputChanges.removed.map { RemoveInput(old.id, it.id) } +
+                            outputChanges.removed.map { RemoveOutput(old.id, it.id) } +
+                            ChangeNode(current.id, current) +
+                            inputChanges.modified.map { ChangeInput(current.id, it.second.id, it.second) } +
+                            outputChanges.modified.map { ChangeOutput(current.id, it.second.id, it.second) } +
+                            inputChanges.added.map { AddInput(current.id, it) } +
+                            outputChanges.added.map { AddOutput(old.id, it) }
+                }
+
                 actions = actions + nodeChanges.added.flatMap { n ->
                     listOf(AddNode(n)) + inputsOf(n).map { inputSlot ->
                         AddInput(n.id, inputSlot)
@@ -50,6 +70,14 @@ sealed class Action {
                 }
             }
             return actions
+        }
+
+        private fun inputChanges(old: Node, current: Node): Change<InputSlot<*>> {
+            return Change.diff(inputsOf(old), inputsOf(current), InputSlot<out Comparable<*>>::id)
+        }
+
+        private fun outputChanges(old: Node, current: Node): Change<Data> {
+            return Change.diff(outputs(old), outputs(current), Data::id)
         }
 
         private fun inputsOf(node: Node): List<InputSlot<*>> {
@@ -74,28 +102,5 @@ sealed class Action {
                     node.columns.columns
             }
         }
-
-//        fun inputChanges(old: Node, current: Node): Change<Pair<Id<Node.Calculated<*>>, InputSlot<out Comparable<*>>>> {
-//            require(old.id == current.id) { "id mismatch: ${old.id} != ${current.id}"}
-//            if (old is Node.Calculated<out Comparable<*>> && current is Node.Calculated<out Comparable<*>>) {
-//                return inputChanges(old, current)
-//            }
-//            return Change.empty()
-//        }
-//
-//        private fun inputChanges(
-//            old: Node.Calculated<out Comparable<*>>,
-//            current: Node.Calculated<out Comparable<*>>
-//        ): Change<Pair<Id<Node.Calculated<*>>, InputSlot<out Comparable<*>>>> {
-//            val change = Change.diff(old.calculations.inputs, current.calculations.inputs, InputSlot<out Comparable<*>>::id)
-//            return Change(
-//                removed = change.removed.map { old.id to it }.toSet(),
-//                notChanged = change.notChanged.map { current.id to it }.toSet(),
-//                modified = change.modified.map { (o,c) ->
-//                    (old.id to o) to (current.id to c)
-//                }.toSet(),
-//                added = change.added.map { current.id to it }.toSet()
-//            )
-//        }
     }
 }
