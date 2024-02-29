@@ -1,5 +1,9 @@
 package de.flapdoodle.tab.types
 
+import de.flapdoodle.kfx.types.Id
+import de.flapdoodle.tab.app.model.Node
+import de.flapdoodle.tab.app.model.calculations.InputSlot
+
 data class Change<T>(
     val removed: Set<T>,
     val notChanged: Set<T>,
@@ -24,6 +28,10 @@ data class Change<T>(
                 modified = modified.map { it.second }.toSet(),
                 added = added.map { newByKey[it]!! }.toSet()
             )
+        }
+
+        fun <T> empty(): Change<T> {
+            return Change(emptySet(), emptySet(), emptySet(), emptySet())
         }
     }
 }
