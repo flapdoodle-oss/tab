@@ -7,7 +7,7 @@ data class Change<T>(
     val added: Set<T>
 ) {
     companion object {
-        fun <K: Any, T: Any> change(old: Collection<T>, new: Collection<T>, keyOf: (T) -> K): Change<T> {
+        fun <K: Any, T: Any> diff(old: Collection<T>, new: Collection<T>, keyOf: (T) -> K): Change<T> {
             val oldByKey = old.associateBy(keyOf)
             val newByKey = new.associateBy(keyOf)
 

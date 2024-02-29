@@ -42,6 +42,20 @@ class Tab2ModelAdapter(
     private fun apply(action: List<Action>) {
         action.forEach { action ->
             println("action: $action")
+
+            when (action) {
+                is Action.AddNode -> {
+
+                }
+
+                is Action.RemoveNode -> {
+
+                }
+
+                else -> {
+                    println("not implemented: $action")
+                }
+            }
         }
     }
 }

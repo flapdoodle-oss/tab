@@ -9,7 +9,7 @@ class ChangeTest {
     fun someChange() {
         val old = listOf(1 to "A", 2 to "B", 3 to "C")
         val new = listOf(1 to "A", 2 to "b", 4 to "X")
-        val change = Change.change(old, new, Pair<Int, String>::first)
+        val change = Change.diff(old, new, Pair<Int, String>::first)
 
         assertThat(change.notChanged)
             .containsExactlyInAnyOrder(1 to "A")

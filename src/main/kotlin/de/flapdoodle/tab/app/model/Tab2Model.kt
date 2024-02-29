@@ -1,6 +1,8 @@
 package de.flapdoodle.tab.app.model
 
 import de.flapdoodle.kfx.types.Id
+import de.flapdoodle.tab.app.model.calculations.InputSlot
+import de.flapdoodle.tab.app.model.connections.Source
 import de.flapdoodle.tab.types.Change
 import de.flapdoodle.tab.types.one
 
@@ -29,7 +31,23 @@ data class Tab2Model(
 
     companion object {
         fun nodeChanges(old: Tab2Model, current: Tab2Model): Change<Node> {
-            return Change.change(old.nodes, current.nodes, Node::id)
+            return Change.diff(old.nodes, current.nodes, Node::id)
+        }
+
+        fun connectionChanges(old: Tab2Model, current: Tab2Model): Change<Pair<Source, Pair<Id<Node.Calculated<*>>, InputSlot<out Comparable<*>>>>> {
+            val oldInputs = nodeAndInputs(old.nodes)
+            val currentInputs = nodeAndInputs(current.nodes)
+            return Change.diff(oldInputs, currentInputs) { it.first to (it.second.first to it.second.second.id) }
+        }
+
+        private fun nodeAndInputs(nodes: List<Node>): List<Pair<Source, Pair<Id<Node.Calculated<*>>, InputSlot<out Comparable<*>>>>> {
+            return nodes.filterIsInstance<Node.Calculated<out Comparable<*>>>().flatMap { node ->
+                node.calculations.inputs.map { node to it }
+            }.filter {
+                it.second.source!=null
+            }.map {
+                it.second.source!! to (it.first.id to it.second)
+            }
         }
     }
 }
