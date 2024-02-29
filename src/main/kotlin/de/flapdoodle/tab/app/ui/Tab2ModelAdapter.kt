@@ -4,17 +4,19 @@ import de.flapdoodle.kfx.bindings.Subscriptions
 import de.flapdoodle.kfx.controls.grapheditor.GraphEditor
 import de.flapdoodle.kfx.controls.grapheditor.Vertex
 import de.flapdoodle.kfx.controls.grapheditor.events.EventListener
-import de.flapdoodle.kfx.controls.grapheditor.types.EdgeId
-import de.flapdoodle.kfx.controls.graphmodeleditor.GraphEditorModelAdapter
-import de.flapdoodle.kfx.controls.graphmodeleditor.model.Edge
-import de.flapdoodle.kfx.controls.graphmodeleditor.model.VertexContent
-import de.flapdoodle.kfx.controls.graphmodeleditor.types.VertexId
+import de.flapdoodle.kfx.controls.grapheditor.slots.Position
+import de.flapdoodle.kfx.controls.grapheditor.slots.Slot
+import de.flapdoodle.kfx.controls.grapheditor.types.SlotId
+import de.flapdoodle.kfx.controls.grapheditor.types.VertexId
 import de.flapdoodle.kfx.extensions.layoutPosition
 import de.flapdoodle.kfx.extensions.unsubscribeOnDetach
 import de.flapdoodle.kfx.extensions.withAnchors
 import de.flapdoodle.kfx.types.Id
 import de.flapdoodle.tab.app.model.Node
 import de.flapdoodle.tab.app.model.Tab2Model
+import de.flapdoodle.tab.app.model.data.Column
+import de.flapdoodle.tab.app.model.data.DataId
+import de.flapdoodle.tab.app.model.data.SingleValue
 import de.flapdoodle.tab.app.ui.commands.Command
 import javafx.beans.property.ReadOnlyObjectProperty
 import javafx.beans.property.ReadOnlyProperty
@@ -29,7 +31,8 @@ class Tab2ModelAdapter(
     private val graphEditor = GraphEditor(eventListener = EventListener { graphEditor, event -> false }).withAnchors(all = 10.0)
 
     private class VertexAndContent(val vertex: Vertex, val content: javafx.scene.Node)
-    private val vertexMapping = Mapping<Id<out Node>, de.flapdoodle.kfx.controls.grapheditor.types.VertexId, VertexAndContent>()
+    private val vertexMapping = Mapping<Id<out Node>, VertexId, VertexAndContent>()
+    private val slotMapping = Mapping<DataId, SlotId, Slot>()
 //    private val edgeMapping = Mapping<Edge<V>, EdgeId, de.flapdoodle.kfx.controls.grapheditor.Edge>()
 
     private val selectedVertices = SimpleObjectProperty<Set<Id<out Node>>>(emptySet())
@@ -64,7 +67,7 @@ class Tab2ModelAdapter(
 
     private fun apply(action: List<Action>) {
         action.forEach { action ->
-            println("action: $action")
+//            println("action: $action")
 
             when (action) {
                 is Action.AddNode -> {
@@ -86,6 +89,25 @@ class Tab2ModelAdapter(
                         Subscriptions.unsubscribeAll(it.vertex)
                     }
 
+                }
+
+                is Action.AddOutput -> {
+                    val slot = when (action.output) {
+                        is Column<*,*> -> Slot(action.output.name, Slot.Mode.OUT, Position.RIGHT)
+                        is SingleValue<*> -> Slot(action.output.name, Slot.Mode.OUT, Position.RIGHT)
+                    }
+                    slotMapping.add(action.output.id, slot.id, slot)
+                    vertexMapping.with(action.id) {
+                        it.vertex.addConnector(slot)
+                    }
+                }
+
+                is Action.RemoveOutput -> {
+                    slotMapping.remove(action.output) { slot ->
+                        vertexMapping.with(action.id) {
+                            it.vertex.removeConnector(slot.id)
+                        }
+                    }
                 }
 
                 else -> {
