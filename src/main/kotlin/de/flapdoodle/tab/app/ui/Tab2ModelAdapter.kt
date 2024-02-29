@@ -14,10 +14,14 @@ import de.flapdoodle.kfx.extensions.withAnchors
 import de.flapdoodle.kfx.types.Id
 import de.flapdoodle.tab.app.model.Node
 import de.flapdoodle.tab.app.model.Tab2Model
+import de.flapdoodle.tab.app.model.calculations.InputSlot
 import de.flapdoodle.tab.app.model.data.Column
 import de.flapdoodle.tab.app.model.data.DataId
 import de.flapdoodle.tab.app.model.data.SingleValue
 import de.flapdoodle.tab.app.ui.commands.Command
+import de.flapdoodle.tab.app.ui.events.Event2ModelEvent
+import de.flapdoodle.tab.app.ui.events.ModelEventListener
+import de.flapdoodle.types.Either
 import javafx.beans.property.ReadOnlyObjectProperty
 import javafx.beans.property.ReadOnlyProperty
 import javafx.beans.property.SimpleObjectProperty
@@ -26,13 +30,19 @@ import javafx.scene.control.Button
 import javafx.scene.layout.AnchorPane
 
 class Tab2ModelAdapter(
-    model: ReadOnlyObjectProperty<Tab2Model>
+    model: ReadOnlyObjectProperty<Tab2Model>,
+    modelEventListener: ModelEventListener
 ) : AnchorPane() {
-    private val graphEditor = GraphEditor(eventListener = EventListener { graphEditor, event -> false }).withAnchors(all = 10.0)
+    private val graphEditor = GraphEditor(eventListener = Event2ModelEvent(
+        delegate = modelEventListener,
+        vertexIdMapper = ::nodeOfVertex,
+        slotIdMapper = ::outputOrInputOfSlot
+    )).withAnchors(all = 10.0)
 
     private class VertexAndContent(val vertex: Vertex, val content: javafx.scene.Node)
     private val vertexMapping = Mapping<Id<out Node>, VertexId, VertexAndContent>()
     private val slotMapping = Mapping<DataId, SlotId, Slot>()
+    private val inputMapping = Mapping<Id<InputSlot<*>>, SlotId, Slot>()
 //    private val edgeMapping = Mapping<Edge<V>, EdgeId, de.flapdoodle.kfx.controls.grapheditor.Edge>()
 
     private val selectedVertices = SimpleObjectProperty<Set<Id<out Node>>>(emptySet())
@@ -48,6 +58,20 @@ class Tab2ModelAdapter(
             }
         }
     }
+
+    private fun nodeOfVertex(vertexId: VertexId): Id<out Node> {
+        return requireNotNull(vertexMapping.key(vertexId)) { "could not get node for $vertexId" }
+    }
+
+    private fun outputOrInputOfSlot(slotId: SlotId): Either<DataId, Id<InputSlot<*>>> {
+        val dataId = slotMapping.key(slotId)
+        if (dataId!=null) {
+            return Either.left(dataId)
+        }
+        val inputId = inputMapping.key(slotId)
+        return Either.right(requireNotNull(inputId) { "could not find mapping for $slotId"})
+    }
+
 
     fun selectedNodesProperty(): ReadOnlyProperty<Set<Id<out Node>>> = selectedVertices
 //    fun selectedEdgesProperty(): ReadOnlyProperty<Set<Edge<V>>> = selectedEdges
@@ -110,6 +134,21 @@ class Tab2ModelAdapter(
                     }
                 }
 
+                is Action.AddInput -> {
+                    val slot = Slot(action.input.name, Slot.Mode.IN, Position.LEFT)
+                    inputMapping.add(action.input.id, slot.id, slot)
+                    vertexMapping.with(action.id) {
+                        it.vertex.addConnector(slot)
+                    }
+                }
+
+                is Action.RemoveInput -> {
+                    inputMapping.remove(action.input) { slot ->
+                        vertexMapping.with(action.id) {
+                            it.vertex.removeConnector(slot.id)
+                        }
+                    }
+                }
                 else -> {
                     println("not implemented: $action")
                 }

@@ -3,8 +3,13 @@ package de.flapdoodle.tab.app.model
 import de.flapdoodle.kfx.types.Id
 import de.flapdoodle.tab.app.model.calculations.InputSlot
 import de.flapdoodle.tab.app.model.connections.Source
+import de.flapdoodle.tab.app.model.data.ColumnId
+import de.flapdoodle.tab.app.model.data.DataId
+import de.flapdoodle.tab.app.model.data.SingleValueId
 import de.flapdoodle.tab.types.Change
+import de.flapdoodle.tab.types.change
 import de.flapdoodle.tab.types.one
+import de.flapdoodle.types.Either
 
 data class Tab2Model(
     val nodes: List<Node> = emptyList()
@@ -30,6 +35,43 @@ data class Tab2Model(
 
     fun node(id: Id<out Node.Calculated<*>>): Node.Calculated<*> {
         return nodes.one { it.id == id } as Node.Calculated<*>
+    }
+
+    fun connect(
+        startId: Id<out Node>,
+        startDataOrInput: Either<DataId, Id<InputSlot<*>>>,
+        endId: Id<out Node>,
+        endDataOrInput: Either<DataId, Id<InputSlot<*>>>
+    ): Tab2Model {
+        require(startDataOrInput.isLeft != endDataOrInput.isLeft) {"can not connect input to input/output to output"}
+        require(startId!=endId) {"can not connect to itself"}
+
+        val start: Node
+        val end: Node
+        val dataId: DataId
+        val inputId: Id<InputSlot<*>>
+
+        if (startDataOrInput.isLeft) {
+            // dataId 2 input
+            start=node(startId)
+            end = node(endId)
+            dataId = startDataOrInput.left()
+            inputId = endDataOrInput.right()
+        } else {
+            // input 2 dataId
+            start=node(endId)
+            end = node(startId)
+            dataId = endDataOrInput.left()
+            inputId = startDataOrInput.right()
+        }
+
+        require(end is Node.Calculated<out Comparable<*>>) {"wrong node type: $end"}
+        val connected = end.connect(inputId, when (dataId) {
+            is ColumnId<out Comparable<*>> -> Source.ColumnSource(startId, dataId)
+            is SingleValueId -> Source.ValueSource(startId, dataId)
+        })
+
+        return copy(nodes = nodes.change(Node::id, connected.id, { connected }))
     }
 
 

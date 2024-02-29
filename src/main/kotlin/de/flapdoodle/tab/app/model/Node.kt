@@ -1,7 +1,10 @@
 package de.flapdoodle.tab.app.model
 
 import de.flapdoodle.kfx.types.Id
+import de.flapdoodle.tab.app.model.calculations.Calculation
 import de.flapdoodle.tab.app.model.calculations.Calculations
+import de.flapdoodle.tab.app.model.calculations.InputSlot
+import de.flapdoodle.tab.app.model.connections.Source
 import de.flapdoodle.tab.app.model.data.*
 import de.flapdoodle.tab.types.one
 import kotlin.reflect.KClass
@@ -45,7 +48,12 @@ sealed class Node {
         override val values: SingleValues = SingleValues(),
         override val id: Id<Constants> = Id.nextId(Constants::class),
         override val position: Position = Position(0.0, 0.0)
-    ) : Node(), HasValues
+    ) : Node(), HasValues {
+
+        fun addValue(value: SingleValue<*>): Constants {
+            return copy(values = values.addValue(value))
+        }
+    }
 
     data class Table<K: Comparable<K>> (
         override val name: String,
@@ -58,10 +66,23 @@ sealed class Node {
     data class Calculated<K: Comparable<K>>(
         override val name: String,
         val indexType: KClass<K>,
-        val calculations: Calculations<K>,
+        val calculations: Calculations<K> = Calculations(),
         override val columns: Columns<K> = Columns(),
         override val values: SingleValues = SingleValues(),
         override val id: Id<Calculated<*>> = Id.nextId(Calculated::class),
         override val position: Position = Position(0.0, 0.0)
-    ): Node(), HasColumns<K>, HasValues
+    ): Node(), HasColumns<K>, HasValues {
+
+        fun addAggregation(aggregation: Calculation.Aggregation<K>): Calculated<K> {
+            return copy(calculations = calculations.addAggregation(aggregation))
+        }
+
+        fun addTabular(tabular: Calculation.Tabular<K>): Calculated<K> {
+            return copy(calculations = calculations.addTabular(tabular))
+        }
+
+        fun connect(input: Id<InputSlot<*>>, source: Source): Calculated<K> {
+            return copy(calculations = calculations.connect(input, source))
+        }
+    }
 }

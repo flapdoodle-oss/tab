@@ -12,6 +12,27 @@ data class Calculations<K: Comparable<K>>(
     val tabular: List<Calculation.Tabular<K>> = emptyList(),
     val inputs: List<InputSlot<K>> = inputSlots(aggregations + tabular)
 ) {
+    init {
+        val aggregationsById = aggregations.groupBy { it.id }.filter { it.value.size > 1 }
+        require(aggregationsById.isEmpty()) { "aggregation id collisions: ${aggregationsById.keys}"}
+        val tabularById = tabular.groupBy { it.id }.filter { it.value.size > 1 }
+        require(tabularById.isEmpty()) { "aggregation id collisions: ${tabularById.keys}"}
+    }
+
+    fun addAggregation(aggregation: Calculation.Aggregation<K>): Calculations<K> {
+        return copy(
+            aggregations = aggregations + aggregation,
+            inputs = merge(inputs, inputSlots(aggregations + aggregation + tabular))
+        )
+    }
+
+    fun addTabular(tab: Calculation.Tabular<K>): Calculations<K> {
+        return copy(
+            tabular = tabular + tab,
+            inputs = merge(inputs, inputSlots(aggregations + tabular + tab))
+        )
+    }
+
     fun aggregation(id: SingleValueId): Calculation.Aggregation<K> {
         return aggregations.one { it.destination == id }
     }

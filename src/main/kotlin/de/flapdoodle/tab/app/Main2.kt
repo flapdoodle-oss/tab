@@ -7,9 +7,14 @@ import de.flapdoodle.kfx.types.Id
 import de.flapdoodle.tab.app.model.Node
 import de.flapdoodle.tab.app.model.Position
 import de.flapdoodle.tab.app.model.Tab2Model
+import de.flapdoodle.tab.app.model.calculations.Calculation
+import de.flapdoodle.tab.app.model.calculations.Calculations
+import de.flapdoodle.tab.app.model.calculations.EvalAdapter
 import de.flapdoodle.tab.app.model.data.SingleValue
 import de.flapdoodle.tab.app.ui.Tab2ModelAdapter
 import de.flapdoodle.tab.app.ui.commands.Command
+import de.flapdoodle.tab.app.ui.events.ModelEvent
+import de.flapdoodle.tab.app.ui.events.ModelEventListener
 import javafx.beans.property.SimpleObjectProperty
 import javafx.event.EventHandler
 import javafx.scene.control.Button
@@ -26,18 +31,27 @@ class Main2() : BorderPane() {
   private val vertexCounter = AtomicInteger(0)
   private val slotCounter = AtomicInteger(0)
 
-//  private val eventListener = ModelEventListener<String> { event ->
-//    when (event) {
-//      is ModelEvent.ConnectTo -> {
-//        model.value = model.value.add(Edge(event.startVertex, event.startSlot, event.endVertex, event.endSlot))
-//      }
-//      else -> {
-//
-//      }
-//    }
-//    true
-//  }
-  private val adapter = Tab2ModelAdapter(model).also { editor ->
+  private val eventListener = ModelEventListener { event ->
+    when (event) {
+      is ModelEvent.ConnectTo -> {
+        println("connect..")
+        model.value = model.value.connect(event.start, event.startDataOrInput, event.end, event.endDataOrInput)
+      }
+      is ModelEvent.TryToConnectTo -> {
+        try {
+          model.value.connect(event.start, event.startDataOrInput, event.end, event.endDataOrInput)
+          return@ModelEventListener true
+        } catch (ex: Exception) {
+          return@ModelEventListener false
+        }
+      }
+      else -> {
+
+      }
+    }
+    true
+  }
+  private val adapter = Tab2ModelAdapter(model, eventListener).also { editor ->
     editor.selectedNodesProperty().subscribe { selection ->
       if (selection.size == 1) {
         selectedVertex.value = selection.first()
@@ -91,12 +105,24 @@ class Main2() : BorderPane() {
       }
     bottom = FlowPane().also { flowPane ->
       flowPane.children.addAll(
+        Button("+V").also { button ->
+          button.onAction = EventHandler {
+            adapter.execute(Command.AskForPosition(onSuccess = { pos ->
+              val node = Node.Constants("Values#" + vertexCounter.incrementAndGet(), position = Position(pos.x, pos.y))
+                .addValue(SingleValue("x", Int::class))
+              model.set(model.get().addNode(node))
+            }))
+          }
+        },
         Button("+C").also { button ->
           button.onAction = EventHandler {
             adapter.execute(Command.AskForPosition(onSuccess = { pos ->
-              val node = Node.Constants("Values#" + vertexCounter.incrementAndGet(), position = Position(pos.x, pos.y)).let {
-                it.copy(values = it.values.addValue(SingleValue("x", Int::class)))
-              }
+              val node = Node.Calculated(
+                name = "Calculation#" + vertexCounter.incrementAndGet(),
+                indexType = Int::class,
+                position = Position(pos.x, pos.y))
+                .addAggregation(Calculation.Aggregation("c",EvalAdapter("a+b")))
+
               model.set(model.get().addNode(node))
             }))
           }
