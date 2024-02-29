@@ -1,9 +1,9 @@
 package de.flapdoodle.tab.app
 
-import de.flapdoodle.kfx.controls.graphmodeleditor.model.*
-import de.flapdoodle.kfx.controls.graphmodeleditor.types.VertexId
+import de.flapdoodle.kfx.controls.graphmodeleditor.model.Edge
 import de.flapdoodle.kfx.extensions.withAnchors
 import de.flapdoodle.kfx.layout.grid.WeightGridPane
+import de.flapdoodle.kfx.types.Id
 import de.flapdoodle.tab.app.model.Node
 import de.flapdoodle.tab.app.model.Position
 import de.flapdoodle.tab.app.model.Tab2Model
@@ -20,8 +20,8 @@ import java.util.concurrent.atomic.AtomicInteger
 
 class Main2() : BorderPane() {
   private val model = SimpleObjectProperty(Tab2Model())
-  private val selectedVertex = SimpleObjectProperty<VertexId<String>>()
-  private val selectedEdge = SimpleObjectProperty<Edge<String>>()
+  private val selectedVertex = SimpleObjectProperty<Id<out Node>>()
+//  private val selectedEdge = SimpleObjectProperty<Edge<String>>()
   private val vertexCounter = AtomicInteger(0)
   private val slotCounter = AtomicInteger(0)
 
@@ -37,6 +37,13 @@ class Main2() : BorderPane() {
 //    true
 //  }
   private val adapter = Tab2ModelAdapter(model).also { editor ->
+    editor.selectedNodesProperty().subscribe { selection ->
+      if (selection.size == 1) {
+        selectedVertex.value = selection.first()
+      } else {
+        selectedVertex.value = null
+      }
+    }
     WeightGridPane.setPosition(editor, 0, 0)
   }
 //  private val editorAdapter = GraphEditorModelAdapter(model, eventListener, DummyVertexContentFactory).also { editor ->
@@ -89,15 +96,15 @@ class Main2() : BorderPane() {
               model.set(model.get().addNode(Node.Constants("Values#"+vertexCounter.incrementAndGet(), position = Position(pos.x, pos.y))))
             }))
           }
+        },
+        Button("-").also { button ->
+          button.visibleProperty().bind(selectedVertex.map { it != null })
+          button.managedProperty().bind(button.visibleProperty())
+          button.onAction = EventHandler {
+            val vertexId = selectedVertex.value
+            model.set(model.get().removeNode(vertexId))
+          }
         }
-//        Button("-").also { button ->
-//          button.visibleProperty().bind(selectedVertex.map { it != null })
-//          button.managedProperty().bind(button.visibleProperty())
-//          button.onAction = EventHandler {
-//            val vertexId = selectedVertex.value
-//            model.set(model.get().remove(vertexId))
-//          }
-//        },
 //        Button("?").also { button ->
 //          button.visibleProperty().bind(selectedVertex.map { it != null })
 //          button.managedProperty().bind(button.visibleProperty())

@@ -19,7 +19,10 @@ data class Tab2Model(
         return copy(nodes = nodes + node)
     }
 
-
+    fun removeNode(id: Id<out Node>?): Tab2Model {
+        // TODO remove all connections before that
+        return copy(nodes = nodes.filter { it.id != id })
+    }
 
     fun node(id: Id<out Node>): Node {
         return nodes.one { it.id == id }
@@ -28,6 +31,7 @@ data class Tab2Model(
     fun node(id: Id<out Node.Calculated<*>>): Node.Calculated<*> {
         return nodes.one { it.id == id } as Node.Calculated<*>
     }
+
 
     companion object {
         fun nodeChanges(old: Tab2Model, current: Tab2Model): Change<Node> {
