@@ -1,13 +1,16 @@
 package de.flapdoodle.tab.app.ui
 
 import de.flapdoodle.kfx.bindings.Subscriptions
+import de.flapdoodle.kfx.controls.grapheditor.Edge
 import de.flapdoodle.kfx.controls.grapheditor.GraphEditor
 import de.flapdoodle.kfx.controls.grapheditor.Vertex
 import de.flapdoodle.kfx.controls.grapheditor.events.EventListener
 import de.flapdoodle.kfx.controls.grapheditor.slots.Position
 import de.flapdoodle.kfx.controls.grapheditor.slots.Slot
+import de.flapdoodle.kfx.controls.grapheditor.types.EdgeId
 import de.flapdoodle.kfx.controls.grapheditor.types.SlotId
 import de.flapdoodle.kfx.controls.grapheditor.types.VertexId
+import de.flapdoodle.kfx.controls.grapheditor.types.VertexSlotId
 import de.flapdoodle.kfx.extensions.layoutPosition
 import de.flapdoodle.kfx.extensions.unsubscribeOnDetach
 import de.flapdoodle.kfx.extensions.withAnchors
@@ -15,6 +18,7 @@ import de.flapdoodle.kfx.types.Id
 import de.flapdoodle.tab.app.model.Node
 import de.flapdoodle.tab.app.model.Tab2Model
 import de.flapdoodle.tab.app.model.calculations.InputSlot
+import de.flapdoodle.tab.app.model.connections.Source
 import de.flapdoodle.tab.app.model.data.Column
 import de.flapdoodle.tab.app.model.data.DataId
 import de.flapdoodle.tab.app.model.data.SingleValue
@@ -43,10 +47,10 @@ class Tab2ModelAdapter(
     private val vertexMapping = Mapping<Id<out Node>, VertexId, VertexAndContent>()
     private val slotMapping = Mapping<DataId, SlotId, Slot>()
     private val inputMapping = Mapping<Id<InputSlot<*>>, SlotId, Slot>()
-//    private val edgeMapping = Mapping<Edge<V>, EdgeId, de.flapdoodle.kfx.controls.grapheditor.Edge>()
+    private val edgeMapping = Mapping<Output2Input, EdgeId, Edge>()
 
     private val selectedVertices = SimpleObjectProperty<Set<Id<out Node>>>(emptySet())
-//    private val selectedEdges = SimpleObjectProperty<Set<Edge<V>>>(emptySet())
+    private val selectedEdges = SimpleObjectProperty<Set<Output2Input>>(emptySet())
 
     init {
         children.add(graphEditor)
@@ -106,6 +110,13 @@ class Tab2ModelAdapter(
                     })
                 }
 
+                is Action.ChangeNode -> {
+                    vertexMapping.with(action.id) {
+                        it.vertex.nameProperty().value = action.node.name
+                        //it.content.valueModel.value = action.node
+                    }
+                }
+
                 is Action.RemoveNode -> {
                     vertexMapping.remove(action.id) {
                         graphEditor.removeVertex(it.vertex)
@@ -142,11 +153,48 @@ class Tab2ModelAdapter(
                     }
                 }
 
+                is Action.ChangeInput -> {
+                    vertexMapping.with(action.id) { vertexMapping ->
+                        inputMapping.with(action.input) {
+                            //it.name = action.change.name
+                            // TODO hier fehlt vieles
+                        }
+                    }
+                }
+
                 is Action.RemoveInput -> {
                     inputMapping.remove(action.input) { slot ->
                         vertexMapping.with(action.id) {
                             it.vertex.removeConnector(slot.id)
                         }
+                    }
+                }
+
+                is Action.AddConnection -> {
+                    vertexMapping.with(action.source.node) { start ->
+                        vertexMapping.with(action.id) { end ->
+                            slotMapping.with(action.source.dataId()) { startSlot ->
+                                inputMapping.with(action.input) { input ->
+                                    graphEditor.addEdge(Edge(
+                                        VertexSlotId(start.vertex.vertexId, startSlot.id),
+                                        VertexSlotId(end.vertex.vertexId, input.id),
+                                    ).also { edge ->
+                                        val output2Input = Output2Input(action.source, action.id, action.input)
+                                        edgeMapping.add(output2Input, edge.edgeId, edge)
+                                        Subscriptions.add(edge, edge.selectedProperty().subscribe { it -> changeSelection(output2Input, it) })
+                                    })
+                                }
+                            }
+                        }
+                    }
+                }
+
+                is Action.RemoveConnection -> {
+                    val output2Input = Output2Input(action.source, action.id, action.input)
+                    edgeMapping.remove(output2Input) {
+                        graphEditor.removeEdge(it)
+                        changeSelection(output2Input, false)
+                        Subscriptions.unsubscribeAll(it)
                     }
                 }
                 else -> {
@@ -165,13 +213,19 @@ class Tab2ModelAdapter(
         }
     }
 
-//    private fun changeSelection(egde: de.flapdoodle.kfx.controls.graphmodeleditor.model.Edge<V>, selection: Boolean) {
-//        val current = selectedEdges.get()
-//        selectedEdges.value = if (selection) {
-//            current + egde
-//        } else {
-//            current - egde
-//        }
-//    }
+    data class Output2Input(
+        val source: Source,
+        val id: Id<out Node>,
+        val input: Id<InputSlot<*>>
+    )
+
+    private fun changeSelection(edge: Output2Input, selection: Boolean) {
+        val current = selectedEdges.get()
+        selectedEdges.value = if (selection) {
+            current + edge
+        } else {
+            current - edge
+        }
+    }
 
 }

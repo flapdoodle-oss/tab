@@ -71,7 +71,7 @@ data class Tab2Model(
             is SingleValueId -> Source.ValueSource(startId, dataId)
         })
 
-        return copy(nodes = nodes.change(Node::id, connected.id, { connected }))
+        return copy(nodes = nodes.change(Node::id, connected.id) { connected })
     }
 
 

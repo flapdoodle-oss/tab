@@ -39,6 +39,10 @@ sealed class Action {
                 val nodeChanges = Tab2Model.nodeChanges(old, current)
                 val connectionChanges = Tab2Model.connectionChanges(old, current)
 
+                actions = actions + connectionChanges.removed.map {
+                    RemoveConnection(it.first, it.second.first, it.second.second.id)
+                }
+
                 actions = actions + nodeChanges.removed.flatMap { n ->
                     inputsOf(n).map { inputSlot ->
                         RemoveInput(n.id, inputSlot.id)
@@ -61,12 +65,20 @@ sealed class Action {
                             outputChanges.added.map { AddOutput(old.id, it) }
                 }
 
+                if (connectionChanges.modified.isNotEmpty()) {
+                    throw IllegalArgumentException("unexpected change: ${connectionChanges.modified}")
+                }
+
                 actions = actions + nodeChanges.added.flatMap { n ->
                     listOf(AddNode(n)) + inputsOf(n).map { inputSlot ->
                         AddInput(n.id, inputSlot)
                     } + outputs(n).map { out ->
                         AddOutput(n.id, out)
                     }
+                }
+
+                actions = actions + connectionChanges.added.map {
+                    AddConnection(it.first, it.second.first, it.second.second.id)
                 }
             }
             return actions
