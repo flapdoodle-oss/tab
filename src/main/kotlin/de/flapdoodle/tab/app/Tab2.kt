@@ -1,6 +1,5 @@
 package de.flapdoodle.tab.app
 
-import de.flapdoodle.kfx.usecase.tab2.Main
 import javafx.application.Application
 import javafx.event.EventHandler
 import javafx.scene.Scene

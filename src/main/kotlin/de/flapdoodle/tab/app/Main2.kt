@@ -1,6 +1,5 @@
 package de.flapdoodle.tab.app
 
-import de.flapdoodle.kfx.controls.graphmodeleditor.model.Edge
 import de.flapdoodle.kfx.extensions.withAnchors
 import de.flapdoodle.kfx.layout.grid.WeightGridPane
 import de.flapdoodle.kfx.types.Id
@@ -8,7 +7,6 @@ import de.flapdoodle.tab.app.model.Node
 import de.flapdoodle.tab.app.model.Position
 import de.flapdoodle.tab.app.model.Tab2Model
 import de.flapdoodle.tab.app.model.calculations.Calculation
-import de.flapdoodle.tab.app.model.calculations.Calculations
 import de.flapdoodle.tab.app.model.calculations.EvalAdapter
 import de.flapdoodle.tab.app.model.data.SingleValue
 import de.flapdoodle.tab.app.model.graph.Solver
