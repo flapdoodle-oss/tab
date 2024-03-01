@@ -1,11 +1,13 @@
 package de.flapdoodle.tab.app.ui.views
 
 import de.flapdoodle.tab.app.model.Node
+import javafx.event.EventHandler
+import javafx.scene.control.Button
 
 object DumpNodeUIAdapterFactory : NodeUIAdapterFactory {
     override fun adapterOf(node: Node): NodeUIAdapter {
         return when (node) {
-            is Node.Constants -> constantAdapter(node)
+            is Node.Constants -> InlineConstantUIAdapter(node)
             is Node.Table<out Comparable<*>> -> tableAdapter(node)
             is Node.Calculated<out Comparable<*>> -> calculationAdapter(node)
         }
@@ -24,6 +26,14 @@ object DumpNodeUIAdapterFactory : NodeUIAdapterFactory {
     }
 
     class ConstantUIAdapter : NodeUIAdapter() {
+        init {
+            children.add(Button("clickMe").apply {
+                onAction = EventHandler {
+                    println("clicked")
+                    it.consume()
+                }
+            })
+        }
         override fun update(node: Node) {
             require(node is Node.Constants) {"wrong type $node"}
             println(node.values)
@@ -31,6 +41,14 @@ object DumpNodeUIAdapterFactory : NodeUIAdapterFactory {
     }
 
     class TableUIAdapter : NodeUIAdapter() {
+        init {
+            children.add(Button("clickMe").apply {
+                onAction = EventHandler {
+                    println("clicked")
+                    it.consume()
+                }
+            })
+        }
         override fun update(node: Node) {
             require(node is Node.Table<*>) {"wrong type $node"}
             println(node.columns)
@@ -38,6 +56,14 @@ object DumpNodeUIAdapterFactory : NodeUIAdapterFactory {
     }
 
     class CalculationUIAdapter : NodeUIAdapter() {
+        init {
+            children.add(Button("clickMe").apply {
+                onAction = EventHandler {
+                    println("clicked")
+                    it.consume()
+                }
+            })
+        }
         override fun update(node: Node) {
             require(node is Node.Calculated<*>) {"wrong type $node"}
             println(node.columns)
