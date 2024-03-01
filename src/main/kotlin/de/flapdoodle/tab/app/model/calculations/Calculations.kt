@@ -8,9 +8,9 @@ import de.flapdoodle.tab.types.change
 import de.flapdoodle.tab.types.one
 
 data class Calculations<K: Comparable<K>>(
-    val aggregations: List<Calculation.Aggregation<K>> = emptyList(),
-    val tabular: List<Calculation.Tabular<K>> = emptyList(),
-    val inputs: List<InputSlot<K>> = inputSlots(aggregations + tabular)
+    private val aggregations: List<Calculation.Aggregation<K>> = emptyList(),
+    private val tabular: List<Calculation.Tabular<K>> = emptyList(),
+    private val inputs: List<InputSlot<K>> = inputSlots(aggregations + tabular)
 ) {
     init {
         val aggregationsById = aggregations.groupBy { it.id }.filter { it.value.size > 1 }
@@ -18,6 +18,10 @@ data class Calculations<K: Comparable<K>>(
         val tabularById = tabular.groupBy { it.id }.filter { it.value.size > 1 }
         require(tabularById.isEmpty()) { "aggregation id collisions: ${tabularById.keys}"}
     }
+
+    fun aggregations() = aggregations
+    fun tabular() = tabular
+    fun inputs() = inputs
 
     fun addAggregation(aggregation: Calculation.Aggregation<K>): Calculations<K> {
         return copy(

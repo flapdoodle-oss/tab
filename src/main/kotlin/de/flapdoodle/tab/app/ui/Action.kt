@@ -3,6 +3,7 @@ package de.flapdoodle.tab.app.ui
 import de.flapdoodle.kfx.types.Id
 import de.flapdoodle.tab.app.model.Node
 import de.flapdoodle.tab.app.model.Tab2Model
+import de.flapdoodle.tab.app.model.calculations.Calculation
 import de.flapdoodle.tab.app.model.calculations.InputSlot
 import de.flapdoodle.tab.app.model.connections.Source
 import de.flapdoodle.tab.app.model.data.Data
@@ -88,6 +89,10 @@ sealed class Action {
             return Change.diff(inputsOf(old), inputsOf(current), InputSlot<out Comparable<*>>::id)
         }
 
+        private fun outputIdChanges(old: Node, current: Node): Change<DataId> {
+            return Change.diff(outputsIds(old), outputsIds(current), { it })
+        }
+
         private fun outputChanges(old: Node, current: Node): Change<Data> {
             return Change.diff(outputs(old), outputs(current), Data::id)
         }
@@ -95,10 +100,25 @@ sealed class Action {
         private fun inputsOf(node: Node): List<InputSlot<*>> {
             return when (node) {
                 is Node.Calculated<out Comparable<*>> -> {
-                    node.calculations.inputs
+                    node.calculations.inputs()
                 }
 
                 else -> emptyList()
+            }
+        }
+
+        private fun outputsIds(node: Node): List<DataId> {
+            return when (node) {
+                is Node.Calculated<out Comparable<*>> -> {
+                    val calculations = node.calculations
+                    calculations.aggregations().map { it.destination() }
+                            calculations.tabular().map { it.destination() }
+                }
+                is Node.Constants ->
+                    node.values.values.map { it.id }
+
+                is Node.Table<out Comparable<*>> ->
+                    node.columns.columns.map { it.id }
             }
         }
 

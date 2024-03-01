@@ -269,7 +269,7 @@ object Solver {
                                     }
                                 }
                             }
-                            node.calculations.inputs.forEach { input ->
+                            node.calculations.inputs().forEach { input ->
                                 when (input.source) {
                                     is Source.ColumnSource<*> -> {
                                         val sourceVertex = Vertex.Column(input.source.node, input.source.columnId)

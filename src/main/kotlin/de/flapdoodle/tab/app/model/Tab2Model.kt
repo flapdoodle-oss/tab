@@ -88,7 +88,7 @@ data class Tab2Model(
 
         private fun nodeAndInputs(nodes: List<Node>): List<Pair<Source, Pair<Id<Node.Calculated<*>>, InputSlot<out Comparable<*>>>>> {
             return nodes.filterIsInstance<Node.Calculated<out Comparable<*>>>().flatMap { node ->
-                node.calculations.inputs.map { node to it }
+                node.calculations.inputs().map { node to it }
             }.filter {
                 it.second.source!=null
             }.map {

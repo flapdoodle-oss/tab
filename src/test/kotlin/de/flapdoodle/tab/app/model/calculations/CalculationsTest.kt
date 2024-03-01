@@ -14,7 +14,7 @@ class CalculationsTest {
     fun emptyCalculationsWithoutAnyInput() {
         val testee = calculations<String>()
 
-        assertThat(testee.inputs)
+        assertThat(testee.inputs())
             .isEmpty()
     }
 
@@ -25,10 +25,10 @@ class CalculationsTest {
             tabular("y", "a*b", ColumnId(Int::class))
         )
 
-        assertThat(testee.inputs)
+        assertThat(testee.inputs())
             .hasSize(2)
 
-        val (a, b) = testee.inputs
+        val (a, b) = testee.inputs()
         assertThat(a.name).isEqualTo("a")
         assertThat(b.name).isEqualTo("b")
     }
@@ -40,20 +40,20 @@ class CalculationsTest {
             tabular("y", "a*b", ColumnId(Int::class))
         )
 
-        assertThat(testee.inputs)
+        assertThat(testee.inputs())
             .hasSize(3)
 
-        val (a, b, c) = testee.inputs
+        val (a, b, c) = testee.inputs()
         assertThat(a.name).isEqualTo("a")
         assertThat(b.name).isEqualTo("b")
         assertThat(c.name).isEqualTo("c")
 
-        val changed = testee.changeFormula(testee.aggregations[0].id, "a*2-x")
+        val changed = testee.changeFormula(testee.aggregations()[0].id, "a*2-x")
 
-        assertThat(changed.inputs)
+        assertThat(changed.inputs())
             .hasSize(3)
 
-        val (a2, b2, x) = changed.inputs
+        val (a2, b2, x) = changed.inputs()
         assertThat(a2).isEqualTo(a)
         assertThat(b2).isEqualTo(b)
         assertThat(x.name).isEqualTo("x")
@@ -69,16 +69,16 @@ class CalculationsTest {
             val testee = calculations(
                 aggregate("1", "a+1"),
                 tabular("2", "a*2", ColumnId(Int::class))
-            ).let { it.copy(inputs = it.inputs.map { input -> input.copy(source = sourceA) }) }
+            ).let { it.copy(inputs = it.inputs().map { input -> input.copy(source = sourceA) }) }
 
-            assertThat(testee.inputs).hasSize(1)
-            val (a) = testee.inputs
+            assertThat(testee.inputs()).hasSize(1)
+            val (a) = testee.inputs()
             assertThat(a.mapTo).hasSize(2)
 
-            val changed = testee.changeFormula(testee.aggregations[0].id, "a+b")
+            val changed = testee.changeFormula(testee.aggregations()[0].id, "a+b")
 
-            assertThat(changed.inputs).hasSize(2)
-            val (a2, b) = changed.inputs
+            assertThat(changed.inputs()).hasSize(2)
+            val (a2, b) = changed.inputs()
 
             assertThat(a2).isEqualTo(a)
             assertThat(a2.source).isEqualTo(sourceA)
@@ -93,16 +93,16 @@ class CalculationsTest {
             val testee = calculations(
                 aggregate("1", "a+1"),
                 tabular("2", "a*2", ColumnId(Int::class))
-            ).let { it.copy(inputs = it.inputs.map { input -> input.copy(source = sourceA) }) }
+            ).let { it.copy(inputs = it.inputs().map { input -> input.copy(source = sourceA) }) }
 
-            assertThat(testee.inputs).hasSize(1)
-            val (a) = testee.inputs
+            assertThat(testee.inputs()).hasSize(1)
+            val (a) = testee.inputs()
             assertThat(a.mapTo).hasSize(2)
 
-            val changed = testee.changeFormula(testee.tabular[0].id, "b*2")
+            val changed = testee.changeFormula(testee.tabular()[0].id, "b*2")
 
-            assertThat(changed.inputs).hasSize(2)
-            val (a2, b) = changed.inputs
+            assertThat(changed.inputs()).hasSize(2)
+            val (a2, b) = changed.inputs()
 
             assertThat(a2.mapTo).hasSize(1)
             assertThat(a2).isEqualTo(a.copy(mapTo = a2.mapTo))
@@ -118,18 +118,18 @@ class CalculationsTest {
             val testee = calculations(
                 aggregate("1", "a+1"),
                 tabular("2", "a+b", ColumnId(Int::class))
-            ).let { it.copy(inputs = it.inputs.map { input -> input.copy(source = sourceA) }) }
+            ).let { it.copy(inputs = it.inputs().map { input -> input.copy(source = sourceA) }) }
 
-            assertThat(testee.inputs).hasSize(2)
-            val (a, b) = testee.inputs
+            assertThat(testee.inputs()).hasSize(2)
+            val (a, b) = testee.inputs()
             assertThat(a.mapTo).hasSize(2)
             assertThat(b.name).isEqualTo("b")
             assertThat(b.source).isEqualTo(sourceA)
 
-            val changed = testee.changeFormula(testee.tabular[1].id, "a*2")
+            val changed = testee.changeFormula(testee.tabular()[1].id, "a*2")
 
-            assertThat(changed.inputs).hasSize(1)
-            val (a2) = changed.inputs
+            assertThat(changed.inputs()).hasSize(1)
+            val (a2) = changed.inputs()
 
             assertThat(a2).isEqualTo(a)
             assertThat(a2.source).isEqualTo(sourceA)

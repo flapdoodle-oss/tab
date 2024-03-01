@@ -3,6 +3,7 @@ package de.flapdoodle.tab.app.model.calculations
 import de.flapdoodle.kfx.types.Id
 import de.flapdoodle.tab.app.model.HasName
 import de.flapdoodle.tab.app.model.data.ColumnId
+import de.flapdoodle.tab.app.model.data.SingleValue
 import de.flapdoodle.tab.app.model.data.SingleValueId
 
 sealed class Calculation<K: Comparable<K>>(
@@ -12,7 +13,6 @@ sealed class Calculation<K: Comparable<K>>(
     abstract val id: Id<Calculation<*>>
 
     override fun name() = name
-//    fun formula() = formula
     fun evaluate(values: Map<Variable, Any?>) = formula.evaluate(values)
     fun variables() = formula.variables()
 
@@ -22,6 +22,7 @@ sealed class Calculation<K: Comparable<K>>(
         private val name: String,
         private val formula: Formula,
         private val destination: SingleValueId = SingleValueId(),
+//        private val singleValue: SingleValue<out Any>,
         override val id: Id<Calculation<*>> = Id.Companion.nextId(Calculation::class)
     ) : Calculation<K>(name, formula) {
 
