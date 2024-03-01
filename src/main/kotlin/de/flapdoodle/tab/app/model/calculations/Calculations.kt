@@ -34,11 +34,11 @@ data class Calculations<K: Comparable<K>>(
     }
 
     fun aggregation(id: SingleValueId): Calculation.Aggregation<K> {
-        return aggregations.one { it.destination == id }
+        return aggregations.one { it.destination() == id }
     }
 
     fun tabular(id: ColumnId<out Comparable<*>>): Calculation.Tabular<K> {
-        return tabular.one { it.destination == id }
+        return tabular.one { it.destination() == id }
     }
 
     fun inputSlots(variable: Set<Variable>): List<InputSlot<K>> {
@@ -88,7 +88,7 @@ data class Calculations<K: Comparable<K>>(
         }
 
         private fun groupByName(list: List<Calculation<*>>) =
-            list.flatMap { it.formula.variables() }.groupBy { it.name }
+            list.flatMap { it.variables() }.groupBy { it.name }
     }
 }
 

@@ -61,7 +61,7 @@ object Solver {
         node: Node.Calculated<K>,
         calculation: Calculation<K>
     ): Tab2Model {
-        val sourceVariables = calculation.formula.variables()
+        val sourceVariables = calculation.variables()
         val neededInputs = node.calculations.inputSlots(sourceVariables)
         val missingSources = neededInputs.filter { it.source == null }
         if (missingSources.isEmpty()) {
@@ -131,7 +131,7 @@ object Solver {
                 else -> throw IllegalArgumentException("not implemented: $data")
             }
         }.toMap()
-        val result = calculation.formula.evaluate(valueMap)
+        val result = calculation.evaluate(valueMap)
         val changedNode: Node.Calculated<K> = setValue(node, calculation, result)
         return model.copy(nodes = model.nodes.map { if (it.id == changedNode.id) changedNode else it })
     }
@@ -157,7 +157,7 @@ object Solver {
     ): Tab2Model {
         val interpolated = sortAndInterpolate(columns2var)
         val result = interpolated.index.mapNotNull {
-            val result = calculation.formula.evaluate(interpolated.variablesAt(it) + singleValueMap.toMap())
+            val result = calculation.evaluate(interpolated.variablesAt(it) + singleValueMap.toMap())
             if (result != null) it to result else null
         }.toMap()
 
@@ -185,15 +185,15 @@ object Solver {
         calculation: Calculation.Aggregation<K>,
         result: Any?
     ): Node.Calculated<K> {
-        val changedNode = if (node.values.find(calculation.destination) == null) {
+        val changedNode = if (node.values.find(calculation.destination()) == null) {
             val newSingleValue = if (result != null) {
-                SingleValue(calculation.name, result::class, result, calculation.destination)
+                SingleValue(calculation.name(), result::class, result, calculation.destination())
             } else {
-                SingleValue(calculation.name, Unit::class, result, calculation.destination)
+                SingleValue(calculation.name(), Unit::class, result, calculation.destination())
             }
             node.copy(values = node.values.addValue(newSingleValue))
         } else {
-            node.copy(values = node.values.change(calculation.destination) { old ->
+            node.copy(values = node.values.change(calculation.destination()) { old ->
                 if (result != null) {
                     SingleValue(old.name, result::class, result, old.id)
                 } else {
@@ -209,12 +209,12 @@ object Solver {
         calculation: Calculation.Tabular<K>,
         result: Map<K, Any>
     ): Node.Calculated<K> {
-        val changedNode = if (node.columns.find(calculation.destination) == null) {
+        val changedNode = if (node.columns.find(calculation.destination()) == null) {
             val newColumn = column(result, calculation)
             node.copy(columns = node.columns.addColumn(newColumn))
         } else {
-            node.copy(columns = node.columns.change(calculation.destination) { old ->
-                old.copy(name = calculation.name)
+            node.copy(columns = node.columns.change(calculation.destination()) { old ->
+                old.copy(name = calculation.name())
             })
         }
         return changedNode
@@ -228,11 +228,11 @@ object Solver {
         val valueType = valueTypes.toList().one { true }
 
         val column = Column(
-            calculation.name,
-            calculation.destination.indexType,
+            calculation.name(),
+            calculation.destination().indexType,
             valueType,
             emptyMap(),
-            calculation.destination
+            calculation.destination()
         )
         return column.set(result)
     }
@@ -261,11 +261,11 @@ object Solver {
                             node.calculations.forEach { calculation ->
                                 when (calculation) {
                                     is Calculation.Tabular -> {
-                                        builder.addVertex(Vertex.Column(node.id, calculation.destination))
+                                        builder.addVertex(Vertex.Column(node.id, calculation.destination()))
                                     }
 
                                     is Calculation.Aggregation -> {
-                                        builder.addVertex(Vertex.SingleValue(node.id, calculation.destination))
+                                        builder.addVertex(Vertex.SingleValue(node.id, calculation.destination()))
                                     }
                                 }
                             }
@@ -277,11 +277,11 @@ object Solver {
                                         node.calculations.forEach { c ->
                                             val destVertex = when (c) {
                                                 is Calculation.Tabular -> {
-                                                    Vertex.Column(node.id, c.destination)
+                                                    Vertex.Column(node.id, c.destination())
                                                 }
 
                                                 is Calculation.Aggregation -> {
-                                                    Vertex.SingleValue(node.id, c.destination)
+                                                    Vertex.SingleValue(node.id, c.destination())
                                                 }
                                             }
                                             builder.addVertex(destVertex)
@@ -295,11 +295,11 @@ object Solver {
                                         node.calculations.forEach { c ->
                                             val destVertex = when (c) {
                                                 is Calculation.Tabular -> {
-                                                    Vertex.Column(node.id, c.destination)
+                                                    Vertex.Column(node.id, c.destination())
                                                 }
 
                                                 is Calculation.Aggregation -> {
-                                                    Vertex.SingleValue(node.id, c.destination)
+                                                    Vertex.SingleValue(node.id, c.destination())
                                                 }
                                             }
                                             builder.addVertex(destVertex)
