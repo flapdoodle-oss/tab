@@ -24,13 +24,15 @@ data class Tab2Model(
         return copy(nodes = nodes + node)
     }
 
-    fun removeNode(id: Id<out Node>?): Tab2Model {
-        // TODO remove all connections before that
-        return copy(nodes = nodes.filter { it.id != id })
+    fun removeNode(id: Id<out Node>): Tab2Model {
+        val node = node(id)
+        val withoutNode = nodes.filter { it.id != node.id }
+        val cleaned = withoutNode.map { it.removeConnectionsFrom(id) }
+        return copy(nodes = cleaned)
     }
 
     fun node(id: Id<out Node>): Node {
-        return nodes.one { it.id == id }
+        return requireNotNull(nodesById[id]) { "could not find node: $id"}
     }
 
     fun node(id: Id<out Node.Calculated<*>>): Node.Calculated<*> {

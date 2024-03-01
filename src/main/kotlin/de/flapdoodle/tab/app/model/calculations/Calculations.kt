@@ -1,6 +1,7 @@
 package de.flapdoodle.tab.app.model.calculations
 
 import de.flapdoodle.kfx.types.Id
+import de.flapdoodle.tab.app.model.Node
 import de.flapdoodle.tab.app.model.connections.Source
 import de.flapdoodle.tab.app.model.data.ColumnId
 import de.flapdoodle.tab.app.model.data.SingleValueId
@@ -62,6 +63,14 @@ data class Calculations<K: Comparable<K>>(
     fun forEach(action: (Calculation<K>) -> Unit) {
         aggregations.forEach(action)
         tabular.forEach(action)
+    }
+
+    fun removeConnectionsFrom(id: Id<out Node>): Calculations<K> {
+        return copy(inputs = inputs.map {
+            if (it.source != null && it.source.node == id) {
+                it.copy(source = null)
+            } else it
+        })
     }
 
     companion object {

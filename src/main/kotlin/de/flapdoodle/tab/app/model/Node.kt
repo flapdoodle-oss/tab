@@ -10,6 +10,8 @@ import de.flapdoodle.tab.types.one
 import kotlin.reflect.KClass
 
 sealed class Node {
+    abstract fun removeConnectionsFrom(id: Id<out Node>): Node
+
     abstract val name: String
     abstract val id: Id<out Node>
     abstract val position: Position
@@ -53,6 +55,8 @@ sealed class Node {
         fun addValue(value: SingleValue<*>): Constants {
             return copy(values = values.addValue(value))
         }
+
+        override fun removeConnectionsFrom(id: Id<out Node>) = this
     }
 
     data class Table<K: Comparable<K>> (
@@ -61,7 +65,10 @@ sealed class Node {
         override val columns: Columns<K> = Columns(),
         override val id: Id<Table<*>> = Id.nextId(Table::class),
         override val position: Position = Position(0.0, 0.0)
-    ) : Node(), HasColumns<K>
+    ) : Node(), HasColumns<K> {
+
+        override fun removeConnectionsFrom(id: Id<out Node>) = this
+    }
 
     data class Calculated<K: Comparable<K>>(
         override val name: String,
@@ -83,6 +90,10 @@ sealed class Node {
 
         fun connect(input: Id<InputSlot<*>>, source: Source): Calculated<K> {
             return copy(calculations = calculations.connect(input, source))
+        }
+
+        override fun removeConnectionsFrom(id: Id<out Node>): Calculated<K> {
+            return copy(calculations = calculations.removeConnectionsFrom(id))
         }
     }
 }
