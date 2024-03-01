@@ -42,7 +42,8 @@ data class EvalAdapter(
     private fun mapToValue(value: Any): Value<out Any> {
         return when (value) {
             is Int -> Value.of(value.toBigDecimal())
-            else -> throw IllegalArgumentException("not implemented: $value")
+            is BigDecimal -> Value.of(value)
+            else -> throw IllegalArgumentException("not implemented: $value (${value::class})")
         }
     }
 

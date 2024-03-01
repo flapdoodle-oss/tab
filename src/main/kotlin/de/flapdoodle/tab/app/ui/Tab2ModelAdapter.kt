@@ -25,6 +25,8 @@ import de.flapdoodle.tab.app.model.data.SingleValue
 import de.flapdoodle.tab.app.ui.commands.Command
 import de.flapdoodle.tab.app.ui.events.Event2ModelEvent
 import de.flapdoodle.tab.app.ui.events.ModelEventListener
+import de.flapdoodle.tab.app.ui.views.DumpNodeUIAdapterFactory
+import de.flapdoodle.tab.app.ui.views.NodeUIAdapter
 import de.flapdoodle.types.Either
 import javafx.beans.property.ReadOnlyObjectProperty
 import javafx.beans.property.ReadOnlyProperty
@@ -42,8 +44,9 @@ class Tab2ModelAdapter(
         vertexIdMapper = ::nodeOfVertex,
         slotIdMapper = ::outputOrInputOfSlot
     )).withAnchors(all = 10.0)
+    private val nodeUIAdapterFactory = DumpNodeUIAdapterFactory
 
-    private class VertexAndContent(val vertex: Vertex, val content: javafx.scene.Node)
+    private class VertexAndContent(val vertex: Vertex, val content: NodeUIAdapter)
     private val vertexMapping = Mapping<Id<out Node>, VertexId, VertexAndContent>()
     private val slotMapping = Mapping<DataId, SlotId, Slot>()
     private val inputMapping = Mapping<Id<InputSlot<*>>, SlotId, Slot>()
@@ -100,7 +103,7 @@ class Tab2ModelAdapter(
             when (action) {
                 is Action.AddNode -> {
                     graphEditor.addVertex(Vertex(action.node.name).also { vertex ->
-                        val vertexContent = Button("wooHoo")
+                        val vertexContent = nodeUIAdapterFactory.adapterOf(action.node)
                         vertex.layoutPosition = Point2D(action.node.position.x, action.node.position.y)
                         vertex.content = vertexContent
                         vertexMapping.add(action.node.id, vertex.vertexId,
@@ -113,7 +116,7 @@ class Tab2ModelAdapter(
                 is Action.ChangeNode -> {
                     vertexMapping.with(action.id) {
                         it.vertex.nameProperty().value = action.node.name
-                        //it.content.valueModel.value = action.node
+                        it.content.update(action.node)
                     }
                 }
 
