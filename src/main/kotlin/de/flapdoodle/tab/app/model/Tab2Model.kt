@@ -78,9 +78,9 @@ data class Tab2Model(
         return copy(nodes = nodes.change(Node::id, connected.id) { connected })
     }
 
-    fun apply(modelChange: ModelChange): Tab2Model {
-        println("change: $modelChange")
-        return this
+    fun apply(change: ModelChange): Tab2Model {
+        println("change: $change")
+        return copy(nodes = nodes.map { it.apply(change) })
     }
 
 

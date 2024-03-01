@@ -4,6 +4,7 @@ import de.flapdoodle.kfx.types.Id
 import de.flapdoodle.tab.app.model.calculations.Calculation
 import de.flapdoodle.tab.app.model.calculations.Calculations
 import de.flapdoodle.tab.app.model.calculations.InputSlot
+import de.flapdoodle.tab.app.model.change.ModelChange
 import de.flapdoodle.tab.app.model.connections.Source
 import de.flapdoodle.tab.app.model.data.*
 import de.flapdoodle.tab.types.one
@@ -15,6 +16,8 @@ sealed class Node {
     abstract val name: String
     abstract val id: Id<out Node>
     abstract val position: Position
+
+    abstract fun apply(change: ModelChange): Node
 
 //    fun data(id: DataId): Data {
 //        return when (id) {
@@ -57,6 +60,17 @@ sealed class Node {
         }
 
         override fun removeConnectionsFrom(id: Id<out Node>) = this
+
+        override fun apply(change: ModelChange): Constants {
+            if (change is ModelChange.ConstantsChange && change.id==id) {
+                when (change) {
+                    is ModelChange.ChangeValue -> {
+                        return copy(values = values.set(change.valueId, change.value))
+                    }
+                }
+            }
+            return this
+        }
     }
 
     data class Table<K: Comparable<K>> (
@@ -68,6 +82,10 @@ sealed class Node {
     ) : Node(), HasColumns<K> {
 
         override fun removeConnectionsFrom(id: Id<out Node>) = this
+
+        override fun apply(change: ModelChange): Table<K> {
+            return this
+        }
     }
 
     data class Calculated<K: Comparable<K>>(
@@ -94,6 +112,10 @@ sealed class Node {
 
         override fun removeConnectionsFrom(id: Id<out Node>): Calculated<K> {
             return copy(calculations = calculations.removeConnectionsFrom(id))
+        }
+
+        override fun apply(change: ModelChange): Calculated<K> {
+            return this
         }
     }
 }

@@ -5,5 +5,6 @@ import de.flapdoodle.tab.app.model.Node
 import de.flapdoodle.tab.app.model.data.SingleValueId
 
 sealed class ModelChange {
-    data class ChangeValue(val id: Id<out Node>, val valueId: SingleValueId, val value: Any?): ModelChange()
+    sealed class ConstantsChange(open val id: Id<out Node.Constants>) : ModelChange()
+    data class ChangeValue(override val id: Id<out Node.Constants>, val valueId: SingleValueId, val value: Any?): ConstantsChange(id)
 }

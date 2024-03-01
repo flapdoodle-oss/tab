@@ -56,6 +56,11 @@ data class SingleValues(
         })
     }
 
+    fun set(id: SingleValueId, value: Any?): SingleValues {
+        val changed = value(id).setIfTypeMatches(value)
+        return copy(values = values.map { if (it.id == changed.id) changed else it })
+    }
+
     operator fun get(id: SingleValueId): Any? {
         return value(id).value
     }
@@ -63,4 +68,5 @@ data class SingleValues(
     fun forEach(action: (SingleValue<out Any>) -> Unit) {
         values.forEach(action)
     }
+
 }

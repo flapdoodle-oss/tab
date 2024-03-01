@@ -35,24 +35,25 @@ class InlineConstantUIAdapter(
         //val change = Diff.between(rows, expectedRows, Pair<SingleValueId, Pair<Label, TextField>>::first)
         rows.forEach { content.children.removeAll(it.second.first, it.second.second) }
         expectedRows.forEachIndexed { index, it ->
-            content.children.add(it.second.first)
             WeightGridPane.setPosition(it.second.first,0,index)
-            content.children.add(it.second.second)
+            content.children.add(it.second.first)
             WeightGridPane.setPosition(it.second.second,1,index)
+            content.children.add(it.second.second)
         }
 
         singleValues = values
     }
 
-    private fun labelAndTextfields(id: Id<out Node>, values: SingleValues, modelChangeListener: ModelChangeListener): List<Pair<SingleValueId, Pair<Label, TextField>>> {
+    private fun labelAndTextfields(id: Id<out Node.Constants>, values: SingleValues, modelChangeListener: ModelChangeListener): List<Pair<SingleValueId, Pair<Label, TextField>>> {
         return values.values.map {
             it.id to (Label(it.name) to textField(id, it, modelChangeListener))
         }
     }
 
-    private fun <T: Any> textField(id: Id<out Node>, value: SingleValue<T>, modelChangeListener: ModelChangeListener): TypedTextField<T> {
+    private fun <T: Any> textField(id: Id<out Node.Constants>, value: SingleValue<T>, modelChangeListener: ModelChangeListener): TypedTextField<T> {
         return TypedTextField(value.valueType).apply {
             set(value.value)
+            prefWidth = 60.0
             valueProperty().addListener { observable, oldValue, newValue ->
                 modelChangeListener.change(ModelChange.ChangeValue(id, value.id, newValue))
             }
