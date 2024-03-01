@@ -5,6 +5,7 @@ import de.flapdoodle.tab.app.model.HasName
 import de.flapdoodle.tab.app.model.data.ColumnId
 import de.flapdoodle.tab.app.model.data.SingleValue
 import de.flapdoodle.tab.app.model.data.SingleValueId
+import kotlin.reflect.KClass
 
 sealed class Calculation<K: Comparable<K>>(
     private val name: String,
@@ -22,7 +23,6 @@ sealed class Calculation<K: Comparable<K>>(
         private val name: String,
         private val formula: Formula,
         private val destination: SingleValueId = SingleValueId(),
-//        private val singleValue: SingleValue<out Any>,
         override val id: Id<Calculation<*>> = Id.Companion.nextId(Calculation::class)
     ) : Calculation<K>(name, formula) {
 

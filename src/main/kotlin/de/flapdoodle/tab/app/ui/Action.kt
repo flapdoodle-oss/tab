@@ -6,8 +6,10 @@ import de.flapdoodle.tab.app.model.Tab2Model
 import de.flapdoodle.tab.app.model.calculations.Calculation
 import de.flapdoodle.tab.app.model.calculations.InputSlot
 import de.flapdoodle.tab.app.model.connections.Source
+import de.flapdoodle.tab.app.model.data.Column
 import de.flapdoodle.tab.app.model.data.Data
 import de.flapdoodle.tab.app.model.data.DataId
+import de.flapdoodle.tab.app.model.data.SingleValue
 import de.flapdoodle.tab.types.Change
 
 sealed class Action {
@@ -89,10 +91,6 @@ sealed class Action {
             return Change.diff(inputsOf(old), inputsOf(current), InputSlot<out Comparable<*>>::id)
         }
 
-        private fun outputIdChanges(old: Node, current: Node): Change<DataId> {
-            return Change.diff(outputsIds(old), outputsIds(current), { it })
-        }
-
         private fun outputChanges(old: Node, current: Node): Change<Data> {
             return Change.diff(outputs(old), outputs(current), Data::id)
         }
@@ -107,25 +105,11 @@ sealed class Action {
             }
         }
 
-        private fun outputsIds(node: Node): List<DataId> {
-            return when (node) {
-                is Node.Calculated<out Comparable<*>> -> {
-                    val calculations = node.calculations
-                    calculations.aggregations().map { it.destination() }
-                            calculations.tabular().map { it.destination() }
-                }
-                is Node.Constants ->
-                    node.values.values.map { it.id }
-
-                is Node.Table<out Comparable<*>> ->
-                    node.columns.columns.map { it.id }
-            }
-        }
-
         private fun outputs(node: Node): List<Data> {
             return when (node) {
-                is Node.Calculated<out Comparable<*>> ->
-                    node.columns.columns + node.values.values
+                is Node.Calculated<out Comparable<*>> -> {
+                    outputsOfCalculatedNode(node)
+                }
 
                 is Node.Constants ->
                     node.values.values
@@ -133,6 +117,23 @@ sealed class Action {
                 is Node.Table<out Comparable<*>> ->
                     node.columns.columns
             }
+        }
+
+        private fun <K: Comparable<K>> outputsOfCalculatedNode(node: Node.Calculated<K>): List<Data> {
+            val calculations = node.calculations
+
+            val expectedColumns = calculations.tabular().map { it.destination() to it }
+            val expectedValues = calculations.aggregations().map { it.destination() to it }
+            val existingColumns = node.columns.columns.map { it.id }
+            val existingValues = node.values.values.map { it.id }
+            
+            val missingColumns = expectedColumns.filter { !existingColumns.contains(it.first) }
+            val missingValues = expectedValues.filter { !existingValues.contains(it.first) }
+
+            return node.columns.columns +
+                    missingColumns.map { Column(it.second.name(), node.indexType, Unit::class, emptyMap(), it.first) } +
+                    node.values.values +
+                    missingValues.map { SingleValue(it.second.name(), Unit::class, null, it.first) }
         }
     }
 }
