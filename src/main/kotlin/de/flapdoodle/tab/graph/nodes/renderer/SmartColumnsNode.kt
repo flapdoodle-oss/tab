@@ -3,7 +3,6 @@ package de.flapdoodle.tab.graph.nodes.renderer
 import de.flapdoodle.tab.controls.tables.SmartCell
 import de.flapdoodle.tab.controls.tables.SmartColumn
 import de.flapdoodle.tab.controls.tables.SmartTable
-import de.flapdoodle.tab.converter.Converters
 import de.flapdoodle.tab.data.ColumnId
 import de.flapdoodle.tab.data.Data
 import de.flapdoodle.tab.data.NamedColumn
@@ -19,6 +18,7 @@ import de.flapdoodle.fx.lazy.bindFrom
 import de.flapdoodle.fx.lazy.map
 import de.flapdoodle.fx.lazy.merge
 import de.flapdoodle.fx.lazy.syncFrom
+import de.flapdoodle.kfx.converters.Converters
 import javafx.collections.FXCollections
 import javafx.scene.control.ContextMenu
 import javafx.scene.control.Control

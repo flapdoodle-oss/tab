@@ -62,7 +62,9 @@ class Main2() : BorderPane() {
     true
   }
 
-  private val adapter = Tab2ModelAdapter(model, eventListener).also { editor ->
+  private val adapter = Tab2ModelAdapter(model, eventListener, { modelChange ->
+    changeModel { old -> old.apply(modelChange) }
+  }).also { editor ->
     editor.selectedNodesProperty().subscribe { selection ->
       if (selection.size == 1) {
         selectedVertex.value = selection.first()

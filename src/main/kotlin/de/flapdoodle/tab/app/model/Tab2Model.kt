@@ -4,6 +4,7 @@ import de.flapdoodle.kfx.collections.Change
 import de.flapdoodle.kfx.collections.Diff
 import de.flapdoodle.kfx.types.Id
 import de.flapdoodle.tab.app.model.calculations.InputSlot
+import de.flapdoodle.tab.app.model.change.ModelChange
 import de.flapdoodle.tab.app.model.connections.Source
 import de.flapdoodle.tab.app.model.data.ColumnId
 import de.flapdoodle.tab.app.model.data.DataId
@@ -75,6 +76,11 @@ data class Tab2Model(
         })
 
         return copy(nodes = nodes.change(Node::id, connected.id) { connected })
+    }
+
+    fun apply(modelChange: ModelChange): Tab2Model {
+        println("change: $modelChange")
+        return this
     }
 
 

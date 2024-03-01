@@ -36,7 +36,8 @@ import javafx.scene.layout.AnchorPane
 
 class Tab2ModelAdapter(
     model: ReadOnlyObjectProperty<Tab2Model>,
-    modelEventListener: ModelEventListener
+    modelEventListener: ModelEventListener,
+    val modelChangeListener: ModelChangeListener
 ) : AnchorPane() {
     private val graphEditor = GraphEditor(eventListener = Event2ModelEvent(
         delegate = modelEventListener,
@@ -102,7 +103,7 @@ class Tab2ModelAdapter(
             when (action) {
                 is Action.AddNode -> {
                     graphEditor.addVertex(Vertex(action.node.name).also { vertex ->
-                        val vertexContent = nodeUIAdapterFactory.adapterOf(action.node)
+                        val vertexContent = nodeUIAdapterFactory.adapterOf(action.node, modelChangeListener)
                         vertex.layoutPosition = Point2D(action.node.position.x, action.node.position.y)
                         vertex.content = vertexContent
                         vertexMapping.add(action.node.id, vertex.vertexId,

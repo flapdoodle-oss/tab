@@ -1,7 +1,6 @@
 package de.flapdoodle.tab.graph.nodes.renderer
 
 import de.flapdoodle.fx.layout.weightgrid.WeightGridPane
-import de.flapdoodle.tab.converter.Converters
 import de.flapdoodle.tab.data.Data
 import de.flapdoodle.tab.data.NamedColumn
 import de.flapdoodle.tab.data.nodes.ConnectableNode
@@ -13,6 +12,7 @@ import de.flapdoodle.tab.graph.nodes.renderer.modals.AddConstantModalView
 import de.flapdoodle.fx.lazy.LazyValue
 import de.flapdoodle.fx.lazy.bindFrom
 import de.flapdoodle.fx.lazy.merge
+import de.flapdoodle.kfx.converters.Converters
 import javafx.geometry.HPos
 import javafx.geometry.VPos
 import javafx.scene.Node

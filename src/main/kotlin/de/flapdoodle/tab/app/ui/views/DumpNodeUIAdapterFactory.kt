@@ -1,13 +1,14 @@
 package de.flapdoodle.tab.app.ui.views
 
 import de.flapdoodle.tab.app.model.Node
+import de.flapdoodle.tab.app.ui.ModelChangeListener
 import javafx.event.EventHandler
 import javafx.scene.control.Button
 
 object DumpNodeUIAdapterFactory : NodeUIAdapterFactory {
-    override fun adapterOf(node: Node): NodeUIAdapter {
+    override fun adapterOf(node: Node, modelChangeListener: ModelChangeListener): NodeUIAdapter {
         return when (node) {
-            is Node.Constants -> InlineConstantUIAdapter(node)
+            is Node.Constants -> InlineConstantUIAdapter(node, modelChangeListener)
             is Node.Table<out Comparable<*>> -> tableAdapter(node)
             is Node.Calculated<out Comparable<*>> -> calculationAdapter(node)
         }
