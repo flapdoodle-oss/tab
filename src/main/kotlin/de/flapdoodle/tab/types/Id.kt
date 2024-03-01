@@ -4,6 +4,7 @@ import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.reflect.KClass
 
+@Deprecated("use kfx.id")
 data class Id<T : Any> constructor(
     val type: KClass<T>,
     val id: Int

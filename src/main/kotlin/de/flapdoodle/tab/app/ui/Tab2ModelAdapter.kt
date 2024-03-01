@@ -1,10 +1,10 @@
 package de.flapdoodle.tab.app.ui
 
 import de.flapdoodle.kfx.bindings.Subscriptions
+import de.flapdoodle.kfx.collections.Mapping
 import de.flapdoodle.kfx.controls.grapheditor.Edge
 import de.flapdoodle.kfx.controls.grapheditor.GraphEditor
 import de.flapdoodle.kfx.controls.grapheditor.Vertex
-import de.flapdoodle.kfx.controls.grapheditor.events.EventListener
 import de.flapdoodle.kfx.controls.grapheditor.slots.Position
 import de.flapdoodle.kfx.controls.grapheditor.slots.Slot
 import de.flapdoodle.kfx.controls.grapheditor.types.EdgeId
@@ -32,7 +32,6 @@ import javafx.beans.property.ReadOnlyObjectProperty
 import javafx.beans.property.ReadOnlyProperty
 import javafx.beans.property.SimpleObjectProperty
 import javafx.geometry.Point2D
-import javafx.scene.control.Button
 import javafx.scene.layout.AnchorPane
 
 class Tab2ModelAdapter(

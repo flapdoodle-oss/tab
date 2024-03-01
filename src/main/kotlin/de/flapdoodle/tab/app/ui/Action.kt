@@ -1,16 +1,16 @@
 package de.flapdoodle.tab.app.ui
 
+import de.flapdoodle.kfx.collections.Change
+import de.flapdoodle.kfx.collections.Diff
 import de.flapdoodle.kfx.types.Id
 import de.flapdoodle.tab.app.model.Node
 import de.flapdoodle.tab.app.model.Tab2Model
-import de.flapdoodle.tab.app.model.calculations.Calculation
 import de.flapdoodle.tab.app.model.calculations.InputSlot
 import de.flapdoodle.tab.app.model.connections.Source
 import de.flapdoodle.tab.app.model.data.Column
 import de.flapdoodle.tab.app.model.data.Data
 import de.flapdoodle.tab.app.model.data.DataId
 import de.flapdoodle.tab.app.model.data.SingleValue
-import de.flapdoodle.tab.types.Change
 
 sealed class Action {
     data class AddNode(val node: Node) : Action()
@@ -88,11 +88,11 @@ sealed class Action {
         }
 
         private fun inputChanges(old: Node, current: Node): Change<InputSlot<*>> {
-            return Change.diff(inputsOf(old), inputsOf(current), InputSlot<out Comparable<*>>::id)
+            return Diff.between(inputsOf(old), inputsOf(current), InputSlot<out Comparable<*>>::id)
         }
 
         private fun outputChanges(old: Node, current: Node): Change<Data> {
-            return Change.diff(outputs(old), outputs(current), Data::id)
+            return Diff.between(outputs(old), outputs(current), Data::id)
         }
 
         private fun inputsOf(node: Node): List<InputSlot<*>> {

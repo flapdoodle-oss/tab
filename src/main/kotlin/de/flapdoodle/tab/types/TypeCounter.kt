@@ -4,6 +4,7 @@ import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.reflect.KClass
 
+@Deprecated("use kfx.key")
 object TypeCounter {
     private val idGeneratorMap = ConcurrentHashMap<KClass<out Any>, AtomicInteger>()
 
