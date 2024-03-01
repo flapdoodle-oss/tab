@@ -67,6 +67,9 @@ sealed class Node {
                     is ModelChange.ChangeValue -> {
                         return copy(values = values.set(change.valueId, change.value))
                     }
+                    is ModelChange.AddValue -> {
+                        return addValue(change.value)
+                    }
                 }
             }
             return this
