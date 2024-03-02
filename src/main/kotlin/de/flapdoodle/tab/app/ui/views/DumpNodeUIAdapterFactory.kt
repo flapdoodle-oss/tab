@@ -10,7 +10,7 @@ object DumpNodeUIAdapterFactory : NodeUIAdapterFactory {
         return when (node) {
             is Node.Constants -> InlineConstantUIAdapter(node, modelChangeListener)
             is Node.Table<out Comparable<*>> -> tableAdapter(node)
-            is Node.Calculated<out Comparable<*>> -> calculationAdapter(node)
+            is Node.Calculated<out Comparable<*>> -> InlineCalculatedUIAdapter(node, modelChangeListener)
         }
     }
 
