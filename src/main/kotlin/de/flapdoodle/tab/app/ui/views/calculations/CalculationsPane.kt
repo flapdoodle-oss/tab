@@ -5,12 +5,12 @@ import de.flapdoodle.tab.app.model.Node
 import de.flapdoodle.tab.app.model.calculations.Calculation
 import de.flapdoodle.tab.app.model.change.ModelChange
 import de.flapdoodle.tab.app.ui.ModelChangeListener
+import de.flapdoodle.tab.app.ui.views.dialogs.NewExpressionDialog
 import javafx.beans.property.SimpleObjectProperty
 import javafx.event.EventHandler
-import javafx.scene.control.Button
-import javafx.scene.control.Label
-import javafx.scene.control.TextField
+import javafx.scene.control.*
 import javafx.scene.layout.VBox
+import javafx.stage.Modality
 
 class CalculationsPane<K: Comparable<K>>(
     node: Node.Calculated<K>,
@@ -37,9 +37,27 @@ class CalculationsPane<K: Comparable<K>>(
     private val actionColumn = WeightGridTable.Column<Calculation.Aggregation<K>>(
         weight = 1.0,
         nodeFactory = { aggregation ->
+//            val dialog = Dialog<ButtonType>().apply {
+//                title = "X"
+//                contentText = "What?"
+//                dialogPane.buttonTypes.add(ButtonType.YES)
+//                dialogPane.buttonTypes.add(ButtonType.CANCEL)
+//            }
+//            dialog.initModality(Modality.APPLICATION_MODAL);
+//            dialog.dialogPane.
+                    
             val button = Button("-").apply {
                 onAction = EventHandler {
-                    modelChangeListener.change(ModelChange.RemoveFormula(nodeId, aggregation.id))
+                    val newExpression = NewExpressionDialog.open()
+                    println("new expression: $newExpression")
+//                    modelChangeListener.change(ModelChange.RemoveFormula(nodeId, aggregation.id))
+//                    dialog.showAndWait()
+//                        .filter {
+//                            println("_-> $it")
+//                            true
+//                        }
+//                        .filter(response -> response == ButtonType.OK)
+//                    .ifPresent(response -> formatSystem());
                 }
             }
             button to WeightGridTable.ChangeListener {}
@@ -78,16 +96,25 @@ class CalculationsPane<K: Comparable<K>>(
             actionColumn
         ),
         footerFactory = { values, columns ->
-            val nameTextField = TextField("name").apply {
-                prefWidth = 20.0
-            }
-            val expressionTextField = TextField("43")
+//            val nameTextField = TextField("name").apply {
+//                prefWidth = 20.0
+//            }
+//            val expressionTextField = TextField("43")
             val addButton = Button("+").apply {
                 onAction = EventHandler {
-                    modelChangeListener.change(ModelChange.AddAggregation(nodeId,nameTextField.text, expressionTextField.text))
+                    val newExpression = NewExpressionDialog.open()
+                    if (newExpression!=null) {
+                        modelChangeListener.change(
+                            ModelChange.AddAggregation(
+                                nodeId,
+                                newExpression.name,
+                                newExpression.expression
+                            )
+                        )
+                    }
                 }
             }
-            mapOf(nameColumn to nameTextField, formulaColumn to expressionTextField, actionColumn to addButton)
+            mapOf(actionColumn to addButton)
         }
     )
 
