@@ -22,12 +22,19 @@ class InlineConstantUIAdapter(
 ) : NodeUIAdapter() {
     val nodeId = node.id
     val model = SimpleObjectProperty(node.values.values)
+
+    val nameColumn =WeightGridTable.Column<SingleValue<out Any>>(
+        weight = 1.0,
+        nodeFactory = { Label(it.name) to WeightGridTable.ChangeListener { } })
+    val valueColumn = WeightGridTable.Column<SingleValue<out Any>>(
+        weight = 10.0,
+        nodeFactory = { textField(nodeId, it, modelChangeListener) to WeightGridTable.ChangeListener { } })
+
     val content = WeightGridTable(
         model = model,
-        columns = listOf(
-            WeightGridTable.Column(weight = 1.0, nodeFactory = { Label(it.name) }),
-            WeightGridTable.Column(weight = 10.0, nodeFactory = { textField(nodeId, it, modelChangeListener) })),
-        footerFactory = { list ->
+        indexOf = SingleValue<out Any>::id,
+        columns = listOf(nameColumn, valueColumn),
+        footerFactory = { values, columns ->
             val nameField = TextField().apply {
                 prefWidth = 20.0
             }
@@ -38,7 +45,7 @@ class InlineConstantUIAdapter(
                     modelChangeListener.change(ModelChange.AddValue(nodeId, value))
                 }
             }
-            listOf(nameField, button)
+            mapOf(nameColumn to nameField, valueColumn to button)
         }
     )
 
