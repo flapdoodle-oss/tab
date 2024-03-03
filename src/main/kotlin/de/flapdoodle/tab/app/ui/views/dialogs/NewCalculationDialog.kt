@@ -1,6 +1,7 @@
 package de.flapdoodle.tab.app.ui.views.dialogs
 
 import de.flapdoodle.kfx.layout.grid.WeightGridPane
+import de.flapdoodle.tab.app.model.Node
 import javafx.scene.control.ButtonBar.ButtonData
 import javafx.scene.control.ButtonType
 import javafx.scene.control.ChoiceBox
@@ -9,12 +10,12 @@ import javafx.scene.control.Label
 import javafx.scene.control.TextField
 import kotlin.reflect.KClass
 
-class NewValueDialog : Dialog<NewValueDialog.NewValue>() {
+class NewCalculationDialog : Dialog<Node.Calculated<out Comparable<*>>>() {
 
     private val name = Label("Name")
     private val nameField = TextField()
     private val type = Label("Type")
-    private val typeField = ChoiceBox<KClass<out Any>>().apply {
+    private val typeField = ChoiceBox<KClass<out Comparable<*>>>().apply {
         items.addAll(Int::class, Double::class, String::class)
         value = Int::class
     }
@@ -38,20 +39,23 @@ class NewValueDialog : Dialog<NewValueDialog.NewValue>() {
 
         setResultConverter { dialogButton: ButtonType? ->
             if (dialogButton?.buttonData == ButtonData.OK_DONE) {
-                NewValue(nameField.text, typeField.selectionModel.selectedItem)
+                val type = typeField.selectionModel.selectedItem
+                nodeOf(nameField.text, type)
             } else null
         }
     }
 
+    private fun <K: Comparable<K>> nodeOf(name: String?, type: KClass<in K>?): Node.Calculated<K>? {
+        if (name!=null && type!=null) {
+            return Node.Calculated(name, type)
+        }
+        return null
+    }
 
-    data class NewValue(
-        val name: String,
-        val type: KClass<out Any>
-    )
 
     companion object {
-        fun open(): NewValue? {
-            val dialog = NewValueDialog()
+        fun open(): Node.Calculated<out Comparable<*>>? {
+            val dialog = NewCalculationDialog()
             return dialog.showAndWait().orElse(null)
         }
     }

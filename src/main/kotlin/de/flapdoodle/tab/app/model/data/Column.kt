@@ -4,7 +4,7 @@ import kotlin.reflect.KClass
 
 data class Column<K : Comparable<K>, V : Any>(
     val name: String,
-    val indexType: KClass<K>,
+    val indexType: KClass<in K>,
     val valueType: KClass<V>,
     val values: Map<K, V> = emptyMap(),
     override val id: ColumnId<K> = ColumnId(indexType)

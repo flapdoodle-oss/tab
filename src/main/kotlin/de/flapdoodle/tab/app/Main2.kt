@@ -14,6 +14,9 @@ import de.flapdoodle.tab.app.ui.Tab2ModelAdapter
 import de.flapdoodle.tab.app.ui.commands.Command
 import de.flapdoodle.tab.app.ui.events.ModelEvent
 import de.flapdoodle.tab.app.ui.events.ModelEventListener
+import de.flapdoodle.tab.app.ui.views.dialogs.NewCalculationDialog
+import de.flapdoodle.tab.app.ui.views.dialogs.NewValueDialog
+import de.flapdoodle.tab.app.ui.views.dialogs.NewValuesDialog
 import javafx.beans.property.SimpleObjectProperty
 import javafx.event.EventHandler
 import javafx.scene.control.Button
@@ -120,24 +123,28 @@ class Main2() : BorderPane() {
       flowPane.children.addAll(
         Button("+V").also { button ->
           button.onAction = EventHandler {
-            adapter.execute(Command.AskForPosition(onSuccess = { pos ->
-              val node = Node.Constants("Values#" + vertexCounter.incrementAndGet(), position = Position(pos.x, pos.y))
-//                .addValue(SingleValue("x", Int::class, 2))
-              changeModel { it.addNode(node) }
-            }))
+            val node = NewValuesDialog.open()
+            if (node!=null) {
+              adapter.execute(Command.AskForPosition(onSuccess = { pos ->
+                changeModel { it.addNode(node.copy(position = Position(pos.x, pos.y))) }
+              }))
+            }
           }
         },
         Button("+C").also { button ->
           button.onAction = EventHandler {
-            adapter.execute(Command.AskForPosition(onSuccess = { pos ->
-              val node = Node.Calculated(
-                name = "Calculation#" + vertexCounter.incrementAndGet(),
-                indexType = Int::class,
-                position = Position(pos.x, pos.y))
-                .addAggregation(Calculation.Aggregation("c",EvalAdapter("a+b")))
+            val node = NewCalculationDialog.open()
+            if (node!=null) {
+              adapter.execute(Command.AskForPosition(onSuccess = { pos ->
+//              val node = Node.Calculated(
+//                name = "Calculation#" + vertexCounter.incrementAndGet(),
+//                indexType = Int::class,
+//                position = Position(pos.x, pos.y))
+//                .addAggregation(Calculation.Aggregation("c",EvalAdapter("a+b")))
 
-              changeModel { it.addNode(node) }
-            }))
+                changeModel { it.addNode(node.copy(position = Position(pos.x, pos.y))) }
+              }))
+            }
           }
         },
         Button("-").also { button ->

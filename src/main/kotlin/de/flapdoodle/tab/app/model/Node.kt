@@ -97,7 +97,7 @@ sealed class Node {
 
     data class Calculated<K: Comparable<K>>(
         override val name: String,
-        val indexType: KClass<K>,
+        val indexType: KClass<in K>,
         val calculations: Calculations<K> = Calculations(),
         override val columns: Columns<K> = Columns(),
         override val values: SingleValues = SingleValues(),
