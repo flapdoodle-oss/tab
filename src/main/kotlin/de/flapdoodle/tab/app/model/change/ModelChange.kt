@@ -3,6 +3,8 @@ package de.flapdoodle.tab.app.model.change
 import de.flapdoodle.kfx.types.Id
 import de.flapdoodle.tab.app.model.Node
 import de.flapdoodle.tab.app.model.calculations.Calculation
+import de.flapdoodle.tab.app.model.data.Column
+import de.flapdoodle.tab.app.model.data.ColumnId
 import de.flapdoodle.tab.app.model.data.SingleValue
 import de.flapdoodle.tab.app.model.data.SingleValueId
 
@@ -12,8 +14,11 @@ sealed class ModelChange {
     data class ChangeValue(override val id: Id<out Node.Constants>, val valueId: SingleValueId, val value: Any?): ConstantsChange(id)
     data class RemoveValue(override val id: Id<out Node.Constants>, val valueId: SingleValueId): ConstantsChange(id)
 
-    sealed class CalculationChange(open val id: Id<out Node.Calculated<out Comparable<*>>>): ModelChange()
+    sealed class TableChange(open val id: Id<out Node.Table<out Comparable<*>>>): ModelChange()
+    data class AddColumn<K: Comparable<K>>(override val id: Id<out Node.Table<out Comparable<*>>>, val column: Column<K, out Any>): TableChange(id)
+    data class RemoveColumn(override val id: Id<out Node.Table<out Comparable<*>>>, val columnId: ColumnId<out Comparable<*>>): TableChange(id)
 
+    sealed class CalculationChange(open val id: Id<out Node.Calculated<out Comparable<*>>>): ModelChange()
     class AddAggregation(id: Id<Node.Calculated<*>>, val name: String, val expression: String) : CalculationChange(id)
     data class ChangeFormula(
         override val id: Id<out Node.Calculated<out Comparable<*>>>,

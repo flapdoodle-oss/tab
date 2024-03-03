@@ -20,6 +20,10 @@ data class Columns<K: Comparable<K>>(
         return copy(columns = columns + column)
     }
 
+    fun remove(id: ColumnId<K>): Columns<K> {
+        return copy(columns = columns.filter { it.id != id })
+    }
+
     fun column(columnId: ColumnId<K>): Column<K, out Any> {
         return requireNotNull(columnIdMap[columnId]) { "column $columnId not found" }
     }

@@ -82,7 +82,7 @@ sealed class Node {
 
     data class Table<K: Comparable<K>> (
         override val name: String,
-        val indexType: KClass<K>,
+        val indexType: KClass<in K>,
         override val columns: Columns<K> = Columns(),
         override val id: Id<Table<*>> = Id.nextId(Table::class),
         override val position: Position = Position(0.0, 0.0)
@@ -91,6 +91,21 @@ sealed class Node {
         override fun removeConnectionsFrom(id: Id<out Node>) = this
 
         override fun apply(change: ModelChange): Table<K> {
+            if (change is ModelChange.TableChange) {
+                when (change) {
+                    is ModelChange.AddColumn<out Comparable<*>> -> {
+                        if (change.id == id) {
+                            require(indexType==change.column.indexType) {"type mismatch: ${change.column}"}
+                            return copy(columns = columns.addColumn(change.column as Column<K, out Any>))
+                        }
+                    }
+                    is ModelChange.RemoveColumn -> {
+                        if (change.id == id) {
+                            return copy(columns = columns.remove(change.columnId as ColumnId<K>))
+                        }
+                    }
+                }
+            }
             return this
         }
     }

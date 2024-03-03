@@ -15,6 +15,7 @@ import de.flapdoodle.tab.app.ui.commands.Command
 import de.flapdoodle.tab.app.ui.events.ModelEvent
 import de.flapdoodle.tab.app.ui.events.ModelEventListener
 import de.flapdoodle.tab.app.ui.views.dialogs.NewCalculationDialog
+import de.flapdoodle.tab.app.ui.views.dialogs.NewTableDialog
 import de.flapdoodle.tab.app.ui.views.dialogs.NewValueDialog
 import de.flapdoodle.tab.app.ui.views.dialogs.NewValuesDialog
 import javafx.beans.property.SimpleObjectProperty
@@ -124,6 +125,16 @@ class Main2() : BorderPane() {
         Button("+V").also { button ->
           button.onAction = EventHandler {
             val node = NewValuesDialog.open()
+            if (node!=null) {
+              adapter.execute(Command.AskForPosition(onSuccess = { pos ->
+                changeModel { it.addNode(node.copy(position = Position(pos.x, pos.y))) }
+              }))
+            }
+          }
+        },
+        Button("+T").also { button ->
+          button.onAction = EventHandler {
+            val node = NewTableDialog.open()
             if (node!=null) {
               adapter.execute(Command.AskForPosition(onSuccess = { pos ->
                 changeModel { it.addNode(node.copy(position = Position(pos.x, pos.y))) }

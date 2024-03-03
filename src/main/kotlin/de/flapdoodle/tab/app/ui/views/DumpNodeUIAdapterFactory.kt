@@ -9,7 +9,7 @@ object DumpNodeUIAdapterFactory : NodeUIAdapterFactory {
     override fun adapterOf(node: Node, modelChangeListener: ModelChangeListener): NodeUIAdapter {
         return when (node) {
             is Node.Constants -> InlineConstantUIAdapter(node, modelChangeListener)
-            is Node.Table<out Comparable<*>> -> tableAdapter(node)
+            is Node.Table<out Comparable<*>> -> InlineTableUIAdapter(node, modelChangeListener)
             is Node.Calculated<out Comparable<*>> -> InlineCalculatedUIAdapter(node, modelChangeListener)
         }
     }
