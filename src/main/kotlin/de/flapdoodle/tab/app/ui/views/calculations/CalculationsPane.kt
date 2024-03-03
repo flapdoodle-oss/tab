@@ -96,10 +96,6 @@ class CalculationsPane<K: Comparable<K>>(
             actionColumn
         ),
         footerFactory = { values, columns ->
-//            val nameTextField = TextField("name").apply {
-//                prefWidth = 20.0
-//            }
-//            val expressionTextField = TextField("43")
             val addButton = Button("+").apply {
                 onAction = EventHandler {
                     val newExpression = NewExpressionDialog.open()

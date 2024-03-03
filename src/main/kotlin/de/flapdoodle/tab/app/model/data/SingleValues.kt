@@ -17,6 +17,10 @@ data class SingleValues(
         return copy(values = values + value)
     }
 
+    fun remove(id: SingleValueId): SingleValues {
+        return copy(values = values.filter { it.id != id })
+    }
+
     fun value(id: SingleValueId): SingleValue<out Any> {
         return requireNotNull(valueIdMap[id]) { "value $id not found" }
     }

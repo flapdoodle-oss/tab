@@ -10,6 +10,7 @@ import de.flapdoodle.tab.app.model.data.SingleValue
 import de.flapdoodle.tab.app.model.data.SingleValueId
 import de.flapdoodle.tab.app.model.data.SingleValues
 import de.flapdoodle.tab.app.ui.ModelChangeListener
+import de.flapdoodle.tab.app.ui.views.dialogs.NewValueDialog
 import javafx.beans.property.SimpleObjectProperty
 import javafx.event.EventHandler
 import javafx.scene.control.Button
@@ -30,24 +31,38 @@ class InlineConstantUIAdapter(
         weight = 10.0,
         nodeFactory = { textField(nodeId, it, modelChangeListener) to WeightGridTable.ChangeListener { } })
 
+    val actionColumn = WeightGridTable.Column<SingleValue<out Any>>(
+        weight = 0.1,
+        nodeFactory = { value ->
+            val button = Button("-").apply {
+                onAction = EventHandler {
+                    modelChangeListener.change(ModelChange.RemoveValue(nodeId, value.id))
+                }
+            }
+            button to WeightGridTable.ChangeListener {  }
+        }
+    )
+
     val content = WeightGridTable(
         model = model,
         indexOf = SingleValue<out Any>::id,
-        columns = listOf(nameColumn, valueColumn),
+        columns = listOf(nameColumn, valueColumn, actionColumn),
         footerFactory = { values, columns ->
-            val nameField = TextField().apply {
-                prefWidth = 20.0
-            }
             val button = Button("+").apply {
                 maxWidth = 200.0
                 onAction = EventHandler {
-                    val value = SingleValue(nameField.text, Int::class)
-                    modelChangeListener.change(ModelChange.AddValue(nodeId, value))
+                    val newValue = NewValueDialog.open()
+                    if (newValue!=null) {
+                        modelChangeListener.change(ModelChange.AddValue(nodeId, SingleValue(newValue.name, newValue.type)))
+                    }
                 }
             }
-            mapOf(nameColumn to nameField, valueColumn to button)
+            mapOf(actionColumn to button)
         }
-    )
+    ).apply {
+        verticalSpace().value = 10.0
+        horizontalSpace().value = 10.0
+    }
 
     init {
         children.add(content)

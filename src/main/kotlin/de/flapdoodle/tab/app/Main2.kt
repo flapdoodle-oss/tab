@@ -122,7 +122,7 @@ class Main2() : BorderPane() {
           button.onAction = EventHandler {
             adapter.execute(Command.AskForPosition(onSuccess = { pos ->
               val node = Node.Constants("Values#" + vertexCounter.incrementAndGet(), position = Position(pos.x, pos.y))
-                .addValue(SingleValue("x", Int::class, 2))
+//                .addValue(SingleValue("x", Int::class, 2))
               changeModel { it.addNode(node) }
             }))
           }

@@ -44,6 +44,7 @@ data class EvalAdapter(
         return when (value) {
             is Int -> Value.of(value.toBigDecimal())
             is BigDecimal -> Value.of(value)
+            is Double -> Value.of(value)
             else -> throw IllegalArgumentException("not implemented: $value (${value::class})")
         }
     }

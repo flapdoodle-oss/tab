@@ -65,11 +65,14 @@ sealed class Node {
         override fun apply(change: ModelChange): Constants {
             if (change is ModelChange.ConstantsChange && change.id==id) {
                 when (change) {
+                    is ModelChange.AddValue -> {
+                        return addValue(change.value)
+                    }
                     is ModelChange.ChangeValue -> {
                         return copy(values = values.set(change.valueId, change.value))
                     }
-                    is ModelChange.AddValue -> {
-                        return addValue(change.value)
+                    is ModelChange.RemoveValue -> {
+                        return copy(values = values.remove(change.valueId))
                     }
                 }
             }
