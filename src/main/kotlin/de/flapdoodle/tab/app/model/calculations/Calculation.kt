@@ -14,6 +14,8 @@ sealed class Calculation<K: Comparable<K>>(
     abstract val id: Id<Calculation<*>>
 
     override fun name() = name
+    fun formula() = formula
+    
     fun evaluate(values: Map<Variable, Any?>) = formula.evaluate(values)
     fun variables() = formula.variables()
 

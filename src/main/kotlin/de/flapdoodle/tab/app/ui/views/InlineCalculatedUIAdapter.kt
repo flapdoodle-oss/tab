@@ -38,6 +38,8 @@ class InlineCalculatedUIAdapter<K: Comparable<K>>(
     override fun update(node: Node) {
         require(node is Node.Calculated<out Comparable<*>>) { "wrong type $node" }
         require(node.id == nodeId) {"wrong node: ${node.id} != $nodeId"}
-        valuesPane.update(node as Node.Calculated<K>)
+
+        calculationsPane.update(node as Node.Calculated<K>)
+        valuesPane.update(node)
     }
 }

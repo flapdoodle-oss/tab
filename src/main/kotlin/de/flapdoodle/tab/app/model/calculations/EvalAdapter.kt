@@ -17,7 +17,7 @@ import java.math.BigInteger
 import java.math.MathContext
 
 data class EvalAdapter(
-    val formula: String,
+    private val formula: String,
     private val expression: Expression = expressionFactory.parse(formula),
     private val variablesWithHash: List<Pair<Variable, Int>> = expression.usedVariablesWithHash()
         .map { Variable(it.key) to it.value }
@@ -25,6 +25,7 @@ data class EvalAdapter(
 
     private val variables = variablesWithHash.map { it.first }.toCollection(linkedSetOf())
 
+    override fun expression() = formula
     override fun variables(): Set<Variable> = variables
 
     override fun evaluate(values: Map<Variable, Any?>): Any? {

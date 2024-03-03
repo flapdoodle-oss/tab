@@ -118,6 +118,15 @@ sealed class Node {
         }
 
         override fun apply(change: ModelChange): Calculated<K> {
+            if (change is ModelChange.CalculationChange) {
+                when (change) {
+                    is ModelChange.ChangeFormula -> {
+                        if (change.id == id) {
+                            return copy(calculations = calculations.changeFormula(change.calculationId,change.formula))
+                        }
+                    }
+                }
+            }
             return this
         }
     }
