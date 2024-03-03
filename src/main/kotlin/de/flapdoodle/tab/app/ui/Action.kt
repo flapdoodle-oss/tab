@@ -115,7 +115,7 @@ sealed class Action {
                     node.values.values
 
                 is Node.Table<out Comparable<*>> ->
-                    node.columns.columns
+                    node.columns.columns()
             }
         }
 
@@ -124,13 +124,13 @@ sealed class Action {
 
             val expectedColumns = calculations.tabular().map { it.destination() to it }
             val expectedValues = calculations.aggregations().map { it.destination() to it }
-            val existingColumns = node.columns.columns.map { it.id }
+            val existingColumns = node.columns.columns().map { it.id }
             val existingValues = node.values.values.map { it.id }
             
             val missingColumns = expectedColumns.filter { !existingColumns.contains(it.first) }
             val missingValues = expectedValues.filter { !existingValues.contains(it.first) }
 
-            return node.columns.columns +
+            return node.columns.columns() +
                     missingColumns.map { Column(it.second.name(), node.indexType, Unit::class, emptyMap(), it.first) } +
                     node.values.values +
                     missingValues.map { SingleValue(it.second.name(), Unit::class, null, it.first) }

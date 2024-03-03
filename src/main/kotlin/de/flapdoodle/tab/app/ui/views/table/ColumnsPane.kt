@@ -20,7 +20,7 @@ class ColumnsPane<K: Comparable<K>>(
 ): VBox() {
     private val nodeId = node.id
 
-    private val valuesModel = SimpleObjectProperty(node.columns.columns)
+    private val valuesModel = SimpleObjectProperty(node.columns.columns())
     private val nameColumn = WeightGridTable.Column<Column<K, out Any>>(weight = 1.0, nodeFactory = {
         val label = Label(it.name)
         label to WeightGridTable.ChangeListener {
@@ -75,6 +75,6 @@ class ColumnsPane<K: Comparable<K>>(
     }
 
     fun update(node: Node.Table<K>) {
-        valuesModel.value = node.columns.columns
+        valuesModel.value = node.columns.columns()
     }
 }

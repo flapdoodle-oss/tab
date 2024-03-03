@@ -12,10 +12,10 @@ class ColumnsTest {
             .addColumn(column)
             .add(column.id, "A", Int::class, 2)
 
-        assertThat(testee.columns)
+        assertThat(testee.columns())
             .hasSize(1)
 
-        val changedColumn = testee.columns[0]
+        val changedColumn = testee.columns()[0]
 
         assertThat(changedColumn.id).isEqualTo(column.id)
         assertThat(changedColumn.values)

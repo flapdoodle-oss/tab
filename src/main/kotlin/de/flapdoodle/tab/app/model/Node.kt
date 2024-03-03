@@ -37,7 +37,7 @@ sealed class Node {
         val columns: Columns<K>
 
         fun column(id: ColumnId<*>): Column<K, out Any> {
-            return columns.columns.one { it.id == id }
+            return columns.columns().one { it.id == id }
         }
     }
 

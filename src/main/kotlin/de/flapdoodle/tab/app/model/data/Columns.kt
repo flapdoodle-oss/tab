@@ -3,7 +3,7 @@ package de.flapdoodle.tab.app.model.data
 import kotlin.reflect.KClass
 
 data class Columns<K: Comparable<K>>(
-    val columns: List<Column<K, out Any>> = emptyList()
+    private val columns: List<Column<K, out Any>> = emptyList()
 ) {
     init {
         val collisions = columns.groupBy { it.id }
@@ -15,6 +15,7 @@ data class Columns<K: Comparable<K>>(
     private val index by lazy { columns.flatMap { it.values.keys }.toSortedSet() }
 
     fun index() = index
+    fun columns() = columns
 
     fun addColumn(column: Column<K, out Any>): Columns<K> {
         return copy(columns = columns + column)
