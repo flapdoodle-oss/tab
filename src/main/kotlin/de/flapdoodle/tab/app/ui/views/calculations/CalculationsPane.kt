@@ -7,6 +7,7 @@ import de.flapdoodle.tab.app.model.change.ModelChange
 import de.flapdoodle.tab.app.ui.ModelChangeListener
 import javafx.beans.property.SimpleObjectProperty
 import javafx.event.EventHandler
+import javafx.scene.control.Button
 import javafx.scene.control.Label
 import javafx.scene.control.TextField
 import javafx.scene.layout.VBox
@@ -27,9 +28,21 @@ class CalculationsPane<K: Comparable<K>>(
     )
 
     private val formulaColumn = WeightGridTable.Column<Calculation.Aggregation<K>>(
-        weight = 10.0,
+        weight = 50.0,
         nodeFactory = { aggregation ->
             textFieldFor(aggregation, modelChangeListener)
+        }
+    )
+
+    private val actionColumn = WeightGridTable.Column<Calculation.Aggregation<K>>(
+        weight = 1.0,
+        nodeFactory = { aggregation ->
+            val button = Button("-").apply {
+                onAction = EventHandler {
+                    modelChangeListener.change(ModelChange.RemoveFormula(nodeId, aggregation.id))
+                }
+            }
+            button to WeightGridTable.ChangeListener {}
         }
     )
 
@@ -61,8 +74,21 @@ class CalculationsPane<K: Comparable<K>>(
         columns = listOf(
             nameColumn,
             WeightGridTable.Column(weight = 0.1, nodeFactory = { Label("=") to WeightGridTable.ChangeListener {  } }),
-            formulaColumn
-        )
+            formulaColumn,
+            actionColumn
+        ),
+        footerFactory = { values, columns ->
+            val nameTextField = TextField("name").apply {
+                prefWidth = 20.0
+            }
+            val expressionTextField = TextField("43")
+            val addButton = Button("+").apply {
+                onAction = EventHandler {
+                    modelChangeListener.change(ModelChange.AddAggregation(nodeId,nameTextField.text, expressionTextField.text))
+                }
+            }
+            mapOf(nameColumn to nameTextField, formulaColumn to expressionTextField, actionColumn to addButton)
+        }
     )
 
 

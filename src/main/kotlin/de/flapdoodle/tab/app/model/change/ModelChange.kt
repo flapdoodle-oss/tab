@@ -12,9 +12,12 @@ sealed class ModelChange {
     data class AddValue(override val id: Id<out Node.Constants>, val value: SingleValue<out Any>): ConstantsChange(id)
 
     sealed class CalculationChange(open val id: Id<out Node.Calculated<out Comparable<*>>>): ModelChange()
+
+    class AddAggregation(id: Id<Node.Calculated<*>>, val name: String, val expression: String) : CalculationChange(id)
     data class ChangeFormula(
         override val id: Id<out Node.Calculated<out Comparable<*>>>,
         val calculationId: Id<Calculation<*>>,
         val formula: String
     ): CalculationChange(id)
+    class RemoveFormula(id: Id<Node.Calculated<*>>, val calculationId: Id<Calculation<*>>) : CalculationChange(id)
 }

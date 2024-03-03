@@ -3,6 +3,7 @@ package de.flapdoodle.tab.app.model
 import de.flapdoodle.kfx.types.Id
 import de.flapdoodle.tab.app.model.calculations.Calculation
 import de.flapdoodle.tab.app.model.calculations.Calculations
+import de.flapdoodle.tab.app.model.calculations.EvalAdapter
 import de.flapdoodle.tab.app.model.calculations.InputSlot
 import de.flapdoodle.tab.app.model.change.ModelChange
 import de.flapdoodle.tab.app.model.connections.Source
@@ -123,6 +124,21 @@ sealed class Node {
                     is ModelChange.ChangeFormula -> {
                         if (change.id == id) {
                             return copy(calculations = calculations.changeFormula(change.calculationId,change.formula))
+                        }
+                    }
+                    is ModelChange.RemoveFormula -> {
+                        if (change.id == id) {
+//                            return copy(calculations = calculations.removeFormula(change.calculationId))
+                        }
+                    }
+                    is ModelChange.AddAggregation -> {
+                        if (change.id == id) {
+                            return copy(calculations = calculations.addAggregation(
+                                Calculation.Aggregation(
+                                    name = change.name,
+                                    formula = EvalAdapter(change.expression)
+                                )
+                            ))
                         }
                     }
                 }
