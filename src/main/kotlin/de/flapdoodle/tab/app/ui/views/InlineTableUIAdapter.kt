@@ -1,5 +1,6 @@
 package de.flapdoodle.tab.app.ui.views
 
+import de.flapdoodle.kfx.layout.grid.WeightGridPane
 import de.flapdoodle.tab.app.model.Node
 import de.flapdoodle.tab.app.ui.ModelChangeListener
 import de.flapdoodle.tab.app.ui.views.table.ColumnsPane
@@ -11,12 +12,21 @@ class InlineTableUIAdapter<K: Comparable<K>>(
 ) : NodeUIAdapter() {
     val nodeId = node.id
 
-    private val columnsPane = ColumnsPane(node, modelChangeListener)
-    private val tablePane = TablePane(node, modelChangeListener)
+    private val wrapper = WeightGridPane().apply {
+        setRowWeight(0,0.1)
+        setRowWeight(1, 1.0)
+    }
+    private val columnsPane = ColumnsPane(node, modelChangeListener).apply {
+        WeightGridPane.setPosition(this, 0, 0)
+    }
+    private val tablePane = TablePane(node, modelChangeListener).apply {
+        WeightGridPane.setPosition(this, 0, 1)
+    }
 
     init {
-        children.add(columnsPane)
-        children.add(tablePane)
+        children.add(wrapper)
+        wrapper.children.add(columnsPane)
+        wrapper.children.add(tablePane)
     }
 
     override fun update(node: Node) {

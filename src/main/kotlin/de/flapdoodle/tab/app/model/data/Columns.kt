@@ -46,6 +46,15 @@ data class Columns<K: Comparable<K>>(
         return copy(columns = columns.map { if (it.id==id) map(it) else it })
     }
 
+    fun set(id: ColumnId<K>, key: K, value: Any?): Columns<K> {
+        val c: Column<K, out Any> = column(id)
+        require( value == null || c.valueType.isInstance(value)) {"value type mismatch: $value != ${c.valueType}"}
+        val column = (c as Column<K, Any>).add(key, value)
+        return copy(columns = columns.map {
+            if (it.id == column.id) column else it
+        })
+    }
+
     fun get(columnId: ColumnId<K>, key: K): Any? {
         return column(columnId)[key]
     }

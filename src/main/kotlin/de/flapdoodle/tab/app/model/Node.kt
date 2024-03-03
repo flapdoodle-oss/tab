@@ -99,6 +99,11 @@ sealed class Node {
                             return copy(columns = columns.addColumn(change.column as Column<K, out Any>))
                         }
                     }
+                    is ModelChange.SetColumn<out Comparable<*>> -> {
+                        if (change.id == id) {
+                            return copy(columns = columns.set(change.columnId as ColumnId<K> , change.index as K, change.value))
+                        }
+                    }
                     is ModelChange.RemoveColumn -> {
                         if (change.id == id) {
                             return copy(columns = columns.remove(change.columnId as ColumnId<K>))

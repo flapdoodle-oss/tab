@@ -9,7 +9,7 @@ import javafx.scene.layout.Pane
 import javafx.scene.layout.StackPane
 import javafx.scene.layout.VBox
 
-abstract class NodeUIAdapter(): VBox() {
+abstract class NodeUIAdapter(): StackPane() {
     abstract fun update(node: Node)
 
 }
