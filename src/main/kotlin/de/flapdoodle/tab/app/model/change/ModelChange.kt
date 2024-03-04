@@ -40,6 +40,7 @@ sealed class ModelChange {
 
     sealed class CalculationChange(open val id: Id<out Node.Calculated<out Comparable<*>>>): ModelChange()
     class AddAggregation(id: Id<Node.Calculated<*>>, val name: String, val expression: String) : CalculationChange(id)
+    class AddTabular(id: Id<Node.Calculated<*>>, val name: String, val expression: String) : CalculationChange(id)
     data class ChangeFormula(
         override val id: Id<out Node.Calculated<out Comparable<*>>>,
         val calculationId: Id<Calculation<*>>,

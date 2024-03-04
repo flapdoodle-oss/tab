@@ -1,5 +1,6 @@
 package de.flapdoodle.tab.app.ui.views
 
+import de.flapdoodle.kfx.layout.grid.WeightGridPane
 import de.flapdoodle.tab.app.model.Node
 import de.flapdoodle.tab.app.ui.ModelChangeListener
 import de.flapdoodle.tab.app.ui.views.calculations.CalculationsPane
@@ -11,12 +12,22 @@ class InlineCalculatedUIAdapter<K: Comparable<K>>(
 ) : NodeUIAdapter() {
     val nodeId = node.id
 
-    val calculationsPane = CalculationsPane(node, modelChangeListener)
-    val valuesPane = ValuesPane(node)
+    private val wrapper = WeightGridPane().apply {
+        setRowWeight(0,0.1)
+        setRowWeight(1, 1.0)
+    }
+
+    val calculationsPane = CalculationsPane(node, modelChangeListener).apply {
+        WeightGridPane.setPosition(this, 0, 0)
+    }
+    val valuesPane = ValuesPane(node).apply {
+        WeightGridPane.setPosition(this, 0, 1)
+    }
 
     init {
-        children.add(calculationsPane)
-        children.add(valuesPane)
+        children.add(wrapper)
+        wrapper.children.add(calculationsPane)
+        wrapper.children.add(valuesPane)
     }
 
     override fun update(node: Node) {

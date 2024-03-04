@@ -8,6 +8,8 @@ import de.flapdoodle.tab.app.model.Position
 import de.flapdoodle.tab.app.model.Tab2Model
 import de.flapdoodle.tab.app.model.calculations.Calculation
 import de.flapdoodle.tab.app.model.calculations.EvalAdapter
+import de.flapdoodle.tab.app.model.change.ModelChange
+import de.flapdoodle.tab.app.model.data.Column
 import de.flapdoodle.tab.app.model.data.SingleValue
 import de.flapdoodle.tab.app.model.graph.Solver
 import de.flapdoodle.tab.app.ui.Tab2ModelAdapter
@@ -136,8 +138,9 @@ class Main2() : BorderPane() {
           button.onAction = EventHandler {
             val node = NewTableDialog.open()
             if (node!=null) {
+              val changed = fakeDummy(node)
               adapter.execute(Command.AskForPosition(onSuccess = { pos ->
-                changeModel { it.addNode(node.copy(position = Position(pos.x, pos.y))) }
+                changeModel { it.addNode(changed.copy(position = Position(pos.x, pos.y))) }
               }))
             }
           }
@@ -202,5 +205,11 @@ class Main2() : BorderPane() {
 //        }
       )
     }
+  }
+
+  private fun <K: Comparable<K>> fakeDummy(node: Node.Table<K>): Node.Table<K> {
+    return node
+      .apply(ModelChange.AddColumn(node.id, Column("Name", node.indexType, String::class)))
+      .apply(ModelChange.AddColumn(node.id, Column("Age", node.indexType, Int::class)))
   }
 }

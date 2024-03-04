@@ -176,6 +176,17 @@ sealed class Node {
                             ))
                         }
                     }
+                    is ModelChange.AddTabular -> {
+                        if (change.id == id) {
+                            return copy(calculations = calculations.addTabular(
+                                Calculation.Tabular(
+                                    name = change.name,
+                                    formula = EvalAdapter(change.expression),
+                                    destination = ColumnId(indexType)
+                                )
+                            ))
+                        }
+                    }
                 }
             }
             return this
