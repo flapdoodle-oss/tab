@@ -4,6 +4,7 @@ import de.flapdoodle.kfx.layout.grid.WeightGridPane
 import de.flapdoodle.tab.app.model.Node
 import de.flapdoodle.tab.app.ui.ModelChangeListener
 import de.flapdoodle.tab.app.ui.views.table.ColumnsPane
+import de.flapdoodle.tab.app.ui.views.table.SlimTablePane
 import de.flapdoodle.tab.app.ui.views.table.TablePane
 
 class InlineTableUIAdapter<K: Comparable<K>>(
