@@ -30,4 +30,13 @@ data class Column<K : Comparable<K>, V : Any>(
         }
         return copy(values = map)
     }
+
+    fun moveValue(lastIndex: K, newIndex: K): Column<K, V> {
+        require(!values.containsKey(newIndex)) { "destination already set" }
+        val value = values[lastIndex]
+        return if (value != null)
+            copy(values = values - lastIndex + (newIndex to value))
+        else
+            this
+    }
 }

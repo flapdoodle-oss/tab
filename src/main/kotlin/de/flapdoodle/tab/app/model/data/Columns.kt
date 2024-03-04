@@ -55,6 +55,12 @@ data class Columns<K: Comparable<K>>(
         })
     }
 
+    fun moveValues(lastIndex: K, newIndex: K): Columns<K> {
+        require(!index.contains(newIndex)) { "can not move values to existing index: $index" }
+
+        return copy(columns = columns.map { it.moveValue(lastIndex, newIndex) })
+    }
+
     fun get(columnId: ColumnId<K>, key: K): Any? {
         return column(columnId)[key]
     }
@@ -62,4 +68,5 @@ data class Columns<K: Comparable<K>>(
     fun forEach(action: (Column<K, out Any>) -> Unit) {
         columns.forEach(action)
     }
+
 }

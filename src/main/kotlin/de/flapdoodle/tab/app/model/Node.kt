@@ -99,9 +99,21 @@ sealed class Node {
                             return copy(columns = columns.addColumn(change.column as Column<K, out Any>))
                         }
                     }
-                    is ModelChange.SetColumn<out Comparable<*>> -> {
+                    is ModelChange.MoveValues<out Comparable<*>> -> {
                         if (change.id == id) {
-                            return copy(columns = columns.set(change.columnId as ColumnId<K> , change.index as K, change.value))
+                            return copy(columns = columns.moveValues(change.lastIndex as K, change.index as K))
+                        }
+                    }
+//                    is ModelChange.SetColumn<out Comparable<*>> -> {
+//                        if (change.id == id) {
+//                            return copy(columns = columns.set(change.columnId as ColumnId<K> , change.index as K, change.value))
+//                        }
+//                    }
+                    is ModelChange.SetColumns<out Comparable<*>> -> {
+                        if (change.id == id) {
+                            return copy(columns = change.changes.fold(columns) { c: Columns<K>, idAndValue: Pair<ColumnId<out Comparable<*>>, Any?> ->
+                                c.set(idAndValue.first as ColumnId<K>, change.index as K, idAndValue.second)
+                            })
                         }
                     }
                     is ModelChange.RemoveColumn -> {
