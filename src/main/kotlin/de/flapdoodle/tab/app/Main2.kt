@@ -6,20 +6,13 @@ import de.flapdoodle.kfx.types.Id
 import de.flapdoodle.tab.app.model.Node
 import de.flapdoodle.tab.app.model.Position
 import de.flapdoodle.tab.app.model.Tab2Model
-import de.flapdoodle.tab.app.model.calculations.Calculation
-import de.flapdoodle.tab.app.model.calculations.EvalAdapter
 import de.flapdoodle.tab.app.model.change.ModelChange
 import de.flapdoodle.tab.app.model.data.Column
-import de.flapdoodle.tab.app.model.data.SingleValue
-import de.flapdoodle.tab.app.model.graph.Solver
 import de.flapdoodle.tab.app.ui.ModelSolverWrapper
 import de.flapdoodle.tab.app.ui.Tab2ModelAdapter
 import de.flapdoodle.tab.app.ui.commands.Command
-import de.flapdoodle.tab.app.ui.events.ModelEvent
-import de.flapdoodle.tab.app.ui.events.ModelEventListener
 import de.flapdoodle.tab.app.ui.views.dialogs.NewCalculationDialog
 import de.flapdoodle.tab.app.ui.views.dialogs.NewTableDialog
-import de.flapdoodle.tab.app.ui.views.dialogs.NewValueDialog
 import de.flapdoodle.tab.app.ui.views.dialogs.NewValuesDialog
 import javafx.beans.property.SimpleObjectProperty
 import javafx.event.EventHandler
@@ -168,6 +161,26 @@ class Main2() : BorderPane() {
           button.onAction = EventHandler {
             val vertexId = selectedVertex.value
             modelWrapper.changeModel { it.removeNode(vertexId) }
+          }
+        },
+        Button("*").also { button ->
+          button.onAction = EventHandler {
+            val vertexId = selectedVertex.value
+            modelWrapper.changeModel {
+              val node = Node.Table("Table", Int::class)
+              val nameColumn = Column("Name", node.indexType, String::class)
+              val ageColumn = Column("Age", node.indexType, Int::class)
+
+              val tableNode = node
+                .apply(ModelChange.AddColumn(node.id, nameColumn))
+                .apply(ModelChange.AddColumn(node.id, ageColumn))
+
+              val calcNode = Node.Calculated("Calc", Int::class)
+              it.addNode(tableNode.copy(position = Position(30.0, 30.0)))
+                .apply(ModelChange.SetColumns(tableNode.id, 1, listOf(nameColumn.id to "Klaus", ageColumn.id to 22)))
+                .addNode(calcNode.copy(position = Position(200.0, 30.0)))
+                .apply(ModelChange.AddTabular(calcNode.id,"Copy","x"))
+            }
           }
         }
 //        Button("?").also { button ->

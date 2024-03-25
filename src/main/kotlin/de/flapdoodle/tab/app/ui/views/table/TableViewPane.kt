@@ -24,7 +24,8 @@ class TableViewPane<K : Comparable<K>>(
     private var columns = node.columns
 
     private val tableRows = SimpleObjectProperty(rowsOf(columns))
-    private val tableColumns = SimpleObjectProperty(tableColumnsOff(node.indexType, columns))
+    private val indexColumn = indexColumn(node.indexType)
+    private val tableColumns = SimpleObjectProperty(tableColumnsOff(indexColumn, columns))
 
     private val tableChangeListener: TableChangeListener<Row<K>> = object : TableChangeListener<Row<K>> {
         override fun changeCell(row: Row<K>, change: TableChangeListener.CellChange<Row<K>, out Any>): Row<K> {
@@ -58,8 +59,8 @@ class TableViewPane<K : Comparable<K>>(
         }
     }
 
-    private fun tableColumnsOff(indexType: KClass<K>,  columns: Columns<K>): List<de.flapdoodle.kfx.controls.bettertable.Column<Row<K>, out Any>> {
-        return listOf(indexColumn(indexType)) + columns.columns().map {
+    private fun tableColumnsOff(indexColumn: de.flapdoodle.kfx.controls.bettertable.Column<Row<K>, out Any>,  columns: Columns<K>): List<de.flapdoodle.kfx.controls.bettertable.Column<Row<K>, out Any>> {
+        return listOf(indexColumn) + columns.columns().map {
             column(it)
         }
     }
@@ -110,11 +111,15 @@ class TableViewPane<K : Comparable<K>>(
     }
 
     fun update(node: Node.Calculated<K>) {
-        println("update table view: $node")
+//        val columnChanges = Diff.diff(columns.columns(), node.columns.columns()) { it.id }
+        
         // HACK
-        tableColumns.value = tableColumnsOff(node.indexType, node.columns)
+        tableColumns.value = tableColumnsOff(indexColumn, node.columns)
         tableRows.value = rowsOf(node.columns)
         columns = node.columns
+
+
+
     }
 
     private fun <V : Any> columnValue(column: Column<K, V>, index: K): ColumnValue<K, V> {
