@@ -178,6 +178,9 @@ class Main2() : BorderPane() {
               val calcNode = Node.Calculated("Calc", Int::class)
               it.addNode(tableNode.copy(position = Position(30.0, 30.0)))
                 .apply(ModelChange.SetColumns(tableNode.id, 1, listOf(nameColumn.id to "Klaus", ageColumn.id to 22)))
+                .apply(ModelChange.SetColumns(tableNode.id, 2, listOf(ageColumn.id to 24)))
+                .apply(ModelChange.SetColumns(tableNode.id, 3, listOf(nameColumn.id to "Susi", ageColumn.id to 45)))
+                .apply(ModelChange.SetColumns(tableNode.id, 10, listOf(nameColumn.id to "Peter")))
                 .addNode(calcNode.copy(position = Position(200.0, 30.0)))
                 .apply(ModelChange.AddTabular(calcNode.id,"Copy","x"))
             }
