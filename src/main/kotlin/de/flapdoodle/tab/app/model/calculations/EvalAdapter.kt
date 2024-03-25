@@ -27,6 +27,9 @@ data class EvalAdapter(
 
     override fun expression() = formula
     override fun variables(): Set<Variable> = variables
+    override fun toString(): String {
+        return "EvalAdapter(formula=$formula, variablesWithHash=$variablesWithHash)"
+    }
 
     override fun evaluate(values: Map<Variable, Any?>): Any? {
         var resolver = VariableResolver.empty()
@@ -45,6 +48,7 @@ data class EvalAdapter(
             is Int -> Value.of(value.toBigDecimal())
             is BigDecimal -> Value.of(value)
             is Double -> Value.of(value)
+            is String -> Value.of(value)
             else -> throw IllegalArgumentException("not implemented: $value (${value::class})")
         }
     }

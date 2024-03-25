@@ -209,13 +209,21 @@ object Solver {
         calculation: Calculation.Tabular<K>,
         result: Map<K, Any>
     ): Node.Calculated<K> {
-        val changedNode = if (node.columns.find(calculation.destination()) == null) {
-            val newColumn = column(result, calculation)
+        val newColumn = column(result, calculation)
+        val existingColumn = node.columns.find(calculation.destination())
+
+        val changedNode = if (existingColumn == null) {
             node.copy(columns = node.columns.addColumn(newColumn))
         } else {
-            node.copy(columns = node.columns.change(calculation.destination()) { old ->
-                old.copy(name = calculation.name())
-            })
+            if (existingColumn.valueType != newColumn.valueType) {
+                node.copy(columns = node.columns.change(calculation.destination()) { old ->
+                    newColumn
+                })
+            } else {
+                node.copy(columns = node.columns.change(calculation.destination()) { old ->
+                    newColumn.copy(id = old.id)
+                })
+            }
         }
         return changedNode
     }

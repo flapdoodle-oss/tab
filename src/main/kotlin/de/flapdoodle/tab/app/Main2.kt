@@ -12,6 +12,7 @@ import de.flapdoodle.tab.app.model.change.ModelChange
 import de.flapdoodle.tab.app.model.data.Column
 import de.flapdoodle.tab.app.model.data.SingleValue
 import de.flapdoodle.tab.app.model.graph.Solver
+import de.flapdoodle.tab.app.ui.ModelSolverWrapper
 import de.flapdoodle.tab.app.ui.Tab2ModelAdapter
 import de.flapdoodle.tab.app.ui.commands.Command
 import de.flapdoodle.tab.app.ui.events.ModelEvent
@@ -30,47 +31,47 @@ import javafx.scene.layout.FlowPane
 import java.util.concurrent.atomic.AtomicInteger
 
 class Main2() : BorderPane() {
-  private val model = SimpleObjectProperty(Tab2Model())
+  private val modelWrapper = ModelSolverWrapper(Tab2Model())
+
+//  private val model = SimpleObjectProperty(Tab2Model())
   private val selectedVertex = SimpleObjectProperty<Id<out Node>>()
 //  private val selectedEdge = SimpleObjectProperty<Edge<String>>()
   private val vertexCounter = AtomicInteger(0)
   private val slotCounter = AtomicInteger(0)
 
-  private fun changeModel(change: (Tab2Model) -> Tab2Model) {
-    val changed = change(model.value)
-    val solved = Solver.solve(changed)
-    model.value = solved
-  }
+//  private fun changeModel(change: (Tab2Model) -> Tab2Model) {
+//    val changed = change(model.value)
+//    val solved = Solver.solve(changed)
+//    model.value = solved
+//  }
+//
+//  private fun validModelChange(change: (Tab2Model) -> Tab2Model): Boolean {
+//    try {
+//      change(model.value)
+//      return true
+//    } catch (ex: Exception) {
+//      return  false
+//    }
+//  }
+//
+//  private val eventListener = ModelEventListener { event ->
+//    when (event) {
+//      is ModelEvent.ConnectTo -> {
+//        changeModel { current ->
+//          current.connect(event.start, event.startDataOrInput, event.end, event.endDataOrInput)
+//        }
+//      }
+//      is ModelEvent.TryToConnectTo -> {
+//        validModelChange { it.connect(event.start, event.startDataOrInput, event.end, event.endDataOrInput) }
+//      }
+//      else -> {
+//
+//      }
+//    }
+//    true
+//  }
 
-  private fun validModelChange(change: (Tab2Model) -> Tab2Model): Boolean {
-    try {
-      change(model.value)
-      return true
-    } catch (ex: Exception) {
-      return  false
-    }
-  }
-
-  private val eventListener = ModelEventListener { event ->
-    when (event) {
-      is ModelEvent.ConnectTo -> {
-        changeModel { current ->
-          current.connect(event.start, event.startDataOrInput, event.end, event.endDataOrInput)
-        }
-      }
-      is ModelEvent.TryToConnectTo -> {
-        validModelChange { it.connect(event.start, event.startDataOrInput, event.end, event.endDataOrInput) }
-      }
-      else -> {
-
-      }
-    }
-    true
-  }
-
-  private val adapter = Tab2ModelAdapter(model, eventListener, { modelChange ->
-    changeModel { old -> old.apply(modelChange) }
-  }).also { editor ->
+  private val adapter = Tab2ModelAdapter(modelWrapper.model(), modelWrapper.eventListener(), modelWrapper.changeListener()).also { editor ->
     editor.selectedNodesProperty().subscribe { selection ->
       if (selection.size == 1) {
         selectedVertex.value = selection.first()
@@ -129,7 +130,7 @@ class Main2() : BorderPane() {
             val node = NewValuesDialog.open()
             if (node!=null) {
               adapter.execute(Command.AskForPosition(onSuccess = { pos ->
-                changeModel { it.addNode(node.copy(position = Position(pos.x, pos.y))) }
+                modelWrapper.changeModel { it.addNode(node.copy(position = Position(pos.x, pos.y))) }
               }))
             }
           }
@@ -140,7 +141,7 @@ class Main2() : BorderPane() {
             if (node!=null) {
               val changed = fakeDummy(node)
               adapter.execute(Command.AskForPosition(onSuccess = { pos ->
-                changeModel { it.addNode(changed.copy(position = Position(pos.x, pos.y))) }
+                modelWrapper.changeModel { it.addNode(changed.copy(position = Position(pos.x, pos.y))) }
               }))
             }
           }
@@ -156,7 +157,7 @@ class Main2() : BorderPane() {
 //                position = Position(pos.x, pos.y))
 //                .addAggregation(Calculation.Aggregation("c",EvalAdapter("a+b")))
 
-                changeModel { it.addNode(node.copy(position = Position(pos.x, pos.y))) }
+                modelWrapper.changeModel { it.addNode(node.copy(position = Position(pos.x, pos.y))) }
               }))
             }
           }
@@ -166,7 +167,7 @@ class Main2() : BorderPane() {
           button.managedProperty().bind(button.visibleProperty())
           button.onAction = EventHandler {
             val vertexId = selectedVertex.value
-            changeModel { it.removeNode(vertexId) }
+            modelWrapper.changeModel { it.removeNode(vertexId) }
           }
         }
 //        Button("?").also { button ->

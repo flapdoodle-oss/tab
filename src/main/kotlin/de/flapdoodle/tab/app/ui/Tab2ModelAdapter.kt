@@ -98,7 +98,7 @@ class Tab2ModelAdapter(
 
     private fun apply(action: List<Action>) {
         action.forEach { action ->
-//            println("action: $action")
+            println("action: $action")
 
             when (action) {
                 is Action.AddNode -> {
@@ -139,13 +139,21 @@ class Tab2ModelAdapter(
                         it.vertex.addConnector(slot)
                     }
                 }
-
                 is Action.RemoveOutput -> {
                     slotMapping.remove(action.output) { slot ->
                         vertexMapping.with(action.id) {
                             it.vertex.removeConnector(slot.id)
                         }
                     }
+                }
+                is Action.ChangeOutput -> {
+//                    vertexMapping.with(action.id) {
+//                        //it.content.update(action.)
+//                    }
+//                    println("$this - not implemented: $action")
+//                    slotMapping.with(action.output) { slot ->
+//                        // TODO hier fehlt vieles
+//                    }
                 }
 
                 is Action.AddInput -> {
@@ -172,7 +180,6 @@ class Tab2ModelAdapter(
                         }
                     }
                 }
-
                 is Action.AddConnection -> {
                     vertexMapping.with(action.source.node) { start ->
                         vertexMapping.with(action.id) { end ->
@@ -199,9 +206,6 @@ class Tab2ModelAdapter(
                         changeSelection(output2Input, false)
                         Subscriptions.unsubscribeAll(it)
                     }
-                }
-                else -> {
-                    println("not implemented: $action")
                 }
             }
         }

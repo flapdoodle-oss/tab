@@ -16,9 +16,8 @@ import javafx.beans.value.ObservableValue
 import javafx.scene.layout.StackPane
 import kotlin.reflect.KClass
 
-class TablePane<K : Comparable<K>>(
-    node: Node.Table<K>,
-    val modelChangeListener: ModelChangeListener
+class TableViewPane<K : Comparable<K>>(
+    node: Node.Calculated<K>
 ) : StackPane() {
     private val nodeId = node.id
 
@@ -29,7 +28,7 @@ class TablePane<K : Comparable<K>>(
 
     private val tableChangeListener: TableChangeListener<Row<K>> = object : TableChangeListener<Row<K>> {
         override fun changeCell(row: Row<K>, change: TableChangeListener.CellChange<Row<K>, out Any>): Row<K> {
-            return (change.column as TableColumn<K, out Any>).applyChange(row, change)
+            TODO("Not yet implemented")
         }
 
         override fun emptyRow(index: Int): Row<K> {
@@ -37,12 +36,7 @@ class TablePane<K : Comparable<K>>(
         }
 
         override fun updateRow(row: Row<K>, changed: Row<K>) {
-            val changes = Diff.diff(row.values, changed.values) { it.column }
-            val removed = changes.removed.map { it.column.id to null }
-            val modified = changes.changed.map { it.first.column.id to it.second.value }
-            val added = changes.new.map { it.column.id to it.value }
-
-            modelChangeListener.change(ModelChange.SetColumns(nodeId,row.index!!, changes = removed + modified + added))
+            TODO("Not yet implemented")
         }
 
         override fun removeRow(row: Row<K>) {
@@ -50,20 +44,8 @@ class TablePane<K : Comparable<K>>(
         }
 
         override fun insertRow(index: Int, row: Row<K>): Boolean {
-            return if (row.index!=null) {
-                modelChangeListener.change(
-                    ModelChange.SetColumns(
-                        nodeId,
-                        row.index,
-                        changes = row.values.map { change ->
-                            change.column.id to change.value
-                        })
-                )
-                true
-            } else
-                false
+            TODO("Not yet implemented")
         }
-
     }
 
     private val table2 = Table(tableRows, tableColumns, tableChangeListener)
@@ -101,7 +83,7 @@ class TablePane<K : Comparable<K>>(
         de.flapdoodle.kfx.controls.bettertable.Column<Row<K>, K>(
             label = "#",
             property = { row -> row.index },
-            editable = true,
+            editable = false,
             converter = Converters.converterFor(indexType)
     ), TableColumn<K, K> {
         override fun applyChange(row: Row<K>, change: TableChangeListener.CellChange<Row<K>, out Any>): Row<K> {
@@ -113,7 +95,7 @@ class TablePane<K : Comparable<K>>(
         de.flapdoodle.kfx.controls.bettertable.Column<Row<K>, V>(
             label = column.name,
             property = { row -> row.get(column) },
-            editable = true,
+            editable = false,
             converter = Converters.converterFor(column.valueType)
         ), TableColumn<K, V> {
         override fun applyChange(row: Row<K>, change: TableChangeListener.CellChange<Row<K>, out Any>): Row<K> {
@@ -127,10 +109,11 @@ class TablePane<K : Comparable<K>>(
         children.add(table2)
     }
 
-    fun update(node: Node.Table<K>) {
+    fun update(node: Node.Calculated<K>) {
+        println("update table view: $node")
         // HACK
-        tableRows.value = rowsOf(node.columns)
         tableColumns.value = tableColumnsOff(node.indexType, node.columns)
+        tableRows.value = rowsOf(node.columns)
         columns = node.columns
     }
 

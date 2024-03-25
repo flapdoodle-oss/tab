@@ -5,6 +5,7 @@ import de.flapdoodle.tab.app.model.Node
 import de.flapdoodle.tab.app.ui.ModelChangeListener
 import de.flapdoodle.tab.app.ui.views.calculations.CalculationsPane
 import de.flapdoodle.tab.app.ui.views.calculations.ValuesPane
+import de.flapdoodle.tab.app.ui.views.table.TableViewPane
 
 class InlineCalculatedUIAdapter<K: Comparable<K>>(
     node: Node.Calculated<K>,
@@ -15,6 +16,7 @@ class InlineCalculatedUIAdapter<K: Comparable<K>>(
     private val wrapper = WeightGridPane().apply {
         setRowWeight(0,0.1)
         setRowWeight(1, 1.0)
+        setRowWeight(2, 10.0)
     }
 
     val calculationsPane = CalculationsPane(node, modelChangeListener).apply {
@@ -24,10 +26,15 @@ class InlineCalculatedUIAdapter<K: Comparable<K>>(
         WeightGridPane.setPosition(this, 0, 1)
     }
 
+    val tableViewPane = TableViewPane(node).apply {
+        WeightGridPane.setPosition(this, 0, 2)
+    }
+
     init {
         children.add(wrapper)
         wrapper.children.add(calculationsPane)
         wrapper.children.add(valuesPane)
+        wrapper.children.add(tableViewPane)
     }
 
     override fun update(node: Node) {
@@ -36,5 +43,6 @@ class InlineCalculatedUIAdapter<K: Comparable<K>>(
 
         calculationsPane.update(node as Node.Calculated<K>)
         valuesPane.update(node)
+        tableViewPane.update(node)
     }
 }

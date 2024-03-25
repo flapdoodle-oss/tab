@@ -47,7 +47,7 @@ class NewCalculationDialog : Dialog<Node.Calculated<out Comparable<*>>>() {
 
     private fun <K: Comparable<K>> nodeOf(name: String?, type: KClass<in K>?): Node.Calculated<K>? {
         if (name!=null && type!=null) {
-            return Node.Calculated(name, type)
+            return Node.Calculated(name, type as KClass<K>)
         }
         return null
     }
