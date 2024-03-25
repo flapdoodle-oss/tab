@@ -32,7 +32,7 @@ data class SingleValues(
     @Deprecated("use change with mapper")
     fun <T: Any> changeWithType(id: SingleValueId, value: T): SingleValues {
         val oldValue = value(id)
-        val changedValue = SingleValue(oldValue.name, value::class, value, oldValue.id)
+        val changedValue = SingleValue.of(oldValue.name, value, oldValue.id)
         return copy(values = values.map { if (it.id==id) changedValue else it })
     }
 

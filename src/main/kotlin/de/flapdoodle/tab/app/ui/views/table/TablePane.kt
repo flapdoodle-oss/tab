@@ -1,5 +1,7 @@
 package de.flapdoodle.tab.app.ui.views.table
 
+import de.flapdoodle.kfx.controls.bettertable.Table
+import de.flapdoodle.kfx.controls.bettertable.TableChangeListener
 import de.flapdoodle.kfx.converters.Converters
 import de.flapdoodle.tab.app.model.Node
 import de.flapdoodle.tab.app.model.change.ModelChange
@@ -15,6 +17,7 @@ import javafx.scene.control.cell.TextFieldTableCell
 import javafx.scene.layout.StackPane
 import javafx.util.Callback
 import javafx.util.StringConverter
+import kotlin.reflect.KClass
 
 class TablePane<K : Comparable<K>>(
     node: Node.Table<K>,
@@ -52,14 +55,68 @@ class TablePane<K : Comparable<K>>(
         prefHeight = 200.0
     }
 
-    init {
-        children.add(table)
-        if (columns.isNotEmpty()) {
-            table.columns.add(indexColumn)
-            table.columns.addAll(columns.map { it.tableColumn })
+    private val tableRows = SimpleObjectProperty(rowsOf(node.columns))
+    private val tableColumns = SimpleObjectProperty(tableColumnsOff(node))
+
+    private val tableChangeListener: TableChangeListener<Row<K>> = object : TableChangeListener<Row<K>> {
+        override fun changeCell(row: Row<K>, change: TableChangeListener.CellChange<Row<K>, out Any>): Row<K> {
+            TODO("Not yet implemented")
         }
-        table.items.addAll(rows)
-        table.items.add(Row(null, emptyList(), true))
+
+        override fun emptyRow(index: Int): Row<K> {
+            return Row(null, emptyList())
+        }
+
+        override fun updateRow(row: Row<K>, changed: Row<K>) {
+            TODO("Not yet implemented")
+        }
+
+        override fun removeRow(row: Row<K>) {
+            TODO("Not yet implemented")
+        }
+
+        override fun insertRow(index: Int, row: Row<K>) {
+            TODO("Not yet implemented")
+        }
+
+    }
+
+    private val table2 = Table(tableRows, tableColumns, tableChangeListener)
+
+    private fun tableColumnsOff(node: Node.Table<K>): List<de.flapdoodle.kfx.controls.bettertable.Column<Row<K>, out Any>> {
+        return listOf(indexColumn(node.indexType)) + node.columns.columns().map {
+            column(it)
+        }
+    }
+
+    private fun indexColumn(indexType: KClass<K>): de.flapdoodle.kfx.controls.bettertable.Column<Row<K>, K> {
+        return de.flapdoodle.kfx.controls.bettertable.Column(
+            label = "#",
+            property = { row -> row.index },
+            editable = true,
+            converter = Converters.converterFor(indexType)
+        )
+    }
+
+    private fun <V: Any> column(column: Column<K, V>): de.flapdoodle.kfx.controls.bettertable.Column<Row<K>, V> {
+        return de.flapdoodle.kfx.controls.bettertable.Column(
+            label = column.name,
+            property = { row -> row.get(column) },
+            editable = true,
+            converter = Converters.converterFor(column.valueType)
+        )
+    }
+
+
+    init {
+        children.add(table2)
+//        children.add(table)
+//        if (columns.isNotEmpty()) {
+//            table.columns.add(indexColumn)
+//            table.columns.addAll(columns.map { it.tableColumn })
+//        }
+//        table.items.addAll(rows)
+//        table.items.add(Row(null, emptyList(), true))
     }
 
     fun update(node: Node.Table<K>) {
@@ -82,12 +139,31 @@ class TablePane<K : Comparable<K>>(
             table.columns.addAll(newColumns.map { it.tableColumn })
         }
         table.items.addAll(newRows)
-        table.items.add(Row(null, emptyList(), true))
+//        table.items.add(Row(null, emptyList(), true))
 
         tempRowIndexMap = emptyMap()
         columns = newColumns
         rows = newRows
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     private fun rowsOf(columns: Columns<K>): List<Row<K>> {
         return columns.index().map { index ->
@@ -120,6 +196,12 @@ class TablePane<K : Comparable<K>>(
             return SimpleObjectProperty<V>(value)
         }
 
+        fun <V: Any> get(column: Column<K, V>): V? {
+            val columnValue = columnValueMap[column.id]
+            val value = (columnValue?.value) as V?
+            return value
+        }
+
         fun set(change: ColumnValue<K, out Any>) {
             changes = changes.filter { it.column!=change.column } + change
         }
@@ -130,6 +212,8 @@ class TablePane<K : Comparable<K>>(
     fun <V : Any>rowColumn(column: Column<K, V>): RowColumn<K, V> {
         return RowColumn(column, tableColumnOf(column))
     }
+
+
 
     data class RowColumn<K : Comparable<K>, V : Any>(
         val column: Column<K, V>,

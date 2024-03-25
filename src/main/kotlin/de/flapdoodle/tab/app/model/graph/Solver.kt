@@ -187,15 +187,15 @@ object Solver {
     ): Node.Calculated<K> {
         val changedNode = if (node.values.find(calculation.destination()) == null) {
             val newSingleValue = if (result != null) {
-                SingleValue(calculation.name(), result::class, result, calculation.destination())
+                SingleValue.of(calculation.name(), result, calculation.destination())
             } else {
-                SingleValue(calculation.name(), Unit::class, result, calculation.destination())
+                SingleValue.ofNull(calculation.name(), calculation.destination())
             }
             node.copy(values = node.values.addValue(newSingleValue))
         } else {
             node.copy(values = node.values.change(calculation.destination()) { old ->
                 if (result != null) {
-                    SingleValue(old.name, result::class, result, old.id)
+                    SingleValue.of(old.name, result, old.id)
                 } else {
                     old.copy(value = null)
                 }

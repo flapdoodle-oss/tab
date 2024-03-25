@@ -47,7 +47,7 @@ class NewTableDialog : Dialog<Node.Table<out Comparable<*>>>() {
 
     private fun <K: Comparable<K>> nodeOf(name: String?, type: KClass<in K>?): Node.Table<K>? {
         if (name!=null && type!=null) {
-            return Node.Table(name, type)
+            return Node.Table(name, type as KClass<K>)
         }
         return null
     }

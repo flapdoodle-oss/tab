@@ -82,7 +82,7 @@ sealed class Node {
 
     data class Table<K: Comparable<K>> (
         override val name: String,
-        val indexType: KClass<in K>,
+        val indexType: KClass<K>,
         override val columns: Columns<K> = Columns(),
         override val id: Id<Table<*>> = Id.nextId(Table::class),
         override val position: Position = Position(0.0, 0.0)
