@@ -37,12 +37,28 @@ class TablePane<K : Comparable<K>>(
         }
 
         override fun updateRow(row: Row<K>, changed: Row<K>) {
-            val changes = Diff.diff(row.values, changed.values) { it.column }
-            val removed = changes.removed.map { it.column.id to null }
-            val modified = changes.changed.map { it.first.column.id to it.second.value }
-            val added = changes.new.map { it.column.id to it.value }
+            if (row.index == changed.index) {
+                val changes = Diff.diff(row.values, changed.values) { it.column }
+                val removed = changes.removed.map { it.column.id to null }
+                val modified = changes.changed.map { it.first.column.id to it.second.value }
+                val added = changes.new.map { it.column.id to it.value }
 
-            modelChangeListener.change(ModelChange.SetColumns(nodeId,row.index!!, changes = removed + modified + added))
+                modelChangeListener.change(
+                    ModelChange.SetColumns(
+                        nodeId,
+                        row.index!!,
+                        changes = removed + modified + added
+                    )
+                )
+            } else {
+                modelChangeListener.change(
+                    ModelChange.MoveValues(
+                        nodeId,
+                        row.index!!,
+                        changed.index!!
+                    )
+                )
+            }
         }
 
         override fun removeRow(row: Row<K>) {
