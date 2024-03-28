@@ -16,12 +16,6 @@ sealed class ModelChange {
 
     sealed class TableChange(open val id: Id<out Node.Table<out Comparable<*>>>): ModelChange()
     data class AddColumn<K: Comparable<K>>(override val id: Id<out Node.Table<out Comparable<*>>>, val column: Column<K, out Any>): TableChange(id)
-//    data class SetColumn<K: Comparable<K>>(
-//        override val id: Id<out Node.Table<out Comparable<*>>>,
-//        val columnId: ColumnId<K>,
-//        val index: K,
-//        val value: Any?
-//    ): TableChange(id)
     data class SetColumns<K: Comparable<K>>(
         override val id: Id<out Node.Table<out Comparable<*>>>,
         val index: K,

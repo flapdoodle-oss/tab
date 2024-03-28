@@ -16,6 +16,7 @@ import java.math.BigDecimal
 import java.math.BigInteger
 import java.math.MathContext
 
+@Deprecated("use EvalFormulaAdapter")
 data class EvalAdapter(
     private val formula: String,
     private val expression: Expression = expressionFactory.parse(formula),
