@@ -209,6 +209,7 @@ object Solver {
         calculation: Calculation.Tabular<K>,
         result: Map<K, Any>
     ): Node.Calculated<K> {
+        // TODO multiple value types in result
         val newColumn = column(result, calculation)
         val existingColumn = node.columns.find(calculation.destination())
 
@@ -233,6 +234,7 @@ object Solver {
         calculation: Calculation.Tabular<K>
     ): Column<K, out Any> {
         val valueTypes = result.values.map { it::class }.toSet()
+        require(valueTypes.size == 1) { "more than one value type: $result"}
         val valueType = valueTypes.toList().one { true }
 
         val column = Column(

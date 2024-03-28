@@ -132,11 +132,11 @@ class TableViewPane<K : Comparable<K>>(
         val values: List<ColumnValue<K, out Any>>,
         val newLine: Boolean = false
     ) {
-        private val columnValueMap = values.associateBy { it.column.id }
+        private val columnValueMap = values.associateBy { it.column.id to it.column.valueType }
 //        private var changes = emptyList<ColumnValue<K, out Any>>()
 
         fun <V: Any> get(column: Column<K, V>): V? {
-            val columnValue = columnValueMap[column.id]
+            val columnValue = columnValueMap[column.id to column.valueType]
             val value = (columnValue?.value) as V?
             return value
         }
