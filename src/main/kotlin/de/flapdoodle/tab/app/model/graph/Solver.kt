@@ -128,6 +128,7 @@ object Solver {
         val valueMap: Map<Variable, Any?> = variableDataMap.map { (v, data) ->
             v to when (data) {
                 is SingleValue<*> -> data.value
+                // TODO wrap Column into some kind of TypedMap
                 else -> throw IllegalArgumentException("not implemented: $data")
             }
         }.toMap()

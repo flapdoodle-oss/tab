@@ -93,7 +93,8 @@ data class EvalAdapter(
 
     companion object {
         private val expressionFactory = Defaults.expressionFactory()
-        
+
+        // TODO create custom expression factory which supports Column-Data
         private val expressionFactoryC = ExpressionFactory.builder()
             .constants(constants())
             .evaluatables(TypedEvaluableMap.builder()
