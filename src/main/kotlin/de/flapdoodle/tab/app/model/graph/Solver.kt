@@ -7,6 +7,7 @@ import de.flapdoodle.tab.app.model.Node
 import de.flapdoodle.tab.app.model.Tab2Model
 import de.flapdoodle.tab.app.model.calculations.Calculation
 import de.flapdoodle.tab.app.model.calculations.Variable
+import de.flapdoodle.tab.app.model.calculations.types.IndexMap
 import de.flapdoodle.tab.app.model.connections.Source
 import de.flapdoodle.tab.app.model.data.Column
 import de.flapdoodle.tab.app.model.data.Data
@@ -128,8 +129,7 @@ object Solver {
         val valueMap: Map<Variable, Any?> = variableDataMap.map { (v, data) ->
             v to when (data) {
                 is SingleValue<*> -> data.value
-                // TODO wrap Column into some kind of TypedMap
-                else -> throw IllegalArgumentException("not implemented: $data")
+                is Column<*,*> -> IndexMap.asMap(data)
             }
         }.toMap()
         val result = calculation.evaluate(valueMap)
@@ -252,7 +252,7 @@ object Solver {
     private fun verticesAndEdges(
         model: Tab2Model
     ): Collection<VerticesAndEdges<Vertex, DefaultEdge>> {
-        val graph = Graphs.with(Graphs.graphBuilder(Graphs.directedGraph(Vertex::class.java, DefaultEdge::class.java)))
+        val graph = Graphs.with(Graphs.directedGraphBuilder<Vertex>())
             .build { builder ->
                 model.nodes.forEach { node ->
                     when (node) {

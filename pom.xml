@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/maven-v4_0_0.xsd">
 
 <modelVersion>4.0.0</modelVersion>
     <groupId>de.flapdoodle</groupId>
@@ -9,11 +9,11 @@
     <version>1.0-SNAPSHOT</version>
 
     <description>tab project</description>
-    <url>http://github.com/flapdoodle-oss/tab</url>
+    <url>https://github.com/flapdoodle-oss/tab</url>
     <licenses>
         <license>
             <name>The Apache Software License, Version 2.0</name>
-            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
             <distribution>repo</distribution>
         </license>
     </licenses>
@@ -22,7 +22,7 @@
             <name>Michael Mosmann</name>
             <email>michael@mosmann.de</email>
             <organization>Flapdoodle OSS</organization>
-            <organizationUrl>http://github.com/flapdoodle-oss</organizationUrl>
+            <organizationUrl>https://github.com/flapdoodle-oss</organizationUrl>
         </developer>
     </developers>
 
@@ -696,7 +696,7 @@
         <dependency>
             <groupId>de.flapdoodle.graph</groupId>
             <artifactId>de.flapdoodle.graph</artifactId>
-            <version>1.2.3</version>
+            <version>1.3.3</version>
         </dependency>
         <dependency>
             <groupId>de.flapdoodle.eval</groupId>
@@ -737,4 +737,10 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+<!--    <repositories>-->
+<!--        <repository>-->
+<!--            <id/>-->
+<!--            <url>https://repo.maven.apache.org/maven2/</url>-->
+<!--        </repository>-->
+<!--    </repositories>-->
 </project>

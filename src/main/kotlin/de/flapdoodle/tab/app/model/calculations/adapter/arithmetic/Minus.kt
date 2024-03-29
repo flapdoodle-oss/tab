@@ -8,15 +8,12 @@ import de.flapdoodle.eval.core.evaluables.TypedEvaluable.Arg2
 import de.flapdoodle.eval.core.evaluables.TypedEvaluables
 import de.flapdoodle.eval.core.exceptions.EvaluationException
 import de.flapdoodle.eval.core.parser.Token
-import de.flapdoodle.eval.example.Value
-import de.flapdoodle.eval.example.Value.DateTimeValue
-import de.flapdoodle.eval.example.Value.DurationValue
+import de.flapdoodle.tab.app.model.calculations.adapter.TypedEvaluablesWrapper
 import java.math.BigDecimal
-import java.time.Duration
 
-object Minus : TypedEvaluables.Wrapper(
+object Minus : TypedEvaluablesWrapper(
     TypedEvaluables.builder()
-        .addList(TypedEvaluable.of(BigDecimal::class.java, BigDecimal::class.java, BigDecimal::class.java, Number()))
+        .addList(TypedEvaluable.of(bigDecimal, BigDecimal::class.java, BigDecimal::class.java, Number()))
 //        .addList(
 //            TypedEvaluable.of(
 //                DateTimeValue::class.java,

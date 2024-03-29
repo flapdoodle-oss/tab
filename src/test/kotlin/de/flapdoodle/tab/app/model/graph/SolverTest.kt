@@ -78,6 +78,30 @@ class SolverTest {
     }
 
     @Test
+    fun tableAggregation() {
+        val x = Column("x", Int::class, Int::class)
+            .add(0, 1)
+            .add(1,2)
+            .add(3,10)
+
+        val table = Node.Table(
+            "table", Int::class, Columns(listOf(x))
+        )
+        val destination = SingleValueId()
+        val formula = Node.Calculated("calc", Int::class, Calculations(
+            aggregations = listOf(Calculation.Aggregation<Int>("y", EvalFormulaAdapter("sum(x)"), destination))
+        ).let { c -> c.connect(c.inputs()[0].id, Source.ColumnSource(table.id, x.id)) })
+
+        val source = Tab2Model(listOf(table, formula))
+        val changed = Solver.solve(source)
+
+        val data = changed.node(formula.id).value(destination)
+        assertThat(data.value)
+            .isEqualTo(13)
+
+    }
+
+    @Test
     fun singleTableConnectionReconnected() {
         val x = Column("x", Int::class, Int::class)
             .add(0, 1)

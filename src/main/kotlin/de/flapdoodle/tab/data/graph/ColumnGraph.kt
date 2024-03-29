@@ -97,7 +97,7 @@ data class ColumnGraph(
     }
 
     class Wrapper {
-      private val builder = Graphs.graphBuilder(Graphs.directedGraph<ColumnId<out Any>>()).get()
+      private val builder = Graphs.graphBuilder(Graphs.directedGraphFactory<ColumnId<out Any>>()).get()
 
       fun add(dest: ColumnId<out Any>, mappedSources: List<ColumnId<out Any>>) {
         builder.addVertex(dest)
