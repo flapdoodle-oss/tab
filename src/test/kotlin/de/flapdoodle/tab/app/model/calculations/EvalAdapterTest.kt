@@ -1,5 +1,6 @@
 package de.flapdoodle.tab.app.model.calculations
 
+import de.flapdoodle.tab.app.model.calculations.adapter.EvalFormulaAdapter
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -7,7 +8,7 @@ class EvalAdapterTest {
 
     @Test
     fun simpleSample() {
-        val testee = EvalAdapter("a*2+X-c")
+        val testee = EvalFormulaAdapter("a*2+X-c")
         
         assertThat(testee.variables())
             .hasSize(3)

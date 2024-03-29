@@ -3,8 +3,8 @@ package de.flapdoodle.tab.app.model
 import de.flapdoodle.kfx.types.Id
 import de.flapdoodle.tab.app.model.calculations.Calculation
 import de.flapdoodle.tab.app.model.calculations.Calculations
-import de.flapdoodle.tab.app.model.calculations.EvalAdapter
 import de.flapdoodle.tab.app.model.calculations.InputSlot
+import de.flapdoodle.tab.app.model.calculations.adapter.EvalFormulaAdapter
 import de.flapdoodle.tab.app.model.change.ModelChange
 import de.flapdoodle.tab.app.model.connections.Source
 import de.flapdoodle.tab.app.model.data.*
@@ -171,7 +171,7 @@ sealed class Node {
                             return copy(calculations = calculations.addAggregation(
                                 Calculation.Aggregation(
                                     name = change.name,
-                                    formula = EvalAdapter(change.expression)
+                                    formula = EvalFormulaAdapter(change.expression)
                                 )
                             ))
                         }
@@ -181,7 +181,7 @@ sealed class Node {
                             return copy(calculations = calculations.addTabular(
                                 Calculation.Tabular(
                                     name = change.name,
-                                    formula = EvalAdapter(change.expression),
+                                    formula = EvalFormulaAdapter(change.expression),
                                     destination = ColumnId(indexType)
                                 )
                             ))

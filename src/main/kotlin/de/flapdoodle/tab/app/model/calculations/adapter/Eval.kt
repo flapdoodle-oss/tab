@@ -7,6 +7,8 @@ import de.flapdoodle.eval.core.evaluables.OperatorMap
 import de.flapdoodle.eval.core.evaluables.OperatorMapping
 import de.flapdoodle.eval.core.evaluables.Precedence
 import de.flapdoodle.eval.core.evaluables.TypedEvaluableMap
+import de.flapdoodle.tab.app.model.calculations.adapter.arithmetic.Minus
+import de.flapdoodle.tab.app.model.calculations.adapter.arithmetic.Multiply
 import de.flapdoodle.tab.app.model.calculations.adapter.arithmetic.Plus
 import java.math.BigDecimal
 import java.math.BigInteger
@@ -57,6 +59,8 @@ object Eval {
         .exceptionMapper(ExceptionMapper)
         .evaluatables(TypedEvaluableMap.builder()
             .putMap("sum", Plus)
+            .putMap("multiply", Multiply)
+            .putMap("minus", Minus)
             .build())
         .build()
 

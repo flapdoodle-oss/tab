@@ -4,13 +4,13 @@ import de.flapdoodle.tab.app.model.Node
 import de.flapdoodle.tab.app.model.Tab2Model
 import de.flapdoodle.tab.app.model.calculations.Calculation
 import de.flapdoodle.tab.app.model.calculations.Calculations
-import de.flapdoodle.tab.app.model.calculations.EvalAdapter
+import de.flapdoodle.tab.app.model.calculations.adapter.EvalFormulaAdapter
 import de.flapdoodle.tab.app.model.connections.Source
 import de.flapdoodle.tab.app.model.data.*
 import de.flapdoodle.types.Either
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
-import java.math.BigDecimal
+import java.math.BigInteger
 
 class SolverTest {
     @Test
@@ -38,14 +38,14 @@ class SolverTest {
         )
         val destination = SingleValueId()
         val formula = Node.Calculated("calc", String::class, Calculations(
-            listOf(Calculation.Aggregation<String>("y", EvalAdapter("x+2"), destination))
+            listOf(Calculation.Aggregation<String>("y", EvalFormulaAdapter("x+2"), destination))
         ).let { c -> c.connect(c.inputs()[0].id, Source.ValueSource(constants.id, x.id)) })
 
         val source = Tab2Model(listOf(constants, formula))
         val changed = Solver.solve(source)
 
         assertThat(changed.node(formula.id).value(destination))
-            .isEqualTo(SingleValue("y", BigDecimal::class, BigDecimal.valueOf(3), destination))
+            .isEqualTo(SingleValue("y", BigInteger::class, BigInteger.valueOf(3), destination))
 
     }
 
@@ -61,7 +61,7 @@ class SolverTest {
         )
         val destination = ColumnId(Int::class)
         val formula = Node.Calculated("calc", Int::class, Calculations(
-            tabular = listOf(Calculation.Tabular("y", EvalAdapter("x+2"), destination))
+            tabular = listOf(Calculation.Tabular("y", EvalFormulaAdapter("x+2"), destination))
         ).let { c -> c.connect(c.inputs()[0].id, Source.ColumnSource(table.id, x.id)) })
 
         val source = Tab2Model(listOf(table, formula))
@@ -70,9 +70,9 @@ class SolverTest {
         val data = changed.node(formula.id).column(destination)
         assertThat(data.values)
             .isEqualTo(mapOf(
-                0 to BigDecimal.valueOf(3),
-                1 to BigDecimal.valueOf(4),
-                3 to BigDecimal.valueOf(12)
+                0 to BigInteger.valueOf(3),
+                1 to BigInteger.valueOf(4),
+                3 to BigInteger.valueOf(12)
             ))
 
     }
@@ -94,7 +94,7 @@ class SolverTest {
         )
         val destination = ColumnId(Int::class)
         val formula = Node.Calculated("calc", Int::class, Calculations(
-            tabular = listOf(Calculation.Tabular("y", EvalAdapter("x+2"), destination))
+            tabular = listOf(Calculation.Tabular("y", EvalFormulaAdapter("x+2"), destination))
         ).let { c -> c.connect(c.inputs()[0].id, Source.ColumnSource(table.id, x.id)) })
 
         val source = Tab2Model(listOf(table, formula))
@@ -104,9 +104,9 @@ class SolverTest {
         val data = changed.node(formula.id).column(destination)
         assertThat(data.values)
             .isEqualTo(mapOf(
-                0 to BigDecimal.valueOf(4),
-                1 to BigDecimal.valueOf(6),
-                3 to BigDecimal.valueOf(22)
+                0 to BigInteger.valueOf(4),
+                1 to BigInteger.valueOf(6),
+                3 to BigInteger.valueOf(22)
             ))
 
     }
@@ -128,7 +128,7 @@ class SolverTest {
         )
         val destination = ColumnId(Int::class)
         val formula = Node.Calculated("calc", Int::class, Calculations(
-            tabular = listOf(Calculation.Tabular("y", EvalAdapter("x"), destination))
+            tabular = listOf(Calculation.Tabular("y", EvalFormulaAdapter("x"), destination))
         ).let { c -> c.connect(c.inputs()[0].id, Source.ColumnSource(table.id, x.id)) })
 
         val source = Tab2Model(listOf(table, formula))
@@ -170,7 +170,7 @@ class SolverTest {
         )
         val destination = ColumnId(Int::class)
         val formula = Node.Calculated("calc", Int::class, Calculations(
-            tabular = listOf(Calculation.Tabular("y", EvalAdapter("x+b+c"), destination))
+            tabular = listOf(Calculation.Tabular("y", EvalFormulaAdapter("x+b+c"), destination))
         ).let { c ->
             c.connect(c.inputs()[0].id, Source.ColumnSource(table.id, a.id))
                 .connect(c.inputs()[1].id, Source.ColumnSource(table.id, b.id))
@@ -183,10 +183,10 @@ class SolverTest {
         val data = changed.node(formula.id).column(destination)
         assertThat(data.values)
             .isEqualTo(mapOf(
-                0 to BigDecimal.valueOf(7),
-                1 to BigDecimal.valueOf(8),
-                2 to BigDecimal.valueOf(13),
-                3 to BigDecimal.valueOf(16)
+                0 to 7,
+                1 to 8,
+                2 to 13,
+                3 to 16
             ))
 
     }

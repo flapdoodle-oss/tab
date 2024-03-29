@@ -2,6 +2,7 @@ package de.flapdoodle.tab.app.model.calculations
 
 import de.flapdoodle.kfx.types.Id
 import de.flapdoodle.tab.app.model.Node
+import de.flapdoodle.tab.app.model.calculations.adapter.EvalFormulaAdapter
 import de.flapdoodle.tab.app.model.connections.Source
 import de.flapdoodle.tab.app.model.data.ColumnId
 import de.flapdoodle.tab.app.model.data.SingleValueId
@@ -126,7 +127,9 @@ class CalculationsTest {
             assertThat(b.name).isEqualTo("b")
             assertThat(b.source).isEqualTo(sourceA)
 
-            val changed = testee.changeFormula(testee.tabular()[1].id, "a*2")
+            assertThat(testee.tabular()).hasSize(1)
+
+            val changed = testee.changeFormula(testee.tabular()[0].id, "a*2")
 
             assertThat(changed.inputs()).hasSize(1)
             val (a2) = changed.inputs()
@@ -143,7 +146,7 @@ class CalculationsTest {
     }
 
     private fun <K: Comparable<K>> aggregate(name: String, formula: String): Calculation.Aggregation<K> {
-        return Calculation.Aggregation(name, EvalAdapter(formula), SingleValueId())
+        return Calculation.Aggregation(name, EvalFormulaAdapter(formula), SingleValueId())
     }
 
     private fun <K: Comparable<K>> tabular(
@@ -151,6 +154,6 @@ class CalculationsTest {
         formula: String,
         columnId: ColumnId<K>
     ): Calculation.Tabular<K> {
-        return Calculation.Tabular(name, EvalAdapter(formula), columnId)
+        return Calculation.Tabular(name, EvalFormulaAdapter(formula), columnId)
     }
 }
