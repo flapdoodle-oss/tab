@@ -2,11 +2,13 @@ package de.flapdoodle.tab.app.model.calculations.adapter
 
 import de.flapdoodle.eval.core.EvaluationContext
 import de.flapdoodle.eval.core.VariableResolver
+import de.flapdoodle.eval.core.evaluables.Parameter
 import de.flapdoodle.eval.core.evaluables.TypedEvaluable
 import de.flapdoodle.eval.core.evaluables.TypedEvaluableByArguments
 import de.flapdoodle.eval.core.evaluables.TypedEvaluableByNumberOfArguments
 import de.flapdoodle.eval.core.exceptions.EvaluableException
 import de.flapdoodle.eval.core.parser.Token
+import de.flapdoodle.eval.core.validation.ParameterValidator
 import de.flapdoodle.types.Either
 import java.math.BigDecimal
 import java.math.BigInteger
@@ -31,6 +33,23 @@ open class Evaluables(
         val bigDecimal = BigDecimal::class.java
         val bigInt = BigInteger::class.java
         val javaInt = Int::class.javaObjectType
+
+        val bigDecimalParameter = Parameter.of(BigDecimal::class.java)!!
+        val bigIntParameter = Parameter.of(BigInteger::class.java)!!
+        val javaIntParameter = Parameter.of(Int::class.javaObjectType)!!
+
+        val bigDecimalNotZero = bigDecimalParameter.withValidators(isNot(BigDecimal.ZERO,"division by zero"))!!
+        val bigIntNotZero = bigIntParameter.withValidators(isNot(BigInteger.ZERO,"division by zero"))!!
+        val javaIntNotZero = javaIntParameter.withValidators(isNot(0,"division by zero"))!!
+
+        fun <T : Any> isNot(match: T, text: String): ParameterValidator<T> {
+            return ParameterValidator { value ->
+                if (match == value) {
+                    Optional.of(EvaluableException.of(text, match, value))
+                } else
+                    Optional.empty()
+            }
+        }
     }
 
     fun interface ArgMath<A : Any, T : Any> : TypedEvaluable.Arg1<A, T> {

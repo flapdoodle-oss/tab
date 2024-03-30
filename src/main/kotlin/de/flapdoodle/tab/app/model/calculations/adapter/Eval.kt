@@ -7,6 +7,7 @@ import de.flapdoodle.eval.core.evaluables.OperatorMap
 import de.flapdoodle.eval.core.evaluables.OperatorMapping
 import de.flapdoodle.eval.core.evaluables.Precedence
 import de.flapdoodle.eval.core.evaluables.TypedEvaluableMap
+import de.flapdoodle.tab.app.model.calculations.adapter.arithmetic.Divide
 import de.flapdoodle.tab.app.model.calculations.adapter.arithmetic.Minus
 import de.flapdoodle.tab.app.model.calculations.adapter.arithmetic.Multiply
 import de.flapdoodle.tab.app.model.calculations.adapter.arithmetic.Plus
@@ -61,19 +62,19 @@ object Eval {
             .putMap("sum", Plus)
             .putMap("multiply", Multiply)
             .putMap("minus", Minus)
+            .putMap("divide", Divide)
             .build())
         .build()
 
     private fun numFromString(value: String, mathContext: MathContext?): Any {
-        if (value.startsWith("0x") || value.startsWith("0X")) {
-            val hexToInteger = BigInteger(value.substring(2), 16)
-            return hexToInteger
+        return if (value.startsWith("0x") || value.startsWith("0X")) {
+            BigInteger(value.substring(2), 16)
         } else {
             val ret = BigDecimal(value, mathContext)
             if (isIntegerValue(ret)) {
-                return ret.toBigIntegerExact()
-            }
-            return ret
+                ret.toBigIntegerExact()
+            } else
+                ret
         }
     }
 

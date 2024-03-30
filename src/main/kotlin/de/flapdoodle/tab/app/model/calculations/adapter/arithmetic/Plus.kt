@@ -17,23 +17,16 @@ object Plus : Evaluables(
         list.fold(BigInteger.ZERO) { l, r -> l.add(r) }
     }),
     ofVarArg(javaInt, javaInt, VarArgMath { list, _ ->
-        list.fold(0) { l, r -> l + r }
+        list.fold(0) { l, r -> Math.addExact(l,r) }
     }),
-
     of(bigDecimal, IndexMap.asParameterWithValueType(BigDecimal::class), ArgMath { argument, mathContext ->
         argument.foldValuesIfNotEmpty(BigDecimal.ZERO) { l, r -> l.add(r, mathContext) }
     }),
-    of(bigInt, IndexMap.asParameterWithValueType(BigInteger::class), ArgMath { argument, mathContext ->
-        if (argument.values().isNotEmpty()) {
-            argument.values().fold(BigInteger.ZERO) { l, r -> l.add(r) }
-        } else
-            null
+    of(bigInt, IndexMap.asParameterWithValueType(BigInteger::class), ArgMath { argument, _ ->
+        argument.foldValuesIfNotEmpty(BigInteger.ZERO) { l, r -> l.add(r) }
     }),
-    of(Int::class.java, IndexMap.asParameterWithValueType(Int::class), ArgMath { argument, mathContext ->
-        if (argument.values().isNotEmpty()) {
-            argument.values().fold(0) { l, r -> l + r }
-        } else
-            null
+    of(Int::class.java, IndexMap.asParameterWithValueType(Int::class), ArgMath { argument, _ ->
+        argument.foldValuesIfNotEmpty(0) { l, r -> Math.addExact(l,r) }
     }),
     of(bigDecimal, bigDecimal, bigInt,
         Arg2Math { first, second, math -> first.add(second.toBigDecimal(), math) }),
@@ -44,11 +37,11 @@ object Plus : Evaluables(
     of(bigDecimal, javaInt, bigDecimal,
         Arg2Math { first, second, math -> second.add(first.toBigDecimal(), math) }),
     of(bigInt, bigInt, javaInt,
-        Arg2Math { first, second, math -> first.add(second.toBigInteger()) }),
+        Arg2Math { first, second, _ -> first.add(second.toBigInteger()) }),
     of(bigInt, javaInt, bigInt,
-        Arg2Math { first, second, math -> first.toBigInteger().add(second) }),
+        Arg2Math { first, second, _ -> first.toBigInteger().add(second) }),
     of(String::class.java, String::class.java, Any::class.java,
-        Arg2Math { first, second, math -> first + second }),
+        Arg2Math { first, second, _ -> first + second }),
     of(String::class.java, Any::class.java, String::class.java,
-        Arg2Math { first, second, math -> first.toString() + second })
+        Arg2Math { first, second, _ -> first.toString() + second })
 )
