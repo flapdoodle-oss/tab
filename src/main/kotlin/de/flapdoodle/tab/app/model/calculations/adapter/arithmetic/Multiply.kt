@@ -8,18 +8,17 @@ import de.flapdoodle.eval.core.evaluables.TypedEvaluables
 import de.flapdoodle.eval.core.exceptions.EvaluationException
 import de.flapdoodle.eval.core.parser.Token
 import de.flapdoodle.eval.example.Value
+import de.flapdoodle.tab.app.model.calculations.adapter.Evaluables
 import java.math.BigDecimal
 
-object Multiply : TypedEvaluables.Wrapper(
-    TypedEvaluables.builder()
-        .addList(
+object Multiply : Evaluables(
+    listOf(
             TypedEvaluable.of(
                 BigDecimal::class.java,
                 BigDecimal::class.java,
                 BigDecimal::class.java, Number()
             )
         )
-        .build()
 ) {
     class Number :
         Arg2<BigDecimal, BigDecimal, BigDecimal> {

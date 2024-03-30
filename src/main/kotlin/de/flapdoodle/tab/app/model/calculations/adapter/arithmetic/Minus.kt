@@ -8,12 +8,12 @@ import de.flapdoodle.eval.core.evaluables.TypedEvaluable.Arg2
 import de.flapdoodle.eval.core.evaluables.TypedEvaluables
 import de.flapdoodle.eval.core.exceptions.EvaluationException
 import de.flapdoodle.eval.core.parser.Token
+import de.flapdoodle.tab.app.model.calculations.adapter.Evaluables
 import de.flapdoodle.tab.app.model.calculations.adapter.TypedEvaluablesWrapper
 import java.math.BigDecimal
 
-object Minus : TypedEvaluablesWrapper(
-    TypedEvaluables.builder()
-        .addList(TypedEvaluable.of(bigDecimal, BigDecimal::class.java, BigDecimal::class.java, Number()))
+object Minus : Evaluables(
+    TypedEvaluable.of(bigDecimal, BigDecimal::class.java, BigDecimal::class.java, Number()),
 //        .addList(
 //            TypedEvaluable.of(
 //                DateTimeValue::class.java,
@@ -42,8 +42,7 @@ object Minus : TypedEvaluablesWrapper(
 //                BigDecimal::class.java, DateTimeNumber()
 //            )
 //        )
-        .addList(TypedEvaluable.of(BigDecimal::class.java, BigDecimal::class.java, Negate()))
-        .build()
+        TypedEvaluable.of(BigDecimal::class.java, BigDecimal::class.java, Negate())
 ) {
     class Number :
         Arg2<BigDecimal, BigDecimal, BigDecimal> {
