@@ -5,11 +5,9 @@ import de.flapdoodle.eval.core.VariableResolver
 import de.flapdoodle.eval.core.evaluables.TypedEvaluable
 import de.flapdoodle.eval.core.evaluables.TypedEvaluable.Arg1
 import de.flapdoodle.eval.core.evaluables.TypedEvaluable.Arg2
-import de.flapdoodle.eval.core.evaluables.TypedEvaluables
 import de.flapdoodle.eval.core.exceptions.EvaluationException
 import de.flapdoodle.eval.core.parser.Token
 import de.flapdoodle.tab.app.model.calculations.adapter.Evaluables
-import de.flapdoodle.tab.app.model.calculations.adapter.TypedEvaluablesWrapper
 import java.math.BigDecimal
 
 object Minus : Evaluables(
