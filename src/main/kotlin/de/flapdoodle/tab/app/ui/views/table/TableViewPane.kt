@@ -3,6 +3,7 @@ package de.flapdoodle.tab.app.ui.views.table
 import de.flapdoodle.kfx.bindings.syncWith
 import de.flapdoodle.kfx.controls.bettertable.Table
 import de.flapdoodle.kfx.controls.bettertable.TableChangeListener
+import de.flapdoodle.kfx.controls.bettertable.events.ReadOnlyState
 import de.flapdoodle.kfx.converters.Converters
 import de.flapdoodle.tab.app.model.Node
 import de.flapdoodle.tab.app.model.change.ModelChange
@@ -49,7 +50,7 @@ class TableViewPane<K : Comparable<K>>(
         }
     }
 
-    private val table2 = Table(tableRows, tableColumns, tableChangeListener)
+    private val table2 = Table(tableRows, tableColumns, tableChangeListener, stateFactory = { ReadOnlyState(it) })
 
     private fun rowsOf(columns: Columns<K>): List<Row<K>> {
         return columns.index().map { index ->
