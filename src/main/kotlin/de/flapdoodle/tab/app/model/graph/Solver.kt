@@ -7,6 +7,7 @@ import de.flapdoodle.tab.app.model.Node
 import de.flapdoodle.tab.app.model.Tab2Model
 import de.flapdoodle.tab.app.model.calculations.Calculation
 import de.flapdoodle.tab.app.model.calculations.Variable
+import de.flapdoodle.tab.app.model.calculations.interpolation.Interpolator
 import de.flapdoodle.tab.app.model.calculations.types.IndexMap
 import de.flapdoodle.tab.app.model.connections.Source
 import de.flapdoodle.tab.app.model.data.Column

@@ -1,4 +1,4 @@
-package de.flapdoodle.tab.app.model.graph
+package de.flapdoodle.tab.app.model.calculations.interpolation
 
 fun interface Interpolator<K: Any, V: Any> {
     fun interpolated(offset: K): V?
