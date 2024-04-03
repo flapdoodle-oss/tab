@@ -1,6 +1,7 @@
 package de.flapdoodle.tab.app.ui.views.table
 
 import de.flapdoodle.kfx.bindings.syncWith
+import de.flapdoodle.kfx.controls.bettertable.ColumnProperty
 import de.flapdoodle.kfx.controls.bettertable.Table
 import de.flapdoodle.kfx.controls.bettertable.TableChangeListener
 import de.flapdoodle.kfx.controls.bettertable.events.ReadOnlyState
@@ -84,9 +85,8 @@ class TableViewPane<K : Comparable<K>>(
     data class IndexColumn<K: Comparable<K>>(val indexType: KClass<K>):
         de.flapdoodle.kfx.controls.bettertable.Column<Row<K>, K>(
             label = "#",
-            property = { row -> row.index },
-            editable = false,
-            converter = Converters.converterFor(indexType)
+            property = ColumnProperty(indexType, { row -> row.index }),
+            editable = false
     ), TableColumn<K, K> {
         override fun applyChange(row: Row<K>, change: TableChangeListener.CellChange<Row<K>, out Any>): Row<K> {
             return row.copy(index = change.value as K?)
@@ -96,9 +96,8 @@ class TableViewPane<K : Comparable<K>>(
     data class NormalColumn<K: Comparable<K>, V: Any>(val column: Column<K, V>) :
         de.flapdoodle.kfx.controls.bettertable.Column<Row<K>, V>(
             label = column.name,
-            property = { row -> row.get(column) },
-            editable = false,
-            converter = Converters.converterFor(column.valueType)
+            property = ColumnProperty(column.valueType, { row -> row.get(column) }),
+            editable = false
         ), TableColumn<K, V> {
         override fun applyChange(row: Row<K>, change: TableChangeListener.CellChange<Row<K>, out Any>): Row<K> {
             return row.set(ColumnValue(column, change.value as V?))

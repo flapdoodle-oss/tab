@@ -8,6 +8,8 @@ import javafx.scene.control.ChoiceBox
 import javafx.scene.control.Dialog
 import javafx.scene.control.Label
 import javafx.scene.control.TextField
+import java.time.LocalDate
+import java.time.LocalDateTime
 import kotlin.reflect.KClass
 
 class NewTableDialog : Dialog<Node.Table<out Comparable<*>>>() {
@@ -16,7 +18,7 @@ class NewTableDialog : Dialog<Node.Table<out Comparable<*>>>() {
     private val nameField = TextField()
     private val type = Label("Type")
     private val typeField = ChoiceBox<KClass<out Comparable<*>>>().apply {
-        items.addAll(Int::class, Double::class, String::class)
+        items.addAll(Int::class, Double::class, String::class, LocalDate::class)
         value = Int::class
     }
 
