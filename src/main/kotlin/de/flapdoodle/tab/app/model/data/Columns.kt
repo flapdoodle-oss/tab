@@ -1,5 +1,6 @@
 package de.flapdoodle.tab.app.model.data
 
+import java.util.function.Predicate
 import kotlin.reflect.KClass
 
 data class Columns<K: Comparable<K>>(
@@ -69,4 +70,7 @@ data class Columns<K: Comparable<K>>(
         columns.forEach(action)
     }
 
+    fun filter(predicate: (Column<K, out Any>) -> Boolean): Columns<K> {
+        return Columns(columns.filter(predicate))
+    }
 }
