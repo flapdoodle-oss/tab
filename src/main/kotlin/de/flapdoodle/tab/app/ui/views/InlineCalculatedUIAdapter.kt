@@ -5,7 +5,7 @@ import de.flapdoodle.tab.app.model.Node
 import de.flapdoodle.tab.app.ui.ModelChangeListener
 import de.flapdoodle.tab.app.ui.views.calculations.CalculationsPane
 import de.flapdoodle.tab.app.ui.views.calculations.ValuesPane
-import de.flapdoodle.tab.app.ui.views.charts.ChartPane
+import de.flapdoodle.tab.app.ui.views.charts.SmallChartPane
 import de.flapdoodle.tab.app.ui.views.table.TableViewPane
 import javafx.scene.control.Tab
 import javafx.scene.control.TabPane
@@ -37,7 +37,7 @@ class InlineCalculatedUIAdapter<K: Comparable<K>>(
         WeightGridPane.setPosition(this, 0, 3)
     }
 
-    val chartPane = ChartPane(node)
+    val chartPane = SmallChartPane(node)
 
     init {
         children.add(wrapper)
