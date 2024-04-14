@@ -1,5 +1,7 @@
 package de.flapdoodle.tab.app.model.data
 
+import de.flapdoodle.kfx.controls.colors.HashedColors
+import javafx.scene.paint.Color
 import kotlin.reflect.KClass
 
 data class SingleValue<T : Any>(
@@ -7,6 +9,7 @@ data class SingleValue<T : Any>(
     val valueType: KClass<T>,
     val value: T? = null,
     override val id: SingleValueId = SingleValueId(),
+    val color: Color = HashedColors.hashedColor(name.hashCode() + id.hashCode())
 ) : Data() {
     fun set(value: T?): SingleValue<T> {
         return copy(value = value)

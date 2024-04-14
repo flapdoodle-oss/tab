@@ -53,7 +53,7 @@ class SmallChartPane<K : Comparable<K>>(
         c: Column<K, out Number>
     ): Serie<K, Number> {
         val values = index.map { it to c[it]!! }
-        return Serie<K, Number>(c.name, javafx.scene.paint.Color.RED, values)
+        return Serie<K, Number>(c.name, c.color, values)
     }
 
 
