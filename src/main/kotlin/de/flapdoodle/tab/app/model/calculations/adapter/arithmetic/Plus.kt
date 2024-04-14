@@ -22,13 +22,16 @@ object Plus : Evaluables(
     ofVarArg(javaInt, javaInt, VarArgMath { list, _ ->
         list.fold(0) { l, r -> Math.addExact(l,r) }
     }),
-    of(bigDecimal, IndexMap.asParameterWithValueType(BigDecimal::class), ArgMath { argument, mathContext ->
+    of(bigDecimal, IndexMap.asParameterWithValueType(bigDecimal), ArgMath { argument, mathContext ->
         argument.foldValuesIfNotEmpty(BigDecimal.ZERO) { l, r -> l.add(r, mathContext) }
     }),
-    of(bigInt, IndexMap.asParameterWithValueType(BigInteger::class), ArgMath { argument, _ ->
+    of(bigInt, IndexMap.asParameterWithValueType(bigInt), ArgMath { argument, _ ->
         argument.foldValuesIfNotEmpty(BigInteger.ZERO) { l, r -> l.add(r) }
     }),
-    of(Int::class.java, IndexMap.asParameterWithValueType(Int::class), ArgMath { argument, _ ->
+    of(javaDouble, IndexMap.asParameterWithValueType(javaDouble), ArgMath { argument, _ ->
+        argument.foldValuesIfNotEmpty(0.0) { l, r -> l + r }
+    }),
+    of(javaInt, IndexMap.asParameterWithValueType(javaInt), ArgMath { argument, _ ->
         argument.foldValuesIfNotEmpty(0) { l, r -> Math.addExact(l,r) }
     }),
     of(bigDecimal, bigDecimal, bigInt,

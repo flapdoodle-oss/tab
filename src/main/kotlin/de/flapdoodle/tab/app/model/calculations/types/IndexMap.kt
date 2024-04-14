@@ -35,6 +35,14 @@ data class IndexMap<K : Comparable<K>, V : Any>(
                 )
             )
         }
+
+        fun <K : Any> asParameterWithValueType(type: Class<K>): Parameter<IndexMap<*, K>> {
+            return Parameter.of(
+                IndexMapTypeInfo(
+                    TypeInfo.of(type)
+                )
+            )
+        }
     }
 
     data class IndexMapTypeInfo<V : Any>(
