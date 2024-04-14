@@ -16,6 +16,9 @@ object Plus : Evaluables(
     ofVarArg(bigInt, bigInt, VarArgMath { list, _ ->
         list.fold(BigInteger.ZERO) { l, r -> l.add(r) }
     }),
+    ofVarArg(javaDouble, javaDouble, VarArgMath { list, _ ->
+        list.fold(0.0) { l, r -> l + r }
+    }),
     ofVarArg(javaInt, javaInt, VarArgMath { list, _ ->
         list.fold(0) { l, r -> Math.addExact(l,r) }
     }),
@@ -30,12 +33,24 @@ object Plus : Evaluables(
     }),
     of(bigDecimal, bigDecimal, bigInt,
         Arg2Math { first, second, math -> first.add(second.toBigDecimal(), math) }),
-    of(bigDecimal, bigDecimal, javaInt,
-        Arg2Math { first, second, math -> first.add(second.toBigDecimal(), math) }),
     of(bigDecimal, bigInt, bigDecimal,
         Arg2Math { first, second, math -> second.add(first.toBigDecimal(), math) }),
+    of(bigDecimal, bigDecimal, javaDouble,
+        Arg2Math { first, second, math -> first.add(second.toBigDecimal(), math) }),
+    of(bigDecimal, javaDouble, bigDecimal,
+        Arg2Math { first, second, math -> second.add(first.toBigDecimal(), math) }),
+    of(bigDecimal, bigDecimal, javaInt,
+        Arg2Math { first, second, math -> first.add(second.toBigDecimal(), math) }),
     of(bigDecimal, javaInt, bigDecimal,
         Arg2Math { first, second, math -> second.add(first.toBigDecimal(), math) }),
+    of(bigDecimal, bigInt, javaDouble,
+        Arg2Math { first, second, _ -> first.toBigDecimal().add(second.toBigDecimal()) }),
+    of(bigDecimal, javaDouble, bigInt,
+        Arg2Math { first, second, _ -> first.toBigDecimal().add(second.toBigDecimal()) }),
+    of(bigDecimal, javaInt, javaDouble,
+        Arg2Math { first, second, _ -> first.toBigDecimal().add(second.toBigDecimal()) }),
+    of(bigDecimal, javaDouble, javaInt,
+        Arg2Math { first, second, _ -> first.toBigDecimal().add(second.toBigDecimal()) }),
     of(bigInt, bigInt, javaInt,
         Arg2Math { first, second, _ -> first.add(second.toBigInteger()) }),
     of(bigInt, javaInt, bigInt,

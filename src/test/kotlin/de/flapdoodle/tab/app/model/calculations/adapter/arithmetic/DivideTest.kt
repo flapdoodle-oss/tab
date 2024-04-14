@@ -16,6 +16,7 @@ class DivideTest {
             valueSet.forEach { divisor ->
                 val eval = testee.find(listOf(dividend, divisor).toMutableList())
                 assertThat(eval)
+                    .describedAs("${dividend.javaClass} / ${divisor.javaClass}")
                     .extracting(Either<*,*>::isLeft)
                     .isEqualTo(true)
             }
