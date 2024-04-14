@@ -33,14 +33,17 @@ open class Evaluables(
         val bigDecimal = BigDecimal::class.java
         val bigInt = BigInteger::class.java
         val javaInt = Int::class.javaObjectType
+        val javaDouble = Double::class.javaObjectType
 
         val bigDecimalParameter = Parameter.of(BigDecimal::class.java)!!
         val bigIntParameter = Parameter.of(BigInteger::class.java)!!
-        val javaIntParameter = Parameter.of(Int::class.javaObjectType)!!
+        val javaIntParameter = Parameter.of(javaInt)!!
+        val javaDoubleParameter = Parameter.of(javaDouble)!!
 
         val bigDecimalNotZero = bigDecimalParameter.withValidators(isNot(BigDecimal.ZERO,"division by zero"))!!
         val bigIntNotZero = bigIntParameter.withValidators(isNot(BigInteger.ZERO,"division by zero"))!!
         val javaIntNotZero = javaIntParameter.withValidators(isNot(0,"division by zero"))!!
+        val javaDoubleNotZero = javaDoubleParameter.withValidators(isNot(0.0,"division by zero"))!!
 
         fun <T : Any> isNot(match: T, text: String): ParameterValidator<T> {
             return ParameterValidator { value ->

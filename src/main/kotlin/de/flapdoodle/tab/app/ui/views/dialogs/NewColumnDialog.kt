@@ -8,6 +8,8 @@ import javafx.scene.control.ChoiceBox
 import javafx.scene.control.Dialog
 import javafx.scene.control.Label
 import javafx.scene.control.TextField
+import java.math.BigDecimal
+import java.math.BigInteger
 import java.time.LocalDate
 import kotlin.reflect.KClass
 
@@ -19,7 +21,7 @@ class NewColumnDialog<K: Comparable<K>>(
     private val nameField = TextField()
     private val type = Label("Type")
     private val typeField = ChoiceBox<KClass<out Any>>().apply {
-        items.addAll(Int::class, Double::class, String::class, LocalDate::class)
+        items.addAll(Int::class, Double::class, BigInteger::class, BigDecimal::class, String::class, LocalDate::class)
         value = Int::class
     }
 
