@@ -60,6 +60,7 @@ class SmallChartPane<K : Comparable<K>>(
     private fun indexRangeFactory(indexType: KClass<K>): RangeFactory<K> {
         return when (indexType) {
             LocalDate::class -> RangeFactories.localDate() as RangeFactory<K>
+            Double::class -> RangeFactories.number() as RangeFactory<K>
             Int::class -> RangeFactories.number() as RangeFactory<K>
             else -> throw IllegalArgumentException("not implemented: $indexType")
         }

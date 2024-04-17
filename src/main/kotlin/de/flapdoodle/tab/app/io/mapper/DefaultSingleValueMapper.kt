@@ -4,6 +4,7 @@ import de.flapdoodle.tab.app.io.adapter.ToFileMapping
 import de.flapdoodle.tab.app.io.adapter.ToModelMapping
 import de.flapdoodle.tab.app.io.file.FileSingleValue
 import de.flapdoodle.tab.app.model.data.SingleValue
+import de.flapdoodle.tab.app.model.data.SingleValueId
 import kotlin.reflect.KClass
 
 object DefaultSingleValueMapper : Mapper<SingleValue<out Any>, FileSingleValue> {
@@ -16,7 +17,7 @@ object DefaultSingleValueMapper : Mapper<SingleValue<out Any>, FileSingleValue> 
             name = src.name,
             valueType = toFileMapping.valueType(src.valueType),
             value = if (src.value!=null) toFileMapping.value(src.valueType, src.value) else null,
-            id = toFileMapping.idFor(src.id),
+            id = toFileMapping.idFor(src.id.id),
             color = src.color
         )
     }
@@ -30,7 +31,7 @@ object DefaultSingleValueMapper : Mapper<SingleValue<out Any>, FileSingleValue> 
             name = src.name,
             valueType = valueType,
             value = if (src.value!=null) toModelMapping.value(valueType, src.value) else null,
-            id = toModelMapping.nextId(src.id),
+            id = SingleValueId(toModelMapping.nextId(src.id, SingleValueId::class)),
             color = src.color
         )
     }

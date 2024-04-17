@@ -34,9 +34,10 @@ sealed class Node {
 //    }
 
     interface HasColumns<K: Comparable<K>> {
+        val indexType: KClass<K>
         val columns: Columns<K>
 
-        fun column(id: ColumnId<*>): Column<K, out Any> {
+        fun column(id: ColumnId): Column<K, out Any> {
             return columns.columns().one { it.id == id }
         }
     }
@@ -82,7 +83,7 @@ sealed class Node {
 
     data class Table<K: Comparable<K>> (
         override val name: String,
-        val indexType: KClass<K>,
+        override val indexType: KClass<K>,
         override val columns: Columns<K> = Columns(),
         override val id: Id<Table<*>> = Id.nextId(Table::class),
         override val position: Position = Position(0.0, 0.0)
@@ -111,14 +112,14 @@ sealed class Node {
 //                    }
                     is ModelChange.SetColumns<out Comparable<*>> -> {
                         if (change.id == id) {
-                            return copy(columns = change.changes.fold(columns) { c: Columns<K>, idAndValue: Pair<ColumnId<out Comparable<*>>, Any?> ->
-                                c.set(idAndValue.first as ColumnId<K>, change.index as K, idAndValue.second)
+                            return copy(columns = change.changes.fold(columns) { c: Columns<K>, idAndValue: Pair<ColumnId, Any?> ->
+                                c.set(idAndValue.first, change.index as K, idAndValue.second)
                             })
                         }
                     }
                     is ModelChange.RemoveColumn -> {
                         if (change.id == id) {
-                            return copy(columns = columns.remove(change.columnId as ColumnId<K>))
+                            return copy(columns = columns.remove(change.columnId as ColumnId))
                         }
                     }
                 }
@@ -129,8 +130,8 @@ sealed class Node {
 
     data class Calculated<K: Comparable<K>>(
         override val name: String,
-        val indexType: KClass<K>,
-        val calculations: Calculations<K> = Calculations(),
+        override val indexType: KClass<K>,
+        val calculations: Calculations<K> = Calculations(indexType),
         override val columns: Columns<K> = Columns(),
         override val values: SingleValues = SingleValues(),
         override val id: Id<Calculated<*>> = Id.nextId(Calculated::class),
@@ -170,6 +171,7 @@ sealed class Node {
                         if (change.id == id) {
                             return copy(calculations = calculations.addAggregation(
                                 Calculation.Aggregation(
+                                    indexType = indexType,
                                     name = change.name,
                                     formula = EvalFormulaAdapter(change.expression)
                                 )
@@ -180,9 +182,10 @@ sealed class Node {
                         if (change.id == id) {
                             return copy(calculations = calculations.addTabular(
                                 Calculation.Tabular(
+                                    indexType = indexType,
                                     name = change.name,
                                     formula = EvalFormulaAdapter(change.expression),
-                                    destination = ColumnId(indexType)
+                                    destination = ColumnId()
                                 )
                             ))
                         }

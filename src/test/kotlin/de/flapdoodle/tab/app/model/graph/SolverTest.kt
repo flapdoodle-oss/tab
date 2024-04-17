@@ -37,8 +37,8 @@ class SolverTest {
             )
         )
         val destination = SingleValueId()
-        val formula = Node.Calculated("calc", String::class, Calculations(
-            listOf(Calculation.Aggregation<String>("y", EvalFormulaAdapter("x+2"), destination))
+        val formula = Node.Calculated("calc", String::class, Calculations(String::class,
+            listOf(Calculation.Aggregation<String>(String::class,"y", EvalFormulaAdapter("x+2"), destination))
         ).let { c -> c.connect(c.inputs()[0].id, Source.ValueSource(constants.id, x.id)) })
 
         val source = Tab2Model(listOf(constants, formula))
@@ -59,10 +59,10 @@ class SolverTest {
         val table = Node.Table(
             "table", Int::class, Columns(listOf(x))
         )
-        val destination = ColumnId(Int::class)
-        val formula = Node.Calculated("calc", Int::class, Calculations(
-            tabular = listOf(Calculation.Tabular("y", EvalFormulaAdapter("x+2"), destination))
-        ).let { c -> c.connect(c.inputs()[0].id, Source.ColumnSource(table.id, x.id)) })
+        val destination = ColumnId()
+        val formula = Node.Calculated("calc", Int::class, Calculations(Int::class,
+            tabular = listOf(Calculation.Tabular(Int::class,"y", EvalFormulaAdapter("x+2"), destination))
+        ).let { c -> c.connect(c.inputs()[0].id, Source.ColumnSource(table.id, x.id, Int::class)) })
 
         val source = Tab2Model(listOf(table, formula))
         val changed = Solver.solve(source)
@@ -88,9 +88,9 @@ class SolverTest {
             "table", Int::class, Columns(listOf(x))
         )
         val destination = SingleValueId()
-        val formula = Node.Calculated("calc", Int::class, Calculations(
-            aggregations = listOf(Calculation.Aggregation<Int>("y", EvalFormulaAdapter("sum(x)"), destination))
-        ).let { c -> c.connect(c.inputs()[0].id, Source.ColumnSource(table.id, x.id)) })
+        val formula = Node.Calculated("calc", Int::class, Calculations(Int::class,
+            aggregations = listOf(Calculation.Aggregation<Int>(Int::class,"y", EvalFormulaAdapter("sum(x)"), destination))
+        ).let { c -> c.connect(c.inputs()[0].id, Source.ColumnSource(table.id, x.id, Int::class)) })
 
         val source = Tab2Model(listOf(table, formula))
         val changed = Solver.solve(source)
@@ -116,10 +116,10 @@ class SolverTest {
         val table = Node.Table(
             "table", Int::class, Columns(listOf(x, y))
         )
-        val destination = ColumnId(Int::class)
-        val formula = Node.Calculated("calc", Int::class, Calculations(
-            tabular = listOf(Calculation.Tabular("y", EvalFormulaAdapter("x+2"), destination))
-        ).let { c -> c.connect(c.inputs()[0].id, Source.ColumnSource(table.id, x.id)) })
+        val destination = ColumnId()
+        val formula = Node.Calculated("calc", Int::class, Calculations(Int::class,
+            tabular = listOf(Calculation.Tabular(Int::class,"y", EvalFormulaAdapter("x+2"), destination))
+        ).let { c -> c.connect(c.inputs()[0].id, Source.ColumnSource(table.id, x.id, Int::class)) })
 
         val source = Tab2Model(listOf(table, formula))
         val reconnected = source.connect(table.id, Either.left(y.id), formula.id, Either.right(formula.calculations.inputs()[0].id))
@@ -150,10 +150,10 @@ class SolverTest {
         val table = Node.Table(
             "table", Int::class, Columns(listOf(x, y))
         )
-        val destination = ColumnId(Int::class)
-        val formula = Node.Calculated("calc", Int::class, Calculations(
-            tabular = listOf(Calculation.Tabular("y", EvalFormulaAdapter("x"), destination))
-        ).let { c -> c.connect(c.inputs()[0].id, Source.ColumnSource(table.id, x.id)) })
+        val destination = ColumnId()
+        val formula = Node.Calculated("calc", Int::class, Calculations(Int::class,
+            tabular = listOf(Calculation.Tabular(Int::class,"y", EvalFormulaAdapter("x"), destination))
+        ).let { c -> c.connect(c.inputs()[0].id, Source.ColumnSource(table.id, x.id, Int::class)) })
 
         val source = Tab2Model(listOf(table, formula))
         val reconnected = source.connect(table.id, Either.left(y.id), formula.id, Either.right(formula.calculations.inputs()[0].id))
@@ -192,12 +192,12 @@ class SolverTest {
         val table = Node.Table(
             "table", Int::class, Columns(listOf(a, b))
         )
-        val destination = ColumnId(Int::class)
-        val formula = Node.Calculated("calc", Int::class, Calculations(
-            tabular = listOf(Calculation.Tabular("y", EvalFormulaAdapter("x+b+c"), destination))
+        val destination = ColumnId()
+        val formula = Node.Calculated("calc", Int::class, Calculations(Int::class,
+            tabular = listOf(Calculation.Tabular(Int::class,"y", EvalFormulaAdapter("x+b+c"), destination))
         ).let { c ->
-            c.connect(c.inputs()[0].id, Source.ColumnSource(table.id, a.id))
-                .connect(c.inputs()[1].id, Source.ColumnSource(table.id, b.id))
+            c.connect(c.inputs()[0].id, Source.ColumnSource(table.id, a.id, Int::class))
+                .connect(c.inputs()[1].id, Source.ColumnSource(table.id, b.id, Int::class))
                 .connect(c.inputs()[2].id, Source.ValueSource(constants.id, x.id))
         })
 

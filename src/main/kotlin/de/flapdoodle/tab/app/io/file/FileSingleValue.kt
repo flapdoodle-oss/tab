@@ -6,6 +6,6 @@ data class FileSingleValue(
     val name: String,
     val valueType: String,
     val value: String? = null,
-    val id: FileDataId.SingleValueId,
+    val id: String,
     val color: Color
 )

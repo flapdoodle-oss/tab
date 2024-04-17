@@ -31,10 +31,10 @@ class ModelSolverWrapperTest {
         val table = Node.Table(
             "table", Int::class, Columns(listOf(x, y))
         )
-        val destination = ColumnId(Int::class)
-        val formula = Node.Calculated("calc", Int::class, Calculations(
-            tabular = listOf(Calculation.Tabular("y", EvalFormulaAdapter("x+2"), destination))
-        ).let { c -> c.connect(c.inputs()[0].id, Source.ColumnSource(table.id, x.id)) })
+        val destination = ColumnId()
+        val formula = Node.Calculated("calc", Int::class, Calculations(Int::class,
+            tabular = listOf(Calculation.Tabular(Int::class,"y", EvalFormulaAdapter("x+2"), destination))
+        ).let { c -> c.connect(c.inputs()[0].id, Source.ColumnSource(table.id, x.id, Int::class)) })
 
         val source = Tab2Model(listOf(table, formula))
         val wrapper = ModelSolverWrapper(source)

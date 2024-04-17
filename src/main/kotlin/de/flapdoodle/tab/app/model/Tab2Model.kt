@@ -12,6 +12,7 @@ import de.flapdoodle.tab.app.model.data.SingleValueId
 import de.flapdoodle.tab.types.change
 import de.flapdoodle.tab.types.one
 import de.flapdoodle.types.Either
+import kotlin.reflect.KClass
 
 data class Tab2Model(
     val nodes: List<Node> = emptyList()
@@ -70,10 +71,27 @@ data class Tab2Model(
         }
 
         require(end is Node.Calculated<out Comparable<*>>) {"wrong node type: $end"}
-        val connected = end.connect(inputId, when (dataId) {
-            is ColumnId<out Comparable<*>> -> Source.ColumnSource(startId, dataId)
-            is SingleValueId -> Source.ValueSource(startId, dataId)
-        })
+        return connect(start, dataId, end, inputId)
+    }
+
+    private fun <K: Comparable<K>> connect(
+        start: Node,
+        dataId: DataId,
+        end: Node.Calculated<K>,
+        inputId: Id<InputSlot<*>>
+    ): Tab2Model {
+        val source = when (dataId) {
+            is ColumnId -> {
+                require(start is Node.HasColumns<out Comparable<*>>) { "wrong source node type: $start" }
+                require(start.indexType == end.indexType) { "index type mismatch: ${start.indexType} != ${end.indexType}" }
+                val startWithIndexType = start as Node.HasColumns<K>
+                Source.ColumnSource(start.id, dataId, startWithIndexType.indexType)
+            }
+
+            is SingleValueId -> Source.ValueSource(start.id, dataId)
+        }
+
+        val connected = end.connect(inputId, source)
 
         return copy(nodes = nodes.change(Node::id, connected.id) { connected })
     }

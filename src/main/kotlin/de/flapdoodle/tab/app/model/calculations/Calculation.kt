@@ -8,11 +8,13 @@ import de.flapdoodle.tab.app.model.data.SingleValueId
 import kotlin.reflect.KClass
 
 sealed class Calculation<K: Comparable<K>>(
+    private val indexType: KClass<K>,
     private val name: String,
     private val formula: Formula,
 ): HasName {
     abstract val id: Id<Calculation<*>>
 
+    fun indexType() = indexType
     override fun name() = name
     fun formula() = formula
     
@@ -22,11 +24,12 @@ sealed class Calculation<K: Comparable<K>>(
     abstract fun changeFormula(newFormula: String): Calculation<K>
 
     data class Aggregation<K: Comparable<K>>(
+        private val indexType: KClass<K>,
         private val name: String,
         private val formula: Formula,
         private val destination: SingleValueId = SingleValueId(),
         override val id: Id<Calculation<*>> = Id.Companion.nextId(Calculation::class)
-    ) : Calculation<K>(name, formula) {
+    ) : Calculation<K>(indexType, name, formula) {
 
         fun destination() = destination
 
@@ -36,11 +39,12 @@ sealed class Calculation<K: Comparable<K>>(
     }
 
     data class Tabular<K: Comparable<K>>(
+        private val indexType: KClass<K>,
         private val name: String,
         private val formula: Formula,
-        private val destination: ColumnId<K>,
+        private val destination: ColumnId,
         override val id: Id<Calculation<*>> = Id.Companion.nextId(Calculation::class)
-    ) : Calculation<K>(name, formula) {
+    ) : Calculation<K>(indexType, name, formula) {
 
         fun destination() = destination
 

@@ -15,6 +15,7 @@ import de.flapdoodle.tab.app.model.data.Data
 import de.flapdoodle.tab.app.model.data.SingleValue
 import de.flapdoodle.tab.types.one
 import org.jgrapht.graph.DefaultEdge
+import kotlin.reflect.KClass
 
 object Solver {
 
@@ -52,7 +53,7 @@ object Solver {
         model: Tab2Model
     ): Tab2Model {
         return update(model, node, when (vertex) {
-                is Vertex.Column<*> -> node.calculations.tabular(vertex.columnId)
+                is Vertex.Column -> node.calculations.tabular(vertex.columnId)
                 is Vertex.SingleValue -> node.calculations.aggregation(vertex.valueId)
             }
         )
@@ -69,7 +70,7 @@ object Solver {
         if (missingSources.isEmpty()) {
             val sources = neededInputs.associateBy { it.source!! }
             val input2data = sources.map { (source, input) ->
-                input to dataOf(source, model)
+                input to dataOf(calculation.indexType(), source, model)
             }
             val variableDataMap = input2data.flatMap { (input, data) ->
                 input.mapTo.map { v -> v to data }
@@ -82,7 +83,8 @@ object Solver {
         return model
     }
 
-    private fun dataOf(
+    private fun <K: Comparable<K>> dataOf(
+        indexType: KClass<K>,
         source: Source,
         model: Tab2Model
     ): Data {
@@ -90,7 +92,10 @@ object Solver {
         val data = when (source) {
             is Source.ColumnSource<*> -> {
                 when (node) {
-                    is Node.HasColumns<*> -> node.column(source.columnId)
+                    is Node.HasColumns<*> -> {
+                        require(node.indexType==indexType) {"wrong index type: $indexType != ${node.indexType}"}
+                        node.column(source.columnId)
+                    }
                     else -> {
                         throw IllegalArgumentException("mismatch")
                     }
@@ -241,7 +246,7 @@ object Solver {
 
         val column = Column(
             calculation.name(),
-            calculation.destination().indexType,
+            calculation.indexType(),
             valueType,
             emptyMap(),
             calculation.destination()
@@ -330,7 +335,7 @@ object Solver {
             }
         val dot = GraphAsDot.builder<Vertex> { it ->
             when (it) {
-                is Vertex.Column<*> -> "column(${it.node}:${it.columnId})"
+                is Vertex.Column -> "column(${it.node}:${it.columnId})"
                 is Vertex.SingleValue -> "value(${it.node}:${it.valueId})"
             }
         }

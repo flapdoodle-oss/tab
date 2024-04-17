@@ -19,7 +19,7 @@ sealed class ModelChange {
     data class SetColumns<K: Comparable<K>>(
         override val id: Id<out Node.Table<out Comparable<*>>>,
         val index: K,
-        val changes: List<Pair<ColumnId<K>, Any?>>
+        val changes: List<Pair<ColumnId, Any?>>
     ): TableChange(id)
     data class MoveValues<K: Comparable<K>>(
         override val id: Id<out Node.Table<out Comparable<*>>>,
@@ -30,7 +30,7 @@ sealed class ModelChange {
             require(lastIndex != index) { "same index: $lastIndex" }
         }
     }
-    data class RemoveColumn(override val id: Id<out Node.Table<out Comparable<*>>>, val columnId: ColumnId<out Comparable<*>>): TableChange(id)
+    data class RemoveColumn(override val id: Id<out Node.Table<out Comparable<*>>>, val columnId: ColumnId): TableChange(id)
 
     sealed class CalculationChange(open val id: Id<out Node.Calculated<out Comparable<*>>>): ModelChange()
     class AddAggregation(id: Id<Node.Calculated<*>>, val name: String, val expression: String) : CalculationChange(id)

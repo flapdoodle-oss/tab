@@ -31,15 +31,15 @@ class ModelSolverWrapper(initalModel: Tab2Model = Tab2Model()) {
                 changeModel { current ->
                     current.connect(event.start, event.startDataOrInput, event.end, event.endDataOrInput)
                 }
+                true
             }
             is ModelEvent.TryToConnectTo -> {
                 validModelChange { it.connect(event.start, event.startDataOrInput, event.end, event.endDataOrInput) }
             }
             else -> {
-
+                true
             }
         }
-        true
     }
 
     private val modelChangeListener = ModelChangeListener { modelChange ->

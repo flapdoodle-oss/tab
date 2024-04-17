@@ -5,6 +5,7 @@ import de.flapdoodle.tab.app.model.Node
 import de.flapdoodle.tab.app.model.data.ColumnId
 import de.flapdoodle.tab.app.model.data.DataId
 import de.flapdoodle.tab.app.model.data.SingleValueId
+import kotlin.reflect.KClass
 
 sealed class Source {
     abstract val node: Id<out Node>
@@ -14,7 +15,8 @@ sealed class Source {
 
     data class ColumnSource<K: Comparable<K>>(
         override val node: Id<out Node>,
-        val columnId: ColumnId<K>,
+        val columnId: ColumnId,
+        val indexType: KClass<K>,
         override val id: Id<ColumnSource<*>> = Id.nextId(ColumnSource::class)
     ) : Source() {
         override fun dataId(): DataId {

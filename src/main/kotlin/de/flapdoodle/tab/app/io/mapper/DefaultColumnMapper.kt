@@ -16,7 +16,7 @@ object DefaultColumnMapper : ColumnMapper {
         return FileColumn(
             name = src.name,
             valueType = toFileMapping.valueType(src.valueType),
-            id = toFileMapping.idFor(src.id),
+            id = toFileMapping.idFor(src.id.id),
             color = src.color,
             values = src.values.map { (key, value) ->
                 toFileMapping.value(src.indexType, key) to toFileMapping.value(src.valueType, value)
@@ -34,13 +34,11 @@ object DefaultColumnMapper : ColumnMapper {
         indexType: KClass<K>,
         valueType: KClass<V>
     ): Column<K, V> {
-        val id = toModelMapping.nextId(src.id)
-        require(id.indexType == indexType) {"type mismatch: $indexType != ${id.indexType}"}
         return Column(
             name = src.name,
             indexType = indexType,
             valueType = valueType,
-            id = id as ColumnId<K>,
+            id = ColumnId(toModelMapping.nextId(src.id, ColumnId::class)),
             color = src.color,
             values = src.values.map { (key, value) ->
                 toModelMapping.value(indexType, key) to toModelMapping.value(valueType, value)

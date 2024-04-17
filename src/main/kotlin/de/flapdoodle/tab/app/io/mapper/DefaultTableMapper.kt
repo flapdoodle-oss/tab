@@ -7,9 +7,9 @@ import de.flapdoodle.tab.app.model.Node
 import kotlin.reflect.KClass
 
 class DefaultTableMapper(
-    private val columnsMapper: ColumnsMapper
-) : Mapper<Node.Table<Comparable<Any>>, FileNode> {
-    override fun toFile(toFileMapping: ToFileMapping, src: Node.Table<Comparable<Any>>): FileNode {
+    private val columnsMapper: ColumnsMapper = DefaultColumnsMapper()
+) : Mapper<Node.Table<out Comparable<*>>, FileNode> {
+    override fun toFile(toFileMapping: ToFileMapping, src: Node.Table<out Comparable<*>>): FileNode {
         return FileNode(
             name = src.name,
             position = src.position,

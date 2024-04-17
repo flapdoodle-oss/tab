@@ -9,7 +9,7 @@ data class Column<K : Comparable<K>, V : Any>(
     val indexType: KClass<in K>,
     val valueType: KClass<V>,
     val values: Map<K, V> = emptyMap(),
-    override val id: ColumnId<K> = ColumnId(indexType),
+    override val id: ColumnId = ColumnId(),
     val color: Color = HashedColors.hashedColor(name.hashCode() + id.hashCode())
 ): Data() {
     fun add(index: K, value: V?): Column<K, V> {

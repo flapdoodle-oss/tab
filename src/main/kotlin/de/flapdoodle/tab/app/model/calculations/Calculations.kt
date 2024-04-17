@@ -7,8 +7,10 @@ import de.flapdoodle.tab.app.model.data.ColumnId
 import de.flapdoodle.tab.app.model.data.SingleValueId
 import de.flapdoodle.tab.types.change
 import de.flapdoodle.tab.types.one
+import kotlin.reflect.KClass
 
 data class Calculations<K: Comparable<K>>(
+    private val indexType: KClass<K>,
     private val aggregations: List<Calculation.Aggregation<K>> = emptyList(),
     private val tabular: List<Calculation.Tabular<K>> = emptyList(),
     private val inputs: List<InputSlot<K>> = inputSlots(aggregations + tabular)
@@ -42,7 +44,7 @@ data class Calculations<K: Comparable<K>>(
         return aggregations.one { it.destination() == id }
     }
 
-    fun tabular(id: ColumnId<out Comparable<*>>): Calculation.Tabular<K> {
+    fun tabular(id: ColumnId): Calculation.Tabular<K> {
         return tabular.one { it.destination() == id }
     }
 

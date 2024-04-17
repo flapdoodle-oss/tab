@@ -5,6 +5,5 @@ import de.flapdoodle.kfx.types.Key
 import kotlin.reflect.KClass
 
 data class SingleValueId(
-//    val valueType: KClass<V>,
-    val id: Id<SingleValueId> = Id.Companion.nextId(SingleValueId::class)
+    val id: Id<SingleValueId> = Id.nextId(SingleValueId::class)
 ): DataId()
