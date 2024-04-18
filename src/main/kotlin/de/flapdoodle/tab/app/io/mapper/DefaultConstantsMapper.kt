@@ -7,7 +7,7 @@ import de.flapdoodle.tab.app.io.file.FileSingleValues
 import de.flapdoodle.tab.app.model.Node
 import de.flapdoodle.tab.app.model.data.SingleValues
 
-class ConstantsMapper(
+class DefaultConstantsMapper(
     private val singleValuesMapper: Mapper<SingleValues, FileSingleValues> = DefaultSingleValuesMapper()
 ) : Mapper<Node.Constants, FileNode> {
     override fun toFile(toFileMapping: ToFileMapping, src: Node.Constants): FileNode {

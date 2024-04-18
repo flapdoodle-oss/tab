@@ -11,8 +11,10 @@ sealed class Calculation<K: Comparable<K>>(
     private val indexType: KClass<K>,
     private val name: String,
     private val formula: Formula,
+    open val id: Id<Calculation<*>>
 ): HasName {
-    abstract val id: Id<Calculation<*>>
+    // TODO verschieben?
+//    abstract val id: Id<Calculation<*>>
 
     fun indexType() = indexType
     override fun name() = name
@@ -28,8 +30,8 @@ sealed class Calculation<K: Comparable<K>>(
         private val name: String,
         private val formula: Formula,
         private val destination: SingleValueId = SingleValueId(),
-        override val id: Id<Calculation<*>> = Id.Companion.nextId(Calculation::class)
-    ) : Calculation<K>(indexType, name, formula) {
+        override val id: Id<Calculation<*>> = Id.nextId(Calculation::class)
+    ) : Calculation<K>(indexType, name, formula, id) {
 
         fun destination() = destination
 
@@ -43,8 +45,8 @@ sealed class Calculation<K: Comparable<K>>(
         private val name: String,
         private val formula: Formula,
         private val destination: ColumnId,
-        override val id: Id<Calculation<*>> = Id.Companion.nextId(Calculation::class)
-    ) : Calculation<K>(indexType, name, formula) {
+        override val id: Id<Calculation<*>> = Id.nextId(Calculation::class)
+    ) : Calculation<K>(indexType, name, formula, id) {
 
         fun destination() = destination
 

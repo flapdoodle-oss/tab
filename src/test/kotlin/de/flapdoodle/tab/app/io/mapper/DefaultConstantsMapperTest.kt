@@ -9,7 +9,7 @@ import javafx.scene.paint.Color
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
-class ConstantsMapperTest {
+class DefaultConstantsMapperTest {
 
     @Test
     fun mapConstants() {
@@ -30,7 +30,7 @@ class ConstantsMapperTest {
             )
         )
 
-        val testee = ConstantsMapper()
+        val testee = DefaultConstantsMapper()
 
         val mapped = testee.toFile(memorizingMapping.toFileMapping(), src)
         val readBack = testee.toModel(memorizingMapping.toModelMapping(), mapped)

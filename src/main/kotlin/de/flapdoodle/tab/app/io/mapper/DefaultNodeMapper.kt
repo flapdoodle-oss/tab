@@ -6,7 +6,7 @@ import de.flapdoodle.tab.app.io.file.FileNode
 import de.flapdoodle.tab.app.model.Node
 
 class DefaultNodeMapper(
-    private val constantsMapper: Mapper<Node.Constants, FileNode> = ConstantsMapper(),
+    private val constantsMapper: Mapper<Node.Constants, FileNode> = DefaultConstantsMapper(),
     private val tableMapper: Mapper<Node.Table<out Comparable<*>>, FileNode> = DefaultTableMapper()
 ) : Mapper<Node, FileNode> {
     override fun toFile(toFileMapping: ToFileMapping, src: Node): FileNode {
@@ -17,8 +17,9 @@ class DefaultNodeMapper(
             is Node.Table<out Comparable<*>> -> {
                 tableMapper.toFile(toFileMapping, src)
             }
-
-            else -> TODO("Not yet implemented")
+            is Node.Calculated<out Comparable<*>> -> {
+                TODO("Not yet implemented")
+            }
         }
     }
 
