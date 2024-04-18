@@ -30,8 +30,10 @@ class ConstantsMapperTest {
             )
         )
 
-        val mapped = ConstantsMapper().toFile(memorizingMapping.toFileMapping(), src)
-        val readBack = ConstantsMapper().toModel(memorizingMapping.toModelMapping(), mapped)
+        val testee = ConstantsMapper()
+
+        val mapped = testee.toFile(memorizingMapping.toFileMapping(), src)
+        val readBack = testee.toModel(memorizingMapping.toModelMapping(), mapped)
 
         assertThat(readBack).isEqualTo(src)
     }
