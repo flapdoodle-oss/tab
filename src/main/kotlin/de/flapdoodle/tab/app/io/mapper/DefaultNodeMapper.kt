@@ -7,7 +7,8 @@ import de.flapdoodle.tab.app.model.Node
 
 class DefaultNodeMapper(
     private val constantsMapper: Mapper<Node.Constants, FileNode> = DefaultConstantsMapper(),
-    private val tableMapper: Mapper<Node.Table<out Comparable<*>>, FileNode> = DefaultTableMapper()
+    private val tableMapper: Mapper<Node.Table<out Comparable<*>>, FileNode> = DefaultTableMapper(),
+    private val calculatedMapper: Mapper<Node.Calculated<out Comparable<*>>, FileNode> = DefaultCalculatedMapper()
 ) : Mapper<Node, FileNode> {
     override fun toFile(toFileMapping: ToFileMapping, src: Node): FileNode {
         return when (src) {
@@ -18,7 +19,7 @@ class DefaultNodeMapper(
                 tableMapper.toFile(toFileMapping, src)
             }
             is Node.Calculated<out Comparable<*>> -> {
-                TODO("Not yet implemented")
+                calculatedMapper.toFile(toFileMapping, src)
             }
         }
     }
@@ -30,6 +31,9 @@ class DefaultNodeMapper(
         if (src.table!=null) {
             return tableMapper.toModel(toModelMapping, src)
         }
-        TODO("Not yet implemented")
+        if (src.calculated!=null) {
+            return calculatedMapper.toModel(toModelMapping, src)
+        }
+        throw IllegalArgumentException("not supported: $src")
     }
 }
