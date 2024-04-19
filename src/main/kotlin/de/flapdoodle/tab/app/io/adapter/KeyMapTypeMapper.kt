@@ -1,5 +1,7 @@
 package de.flapdoodle.tab.app.io.adapter
 
+import java.math.BigDecimal
+import java.math.BigInteger
 import kotlin.reflect.KClass
 
 data class KeyMapTypeMapper(
@@ -26,6 +28,8 @@ data class KeyMapTypeMapper(
         fun defaultMapper() = KeyMapTypeMapper(listOf(
             String::class to "String",
             Double::class to "Double",
+            BigDecimal::class to "BigDecimal",
+            BigInteger::class to "BigInteger",
             Int::class to "Int"
         ))
     }

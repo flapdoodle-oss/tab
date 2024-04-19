@@ -15,6 +15,7 @@ import de.flapdoodle.tab.app.model.data.Column
 import de.flapdoodle.tab.app.model.data.Columns
 import de.flapdoodle.tab.app.model.data.SingleValue
 import de.flapdoodle.tab.app.model.data.SingleValues
+import de.flapdoodle.tab.app.model.graph.Solver
 import javafx.scene.paint.Color
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -122,11 +123,13 @@ class DefaultModelFileMapperTest {
             )
         )
 
+        val solved = Solver.solve(src)
+
         val testee = DefaultModelFileMapper()
 
-        val result = testee.toFile(memorizingMapping.toFileMapping(), src)
+        val result = testee.toFile(memorizingMapping.toFileMapping(), solved)
         val readBack = testee.toModel(memorizingMapping.toModelMapping(), result)
 
-        assertThat(readBack).isEqualTo(src)
+        assertThat(readBack).isEqualTo(solved)
     }
 }
