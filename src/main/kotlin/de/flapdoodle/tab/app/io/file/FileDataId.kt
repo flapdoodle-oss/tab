@@ -1,8 +1,11 @@
 package de.flapdoodle.tab.app.io.file
 
-sealed class FileDataId(
-    open val id: Int,
+class FileDataId(
+    val valueId: String? = null,
+    val columnId: String? = null
 ) {
-    data class SingleValueId(override val id: Int) : FileDataId(id)
-    data class ColumnId(override val id: Int) : FileDataId(id)
+    init {
+        require(valueId != null || columnId!=null) {"valueId and columnId not set"}
+        require(!(valueId != null && columnId!=null)) {"valueId and columnId set"}
+    }
 }

@@ -5,5 +5,5 @@ data class FileCalculations(
 //    val indexType: String,
     val aggregations: List<FileCalculation>,
     val tabular: List<FileCalculation>,
-    // TODO inputSlots!!
+    val inputs: List<FileInputSlot>
 )
