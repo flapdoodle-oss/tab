@@ -28,6 +28,7 @@ class KeyMapValueMapper(
         fun defaultMapper() = KeyMapValueMapper(
             listOf(
                 TypedValueMapper(String::class, { it }, { it }),
+                TypedValueMapper(Double::class, { it.toString() }, { java.lang.Double.parseDouble(it) }),
                 TypedValueMapper(Int::class, { it.toString() }, { Integer.valueOf(it) })
             )
         )

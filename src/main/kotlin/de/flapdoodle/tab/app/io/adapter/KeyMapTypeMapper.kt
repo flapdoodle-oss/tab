@@ -25,6 +25,7 @@ data class KeyMapTypeMapper(
     companion object {
         fun defaultMapper() = KeyMapTypeMapper(listOf(
             String::class to "String",
+            Double::class to "Double",
             Int::class to "Int"
         ))
     }

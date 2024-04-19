@@ -44,7 +44,7 @@ sealed class Calculation<K: Comparable<K>>(
         private val indexType: KClass<K>,
         private val name: String,
         private val formula: Formula,
-        private val destination: ColumnId,
+        private val destination: ColumnId = ColumnId(),
         override val id: Id<Calculation<*>> = Id.nextId(Calculation::class)
     ) : Calculation<K>(indexType, name, formula, id) {
 
