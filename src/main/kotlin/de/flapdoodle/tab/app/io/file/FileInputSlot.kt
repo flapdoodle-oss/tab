@@ -7,5 +7,5 @@ data class FileInputSlot(
     val mapTo: Set<FileVariable>,
     val source: FileSource? = null,
     val id: String,
-    val color: Color
+    val color: FileColor
 )

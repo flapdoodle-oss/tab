@@ -17,6 +17,7 @@ object Tab2ModelIO {
 
     private val modelAdapter = moshi.adapter(Tab2File::class.java)
         .indent("  ")
+        
 
     fun asJson(model: Tab2Model): String {
         val file = DefaultModelFileMapper().toFile(ToFileMapping(), model)

@@ -2,6 +2,7 @@ package de.flapdoodle.tab.app.io.mapper
 
 import de.flapdoodle.tab.app.io.adapter.ToFileMapping
 import de.flapdoodle.tab.app.io.adapter.ToModelMapping
+import de.flapdoodle.tab.app.io.file.FileColor
 import de.flapdoodle.tab.app.io.file.FileColumn
 import de.flapdoodle.tab.app.model.data.Column
 import de.flapdoodle.tab.app.model.data.ColumnId
@@ -17,7 +18,7 @@ object DefaultColumnMapper : ColumnMapper {
             name = src.name,
             valueType = toFileMapping.valueType(src.valueType),
             id = toFileMapping.idFor(src.id.id),
-            color = src.color,
+            color = FileColor.from(src.color),
             values = src.values.map { (key, value) ->
                 toFileMapping.value(src.indexType, key) to toFileMapping.value(src.valueType, value)
             }.toMap()
@@ -39,7 +40,7 @@ object DefaultColumnMapper : ColumnMapper {
             indexType = indexType,
             valueType = valueType,
             id = ColumnId(toModelMapping.nextId(src.id, ColumnId::class)),
-            color = src.color,
+            color = src.color.toColor(),
             values = src.values.map { (key, value) ->
                 toModelMapping.value(indexType, key) to toModelMapping.value(valueType, value)
             }.toMap()

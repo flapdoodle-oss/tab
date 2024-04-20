@@ -23,8 +23,9 @@ import javafx.scene.layout.BorderPane
 import javafx.scene.layout.FlowPane
 import java.util.concurrent.atomic.AtomicInteger
 
-class Main2() : BorderPane() {
-  private val modelWrapper = ModelSolverWrapper(Tab2Model())
+class Main2(
+  private val modelWrapper: ModelSolverWrapper
+) : BorderPane() {
 
 //  private val model = SimpleObjectProperty(Tab2Model())
   private val selectedVertex = SimpleObjectProperty<Id<out Node>>()

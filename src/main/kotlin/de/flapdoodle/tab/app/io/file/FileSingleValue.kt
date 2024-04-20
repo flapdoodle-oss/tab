@@ -7,5 +7,5 @@ data class FileSingleValue(
     val valueType: String,
     val value: String? = null,
     val id: String,
-    val color: Color
+    val color: FileColor
 )
