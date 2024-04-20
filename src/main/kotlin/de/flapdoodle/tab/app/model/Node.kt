@@ -19,6 +19,7 @@ sealed class Node {
     abstract val position: Position
 
     abstract fun apply(change: ModelChange): Node
+    abstract fun moveTo(position: Position): Node
 
 //    fun data(id: DataId): Data {
 //        return when (id) {
@@ -79,6 +80,10 @@ sealed class Node {
             }
             return this
         }
+
+        override fun moveTo(position: Position): Node {
+            return copy(position = position)
+        }
     }
 
     data class Table<K: Comparable<K>> (
@@ -125,6 +130,10 @@ sealed class Node {
                 }
             }
             return this
+        }
+
+        override fun moveTo(position: Position): Node {
+            return copy(position = position)
         }
     }
 
@@ -193,6 +202,10 @@ sealed class Node {
                 }
             }
             return this
+        }
+
+        override fun moveTo(position: Position): Node {
+            return copy(position = position)
         }
     }
 }

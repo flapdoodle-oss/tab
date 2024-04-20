@@ -34,6 +34,7 @@ class InlineTableUIAdapter<K: Comparable<K>>(
         require(node is Node.Table<out Comparable<*>>) { "wrong type $node" }
         require(node.id == nodeId) {"wrong node: ${node.id} != $nodeId"}
 
+
         columnsPane.update(node as Node.Table<K>)
         tablePane.update(node)
     }

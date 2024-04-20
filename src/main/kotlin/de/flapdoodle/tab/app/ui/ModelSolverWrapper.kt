@@ -1,5 +1,6 @@
 package de.flapdoodle.tab.app.ui
 
+import de.flapdoodle.tab.app.model.Position
 import de.flapdoodle.tab.app.model.Tab2Model
 import de.flapdoodle.tab.app.model.graph.Solver
 import de.flapdoodle.tab.app.ui.events.ModelEvent
@@ -35,6 +36,12 @@ class ModelSolverWrapper(initalModel: Tab2Model = Tab2Model()) {
             }
             is ModelEvent.TryToConnectTo -> {
                 validModelChange { it.connect(event.start, event.startDataOrInput, event.end, event.endDataOrInput) }
+            }
+            is ModelEvent.VertexMoved -> {
+                changeModel { current ->
+                    current.moveTo(event.node, event.position)
+                }
+                true
             }
             else -> {
                 true

@@ -7,6 +7,7 @@ import de.flapdoodle.kfx.controls.grapheditor.types.SlotId
 import de.flapdoodle.kfx.controls.grapheditor.types.VertexId
 import de.flapdoodle.kfx.types.Id
 import de.flapdoodle.tab.app.model.Node
+import de.flapdoodle.tab.app.model.Position
 import de.flapdoodle.tab.app.model.calculations.InputSlot
 import de.flapdoodle.tab.app.model.data.DataId
 import de.flapdoodle.types.Either
@@ -41,6 +42,10 @@ class Event2ModelEvent(
                 val endDataOrInput = slotIdMapper(event.end.slotId)
 
                 delegate.onEvent(ModelEvent.ConnectTo(startNodeId, startDataOrInput, endNodeId, endDataOrInput))
+            }
+            is Event.VertexMoved -> {
+                val nodeId = vertexIdMapper(event.vertexId)
+                delegate.onEvent(ModelEvent.VertexMoved(nodeId, Position(event.layoutPosition.x, event.layoutPosition.y)))
             }
         }
     }

@@ -229,7 +229,7 @@ object Solver {
                 })
             } else {
                 node.copy(columns = node.columns.change(calculation.destination()) { old ->
-                    newColumn.copy(id = old.id)
+                    newColumn.copy(id = old.id, color = old.color)
                 })
             }
         }

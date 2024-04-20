@@ -1,6 +1,7 @@
 package de.flapdoodle.tab.app.ui
 
 import de.flapdoodle.kfx.bindings.Subscriptions
+import de.flapdoodle.kfx.bindings.and
 import de.flapdoodle.kfx.collections.Mapping
 import de.flapdoodle.kfx.controls.grapheditor.Edge
 import de.flapdoodle.kfx.controls.grapheditor.GraphEditor
@@ -116,6 +117,7 @@ class Tab2ModelAdapter(
                 is Action.ChangeNode -> {
                     vertexMapping.with(action.id) {
                         it.vertex.nameProperty().value = action.node.name
+                        it.vertex.layoutPosition = Point2D(action.node.position.x, action.node.position.y)
                         it.content.update(action.node)
                     }
                 }
