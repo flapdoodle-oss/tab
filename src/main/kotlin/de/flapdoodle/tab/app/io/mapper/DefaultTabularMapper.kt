@@ -6,7 +6,6 @@ import de.flapdoodle.tab.app.io.file.FileCalculation
 import de.flapdoodle.tab.app.io.file.FileFormula
 import de.flapdoodle.tab.app.model.calculations.Calculation
 import de.flapdoodle.tab.app.model.calculations.Formula
-import de.flapdoodle.tab.app.model.calculations.adapter.EvalFormulaAdapter
 import de.flapdoodle.tab.app.model.data.ColumnId
 import kotlin.reflect.KClass
 

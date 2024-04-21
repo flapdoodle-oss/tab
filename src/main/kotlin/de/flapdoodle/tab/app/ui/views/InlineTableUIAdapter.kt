@@ -5,7 +5,6 @@ import de.flapdoodle.tab.app.model.Node
 import de.flapdoodle.tab.app.ui.ModelChangeListener
 import de.flapdoodle.tab.app.ui.views.table.ColumnsPane
 import de.flapdoodle.tab.app.ui.views.table.TablePane
-import javafx.scene.control.TabPane
 
 class InlineTableUIAdapter<K: Comparable<K>>(
     node: Node.Table<K>,

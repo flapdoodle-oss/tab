@@ -1,19 +1,15 @@
 package de.flapdoodle.tab.app.ui.views.table
 
-import de.flapdoodle.kfx.bindings.syncWith
 import de.flapdoodle.kfx.controls.bettertable.ColumnProperty
 import de.flapdoodle.kfx.controls.bettertable.Table
 import de.flapdoodle.kfx.controls.bettertable.TableChangeListener
-import de.flapdoodle.kfx.converters.Converters
 import de.flapdoodle.tab.app.model.Node
 import de.flapdoodle.tab.app.model.change.ModelChange
 import de.flapdoodle.tab.app.model.data.Column
 import de.flapdoodle.tab.app.model.data.Columns
 import de.flapdoodle.tab.app.model.diff.Diff
 import de.flapdoodle.tab.app.ui.ModelChangeListener
-import de.flapdoodle.tab.extensions.change
 import javafx.beans.property.SimpleObjectProperty
-import javafx.beans.value.ObservableValue
 import javafx.scene.layout.StackPane
 import kotlin.reflect.KClass
 

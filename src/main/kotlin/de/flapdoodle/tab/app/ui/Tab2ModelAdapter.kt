@@ -1,7 +1,6 @@
 package de.flapdoodle.tab.app.ui
 
 import de.flapdoodle.kfx.bindings.Subscriptions
-import de.flapdoodle.kfx.bindings.and
 import de.flapdoodle.kfx.collections.Mapping
 import de.flapdoodle.kfx.controls.grapheditor.Edge
 import de.flapdoodle.kfx.controls.grapheditor.GraphEditor
@@ -26,7 +25,7 @@ import de.flapdoodle.tab.app.model.data.SingleValue
 import de.flapdoodle.tab.app.ui.commands.Command
 import de.flapdoodle.tab.app.ui.events.Event2ModelEvent
 import de.flapdoodle.tab.app.ui.events.ModelEventListener
-import de.flapdoodle.tab.app.ui.views.DumpNodeUIAdapterFactory
+import de.flapdoodle.tab.app.ui.views.DefaultNodeUIAdapterFactory
 import de.flapdoodle.tab.app.ui.views.NodeUIAdapter
 import de.flapdoodle.types.Either
 import javafx.beans.property.ReadOnlyObjectProperty
@@ -45,7 +44,7 @@ class Tab2ModelAdapter(
         vertexIdMapper = ::nodeOfVertex,
         slotIdMapper = ::outputOrInputOfSlot
     )).withAnchors(all = 10.0)
-    private val nodeUIAdapterFactory = DumpNodeUIAdapterFactory
+    private val nodeUIAdapterFactory = DefaultNodeUIAdapterFactory
 
     private class VertexAndContent(val vertex: Vertex, val content: NodeUIAdapter)
     private val vertexMapping = Mapping<Id<out Node>, VertexId, VertexAndContent>()

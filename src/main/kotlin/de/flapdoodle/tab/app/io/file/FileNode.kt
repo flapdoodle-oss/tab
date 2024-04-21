@@ -1,12 +1,6 @@
 package de.flapdoodle.tab.app.io.file
 
-import de.flapdoodle.kfx.types.Id
-import de.flapdoodle.tab.app.model.Node
 import de.flapdoodle.tab.app.model.Position
-import de.flapdoodle.tab.app.model.calculations.Calculations
-import de.flapdoodle.tab.app.model.data.Columns
-import de.flapdoodle.tab.app.model.data.SingleValues
-import kotlin.reflect.KClass
 
 data class FileNode(
     val name: String,

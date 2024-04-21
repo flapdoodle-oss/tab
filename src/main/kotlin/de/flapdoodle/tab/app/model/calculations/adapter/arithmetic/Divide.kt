@@ -1,12 +1,8 @@
 package de.flapdoodle.tab.app.model.calculations.adapter.arithmetic
 
 import de.flapdoodle.eval.core.evaluables.TypedEvaluable.of
-import de.flapdoodle.eval.core.validation.ParameterValidator
 import de.flapdoodle.tab.app.model.calculations.adapter.Evaluables
 import de.flapdoodle.tab.app.model.calculations.adapter.Evaluables.Arg2Math
-import java.math.BigDecimal
-import java.math.BigInteger
-import java.util.*
 
 object Divide : Evaluables(
     of(bigDecimal, bigDecimalParameter, bigDecimalNotZero, Arg2Math { first, second, mathContext ->

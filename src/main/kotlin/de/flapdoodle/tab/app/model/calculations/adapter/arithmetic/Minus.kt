@@ -1,14 +1,9 @@
 package de.flapdoodle.tab.app.model.calculations.adapter.arithmetic
 
-import de.flapdoodle.eval.core.EvaluationContext
-import de.flapdoodle.eval.core.VariableResolver
-import de.flapdoodle.eval.core.evaluables.TypedEvaluable
-import de.flapdoodle.eval.core.evaluables.TypedEvaluable.*
-import de.flapdoodle.eval.core.exceptions.EvaluationException
-import de.flapdoodle.eval.core.parser.Token
+import de.flapdoodle.eval.core.evaluables.TypedEvaluable.of
 import de.flapdoodle.tab.app.model.calculations.adapter.Evaluables
-import java.math.BigDecimal
-import java.math.BigInteger
+import de.flapdoodle.tab.app.model.calculations.adapter.Evaluables.Arg2Math
+import de.flapdoodle.tab.app.model.calculations.adapter.Evaluables.ArgMath
 
 object Minus : Evaluables(
     of(bigDecimal, bigDecimal, bigDecimal, Arg2Math { first, second, mathContext ->

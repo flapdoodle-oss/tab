@@ -2,11 +2,12 @@ package de.flapdoodle.tab.app.io
 
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
-import de.flapdoodle.tab.app.io.adapter.*
+import de.flapdoodle.tab.app.io.adapter.BigDecimalAdapter
+import de.flapdoodle.tab.app.io.adapter.ToFileMapping
+import de.flapdoodle.tab.app.io.adapter.ToModelMapping
 import de.flapdoodle.tab.app.io.file.Tab2File
 import de.flapdoodle.tab.app.io.mapper.DefaultModelFileMapper
 import de.flapdoodle.tab.app.model.Tab2Model
-import de.flapdoodle.tab.data.NodePositions
 
 object Tab2ModelIO {
     private val moshi = Moshi.Builder()

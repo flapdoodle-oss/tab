@@ -12,7 +12,6 @@ import de.flapdoodle.tab.app.model.data.SingleValueId
 import de.flapdoodle.tab.types.change
 import de.flapdoodle.tab.types.one
 import de.flapdoodle.types.Either
-import javafx.geometry.Point2D
 
 data class Tab2Model(
     val nodes: List<Node> = emptyList()

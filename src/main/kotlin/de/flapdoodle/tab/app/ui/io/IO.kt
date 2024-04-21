@@ -1,11 +1,7 @@
 package de.flapdoodle.tab.app.ui.io
 
-import de.flapdoodle.fx.extensions.fire
 import de.flapdoodle.tab.app.io.Tab2ModelIO
 import de.flapdoodle.tab.app.model.Tab2Model
-import de.flapdoodle.tab.graph.nodes.renderer.events.UIEvent
-import de.flapdoodle.tab.persist.TabModelIO
-import javafx.beans.property.ReadOnlyObjectProperty
 import javafx.stage.FileChooser
 import javafx.stage.Window
 import java.nio.file.Files

@@ -5,7 +5,7 @@ import de.flapdoodle.tab.app.ui.ModelChangeListener
 import javafx.event.EventHandler
 import javafx.scene.control.Button
 
-object DumpNodeUIAdapterFactory : NodeUIAdapterFactory {
+object DefaultNodeUIAdapterFactory : NodeUIAdapterFactory {
     override fun adapterOf(node: Node, modelChangeListener: ModelChangeListener): NodeUIAdapter {
         return when (node) {
             is Node.Constants -> InlineConstantUIAdapter(node, modelChangeListener)

@@ -1,21 +1,17 @@
 package de.flapdoodle.tab.app.ui.views
 
 import de.flapdoodle.kfx.controls.textfields.TypedTextField
-import de.flapdoodle.kfx.layout.grid.WeightGridPane
 import de.flapdoodle.kfx.layout.grid.WeightGridTable
 import de.flapdoodle.kfx.types.Id
 import de.flapdoodle.tab.app.model.Node
 import de.flapdoodle.tab.app.model.change.ModelChange
 import de.flapdoodle.tab.app.model.data.SingleValue
-import de.flapdoodle.tab.app.model.data.SingleValueId
-import de.flapdoodle.tab.app.model.data.SingleValues
 import de.flapdoodle.tab.app.ui.ModelChangeListener
 import de.flapdoodle.tab.app.ui.views.dialogs.NewValueDialog
 import javafx.beans.property.SimpleObjectProperty
 import javafx.event.EventHandler
 import javafx.scene.control.Button
 import javafx.scene.control.Label
-import javafx.scene.control.TextField
 
 class InlineConstantUIAdapter(
     node: Node.Constants,

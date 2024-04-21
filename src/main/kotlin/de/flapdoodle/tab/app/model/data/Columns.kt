@@ -1,6 +1,5 @@
 package de.flapdoodle.tab.app.model.data
 
-import java.util.function.Predicate
 import kotlin.reflect.KClass
 
 data class Columns<K: Comparable<K>>(

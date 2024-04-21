@@ -1,7 +1,5 @@
 package de.flapdoodle.tab.app.io.file
 
-import javafx.scene.paint.Color
-
 data class FileInputSlot(
     val name: String,
     val mapTo: Set<FileVariable>,

@@ -2,12 +2,8 @@ package de.flapdoodle.tab.app.ui.views.dialogs
 
 import de.flapdoodle.kfx.layout.grid.WeightGridPane
 import de.flapdoodle.tab.app.model.data.Column
+import javafx.scene.control.*
 import javafx.scene.control.ButtonBar.ButtonData
-import javafx.scene.control.ButtonType
-import javafx.scene.control.ChoiceBox
-import javafx.scene.control.Dialog
-import javafx.scene.control.Label
-import javafx.scene.control.TextField
 import java.math.BigDecimal
 import java.math.BigInteger
 import java.time.LocalDate

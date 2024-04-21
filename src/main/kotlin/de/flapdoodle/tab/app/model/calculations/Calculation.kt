@@ -3,7 +3,6 @@ package de.flapdoodle.tab.app.model.calculations
 import de.flapdoodle.kfx.types.Id
 import de.flapdoodle.tab.app.model.HasName
 import de.flapdoodle.tab.app.model.data.ColumnId
-import de.flapdoodle.tab.app.model.data.SingleValue
 import de.flapdoodle.tab.app.model.data.SingleValueId
 import kotlin.reflect.KClass
 

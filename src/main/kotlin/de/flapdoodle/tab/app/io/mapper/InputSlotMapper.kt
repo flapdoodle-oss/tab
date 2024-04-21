@@ -2,9 +2,7 @@ package de.flapdoodle.tab.app.io.mapper
 
 import de.flapdoodle.tab.app.io.adapter.ToFileMapping
 import de.flapdoodle.tab.app.io.adapter.ToModelMapping
-import de.flapdoodle.tab.app.io.file.FileCalculation
 import de.flapdoodle.tab.app.io.file.FileInputSlot
-import de.flapdoodle.tab.app.model.calculations.Calculation
 import de.flapdoodle.tab.app.model.calculations.InputSlot
 import kotlin.reflect.KClass
 

@@ -1,10 +1,5 @@
 package de.flapdoodle.tab.extensions
 
-import de.flapdoodle.fx.extensions.parentPath
-import javafx.beans.binding.Binding
-import javafx.beans.binding.ObjectBinding
-import javafx.beans.value.ChangeListener
-import javafx.beans.value.WeakChangeListener
 import javafx.geometry.BoundingBox
 import javafx.geometry.Bounds
 import javafx.geometry.Point2D
@@ -37,31 +32,3 @@ fun Node.map(childInTop: Node, coord: Point2D): Point2D {
   return this.mappedBounds(childInTop, BoundingBox(coord.x, coord.y, 0.0, 0.0)).min()
 }
 
-fun Node.centerInTop(child: Node): Binding<Point2D> {
-  return CenterBinding(this,child)
-}
-
-class CenterBinding(
-    private val top: Node,
-    private val child: Node
-) : ObjectBinding<Point2D>() {
-
-  // see https://stackoverflow.com/questions/45117076/javafx-invalidationlistener-or-changelistener
-  private val observer = ChangeListener<Any> { _, _, _ ->
-    this.invalidate()
-  }
-
-  init {
-    top.parentPath(child).forEach {
-      it.boundsInLocalProperty().addListener(WeakChangeListener(observer))
-    }
-  }
-
-  override fun computeValue(): Point2D {
-    try {
-      return top.mappedBounds(child, child.boundsInLocal).centerOf()
-    } catch (ex: Exception) {
-      return Point2D(0.0,0.0)
-    }
-  }
-}

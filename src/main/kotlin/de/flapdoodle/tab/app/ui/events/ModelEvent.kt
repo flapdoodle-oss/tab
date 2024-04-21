@@ -6,7 +6,6 @@ import de.flapdoodle.tab.app.model.Position
 import de.flapdoodle.tab.app.model.calculations.InputSlot
 import de.flapdoodle.tab.app.model.data.DataId
 import de.flapdoodle.types.Either
-import javafx.geometry.Point2D
 
 sealed class ModelEvent {
   data class TryToConnect(val node: Id<out Node>, val dataOrInput: Either<DataId, Id<InputSlot<*>>>): ModelEvent()

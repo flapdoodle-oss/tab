@@ -5,7 +5,6 @@ import de.flapdoodle.kfx.layout.grid.WeightGridPane
 import de.flapdoodle.kfx.types.Id
 import de.flapdoodle.tab.app.model.Node
 import de.flapdoodle.tab.app.model.Position
-import de.flapdoodle.tab.app.model.Tab2Model
 import de.flapdoodle.tab.app.model.change.ModelChange
 import de.flapdoodle.tab.app.model.data.Column
 import de.flapdoodle.tab.app.ui.ModelSolverWrapper
