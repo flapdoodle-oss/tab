@@ -362,7 +362,7 @@
                         <configuration>
                             <classifier>tab</classifier>
                             <mainClass>
-                                de.flapdoodle.tab.app.Tab2Starter
+                                de.flapdoodle.tab.TabStarter
                             </mainClass>
                         </configuration>
                     </execution>
@@ -413,7 +413,7 @@
                         <groupId>org.openjfx</groupId>
                         <artifactId>javafx-maven-plugin</artifactId>
                         <configuration>
-                            <mainClass>de.flapdoodle.tab.app.Tab2Starter</mainClass>
+                            <mainClass>de.flapdoodle.tab.TabStarter</mainClass>
                         </configuration>
                     </plugin>
                 </plugins>
