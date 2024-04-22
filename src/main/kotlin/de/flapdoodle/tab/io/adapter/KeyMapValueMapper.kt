@@ -2,6 +2,8 @@ package de.flapdoodle.tab.io.adapter
 
 import java.math.BigDecimal
 import java.math.BigInteger
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import kotlin.reflect.KClass
 
 class KeyMapValueMapper(
@@ -33,7 +35,8 @@ class KeyMapValueMapper(
                 TypedValueMapper(Double::class, { it.toString() }, { java.lang.Double.parseDouble(it) }),
                 TypedValueMapper(BigInteger::class, { it.toString() }, { BigInteger(it) }),
                 TypedValueMapper(BigDecimal::class, { it.toString() }, { BigDecimal(it) }),
-                TypedValueMapper(Int::class, { it.toString() }, { Integer.valueOf(it) })
+                TypedValueMapper(Int::class, { it.toString() }, { Integer.valueOf(it) }),
+                TypedValueMapper(LocalDate::class, { DateTimeFormatter.ISO_LOCAL_DATE.format(it) }, { LocalDate.parse(it, DateTimeFormatter.ISO_LOCAL_DATE) }),
             )
         )
     }

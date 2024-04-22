@@ -14,15 +14,15 @@ class DefaultSingleValueMapperTest {
 
         val src = SingleValue(
             name = "value",
-            valueType = Int::class,
-            value = 1231,
+            valueType = Double::class,
+            value = 1231.2,
             color = Color.RED
         )
 
         val testee = DefaultSingleValueMapper
         
-        val mapped = DefaultSingleValueMapper.toFile(memorizingMapping.toFileMapping(), src)
-        val readBack = DefaultSingleValueMapper.toModel(memorizingMapping.toModelMapping(), mapped)
+        val mapped = testee.toFile(memorizingMapping.toFileMapping(), src)
+        val readBack = testee.toModel(memorizingMapping.toModelMapping(), mapped)
 
         assertThat(readBack).isEqualTo(src)
     }

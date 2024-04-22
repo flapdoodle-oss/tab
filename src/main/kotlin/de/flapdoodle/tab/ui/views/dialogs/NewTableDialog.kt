@@ -1,9 +1,9 @@
 package de.flapdoodle.tab.ui.views.dialogs
 
 import de.flapdoodle.kfx.layout.grid.WeightGridPane
+import de.flapdoodle.tab.config.IndexTypes
 import javafx.scene.control.*
 import javafx.scene.control.ButtonBar.ButtonData
-import java.time.LocalDate
 import kotlin.reflect.KClass
 
 class NewTableDialog : Dialog<de.flapdoodle.tab.model.Node.Table<out Comparable<*>>>() {
@@ -12,7 +12,7 @@ class NewTableDialog : Dialog<de.flapdoodle.tab.model.Node.Table<out Comparable<
     private val nameField = TextField()
     private val type = Label("Type")
     private val typeField = ChoiceBox<KClass<out Comparable<*>>>().apply {
-        items.addAll(Int::class, Double::class, String::class, LocalDate::class)
+        items.addAll(IndexTypes.all())
         value = Int::class
     }
 
@@ -36,14 +36,17 @@ class NewTableDialog : Dialog<de.flapdoodle.tab.model.Node.Table<out Comparable<
         setResultConverter { dialogButton: ButtonType? ->
             if (dialogButton?.buttonData == ButtonData.OK_DONE) {
                 val type = typeField.selectionModel.selectedItem
-                nodeOf(nameField.text, type)
+                nodeOf(nameField.text, type as KClass<out Comparable<Any>>)
             } else null
         }
     }
 
-    private fun <K: Comparable<K>> nodeOf(name: String?, type: KClass<in K>?): de.flapdoodle.tab.model.Node.Table<K>? {
-        if (name!=null && type!=null) {
-            return de.flapdoodle.tab.model.Node.Table(name, type as KClass<K>)
+    private fun <K: Comparable<K>> nodeOf(name: String?, indexType: KClass<K>?): de.flapdoodle.tab.model.Node.Table<K>? {
+        if (name!=null && indexType!=null) {
+            return de.flapdoodle.tab.model.Node.Table(
+                name = name,
+                indexType = indexType
+            )
         }
         return null
     }
