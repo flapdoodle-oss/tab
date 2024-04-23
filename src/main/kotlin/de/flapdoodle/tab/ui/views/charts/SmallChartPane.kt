@@ -13,7 +13,7 @@ import java.util.*
 import kotlin.reflect.KClass
 
 class SmallChartPane<K : Comparable<K>>(
-    node: de.flapdoodle.tab.model.Node.Calculated<K>
+    node: de.flapdoodle.tab.model.Node.HasColumns<K>
 ) : StackPane() {
 
     private var columns: Columns<K> = node.columns
@@ -27,7 +27,7 @@ class SmallChartPane<K : Comparable<K>>(
         children.add(lineChart)
     }
 
-    fun update(node: de.flapdoodle.tab.model.Node.Calculated<K>) {
+    fun update(node: de.flapdoodle.tab.model.Node.HasColumns<K>) {
         columns = node.columns
         series.value = seriesOf(columns)
     }
