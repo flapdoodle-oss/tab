@@ -21,13 +21,18 @@ class Tab : Application() {
         val root = BorderPane().apply {
             top = MenuBar().also { menuBar ->
                 menuBar.menus.add(Menu("Files").also { files ->
-                    files.items.add(MenuItem("Save").also { save ->
-                        save.onAction = EventHandler {
+                    files.items.add(MenuItem("New").also { item ->
+                        item.onAction = EventHandler {
+                            modelWrapper.changeModel { Tab2Model() }
+                        }
+                    })
+                    files.items.add(MenuItem("Save").also { item ->
+                        item.onAction = EventHandler {
                             IO.save(modelWrapper.model().value, stage)
                         }
                     })
-                    files.items.add(MenuItem("Load").also { save ->
-                        save.onAction = EventHandler {
+                    files.items.add(MenuItem("Load").also { item ->
+                        item.onAction = EventHandler {
                             val loaded = IO.load(stage)
                             if (loaded!=null) {
                                 modelWrapper.changeModel { loaded }
