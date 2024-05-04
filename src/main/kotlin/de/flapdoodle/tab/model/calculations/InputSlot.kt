@@ -1,6 +1,6 @@
 package de.flapdoodle.tab.model.calculations
 
-import de.flapdoodle.kfx.controls.colors.HashedColors
+import de.flapdoodle.kfx.colors.HashedColors
 import de.flapdoodle.kfx.types.Id
 import de.flapdoodle.tab.model.connections.Source
 import javafx.scene.paint.Color

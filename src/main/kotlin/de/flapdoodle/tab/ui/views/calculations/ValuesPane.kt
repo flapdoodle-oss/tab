@@ -1,6 +1,6 @@
 package de.flapdoodle.tab.ui.views.calculations
 
-import de.flapdoodle.kfx.controls.textfields.TypedLabel
+import de.flapdoodle.kfx.controls.fields.TypedLabel
 import de.flapdoodle.kfx.layout.grid.WeightGridTable
 import de.flapdoodle.tab.model.data.SingleValue
 import javafx.beans.property.SimpleObjectProperty

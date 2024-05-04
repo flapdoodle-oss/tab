@@ -1,6 +1,6 @@
 package de.flapdoodle.tab.model.data
 
-import de.flapdoodle.kfx.controls.colors.HashedColors
+import de.flapdoodle.kfx.colors.HashedColors
 import javafx.scene.paint.Color
 import kotlin.reflect.KClass
 

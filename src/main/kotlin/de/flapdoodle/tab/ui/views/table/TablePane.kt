@@ -1,6 +1,7 @@
 package de.flapdoodle.tab.ui.views.table
 
 import de.flapdoodle.kfx.controls.bettertable.ColumnProperty
+import de.flapdoodle.kfx.controls.bettertable.HeaderColumnFactory
 import de.flapdoodle.kfx.controls.bettertable.Table
 import de.flapdoodle.kfx.controls.bettertable.TableChangeListener
 import de.flapdoodle.tab.model.change.ModelChange
@@ -9,7 +10,9 @@ import de.flapdoodle.tab.model.data.Columns
 import de.flapdoodle.tab.model.diff.Diff
 import de.flapdoodle.tab.ui.ModelChangeListener
 import javafx.beans.property.SimpleObjectProperty
+import javafx.scene.layout.Background
 import javafx.scene.layout.StackPane
+import javafx.scene.paint.Color
 import kotlin.reflect.KClass
 
 class TablePane<K : Comparable<K>>(
@@ -78,7 +81,16 @@ class TablePane<K : Comparable<K>>(
 
     }
 
-    private val table2 = Table(tableRows, tableColumns, tableChangeListener)
+    private val table2 = Table(
+        rows = tableRows,
+        columns = tableColumns,
+        changeListener = tableChangeListener,
+        headerColumnFactory = HeaderColumnFactory.Default<Row<K>>().andThen { column, headerColumn ->
+            if (column is NormalColumn<K, out Any>) {
+                headerColumn.backgroundProperty().value = Background.fill(column.column.color.brighter().desaturate())
+            }
+        }
+    )
 
     private fun rowsOf(columns: Columns<K>): List<Row<K>> {
         return columns.index().map { index ->
@@ -126,6 +138,9 @@ class TablePane<K : Comparable<K>>(
             property = ColumnProperty(column.valueType, { row -> row.get(column) }),
             editable = true
         ), TableColumn<K, V> {
+            init {
+
+            }
         override fun applyChange(row: Row<K>, change: TableChangeListener.CellChange<Row<K>, out Any>): Row<K> {
             return row.set(ColumnValue(column, change.value as V?))
         }

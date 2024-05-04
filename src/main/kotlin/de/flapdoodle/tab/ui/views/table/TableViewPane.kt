@@ -1,12 +1,14 @@
 package de.flapdoodle.tab.ui.views.table
 
 import de.flapdoodle.kfx.controls.bettertable.ColumnProperty
+import de.flapdoodle.kfx.controls.bettertable.HeaderColumnFactory
 import de.flapdoodle.kfx.controls.bettertable.Table
 import de.flapdoodle.kfx.controls.bettertable.TableChangeListener
 import de.flapdoodle.kfx.controls.bettertable.events.ReadOnlyState
 import de.flapdoodle.tab.model.data.Column
 import de.flapdoodle.tab.model.data.Columns
 import javafx.beans.property.SimpleObjectProperty
+import javafx.scene.layout.Background
 import javafx.scene.layout.StackPane
 import kotlin.reflect.KClass
 
@@ -43,7 +45,17 @@ class TableViewPane<K : Comparable<K>>(
         }
     }
 
-    private val table2 = Table(tableRows, tableColumns, tableChangeListener, stateFactory = { ReadOnlyState(it) })
+    private val table2 = Table(
+        rows = tableRows,
+        columns = tableColumns,
+        changeListener = tableChangeListener,
+        stateFactory = { ReadOnlyState(it) },
+        headerColumnFactory = HeaderColumnFactory.Default<Row<K>>().andThen { column, headerColumn ->
+            if (column is NormalColumn<K, out Any>) {
+                headerColumn.backgroundProperty().value = Background.fill(column.column.color.brighter().desaturate())
+            }
+        }
+    )
 
     private fun rowsOf(columns: Columns<K>): List<Row<K>> {
         return columns.index().map { index ->

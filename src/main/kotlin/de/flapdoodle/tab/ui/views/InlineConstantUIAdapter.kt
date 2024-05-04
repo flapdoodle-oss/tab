@@ -1,6 +1,6 @@
 package de.flapdoodle.tab.ui.views
 
-import de.flapdoodle.kfx.controls.textfields.TypedTextField
+import de.flapdoodle.kfx.controls.fields.TypedTextField
 import de.flapdoodle.kfx.layout.grid.WeightGridTable
 import de.flapdoodle.kfx.types.Id
 import de.flapdoodle.tab.model.change.ModelChange
