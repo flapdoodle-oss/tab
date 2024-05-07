@@ -29,6 +29,10 @@ sealed class ModelChange {
             require(lastIndex != index) { "same index: $lastIndex" }
         }
     }
+    data class RemoveValues<K: Comparable<K>>(
+        override val id: Id<out de.flapdoodle.tab.model.Node.Table<out Comparable<*>>>,
+        val index: K
+    ): TableChange(id)
     data class RemoveColumn(override val id: Id<out de.flapdoodle.tab.model.Node.Table<out Comparable<*>>>, val columnId: ColumnId): TableChange(id)
 
     sealed class CalculationChange(open val id: Id<out de.flapdoodle.tab.model.Node.Calculated<out Comparable<*>>>): ModelChange()

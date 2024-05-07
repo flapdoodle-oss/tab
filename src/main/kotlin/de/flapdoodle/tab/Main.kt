@@ -131,7 +131,7 @@ class Main(
           button.onAction = EventHandler {
             val node = NewTableDialog.open()
             if (node!=null) {
-              val changed = fakeDummy(node)
+              val changed = node // fakeDummy(node)
               adapter.execute(Command.AskForPosition(onSuccess = { pos ->
                 modelWrapper.changeModel { it.addNode(changed.copy(position = Position(pos.x, pos.y))) }
               }))

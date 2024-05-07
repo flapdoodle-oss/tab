@@ -17,6 +17,7 @@ import org.jgrapht.graph.DefaultEdge
 import kotlin.reflect.KClass
 
 object Solver {
+    private val debug = false
 
     fun solve(model: Tab2Model): Tab2Model {
         val roots = verticesAndEdges(model)
@@ -332,15 +333,18 @@ object Solver {
                     }
                 }
             }
-        val dot = GraphAsDot.builder<Vertex> { it ->
-            when (it) {
-                is Vertex.Column -> "column(${it.node}:${it.columnId})"
-                is Vertex.SingleValue -> "value(${it.node}:${it.valueId})"
+
+        if (debug) {
+            val dot = GraphAsDot.builder<Vertex> { it ->
+                when (it) {
+                    is Vertex.Column -> "column(${it.node}:${it.columnId})"
+                    is Vertex.SingleValue -> "value(${it.node}:${it.valueId})"
+                }
             }
+                .build().asDot(graph)
+            println("----------------------------")
+            println(dot)
         }
-            .build().asDot(graph)
-        println("----------------------------")
-        println(dot)
 
         return Graphs.rootsOf(graph)
     }

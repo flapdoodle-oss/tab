@@ -64,7 +64,9 @@ class SmallChartPane<K : Comparable<K>>(
             index: SortedSet<K>,
             c: Column<K, out Number>
         ): Serie<K, BigDecimal> {
-            val values = index.map { it to bigDecimalOf(c[it]!!) }
+            val values = index.map { it to c[it] }
+                .filter { it.second != null }
+                .map { it.first to bigDecimalOf(it.second!!) }
             return Serie<K, BigDecimal>(c.name, c.color, values)
         }
 

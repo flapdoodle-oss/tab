@@ -12,14 +12,14 @@ import de.flapdoodle.tab.types.one
 import kotlin.reflect.KClass
 
 sealed class Node {
-    abstract fun removeConnectionsFrom(id: Id<out de.flapdoodle.tab.model.Node>): de.flapdoodle.tab.model.Node
+    abstract fun removeConnectionsFrom(id: Id<out Node>): Node
 
     abstract val name: String
-    abstract val id: Id<out de.flapdoodle.tab.model.Node>
-    abstract val position: de.flapdoodle.tab.model.Position
+    abstract val id: Id<out Node>
+    abstract val position: Position
 
-    abstract fun apply(change: ModelChange): de.flapdoodle.tab.model.Node
-    abstract fun moveTo(position: de.flapdoodle.tab.model.Position): de.flapdoodle.tab.model.Node
+    abstract fun apply(change: ModelChange): Node
+    abstract fun moveTo(position: Position): Node
 
 //    fun data(id: DataId): Data {
 //        return when (id) {
@@ -54,17 +54,17 @@ sealed class Node {
     data class Constants(
         override val name: String,
         override val values: SingleValues = SingleValues(),
-        override val id: Id<de.flapdoodle.tab.model.Node.Constants> = Id.nextId(de.flapdoodle.tab.model.Node.Constants::class),
-        override val position: de.flapdoodle.tab.model.Position = de.flapdoodle.tab.model.Position(0.0, 0.0)
-    ) : de.flapdoodle.tab.model.Node(), de.flapdoodle.tab.model.Node.HasValues {
+        override val id: Id<Node.Constants> = Id.nextId(Node.Constants::class),
+        override val position: Position = Position(0.0, 0.0)
+    ) : Node(), Node.HasValues {
 
-        fun addValue(value: SingleValue<*>): de.flapdoodle.tab.model.Node.Constants {
+        fun addValue(value: SingleValue<*>): Node.Constants {
             return copy(values = values.addValue(value))
         }
 
-        override fun removeConnectionsFrom(id: Id<out de.flapdoodle.tab.model.Node>) = this
+        override fun removeConnectionsFrom(id: Id<out Node>) = this
 
-        override fun apply(change: ModelChange): de.flapdoodle.tab.model.Node.Constants {
+        override fun apply(change: ModelChange): Node.Constants {
             if (change is ModelChange.ConstantsChange && change.id==id) {
                 when (change) {
                     is ModelChange.AddValue -> {
@@ -81,7 +81,7 @@ sealed class Node {
             return this
         }
 
-        override fun moveTo(position: de.flapdoodle.tab.model.Position): de.flapdoodle.tab.model.Node {
+        override fun moveTo(position: Position): Node {
             return copy(position = position)
         }
     }
@@ -90,13 +90,13 @@ sealed class Node {
         override val name: String,
         override val indexType: KClass<K>,
         override val columns: Columns<K> = Columns(),
-        override val id: Id<de.flapdoodle.tab.model.Node.Table<*>> = Id.nextId(de.flapdoodle.tab.model.Node.Table::class),
-        override val position: de.flapdoodle.tab.model.Position = de.flapdoodle.tab.model.Position(0.0, 0.0)
-    ) : de.flapdoodle.tab.model.Node(), de.flapdoodle.tab.model.Node.HasColumns<K> {
+        override val id: Id<Table<*>> = Id.nextId(Table::class),
+        override val position: Position = Position(0.0, 0.0)
+    ) : Node(), HasColumns<K> {
 
-        override fun removeConnectionsFrom(id: Id<out de.flapdoodle.tab.model.Node>) = this
+        override fun removeConnectionsFrom(id: Id<out Node>) = this
 
-        override fun apply(change: ModelChange): de.flapdoodle.tab.model.Node.Table<K> {
+        override fun apply(change: ModelChange): Table<K> {
             if (change is ModelChange.TableChange) {
                 when (change) {
                     is ModelChange.AddColumn<out Comparable<*>> -> {
@@ -108,6 +108,11 @@ sealed class Node {
                     is ModelChange.MoveValues<out Comparable<*>> -> {
                         if (change.id == id) {
                             return copy(columns = columns.moveValues(change.lastIndex as K, change.index as K))
+                        }
+                    }
+                    is ModelChange.RemoveValues<out Comparable<*>> -> {
+                        if (change.id == id) {
+                            return copy(columns = columns.removeValues(change.index as K))
                         }
                     }
 //                    is ModelChange.SetColumn<out Comparable<*>> -> {
@@ -132,7 +137,7 @@ sealed class Node {
             return this
         }
 
-        override fun moveTo(position: de.flapdoodle.tab.model.Position): de.flapdoodle.tab.model.Node {
+        override fun moveTo(position: Position): Node {
             return copy(position = position)
         }
     }
@@ -143,28 +148,28 @@ sealed class Node {
         val calculations: Calculations<K> = Calculations(indexType),
         override val columns: Columns<K> = Columns(),
         override val values: SingleValues = SingleValues(),
-        override val id: Id<de.flapdoodle.tab.model.Node.Calculated<*>> = Id.nextId(de.flapdoodle.tab.model.Node.Calculated::class),
-        override val position: de.flapdoodle.tab.model.Position = de.flapdoodle.tab.model.Position(0.0, 0.0)
-    ): de.flapdoodle.tab.model.Node(), de.flapdoodle.tab.model.Node.HasColumns<K>,
-        de.flapdoodle.tab.model.Node.HasValues {
+        override val id: Id<Node.Calculated<*>> = Id.nextId(Node.Calculated::class),
+        override val position: Position = Position(0.0, 0.0)
+    ): Node(), HasColumns<K>,
+        Node.HasValues {
 
-        fun addAggregation(aggregation: Calculation.Aggregation<K>): de.flapdoodle.tab.model.Node.Calculated<K> {
+        fun addAggregation(aggregation: Calculation.Aggregation<K>): Node.Calculated<K> {
             return copy(calculations = calculations.addAggregation(aggregation))
         }
 
-        fun addTabular(tabular: Calculation.Tabular<K>): de.flapdoodle.tab.model.Node.Calculated<K> {
+        fun addTabular(tabular: Calculation.Tabular<K>): Node.Calculated<K> {
             return copy(calculations = calculations.addTabular(tabular))
         }
 
-        fun connect(input: Id<InputSlot<*>>, source: Source): de.flapdoodle.tab.model.Node.Calculated<K> {
+        fun connect(input: Id<InputSlot<*>>, source: Source): Node.Calculated<K> {
             return copy(calculations = calculations.connect(input, source))
         }
 
-        override fun removeConnectionsFrom(id: Id<out de.flapdoodle.tab.model.Node>): de.flapdoodle.tab.model.Node.Calculated<K> {
+        override fun removeConnectionsFrom(id: Id<out Node>): Node.Calculated<K> {
             return copy(calculations = calculations.removeConnectionsFrom(id))
         }
 
-        override fun apply(change: ModelChange): de.flapdoodle.tab.model.Node.Calculated<K> {
+        override fun apply(change: ModelChange): Node.Calculated<K> {
             if (change is ModelChange.CalculationChange) {
                 when (change) {
                     is ModelChange.ChangeFormula -> {
@@ -205,7 +210,7 @@ sealed class Node {
             return this
         }
 
-        override fun moveTo(position: de.flapdoodle.tab.model.Position): de.flapdoodle.tab.model.Node {
+        override fun moveTo(position: Position): Node {
             return copy(position = position)
         }
     }

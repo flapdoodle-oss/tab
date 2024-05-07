@@ -39,7 +39,7 @@ class InlineTableUIAdapter<K: Comparable<K>>(
         tabPane.tabs.add(Tab("Chart", chartPane).apply {
             isClosable = false
         })
-
+        tabPane.isVisible = node.columns.columns().isNotEmpty()
     }
 
     override fun update(node: de.flapdoodle.tab.model.Node) {
@@ -50,5 +50,6 @@ class InlineTableUIAdapter<K: Comparable<K>>(
         columnsPane.update(node as de.flapdoodle.tab.model.Node.Table<K>)
         tablePane.update(node)
         chartPane.update(node)
+        tabPane.isVisible = node.columns.columns().isNotEmpty()
     }
 }

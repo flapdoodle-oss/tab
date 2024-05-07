@@ -27,15 +27,15 @@ class TablePane<K : Comparable<K>>(
     private val tableColumns = SimpleObjectProperty(tableColumnsOff(node.indexType, columns))
 
     private val tableChangeListener: TableChangeListener<Row<K>> = object : TableChangeListener<Row<K>> {
-        override fun changeCell(row: Row<K>, change: TableChangeListener.CellChange<Row<K>, out Any>): Row<K> {
-            return (change.column as TableColumn<K, out Any>).applyChange(row, change)
+        override fun changeCell(row: Row<K>, change: TableChangeListener.CellChange<Row<K>, out Any>): TableChangeListener.ChangedRow<Row<K>> {
+            return TableChangeListener.ChangedRow((change.column as TableColumn<K, out Any>).applyChange(row, change))
         }
 
         override fun emptyRow(index: Int): Row<K> {
             return Row(null, emptyList())
         }
 
-        override fun updateRow(row: Row<K>, changed: Row<K>) {
+        override fun updateRow(row: Row<K>, changed: Row<K>, errors: List<TableChangeListener.CellError<Row<K>, out Any>>) {
             if (row.index == changed.index) {
                 val changes = Diff.diff(row.values, changed.values) { it.column }
                 val removed = changes.removed.map { it.column.id to null }
@@ -61,7 +61,12 @@ class TablePane<K : Comparable<K>>(
         }
 
         override fun removeRow(row: Row<K>) {
-            TODO("Not yet implemented")
+            modelChangeListener.change(
+                ModelChange.RemoveValues(
+                    nodeId,
+                    row.index!!
+                )
+            )
         }
 
         override fun insertRow(index: Int, row: Row<K>): Boolean {

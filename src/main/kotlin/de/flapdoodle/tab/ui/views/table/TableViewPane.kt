@@ -24,7 +24,7 @@ class TableViewPane<K : Comparable<K>>(
     private val tableColumns = SimpleObjectProperty(tableColumnsOff(indexColumn, columns))
 
     private val tableChangeListener: TableChangeListener<Row<K>> = object : TableChangeListener<Row<K>> {
-        override fun changeCell(row: Row<K>, change: TableChangeListener.CellChange<Row<K>, out Any>): Row<K> {
+        override fun changeCell(row: Row<K>, change: TableChangeListener.CellChange<Row<K>, out Any>): TableChangeListener.ChangedRow<Row<K>> {
             TODO("Not yet implemented")
         }
 
@@ -32,7 +32,11 @@ class TableViewPane<K : Comparable<K>>(
             return Row(null, emptyList())
         }
 
-        override fun updateRow(row: Row<K>, changed: Row<K>) {
+        override fun updateRow(
+            row: Row<K>,
+            changed: Row<K>,
+            errors: List<TableChangeListener.CellError<Row<K>, out Any>>
+        ) {
             TODO("Not yet implemented")
         }
 

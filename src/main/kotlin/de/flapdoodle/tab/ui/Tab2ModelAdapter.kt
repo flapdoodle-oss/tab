@@ -38,6 +38,8 @@ class Tab2ModelAdapter(
     modelEventListener: ModelEventListener,
     val modelChangeListener: ModelChangeListener
 ) : AnchorPane() {
+    private val debug = false
+
     private val graphEditor = GraphEditor(eventListener = Event2ModelEvent(
         delegate = modelEventListener,
         vertexIdMapper = ::nodeOfVertex,
@@ -98,7 +100,7 @@ class Tab2ModelAdapter(
 
     private fun apply(action: List<Action>) {
         action.forEach { action ->
-            println("action: $action")
+            if (debug) println("action: $action")
 
             when (action) {
                 is Action.AddNode -> {
@@ -148,13 +150,12 @@ class Tab2ModelAdapter(
                     }
                 }
                 is Action.ChangeOutput -> {
-//                    vertexMapping.with(action.id) {
-//                        //it.content.update(action.)
-//                    }
-//                    println("$this - not implemented: $action")
-//                    slotMapping.with(action.output) { slot ->
-//                        // TODO hier fehlt vieles
-//                    }
+                    vertexMapping.with(action.id) { vertexMapping ->
+                        slotMapping.with(action.output) {
+                            // TODO hier fehlt vieles
+                            println("TODO should do something: $action")
+                        }
+                    }
                 }
 
                 is Action.AddInput -> {
@@ -168,8 +169,8 @@ class Tab2ModelAdapter(
                 is Action.ChangeInput -> {
                     vertexMapping.with(action.id) { vertexMapping ->
                         inputMapping.with(action.input) {
-                            //it.name = action.change.name
                             // TODO hier fehlt vieles
+                            println("TODO should do something: $action")
                         }
                     }
                 }

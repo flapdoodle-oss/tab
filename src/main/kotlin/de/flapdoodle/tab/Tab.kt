@@ -11,12 +11,25 @@ import javafx.scene.control.Menu
 import javafx.scene.control.MenuBar
 import javafx.scene.control.MenuItem
 import javafx.scene.control.SeparatorMenuItem
+import javafx.scene.input.KeyCode
+import javafx.scene.input.KeyCodeCombination
+import javafx.scene.input.KeyCombination
 import javafx.scene.layout.BorderPane
 import javafx.stage.Stage
 
 class Tab : Application() {
+    private var lastModel: Tab2Model = Tab2Model()
+    private var undoModels = emptyList<Tab2Model>()
+
     override fun start(stage: Stage) {
         val modelWrapper = ModelSolverWrapper(Tab2Model())
+        modelWrapper.model().addListener { _, _, newValue ->
+            undoModels = emptyList<Tab2Model>() + lastModel + undoModels
+            lastModel = newValue
+            if (undoModels.size > 10) {
+                undoModels = undoModels.subList(0, 10)
+            }
+        }
 
         val root = BorderPane().apply {
             top = MenuBar().also { menuBar ->
@@ -24,6 +37,20 @@ class Tab : Application() {
                     files.items.add(MenuItem("New").also { item ->
                         item.onAction = EventHandler {
                             modelWrapper.changeModel { Tab2Model() }
+                        }
+                    })
+                    files.items.add(MenuItem("Undo").also { item ->
+                        item.accelerator = KeyCodeCombination(KeyCode.Z, KeyCombination.CONTROL_DOWN)
+                        item.onAction = EventHandler {
+                            var lastUndoList = undoModels
+                            if (lastUndoList.isNotEmpty()) {
+                                val undo = lastUndoList[0]
+                                lastUndoList = lastUndoList.subList(1, lastUndoList.size)
+                                modelWrapper.changeModel { undo }
+
+                                lastModel = undo
+                                undoModels = lastUndoList
+                            }
                         }
                     })
                     files.items.add(MenuItem("Save").also { item ->

@@ -61,6 +61,12 @@ data class Columns<K: Comparable<K>>(
         return copy(columns = columns.map { it.moveValue(lastIndex, newIndex) })
     }
 
+    fun removeValues(removeIndex: K): Columns<K> {
+        require(index.contains(removeIndex)) { "can not remove values to existing index: $index" }
+
+        return copy(columns = columns.map { it.add(removeIndex, null) })
+    }
+
     fun get(columnId: ColumnId, key: K): Any? {
         return column(columnId)[key]
     }
