@@ -13,6 +13,7 @@ import kotlin.reflect.KClass
 
 sealed class Node {
     abstract fun removeConnectionsFrom(id: Id<out Node>): Node
+    abstract fun removeConnectionFrom(input: Id<InputSlot<*>>, id: Id<out Node>, source: Id<out Source>): Node
 
     abstract val name: String
     abstract val id: Id<out Node>
@@ -63,6 +64,7 @@ sealed class Node {
         }
 
         override fun removeConnectionsFrom(id: Id<out Node>) = this
+        override fun removeConnectionFrom(input: Id<InputSlot<*>>, id: Id<out Node>, source: Id<out Source>) = this
 
         override fun apply(change: ModelChange): Node.Constants {
             if (change is ModelChange.ConstantsChange && change.id==id) {
@@ -95,6 +97,7 @@ sealed class Node {
     ) : Node(), HasColumns<K> {
 
         override fun removeConnectionsFrom(id: Id<out Node>) = this
+        override fun removeConnectionFrom(input: Id<InputSlot<*>>, id: Id<out Node>, source: Id<out Source>) = this
 
         override fun apply(change: ModelChange): Table<K> {
             if (change is ModelChange.TableChange) {
@@ -167,6 +170,10 @@ sealed class Node {
 
         override fun removeConnectionsFrom(id: Id<out Node>): Node.Calculated<K> {
             return copy(calculations = calculations.removeConnectionsFrom(id))
+        }
+
+        override fun removeConnectionFrom(input: Id<InputSlot<*>>, id: Id<out Node>, source: Id<out Source>): Node.Calculated<K> {
+            return copy(calculations = calculations.removeConnectionFrom(input, id, source))
         }
 
         override fun apply(change: ModelChange): Node.Calculated<K> {

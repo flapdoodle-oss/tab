@@ -1,6 +1,7 @@
 package de.flapdoodle.tab.model.calculations
 
 import de.flapdoodle.kfx.types.Id
+import de.flapdoodle.tab.model.Node
 import de.flapdoodle.tab.model.connections.Source
 import de.flapdoodle.tab.model.data.ColumnId
 import de.flapdoodle.tab.model.data.SingleValueId
@@ -66,9 +67,17 @@ data class Calculations<K: Comparable<K>>(
         tabular.forEach(action)
     }
 
-    fun removeConnectionsFrom(id: Id<out de.flapdoodle.tab.model.Node>): Calculations<K> {
+    fun removeConnectionsFrom(id: Id<out Node>): Calculations<K> {
         return copy(inputs = inputs.map {
             if (it.source != null && it.source.node == id) {
+                it.copy(source = null)
+            } else it
+        })
+    }
+
+    fun removeConnectionFrom(input: Id<InputSlot<*>>, id: Id<out Node>, source: Id<out Source>): Calculations<K> {
+        return copy(inputs = inputs.map {
+            if (it.id == input && it.source != null && it.source.node == id && it.source.id == source) {
                 it.copy(source = null)
             } else it
         })

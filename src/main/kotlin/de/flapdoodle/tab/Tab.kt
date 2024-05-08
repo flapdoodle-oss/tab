@@ -30,18 +30,6 @@ class Tab : Application() {
                             modelWrapper.changeModel { Tab2Model() }
                         }
                     })
-                    files.items.add(MenuItem("Undo").also { item ->
-                        item.accelerator = KeyCodeCombination(KeyCode.Z, KeyCombination.CONTROL_DOWN)
-                        item.onAction = EventHandler {
-                            modelWrapper.undo()
-                        }
-                    })
-                    files.items.add(MenuItem("Redo").also { item ->
-                        item.accelerator = KeyCodeCombination(KeyCode.Y, KeyCombination.CONTROL_DOWN)
-                        item.onAction = EventHandler {
-                            modelWrapper.redo()
-                        }
-                    })
                     files.items.add(MenuItem("Save").also { item ->
                         item.onAction = EventHandler {
                             IO.save(modelWrapper.model().value, stage)
@@ -61,6 +49,20 @@ class Tab : Application() {
                             println("clicked...")
                             Platform.exit()
                             System.exit(0);
+                        }
+                    })
+                })
+                menuBar.menus.add(Menu("Edit").also { edit ->
+                    edit.items.add(MenuItem("Undo").also { item ->
+                        item.accelerator = KeyCodeCombination(KeyCode.Z, KeyCombination.CONTROL_DOWN)
+                        item.onAction = EventHandler {
+                            modelWrapper.undo()
+                        }
+                    })
+                    edit.items.add(MenuItem("Redo").also { item ->
+                        item.accelerator = KeyCodeCombination(KeyCode.Y, KeyCombination.CONTROL_DOWN)
+                        item.onAction = EventHandler {
+                            modelWrapper.redo()
                         }
                     })
                 })

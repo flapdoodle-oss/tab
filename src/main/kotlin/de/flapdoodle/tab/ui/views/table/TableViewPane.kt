@@ -58,7 +58,8 @@ class TableViewPane<K : Comparable<K>>(
             if (column is NormalColumn<K, out Any>) {
                 headerColumn.backgroundProperty().value = Background.fill(column.column.color.brighter().desaturate())
             }
-        }
+        },
+        footerColumnFactory = null
     )
 
     private fun rowsOf(columns: Columns<K>): List<Row<K>> {

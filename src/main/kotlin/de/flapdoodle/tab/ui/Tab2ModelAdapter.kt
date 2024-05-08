@@ -83,7 +83,7 @@ class Tab2ModelAdapter(
 
 
     fun selectedNodesProperty(): ReadOnlyProperty<Set<Id<out de.flapdoodle.tab.model.Node>>> = selectedVertices
-//    fun selectedEdgesProperty(): ReadOnlyProperty<Set<Edge<V>>> = selectedEdges
+    fun selectedEdgesProperty(): ReadOnlyProperty<Set<Output2Input>> = selectedEdges
 
     fun execute(command: Command) {
         val mapped = when (command) {

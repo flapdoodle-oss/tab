@@ -47,6 +47,12 @@ data class Tab2Model(
         return copy(nodes = nodes.change(Node::id, nodeId) { it.moveTo(position) })
     }
 
+    fun disconnect(endId: Id<out Node>, input: Id<InputSlot<*>>, source: Source): Tab2Model {
+        val end = node(endId)
+        val removed = end.removeConnectionFrom(input, source.node, source.id)
+        return copy(nodes = nodes.change(Node::id, end.id) { removed })
+    }
+
     fun connect(
         startId: Id<out Node>,
         startDataOrInput: Either<DataId, Id<InputSlot<*>>>,

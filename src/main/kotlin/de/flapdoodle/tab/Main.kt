@@ -27,7 +27,7 @@ class Main(
 
 //  private val model = SimpleObjectProperty(Tab2Model())
   private val selectedVertex = SimpleObjectProperty<Id<out de.flapdoodle.tab.model.Node>>()
-//  private val selectedEdge = SimpleObjectProperty<Edge<String>>()
+  private val selectedEdge = SimpleObjectProperty<Tab2ModelAdapter.Output2Input>()
   private val vertexCounter = AtomicInteger(0)
   private val slotCounter = AtomicInteger(0)
 
@@ -69,6 +69,13 @@ class Main(
         selectedVertex.value = selection.first()
       } else {
         selectedVertex.value = null
+      }
+    }
+    editor.selectedEdgesProperty().subscribe { selection ->
+      if (selection.size == 1) {
+        selectedEdge.value = selection.first()
+      } else {
+        selectedEdge.value = null
       }
     }
     WeightGridPane.setPosition(editor, 0, 0)
@@ -154,12 +161,20 @@ class Main(
             }
           }
         },
-        Button("-").also { button ->
+        Button("x").also { button ->
           button.visibleProperty().bind(selectedVertex.map { it != null })
           button.managedProperty().bind(button.visibleProperty())
           button.onAction = EventHandler {
             val vertexId = selectedVertex.value
             modelWrapper.changeModel { it.removeNode(vertexId) }
+          }
+        },
+        Button("-").also { button ->
+          button.visibleProperty().bind(selectedEdge.map { it != null })
+          button.managedProperty().bind(button.visibleProperty())
+          button.onAction = EventHandler {
+            val edge = selectedEdge.value
+            modelWrapper.changeModel { it.disconnect(edge.id, edge.input, edge.source) }
           }
         },
         Button("*").also { button ->
