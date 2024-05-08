@@ -10,9 +10,14 @@ import javafx.beans.property.SimpleObjectProperty
 class ModelSolverWrapper(initalModel: Tab2Model = Tab2Model()) {
     private val model = SimpleObjectProperty(Solver.solve(initalModel))
 
+    private var history = emptyList<Tab2Model>()
+    private var offset = 0
+
     internal fun changeModel(change: (Tab2Model) -> Tab2Model) {
         val changed = change(model.value)
         val solved = Solver.solve(changed)
+        history = listOf(solved) + history.subList(offset, history.size)
+        offset = 0
         model.value = solved
     }
 
@@ -55,4 +60,24 @@ class ModelSolverWrapper(initalModel: Tab2Model = Tab2Model()) {
     fun eventListener() = eventListener
     fun changeListener() = modelChangeListener
     fun model(): ReadOnlyObjectProperty<Tab2Model> = model
+    
+    fun undo(): Boolean {
+        return if ((offset+1) < history.size) {
+            offset++
+            model.value=history[offset]
+            true
+        } else {
+            false
+        }
+    }
+
+    fun redo(): Boolean {
+        return if (offset>0) {
+            offset--
+            model.value=history[offset]
+            true
+        } else {
+            false
+        }
+    }
 }
