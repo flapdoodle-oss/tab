@@ -30,6 +30,8 @@ open class Evaluables(
     }
 
     companion object {
+        val NULL = Null::class.java
+        
         val bigDecimal = BigDecimal::class.java
         val bigInt = BigInteger::class.java
         val javaInt = Int::class.javaObjectType

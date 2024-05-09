@@ -20,14 +20,16 @@ class InlineConstantUIAdapter(
     val model = SimpleObjectProperty(node.values.values)
 
     val nameColumn =WeightGridTable.Column<SingleValue<out Any>>(
-        weight = 1.0,
-        nodeFactory = { Label(it.name) to WeightGridTable.ChangeListener { } })
+        weight = 0.0,
+        nodeFactory = { Label(it.name).apply {
+            minWidth = USE_PREF_SIZE
+        } to WeightGridTable.ChangeListener { } })
     val valueColumn = WeightGridTable.Column<SingleValue<out Any>>(
         weight = 10.0,
         nodeFactory = { textField(nodeId, it, modelChangeListener) to WeightGridTable.ChangeListener { } })
 
     val actionColumn = WeightGridTable.Column<SingleValue<out Any>>(
-        weight = 0.1,
+        weight = 0.0,
         nodeFactory = { value ->
             val button = Button("-").apply {
                 onAction = EventHandler {
@@ -44,7 +46,7 @@ class InlineConstantUIAdapter(
         columns = listOf(nameColumn, valueColumn, actionColumn),
         footerFactory = { values, columns ->
             val button = Button("+").apply {
-                maxWidth = 200.0
+//                maxWidth = 200.0
                 onAction = EventHandler {
                     val newValue = NewValueDialog.open()
                     if (newValue!=null) {

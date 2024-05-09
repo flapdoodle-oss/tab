@@ -1,5 +1,6 @@
 package de.flapdoodle.tab.model.graph
 
+import de.flapdoodle.eval.core.exceptions.BaseException
 import de.flapdoodle.eval.core.exceptions.EvaluableException
 import de.flapdoodle.graph.GraphAsDot
 import de.flapdoodle.graph.Graphs
@@ -139,7 +140,12 @@ object Solver {
                 is Column<*,*> -> IndexMap.asMap(data)
             }
         }.toMap()
-        val result = calculation.evaluate(valueMap)
+        val result = try {
+             calculation.evaluate(valueMap)
+        } catch (ex: BaseException) {
+            ex.printStackTrace()
+            null
+        }
         val changedNode: de.flapdoodle.tab.model.Node.Calculated<K> = setValue(node, calculation, result)
         return model.copy(nodes = model.nodes.map { if (it.id == changedNode.id) changedNode else it })
     }
@@ -168,7 +174,7 @@ object Solver {
             try {
                 val result = calculation.evaluate(interpolated.variablesAt(it) + singleValueMap.toMap())
                 if (result != null) it to result else null
-            } catch (ex: EvaluableException) {
+            } catch (ex: BaseException) {
                 ex.printStackTrace()
                 null
             }
@@ -198,6 +204,7 @@ object Solver {
         calculation: Calculation.Aggregation<K>,
         result: Any?
     ): de.flapdoodle.tab.model.Node.Calculated<K> {
+        // TODO oder bei result==null entfernen?
         val changedNode = if (node.values.find(calculation.destination()) == null) {
             val newSingleValue = if (result != null) {
                 SingleValue.of(calculation.name(), result, calculation.destination())
@@ -210,7 +217,7 @@ object Solver {
                 if (result != null) {
                     SingleValue.of(old.name, result, old.id)
                 } else {
-                    old.copy(value = null)
+                    SingleValue.ofNull(old.name, old.id)
                 }
             })
         }

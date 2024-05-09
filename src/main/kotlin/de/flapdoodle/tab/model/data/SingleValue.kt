@@ -1,6 +1,7 @@
 package de.flapdoodle.tab.model.data
 
 import de.flapdoodle.kfx.colors.HashedColors
+import de.flapdoodle.tab.model.calculations.adapter.Null
 import javafx.scene.paint.Color
 import kotlin.reflect.KClass
 
@@ -18,6 +19,10 @@ data class SingleValue<T : Any>(
     fun setIfTypeMatches(value: Any?): SingleValue<T> {
         require(value == null || valueType.isInstance(value)) { "wrong type: $value is not a ${valueType}" }
         return copy(value = value as T?)
+    }
+
+    fun isNull(): Boolean {
+        return value==null
     }
 
     companion object {

@@ -9,7 +9,7 @@ object ExceptionMapper : EvaluableExceptionMapper {
         return Wrapper(ex)
     }
 
-    override fun match(value: Any): Optional<EvaluationException> {
+    override fun match(value: Any?): Optional<EvaluationException> {
         if (value is Wrapper) {
             return Optional.of(value.ex)
         }

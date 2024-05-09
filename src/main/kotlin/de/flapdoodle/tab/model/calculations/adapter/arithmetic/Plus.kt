@@ -61,5 +61,11 @@ object Plus : Evaluables(
     of(String::class.java, String::class.java, Any::class.java,
         Arg2Math { first, second, _ -> first + second }),
     of(String::class.java, Any::class.java, String::class.java,
-        Arg2Math { first, second, _ -> first.toString() + second })
+        Arg2Math { first, second, _ -> first.toString() + second }),
+    of(Number::class.java, Number::class.java, NULL,
+        Arg2Math { first, second, _ -> first }),
+    of(Number::class.java, NULL, Number::class.java,
+        Arg2Math { first, second, _ -> second }),
+    of(Number::class.java, NULL, NULL,
+        Arg2Math { first, second, _ -> null })
 )
