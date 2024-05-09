@@ -3,8 +3,8 @@
     {
       "name": "Autos",
       "position": {
-        "x": 24.0,
-        "y": 53.0
+        "x": 22.0,
+        "y": 56.0
       },
       "id": "1",
       "table": {
@@ -15,7 +15,13 @@
               "name": "Batterie",
               "valueType": "Double",
               "values": {
-                "Volvo EX30": "69.0"
+                "Volvo EX30": "69.0",
+                "Ionic 6 53kWh": "53.0",
+                "Ionic 6 77kWh": "77.4",
+                "Ionic 5 58kWh": "58.0",
+                "Ionic 5 77kWh": "77.0",
+                "VW Id3 58kWh": "58.0",
+                "VW Id3 77kWh": "77.0"
               },
               "id": "2",
               "color": {
@@ -29,7 +35,13 @@
               "name": "Reichweite Wltp",
               "valueType": "Double",
               "values": {
-                "Volvo EX30": "472.0"
+                "Volvo EX30": "472.0",
+                "Ionic 6 53kWh": "429.0",
+                "Ionic 6 77kWh": "614.0",
+                "Ionic 5 58kWh": "384.0",
+                "Ionic 5 77kWh": "507.0",
+                "VW Id3 58kWh": "435.0",
+                "VW Id3 77kWh": "559.0"
               },
               "id": "3",
               "color": {
@@ -43,13 +55,39 @@
               "name": "pro100",
               "valueType": "Double",
               "values": {
-                "Volvo EX30": "17.1"
+                "Volvo EX30": "17.1",
+                "Ionic 6 53kWh": "13.9",
+                "Ionic 6 77kWh": "14.3",
+                "Ionic 5 58kWh": "16.7",
+                "Ionic 5 77kWh": "17.0",
+                "VW Id3 58kWh": "14.9",
+                "VW Id3 77kWh": "15.6"
               },
               "id": "4",
               "color": {
                 "red": 0.9450980424880981,
                 "green": 0.2078431397676468,
                 "blue": 0.003921568859368563,
+                "opacity": 1.0
+              }
+            },
+            {
+              "name": "Kosten",
+              "valueType": "Double",
+              "values": {
+                "Volvo EX30": "42290.0",
+                "Ionic 6 53kWh": "43900.0",
+                "Ionic 6 77kWh": "54000.0",
+                "Ionic 5 58kWh": "43900.0",
+                "Ionic 5 77kWh": "54800.0",
+                "VW Id3 58kWh": "39995.0",
+                "VW Id3 77kWh": "47595.0"
+              },
+              "id": "5",
+              "color": {
+                "red": 0.3686274588108063,
+                "green": 0.019607843831181526,
+                "blue": 0.929411768913269,
                 "opacity": 1.0
               }
             }
@@ -60,10 +98,10 @@
     {
       "name": "Berechnungen",
       "position": {
-        "x": 490.0,
-        "y": 61.0
+        "x": 790.0,
+        "y": 81.0
       },
-      "id": "5",
+      "id": "6",
       "calculated": {
         "indexType": "String",
         "calculations": {
@@ -76,16 +114,16 @@
                 "variables": [
                   {
                     "name": "batterie",
-                    "id": "7"
+                    "id": "8"
                   },
                   {
                     "name": "reichweite",
-                    "id": "8"
+                    "id": "9"
                   }
                 ]
               },
-              "id": "6",
-              "destination": "9"
+              "id": "7",
+              "destination": "10"
             },
             {
               "name": "reichweite",
@@ -94,16 +132,34 @@
                 "variables": [
                   {
                     "name": "batterie",
-                    "id": "11"
+                    "id": "12"
                   },
                   {
                     "name": "verbrauch",
-                    "id": "12"
+                    "id": "13"
                   }
                 ]
               },
-              "id": "10",
-              "destination": "13"
+              "id": "11",
+              "destination": "14"
+            },
+            {
+              "name": "kosten pro km",
+              "formula": {
+                "expression": "kosten/reichweite",
+                "variables": [
+                  {
+                    "name": "kosten",
+                    "id": "16"
+                  },
+                  {
+                    "name": "reichweite",
+                    "id": "17"
+                  }
+                ]
+              },
+              "id": "15",
+              "destination": "18"
             }
           ],
           "inputs": [
@@ -112,22 +168,46 @@
               "mapTo": [
                 {
                   "name": "batterie",
-                  "id": "7"
+                  "id": "8"
                 },
                 {
                   "name": "batterie",
-                  "id": "11"
+                  "id": "12"
                 }
               ],
               "source": {
                 "node": "1",
                 "nodeType": "Table",
-                "id": "14",
+                "id": "19",
                 "dataId": {
                   "columnId": "2"
                 }
               },
-              "id": "15",
+              "id": "20",
+              "color": {
+                "red": 0.49803921580314636,
+                "green": 0.6509804129600525,
+                "blue": 0.007843137718737125,
+                "opacity": 1.0
+              }
+            },
+            {
+              "name": "kosten",
+              "mapTo": [
+                {
+                  "name": "kosten",
+                  "id": "16"
+                }
+              ],
+              "source": {
+                "node": "1",
+                "nodeType": "Table",
+                "id": "21",
+                "dataId": {
+                  "columnId": "5"
+                }
+              },
+              "id": "22",
               "color": {
                 "red": 0.49803921580314636,
                 "green": 0.6509804129600525,
@@ -140,22 +220,26 @@
               "mapTo": [
                 {
                   "name": "reichweite",
-                  "id": "8"
+                  "id": "9"
+                },
+                {
+                  "name": "reichweite",
+                  "id": "17"
                 }
               ],
               "source": {
                 "node": "1",
                 "nodeType": "Table",
-                "id": "16",
+                "id": "23",
                 "dataId": {
                   "columnId": "3"
                 }
               },
-              "id": "17",
+              "id": "24",
               "color": {
-                "red": 0.01568627543747425,
-                "green": 0.6274510025978088,
-                "blue": 0.8941176533699036,
+                "red": 0.3686274588108063,
+                "green": 0.019607843831181526,
+                "blue": 0.929411768913269,
                 "opacity": 1.0
               }
             },
@@ -164,18 +248,18 @@
               "mapTo": [
                 {
                   "name": "verbrauch",
-                  "id": "12"
+                  "id": "13"
                 }
               ],
               "source": {
                 "node": "1",
                 "nodeType": "Table",
-                "id": "18",
+                "id": "25",
                 "dataId": {
                   "columnId": "4"
                 }
               },
-              "id": "19",
+              "id": "26",
               "color": {
                 "red": 0.04313725605607033,
                 "green": 0.9450980424880981,
@@ -191,9 +275,15 @@
               "name": "Verbrauch",
               "valueType": "BigDecimal",
               "values": {
-                "Volvo EX30": "14.61864406779661016949152542372881"
+                "Volvo EX30": "14.61864406779661016949152542372881",
+                "Ionic 6 53kWh": "12.35431235431235431235431235431235",
+                "Ionic 6 77kWh": "12.60586319218241042345276872964169",
+                "Ionic 5 58kWh": "15.10416666666666666666666666666667",
+                "Ionic 5 77kWh": "15.18737672583826429980276134122288",
+                "VW Id3 58kWh": "13.33333333333333333333333333333333",
+                "VW Id3 77kWh": "13.77459749552772808586762075134168"
               },
-              "id": "9",
+              "id": "10",
               "color": {
                 "red": 0.01568627543747425,
                 "green": 0.42352941632270813,
@@ -205,13 +295,39 @@
               "name": "reichweite",
               "valueType": "BigDecimal",
               "values": {
-                "Volvo EX30": "403.5087719298245614035087719298246"
+                "Volvo EX30": "403.5087719298245614035087719298246",
+                "Ionic 6 53kWh": "381.2949640287769784172661870503597",
+                "Ionic 6 77kWh": "541.2587412587412587412587412587413",
+                "Ionic 5 58kWh": "347.3053892215568862275449101796407",
+                "Ionic 5 77kWh": "452.9411764705882352941176470588235",
+                "VW Id3 58kWh": "389.2617449664429530201342281879195",
+                "VW Id3 77kWh": "493.5897435897435897435897435897436"
               },
-              "id": "13",
+              "id": "14",
               "color": {
                 "red": 1.0,
                 "green": 0.886274516582489,
                 "blue": 0.003921568859368563,
+                "opacity": 1.0
+              }
+            },
+            {
+              "name": "kosten pro km",
+              "valueType": "BigDecimal",
+              "values": {
+                "Volvo EX30": "89.59745762711864406779661016949153",
+                "Ionic 6 53kWh": "102.3310023310023310023310023310023",
+                "Ionic 6 77kWh": "87.94788273615635179153094462540717",
+                "Ionic 5 58kWh": "114.3229166666666666666666666666667",
+                "Ionic 5 77kWh": "108.0867850098619329388560157790927",
+                "VW Id3 58kWh": "91.94252873563218390804597701149425",
+                "VW Id3 77kWh": "85.14311270125223613595706618962433"
+              },
+              "id": "18",
+              "color": {
+                "red": 0.01568627543747425,
+                "green": 0.14901961386203766,
+                "blue": 0.9058823585510254,
                 "opacity": 1.0
               }
             }
