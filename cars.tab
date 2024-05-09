@@ -1,0 +1,226 @@
+{
+  "nodes": [
+    {
+      "name": "Autos",
+      "position": {
+        "x": 24.0,
+        "y": 53.0
+      },
+      "id": "1",
+      "table": {
+        "indexType": "String",
+        "columns": {
+          "values": [
+            {
+              "name": "Batterie",
+              "valueType": "Double",
+              "values": {
+                "Volvo EX30": "69.0"
+              },
+              "id": "2",
+              "color": {
+                "red": 0.6470588445663452,
+                "green": 0.4941176474094391,
+                "blue": 0.0,
+                "opacity": 1.0
+              }
+            },
+            {
+              "name": "Reichweite Wltp",
+              "valueType": "Double",
+              "values": {
+                "Volvo EX30": "472.0"
+              },
+              "id": "3",
+              "color": {
+                "red": 0.729411780834198,
+                "green": 0.9411764740943909,
+                "blue": 0.01568627543747425,
+                "opacity": 1.0
+              }
+            },
+            {
+              "name": "pro100",
+              "valueType": "Double",
+              "values": {
+                "Volvo EX30": "17.1"
+              },
+              "id": "4",
+              "color": {
+                "red": 0.9450980424880981,
+                "green": 0.2078431397676468,
+                "blue": 0.003921568859368563,
+                "opacity": 1.0
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Berechnungen",
+      "position": {
+        "x": 490.0,
+        "y": 61.0
+      },
+      "id": "5",
+      "calculated": {
+        "indexType": "String",
+        "calculations": {
+          "aggregations": [],
+          "tabular": [
+            {
+              "name": "Verbrauch",
+              "formula": {
+                "expression": "100*batterie/reichweite",
+                "variables": [
+                  {
+                    "name": "batterie",
+                    "id": "7"
+                  },
+                  {
+                    "name": "reichweite",
+                    "id": "8"
+                  }
+                ]
+              },
+              "id": "6",
+              "destination": "9"
+            },
+            {
+              "name": "reichweite",
+              "formula": {
+                "expression": "100*batterie/verbrauch",
+                "variables": [
+                  {
+                    "name": "batterie",
+                    "id": "11"
+                  },
+                  {
+                    "name": "verbrauch",
+                    "id": "12"
+                  }
+                ]
+              },
+              "id": "10",
+              "destination": "13"
+            }
+          ],
+          "inputs": [
+            {
+              "name": "batterie",
+              "mapTo": [
+                {
+                  "name": "batterie",
+                  "id": "7"
+                },
+                {
+                  "name": "batterie",
+                  "id": "11"
+                }
+              ],
+              "source": {
+                "node": "1",
+                "nodeType": "Table",
+                "id": "14",
+                "dataId": {
+                  "columnId": "2"
+                }
+              },
+              "id": "15",
+              "color": {
+                "red": 0.49803921580314636,
+                "green": 0.6509804129600525,
+                "blue": 0.007843137718737125,
+                "opacity": 1.0
+              }
+            },
+            {
+              "name": "reichweite",
+              "mapTo": [
+                {
+                  "name": "reichweite",
+                  "id": "8"
+                }
+              ],
+              "source": {
+                "node": "1",
+                "nodeType": "Table",
+                "id": "16",
+                "dataId": {
+                  "columnId": "3"
+                }
+              },
+              "id": "17",
+              "color": {
+                "red": 0.01568627543747425,
+                "green": 0.6274510025978088,
+                "blue": 0.8941176533699036,
+                "opacity": 1.0
+              }
+            },
+            {
+              "name": "verbrauch",
+              "mapTo": [
+                {
+                  "name": "verbrauch",
+                  "id": "12"
+                }
+              ],
+              "source": {
+                "node": "1",
+                "nodeType": "Table",
+                "id": "18",
+                "dataId": {
+                  "columnId": "4"
+                }
+              },
+              "id": "19",
+              "color": {
+                "red": 0.04313725605607033,
+                "green": 0.9450980424880981,
+                "blue": 0.062745101749897,
+                "opacity": 1.0
+              }
+            }
+          ]
+        },
+        "columns": {
+          "values": [
+            {
+              "name": "Verbrauch",
+              "valueType": "BigDecimal",
+              "values": {
+                "Volvo EX30": "14.61864406779661016949152542372881"
+              },
+              "id": "9",
+              "color": {
+                "red": 0.01568627543747425,
+                "green": 0.42352941632270813,
+                "blue": 0.615686297416687,
+                "opacity": 1.0
+              }
+            },
+            {
+              "name": "reichweite",
+              "valueType": "BigDecimal",
+              "values": {
+                "Volvo EX30": "403.5087719298245614035087719298246"
+              },
+              "id": "13",
+              "color": {
+                "red": 1.0,
+                "green": 0.886274516582489,
+                "blue": 0.003921568859368563,
+                "opacity": 1.0
+              }
+            }
+          ]
+        },
+        "values": {
+          "values": []
+        }
+      }
+    }
+  ]
+}

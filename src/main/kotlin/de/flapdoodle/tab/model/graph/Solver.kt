@@ -1,5 +1,6 @@
 package de.flapdoodle.tab.model.graph
 
+import de.flapdoodle.eval.core.exceptions.EvaluableException
 import de.flapdoodle.graph.GraphAsDot
 import de.flapdoodle.graph.Graphs
 import de.flapdoodle.graph.VerticesAndEdges
@@ -164,8 +165,13 @@ object Solver {
     ): Tab2Model {
         val interpolated = sortAndInterpolate(columns2var)
         val result = interpolated.index.mapNotNull {
-            val result = calculation.evaluate(interpolated.variablesAt(it) + singleValueMap.toMap())
-            if (result != null) it to result else null
+            try {
+                val result = calculation.evaluate(interpolated.variablesAt(it) + singleValueMap.toMap())
+                if (result != null) it to result else null
+            } catch (ex: EvaluableException) {
+                ex.printStackTrace()
+                null
+            }
         }.toMap()
 
         val changedNode: de.flapdoodle.tab.model.Node.Calculated<K> = setTable(node, calculation, result)

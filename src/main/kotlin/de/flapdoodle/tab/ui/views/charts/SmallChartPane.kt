@@ -22,16 +22,21 @@ class SmallChartPane<K : Comparable<K>>(
     private var columns: Columns<K> = node.columns
 
     private val series: SimpleObjectProperty<List<Serie<K, BigDecimal>>> = SimpleObjectProperty(emptyList())
-    private val lineChart = SmallChart(series,
-        indexRangeFactory(node.indexType),
+    private val indexRangeFactory = indexRangeFactory(node.indexType)
+
+    private val lineChart = if (indexRangeFactory!=null) SmallChart(series,
+        indexRangeFactory,
         RangeFactories.number(BigDecimal::class),
         Converters.validatingFor(node.indexType, Locale.GERMANY),
         Converters.validatingFor(BigDecimal::class, Locale.GERMANY))
+    else null
 
     init {
         series.value = seriesOf(columns)
-        
-        children.add(lineChart)
+
+        if (lineChart!=null) {
+            children.add(lineChart)
+        }
     }
 
     fun update(node: de.flapdoodle.tab.model.Node.HasColumns<K>) {
@@ -40,11 +45,12 @@ class SmallChartPane<K : Comparable<K>>(
     }
 
 
-    private fun indexRangeFactory(indexType: KClass<K>): RangeFactory<K> {
+    private fun indexRangeFactory(indexType: KClass<K>): RangeFactory<K>? {
         return when (indexType) {
             LocalDate::class -> RangeFactories.localDate() as RangeFactory<K>
             Double::class -> RangeFactories.number(Double::class) as RangeFactory<K>
             Int::class -> RangeFactories.number(Int::class) as RangeFactory<K>
+            String::class -> null
             else -> throw IllegalArgumentException("not implemented: $indexType")
         }
     }

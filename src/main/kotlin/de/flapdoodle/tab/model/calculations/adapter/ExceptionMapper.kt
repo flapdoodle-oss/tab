@@ -16,5 +16,5 @@ object ExceptionMapper : EvaluableExceptionMapper {
         return Optional.empty()
     }
 
-    private class Wrapper(internal val ex: EvaluationException)
+    private data class Wrapper(internal val ex: EvaluationException)
 }

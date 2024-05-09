@@ -36,12 +36,12 @@ sealed class ModelChange {
     data class RemoveColumn(override val id: Id<out de.flapdoodle.tab.model.Node.Table<out Comparable<*>>>, val columnId: ColumnId): TableChange(id)
 
     sealed class CalculationChange(open val id: Id<out de.flapdoodle.tab.model.Node.Calculated<out Comparable<*>>>): ModelChange()
-    class AddAggregation(id: Id<de.flapdoodle.tab.model.Node.Calculated<*>>, val name: String, val expression: String) : CalculationChange(id)
-    class AddTabular(id: Id<de.flapdoodle.tab.model.Node.Calculated<*>>, val name: String, val expression: String) : CalculationChange(id)
+    data class AddAggregation(override val id: Id<de.flapdoodle.tab.model.Node.Calculated<*>>, val name: String, val expression: String) : CalculationChange(id)
+    data class AddTabular(override val id: Id<de.flapdoodle.tab.model.Node.Calculated<*>>, val name: String, val expression: String) : CalculationChange(id)
     data class ChangeFormula(
         override val id: Id<out de.flapdoodle.tab.model.Node.Calculated<out Comparable<*>>>,
         val calculationId: Id<Calculation<*>>,
         val formula: String
     ): CalculationChange(id)
-    class RemoveFormula(id: Id<de.flapdoodle.tab.model.Node.Calculated<*>>, val calculationId: Id<Calculation<*>>) : CalculationChange(id)
+    data class RemoveFormula(override val id: Id<de.flapdoodle.tab.model.Node.Calculated<*>>, val calculationId: Id<Calculation<*>>) : CalculationChange(id)
 }

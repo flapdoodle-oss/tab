@@ -28,6 +28,11 @@ sealed class Action {
         val output: DataId,
         val change: Data
     ) : Action()
+//    data class ChangeConnection(
+//        val source: Source,
+//        val id: Id<out de.flapdoodle.tab.model.Node>,
+//        val input: Id<InputSlot<*>>
+//    )
 
     data class RemoveConnection(val source: Source, val id: Id<out de.flapdoodle.tab.model.Node>, val input: Id<InputSlot<*>>) : Action()
     data class RemoveOutput(val id: Id<out de.flapdoodle.tab.model.Node>, val output: DataId) : Action()
@@ -42,7 +47,11 @@ sealed class Action {
                 val connectionChanges = Tab2Model.connectionChanges(old, current)
 
                 actions = actions + connectionChanges.removed.map {
-                    RemoveConnection(it.first, it.second.first, it.second.second.id)
+                    RemoveConnection(it.source, it.destination, it.inputSlot.id)
+                }
+
+                actions = actions + connectionChanges.modified.map { (old, current) ->
+                    RemoveConnection(old.source, old.destination, old.inputSlot.id)
                 }
 
                 actions = actions + nodeChanges.removed.flatMap { n ->
@@ -67,9 +76,12 @@ sealed class Action {
                             outputChanges.added.map { AddOutput(old.id, it) }
                 }
 
-                if (connectionChanges.modified.isNotEmpty()) {
-                    throw IllegalArgumentException("unexpected change: ${connectionChanges.modified}")
-                }
+//                if (connectionChanges.modified.isNotEmpty()) {
+//                    connectionChanges.modified.map { (old, current) ->
+////                        ChangeConnection(current.source, current.destination, current.inputSlot.id)
+//                    }
+//                    throw IllegalArgumentException("unexpected change: ${connectionChanges.modified}")
+//                }
 
                 actions = actions + nodeChanges.added.flatMap { n ->
                     listOf(AddNode(n)) + inputsOf(n).map { inputSlot ->
@@ -79,8 +91,12 @@ sealed class Action {
                     }
                 }
 
+                actions = actions + connectionChanges.modified.map { (old, current) ->
+                    AddConnection(current.source, current.destination, current.inputSlot.id)
+                }
+
                 actions = actions + connectionChanges.added.map {
-                    AddConnection(it.first, it.second.first, it.second.second.id)
+                    AddConnection(it.source, it.destination, it.inputSlot.id)
                 }
             }
             return actions

@@ -42,6 +42,14 @@ data class Tab2Model(
         return nodes.one { it.id == id } as Node.Calculated<*>
     }
 
+    fun node(id: Id<out Node.Table<*>>): Node.Table<*> {
+        return nodes.one { it.id == id } as Node.Table<*>
+    }
+
+    fun node(id: Id<out Node.Constants>): Node.Constants {
+        return nodes.one { it.id == id } as Node.Constants
+    }
+
     fun moveTo(nodeId: Id<out Node>, position: Position): Tab2Model {
         val node = node(nodeId)
         return copy(nodes = nodes.change(Node::id, nodeId) { it.moveTo(position) })
@@ -121,13 +129,13 @@ data class Tab2Model(
         fun connectionChanges(
             old: Tab2Model,
             current: Tab2Model
-        ): Change<Pair<Source, Pair<Id<Node.Calculated<*>>, InputSlot<out Comparable<*>>>>> {
+        ): Change<SourceAndDestination> {
             val oldInputs = nodeAndInputs(old.nodes)
             val currentInputs = nodeAndInputs(current.nodes)
-            return Diff.between(oldInputs, currentInputs) { it.first to (it.second.first to it.second.second.id) }
+            return Diff.between(oldInputs, currentInputs) { it.source to (it.destination to it.inputSlot.id) }
         }
 
-        private fun nodeAndInputs(nodes: List<Node>): List<Pair<Source, Pair<Id<Node.Calculated<*>>, InputSlot<out Comparable<*>>>>> {
+        private fun nodeAndInputsY(nodes: List<Node>): List<Pair<Source, Pair<Id<Node.Calculated<*>>, InputSlot<out Comparable<*>>>>> {
             return nodes.filterIsInstance<Node.Calculated<out Comparable<*>>>().flatMap { node ->
                 node.calculations.inputs().map { node to it }
             }.filter {
@@ -136,5 +144,21 @@ data class Tab2Model(
                 it.second.source!! to (it.first.id to it.second)
             }
         }
+
+        private fun nodeAndInputs(nodes: List<Node>): List<SourceAndDestination> {
+            return nodes.filterIsInstance<Node.Calculated<out Comparable<*>>>().flatMap { node ->
+                node.calculations.inputs().map { node to it }
+            }.filter {
+                it.second.source != null
+            }.map {
+                SourceAndDestination(it.second.source!! , it.first.id, it.second)
+            }
+        }
+
+        data class SourceAndDestination(
+            val source: Source,
+            val destination: Id<Node.Calculated<*>>,
+            val inputSlot: InputSlot<out Comparable<*>>
+        )
     }
 }
