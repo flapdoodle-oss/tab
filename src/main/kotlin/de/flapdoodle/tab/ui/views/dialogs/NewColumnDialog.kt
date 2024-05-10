@@ -1,6 +1,7 @@
 package de.flapdoodle.tab.ui.views.dialogs
 
 import de.flapdoodle.kfx.layout.grid.WeightGridPane
+import de.flapdoodle.tab.model.calculations.interpolation.InterpolationType
 import de.flapdoodle.tab.model.data.Column
 import javafx.scene.control.*
 import javafx.scene.control.ButtonBar.ButtonData
@@ -21,6 +22,12 @@ class NewColumnDialog<K: Comparable<K>>(
         value = Int::class
     }
 
+    private val interpolation = Label("Interpolation")
+    private val interpolationField = ChoiceBox<InterpolationType>().apply {
+        items.addAll(InterpolationType.values())
+        value = InterpolationType.Linear
+    }
+
     init {
         dialogPane.buttonTypes.addAll(ButtonType.OK, ButtonType.CANCEL)
         dialogPane.content = WeightGridPane().apply {
@@ -34,13 +41,20 @@ class NewColumnDialog<K: Comparable<K>>(
             WeightGridPane.setPosition(nameField, 1, 0)
             WeightGridPane.setPosition(type, 0, 1)
             WeightGridPane.setPosition(typeField, 1, 1)
+            WeightGridPane.setPosition(interpolation, 0, 2)
+            WeightGridPane.setPosition(interpolationField, 1, 2)
 
-            children.addAll(name, nameField, type, typeField)
+            children.addAll(name, nameField, type, typeField, interpolation, interpolationField)
         }
 
         setResultConverter { dialogButton: ButtonType? ->
             if (dialogButton?.buttonData == ButtonData.OK_DONE) {
-                Column(nameField.text, indexType, typeField.selectionModel.selectedItem)
+                Column(
+                    name = nameField.text,
+                    indexType = indexType,
+                    valueType = typeField.selectionModel.selectedItem,
+                    interpolationType = interpolationField.selectionModel.selectedItem ?: InterpolationType.Linear
+                )
             } else null
         }
     }

@@ -153,12 +153,12 @@ object Solver {
     }
 
     private fun <T: Any> singleValueAsEvaluated(data: SingleValue<T>): Evaluated<T> {
-        return Evaluated.ofNullable(data.valueType.java, data.value)
+        return Evaluated.ofNullable(data.valueType.javaObjectType, data.value)
     }
 
     private fun <V: Any> columnAsEvaluated(data: Column<*, V>): Evaluated<out Any> {
         return Evaluated.ofNullable(
-            IndexMap.IndexMapTypeInfo(TypeInfo.of(data.valueType.java)),
+            IndexMap.IndexMapTypeInfo(TypeInfo.of(data.valueType.javaObjectType)),
             IndexMap.asMap(data)
         )
     }

@@ -34,10 +34,28 @@ object Plus : Evaluables(
     of(javaInt, IndexMap.asParameterWithValueType(javaInt), ArgMath { argument, _ ->
         argument.foldValuesIfNotEmpty(0) { l, r -> Math.addExact(l,r) }
     }),
-    of(bigDecimal, bigDecimal, bigInt,
-        Arg2Math { first, second, math -> first.add(second.toBigDecimal(), math) }),
-    of(bigDecimal, bigInt, bigDecimal,
-        Arg2Math { first, second, math -> second.add(first.toBigDecimal(), math) }),
+
+//    of(bigDecimal, bigDecimal, bigInt,
+//        Arg2Math { first, second, math -> first.add(second.toBigDecimal(), math) }),
+    // TODO zu viel Aufwand
+    of(bigDecimal, bigDecimalNullable, bigIntNullable,
+        Arg2NullableMath { first, second, math ->
+            if (first != null && second !=null)
+                first.add(second.toBigDecimal(), math)
+            else
+                second?.toBigDecimal() ?: first
+        }),
+
+//    of(bigDecimal, bigInt, bigDecimal,
+//        Arg2Math { first, second, math -> second.add(first.toBigDecimal(), math) }),
+    of(bigDecimal, bigIntNullable, bigDecimalNullable,
+        Arg2NullableMath { first, second, math ->
+            if (first != null && second !=null)
+                second.add(first.toBigDecimal(), math)
+            else
+                first?.toBigDecimal() ?: second
+        }),
+
     of(bigDecimal, bigDecimal, javaDouble,
         Arg2Math { first, second, math -> first.add(second.toBigDecimal(), math) }),
     of(bigDecimal, javaDouble, bigDecimal,
@@ -46,14 +64,38 @@ object Plus : Evaluables(
         Arg2Math { first, second, math -> first.add(second.toBigDecimal(), math) }),
     of(bigDecimal, javaInt, bigDecimal,
         Arg2Math { first, second, math -> second.add(first.toBigDecimal(), math) }),
+
     of(bigDecimal, bigInt, javaDouble,
         Arg2Math { first, second, _ -> first.toBigDecimal().add(second.toBigDecimal()) }),
     of(bigDecimal, javaDouble, bigInt,
         Arg2Math { first, second, _ -> first.toBigDecimal().add(second.toBigDecimal()) }),
-    of(bigDecimal, javaInt, javaDouble,
-        Arg2Math { first, second, _ -> first.toBigDecimal().add(second.toBigDecimal()) }),
-    of(bigDecimal, javaDouble, javaInt,
-        Arg2Math { first, second, _ -> first.toBigDecimal().add(second.toBigDecimal()) }),
+
+    // TODO zu viel Aufwand
+//    of(bigDecimal, javaInt, javaDouble,
+//        Arg2Math { first, second, _ -> first.toBigDecimal().add(second.toBigDecimal()) }),
+
+    of(bigDecimal, javaIntNullable, javaDoubleNullable,
+        Arg2NullableMath { first, second, _ ->
+            if (first != null && second != null)
+                first.toBigDecimal().add(second.toBigDecimal())
+            else
+                if (first!=null) first.toBigDecimal()
+                else if (second!=null) second.toBigDecimal()
+                else null
+        }),
+
+//    of(bigDecimal, javaDouble, javaInt,
+//        Arg2Math { first, second, _ -> first.toBigDecimal().add(second.toBigDecimal()) }),
+    of(bigDecimal, javaDoubleNullable, javaIntNullable,
+        Arg2NullableMath { first, second, _ ->
+            if (first != null && second != null)
+                first.toBigDecimal().add(second.toBigDecimal())
+            else
+                if (first!=null) first.toBigDecimal()
+                else if (second!=null) second.toBigDecimal()
+                else null
+        }),
+
     of(bigInt, bigInt, javaInt,
         Arg2Math { first, second, _ -> first.add(second.toBigInteger()) }),
     of(bigInt, javaInt, bigInt,
@@ -61,11 +103,5 @@ object Plus : Evaluables(
     of(String::class.java, String::class.java, Any::class.java,
         Arg2Math { first, second, _ -> first + second }),
     of(String::class.java, Any::class.java, String::class.java,
-        Arg2Math { first, second, _ -> first.toString() + second }),
-    of(Number::class.java, Number::class.java, NULL,
-        Arg2Math { first, second, _ -> first }),
-    of(Number::class.java, NULL, Number::class.java,
-        Arg2Math { first, second, _ -> second }),
-    of(Number::class.java, NULL, NULL,
-        Arg2Math { first, second, _ -> null })
+        Arg2Math { first, second, _ -> first.toString() + second })
 )

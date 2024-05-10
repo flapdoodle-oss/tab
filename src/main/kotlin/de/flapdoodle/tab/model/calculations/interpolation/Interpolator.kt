@@ -18,9 +18,9 @@ fun interface Interpolator<K: Any, V: Any> {
                     it <= offset
                 }
                 if (firstIndex!=null)
-                    Evaluated.ofNullable(valueType.java, values[firstIndex])
+                    Evaluated.ofNullable(valueType.javaObjectType, values[firstIndex])
                 else
-                    Evaluated.ofNull(valueType.java)
+                    Evaluated.ofNull(valueType.javaObjectType)
             }
         }
 

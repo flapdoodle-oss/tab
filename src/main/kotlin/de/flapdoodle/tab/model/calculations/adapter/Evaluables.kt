@@ -31,8 +31,6 @@ open class Evaluables(
     }
 
     companion object {
-        val NULL = Null::class.java
-        
         val bigDecimal = BigDecimal::class.java
         val bigInt = BigInteger::class.java
         val javaInt = Int::class.javaObjectType
@@ -42,6 +40,11 @@ open class Evaluables(
         val bigIntParameter = Parameter.of(BigInteger::class.java)!!
         val javaIntParameter = Parameter.of(javaInt)!!
         val javaDoubleParameter = Parameter.of(javaDouble)!!
+
+        val bigDecimalNullable = Parameter.nullableWith(BigDecimal::class.java)!! as Parameter<BigDecimal?>
+        val bigIntNullable = Parameter.nullableWith(BigInteger::class.java)!! as Parameter<BigInteger?>
+        val javaIntNullable = Parameter.nullableWith(javaInt)!!  as Parameter<Int?>
+        val javaDoubleNullable = Parameter.nullableWith(javaDouble)!!  as Parameter<Double?>
 
         val bigDecimalNotZero = bigDecimalParameter.withValidators(isNot(BigDecimal.ZERO,"division by zero"))!!
         val bigIntNotZero = bigIntParameter.withValidators(isNot(BigInteger.ZERO,"division by zero"))!!
@@ -83,6 +86,20 @@ open class Evaluables(
         }
 
         fun evaluate(first: A, second: B, mathContext: MathContext): T?
+    }
+
+    fun interface Arg2NullableMath<A : Any?, B : Any?, T : Any?> : TypedEvaluable.Arg2<A, B, T> {
+        override fun evaluate(
+            variableResolver: VariableResolver,
+            evaluationContext: EvaluationContext,
+            token: Token?,
+            first: A?,
+            second: B?
+        ): T? {
+            return evaluate(first, second, evaluationContext.mathContext())
+        }
+
+        fun evaluate(first: A?, second: B?, mathContext: MathContext): T?
     }
 
     fun interface VarArgMath<A : Any, T : Any> : TypedEvaluable.VarArg1<A, T> {

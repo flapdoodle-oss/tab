@@ -8,7 +8,7 @@ class NoInterpolation<K: Comparable<K>, V: Any>(
 ) : InterpolatorFactory<K, V> {
     override fun interpolatorFor(index: Set<K>, values: Map<out K, V>): Interpolator<K, V> {
         return Interpolator {
-            Evaluated.ofNullable(valueType.java, values[it])
+            Evaluated.ofNullable(valueType.javaObjectType, values[it])
         }
     }
 }
