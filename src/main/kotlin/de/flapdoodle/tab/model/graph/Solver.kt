@@ -182,7 +182,6 @@ object Solver {
         columnsMap: List<Pair<Variable, Column<K, Any>>>,
         singleValueMap: List<Pair<Variable, Evaluated<Any>>>
     ): Tab2Model {
-        // TODO interpolator bei String als Index macht keinen Sinn!!
         val interpolated = sortAndInterpolate(columnsMap)
         val result = interpolated.index.mapNotNull {
             try {
@@ -224,15 +223,6 @@ object Solver {
         }
     }
 
-    data class InterpolatedColumns<K : Any>(
-        val index: Set<K>,
-        val map2vars: List<Pair<Variable, Map<K, Evaluated<out Any>>>>
-    ) {
-        fun variablesAt(index: K): Map<Variable, Evaluated<out Any>> {
-            return map2vars.map { it.first to it.second[index]!! }.toMap()
-        }
-    }
-
     private fun <K : Comparable<K>> setValue(
         node: de.flapdoodle.tab.model.Node.Calculated<K>,
         calculation: Calculation.Aggregation<K>,
@@ -243,7 +233,8 @@ object Solver {
             val newSingleValue = if (result != null && !result.isNull) {
                 SingleValue.of(calculation.name(), result.wrapped(), calculation.destination())
             } else {
-                SingleValue.ofNull(calculation.name(), calculation.destination())
+                // TODO type aus evaluated entnehmen
+                SingleValue.ofNull(calculation.name(), Unit::class, calculation.destination())
             }
             node.copy(values = node.values.addValue(newSingleValue))
         } else {
@@ -251,7 +242,8 @@ object Solver {
                 if (result != null && !result.isNull) {
                     SingleValue.of(old.name, result.wrapped(), old.id)
                 } else {
-                    SingleValue.ofNull(old.name, old.id)
+                    // TODO type aus evaluated entnehmen
+                    SingleValue.ofNull(old.name, Unit::class, old.id)
                 }
             })
         }

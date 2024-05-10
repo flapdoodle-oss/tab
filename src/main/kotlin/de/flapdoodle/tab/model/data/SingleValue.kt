@@ -30,8 +30,8 @@ data class SingleValue<T : Any>(
             return SingleValue(name, value::class as KClass<K>, value, id)
         }
 
-        fun ofNull(name: String, id: SingleValueId): SingleValue<Unit> {
-            return SingleValue(name, Unit::class, null, id)
+        fun <K: Any> ofNull(name: String, valueType: KClass<K>, id: SingleValueId): SingleValue<K> {
+            return SingleValue(name, valueType, null, id)
         }
 
     }
