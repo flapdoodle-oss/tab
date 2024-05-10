@@ -1,6 +1,7 @@
 package de.flapdoodle.tab.model.data
 
-import kotlin.reflect.KClass
+import de.flapdoodle.reflection.TypeInfo
+
 
 data class SingleValues(
     val values: List<SingleValue<out Any>> = emptyList()
@@ -51,9 +52,9 @@ data class SingleValues(
         return copy(values = values.map { if (it.id==id) map(it) else it })
     }
 
-    fun <V: Any> add(id: SingleValueId, valueType: KClass<V>, value: V?): SingleValues {
+    fun <V: Any> add(id: SingleValueId, valueType: TypeInfo<V>, value: V?): SingleValues {
         val v = value(id)
-        require(v.valueType == valueType) { "valueType mismatch: $valueType != ${v.valueType}"}
+        require(v.valueType.isAssignable(valueType)) { "valueType mismatch: $valueType != ${v.valueType}"}
         val singleValue = (v as SingleValue<V>).copy(value = value)
         return copy(values = values.map {
             if (it.id==singleValue.id) singleValue else it

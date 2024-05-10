@@ -1,6 +1,7 @@
 package de.flapdoodle.tab.model
 
 import de.flapdoodle.kfx.types.Id
+import de.flapdoodle.reflection.TypeInfo
 import de.flapdoodle.tab.model.calculations.Calculation
 import de.flapdoodle.tab.model.calculations.Calculations
 import de.flapdoodle.tab.model.calculations.InputSlot
@@ -36,7 +37,7 @@ sealed class Node {
 //    }
 
     interface HasColumns<K: Comparable<K>> {
-        val indexType: KClass<K>
+        val indexType: TypeInfo<K>
         val columns: Columns<K>
 
         fun column(id: ColumnId): Column<K, out Any> {
@@ -90,7 +91,7 @@ sealed class Node {
 
     data class Table<K: Comparable<K>> (
         override val name: String,
-        override val indexType: KClass<K>,
+        override val indexType: TypeInfo<K>,
         override val columns: Columns<K> = Columns(),
         override val id: Id<Table<*>> = Id.nextId(Table::class),
         override val position: Position = Position(0.0, 0.0)
@@ -147,7 +148,7 @@ sealed class Node {
 
     data class Calculated<K: Comparable<K>>(
         override val name: String,
-        override val indexType: KClass<K>,
+        override val indexType: TypeInfo<K>,
         val calculations: Calculations<K> = Calculations(indexType),
         override val columns: Columns<K> = Columns(),
         override val values: SingleValues = SingleValues(),

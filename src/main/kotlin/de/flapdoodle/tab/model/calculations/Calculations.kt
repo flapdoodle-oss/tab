@@ -1,6 +1,7 @@
 package de.flapdoodle.tab.model.calculations
 
 import de.flapdoodle.kfx.types.Id
+import de.flapdoodle.reflection.TypeInfo
 import de.flapdoodle.tab.model.Node
 import de.flapdoodle.tab.model.connections.Source
 import de.flapdoodle.tab.model.data.ColumnId
@@ -10,7 +11,7 @@ import de.flapdoodle.tab.types.one
 import kotlin.reflect.KClass
 
 data class Calculations<K: Comparable<K>>(
-    private val indexType: KClass<K>,
+    private val indexType: TypeInfo<K>,
     private val aggregations: List<Calculation.Aggregation<K>> = emptyList(),
     private val tabular: List<Calculation.Tabular<K>> = emptyList(),
     private val inputs: List<InputSlot<K>> = inputSlots(aggregations + tabular)

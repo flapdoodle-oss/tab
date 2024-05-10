@@ -1,5 +1,6 @@
 package de.flapdoodle.tab.model.calculations.interpolation.linear
 
+import de.flapdoodle.reflection.TypeInfo
 import java.math.BigDecimal
 import kotlin.reflect.KClass
 
@@ -18,21 +19,21 @@ fun interface LinearInterpolation<K : Any, V : Any> {
         }
 
         private data class InterpolationEntry<K : Any, V : Any>(
-            val indexType: KClass<K>,
-            val valueType: KClass<V>,
+            val indexType: TypeInfo<K>,
+            val valueType: TypeInfo<V>,
             val interpolation: LinearInterpolation<K, V>
         )
 
         private val interpolations = listOf(
-            InterpolationEntry(Int::class, Int::class, asInterpolation(LinearFactor.IntFactor, FactorMultiplicator.IntDoubleMultiplicator)),
-            InterpolationEntry(Int::class, BigDecimal::class, asInterpolation(LinearFactor.IntFactor, FactorMultiplicator.BigDecimalDoubleMultiplicator)),
+            InterpolationEntry(TypeInfo.of(Int::class.javaObjectType), TypeInfo.of(Int::class.javaObjectType), asInterpolation(LinearFactor.IntFactor, FactorMultiplicator.IntDoubleMultiplicator)),
+            InterpolationEntry(TypeInfo.of(Int::class.javaObjectType), TypeInfo.of(BigDecimal::class.javaObjectType), asInterpolation(LinearFactor.IntFactor, FactorMultiplicator.BigDecimalDoubleMultiplicator)),
         )
 
-        private val interpolationMap: Map<Pair<KClass<out Any>, KClass<out Any>>, LinearInterpolation<Int, out Any>> = interpolations.map {
+        private val interpolationMap: Map<Pair<TypeInfo<out Any>, TypeInfo<out Any>>, LinearInterpolation<Int, out Any>> = interpolations.map {
             (it.indexType to it.valueType) to it.interpolation
         }.toMap()
 
-        fun <K : Any, V : Any> interpolation(indexType: KClass<K>, valueType: KClass<V>): LinearInterpolation<K, V>? {
+        fun <K : Any, V : Any> interpolation(indexType: TypeInfo<K>, valueType: TypeInfo<V>): LinearInterpolation<K, V>? {
             return interpolationMap[indexType to valueType] as LinearInterpolation<K, V>?
         }
     }

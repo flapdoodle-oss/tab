@@ -1,5 +1,6 @@
 package de.flapdoodle.tab.io.mapper
 
+import de.flapdoodle.reflection.TypeInfo
 import de.flapdoodle.tab.io.MemorizingMapping
 import de.flapdoodle.tab.io.file.FileNode
 import de.flapdoodle.tab.io.file.Tab2File
@@ -53,7 +54,7 @@ class DefaultModelFileMapperTest {
             values = SingleValues(listOf(
                 SingleValue(
                     name = "a",
-                    valueType = Int::class,
+                    valueType = TypeInfo.of(Int::class.javaObjectType),
                     value = 2,
                     color = Color.RED
                 )
@@ -63,12 +64,12 @@ class DefaultModelFileMapperTest {
 
         val table = de.flapdoodle.tab.model.Node.Table(
             name = "table",
-            indexType = Int::class,
+            indexType = TypeInfo.of(Int::class.javaObjectType),
             columns = Columns(listOf(
                 Column(
                     name = "b",
-                    indexType = Int::class,
-                    valueType = Double::class,
+                    indexType = TypeInfo.of(Int::class.javaObjectType),
+                    valueType = TypeInfo.of(Double::class.javaObjectType),
                     values = mapOf(1 to 1.0, 2 to 2.0),
                     color = Color.RED
                 )
@@ -78,20 +79,20 @@ class DefaultModelFileMapperTest {
 
         val aggregation = Calculation.Aggregation(
             name = "x+2",
-            indexType = Int::class,
+            indexType = TypeInfo.of(Int::class.javaObjectType),
             formula = EvalFormulaAdapter("x+2")
         )
         val tabular = Calculation.Tabular(
             name = "x+y",
-            indexType = Int::class,
+            indexType = TypeInfo.of(Int::class.javaObjectType),
             formula = EvalFormulaAdapter("x+y")
         )
 
         val calculated = de.flapdoodle.tab.model.Node.Calculated(
             name = "calculated",
-            indexType = Int::class,
+            indexType = TypeInfo.of(Int::class.javaObjectType),
             calculations = Calculations(
-                indexType = Int::class,
+                indexType = TypeInfo.of(Int::class.javaObjectType),
                 aggregations = listOf(
                     aggregation
                 ),
@@ -109,7 +110,7 @@ class DefaultModelFileMapperTest {
                     InputSlot(
                         name = "y",
                         mapTo = tabular.variables().filter { it.name=="y" }.toSet(),
-                        source = Source.ColumnSource(table.id, table.columns.columns()[0].id, Int::class)
+                        source = Source.ColumnSource(table.id, table.columns.columns()[0].id, TypeInfo.of(Int::class.javaObjectType))
                     )
                 )
             )

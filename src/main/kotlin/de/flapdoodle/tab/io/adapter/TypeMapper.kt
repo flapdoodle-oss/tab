@@ -1,8 +1,9 @@
 package de.flapdoodle.tab.io.adapter
 
+import de.flapdoodle.reflection.TypeInfo
 import kotlin.reflect.KClass
 
 interface TypeMapper {
-    fun toFile(type: KClass<out Any>): String
-    fun toModel(type: String): KClass<out Any>
+    fun toFile(type: TypeInfo<out Any>): String
+    fun toModel(type: String): TypeInfo<out Any>
 }

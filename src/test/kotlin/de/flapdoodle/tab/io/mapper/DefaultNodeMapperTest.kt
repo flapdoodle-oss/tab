@@ -1,5 +1,6 @@
 package de.flapdoodle.tab.io.mapper
 
+import de.flapdoodle.reflection.TypeInfo
 import de.flapdoodle.tab.io.MemorizingMapping
 import de.flapdoodle.tab.io.file.FileColumns
 import de.flapdoodle.tab.io.file.FileNode
@@ -37,7 +38,7 @@ class DefaultNodeMapperTest {
 
     @Test
     fun testDelegationForTable() {
-        val table = de.flapdoodle.tab.model.Node.Table(name = "inTab", Int::class)
+        val table = de.flapdoodle.tab.model.Node.Table(name = "inTab", TypeInfo.of(Int::class.javaObjectType))
         val fileNodeTable = FileNode(
             name = "outTab",
             position = Position(0.0, 0.0),

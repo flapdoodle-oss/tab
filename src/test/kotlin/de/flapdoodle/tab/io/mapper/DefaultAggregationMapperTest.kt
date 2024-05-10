@@ -1,5 +1,6 @@
 package de.flapdoodle.tab.io.mapper
 
+import de.flapdoodle.reflection.TypeInfo
 import de.flapdoodle.tab.io.MemorizingMapping
 import de.flapdoodle.tab.model.calculations.Calculation
 import de.flapdoodle.tab.model.calculations.adapter.Eval
@@ -22,14 +23,14 @@ class DefaultAggregationMapperTest {
 
         val src = Calculation.Aggregation(
             name = "name",
-            indexType = Int::class,
+            indexType = TypeInfo.of(Int::class.javaObjectType),
             formula = EvalFormulaAdapter("x+2")
         )
 
         val testee = DefaultAggregationMapper()
 
         val mapped = testee.toFile(memorizingMapping.toFileMapping(), src)
-        val readBack = testee.toModel(memorizingMapping.toModelMapping(), Int::class, mapped)
+        val readBack = testee.toModel(memorizingMapping.toModelMapping(), TypeInfo.of(Int::class.javaObjectType), mapped)
 
         assertThat(readBack).isEqualTo(src)
     }

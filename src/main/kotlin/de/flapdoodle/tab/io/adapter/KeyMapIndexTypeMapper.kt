@@ -1,10 +1,11 @@
 package de.flapdoodle.tab.io.adapter
 
+import de.flapdoodle.reflection.TypeInfo
 import java.time.LocalDate
 import kotlin.reflect.KClass
 
 data class KeyMapIndexTypeMapper(
-    val mapping: List<Pair<KClass<out Comparable<Any>>, String>>
+    val mapping: List<Pair<TypeInfo<out Comparable<Any>>, String>>
 ) : IndexTypeMapper {
     private val toFile = mapping.associate { it }
     private val toModel = mapping.associate { it.second to it.first }
@@ -14,11 +15,11 @@ data class KeyMapIndexTypeMapper(
         require(toModel.size == mapping.size) { "to model collisions: $mapping" }
     }
 
-    override fun toFile(type: KClass<out Any>): String {
+    override fun toFile(type: TypeInfo<out Any>): String {
         return requireNotNull(toFile[type]) { "not defined for $type" }
     }
 
-    override fun toModel(type: String): KClass<out Comparable<Any>> {
+    override fun toModel(type: String): TypeInfo<out Comparable<Any>> {
         return requireNotNull(toModel[type]) { "unknown $type" }
     }
 
@@ -30,8 +31,8 @@ data class KeyMapIndexTypeMapper(
             fix(LocalDate::class) to "LocalDate"
         ))
 
-        fun <T: Comparable<T>> fix(type: KClass<T>): KClass<out Comparable<Any>> {
-            return type as KClass<out Comparable<Any>>
+        fun <T: Comparable<T>> fix(type: KClass<T>): TypeInfo<out Comparable<Any>> {
+            return TypeInfo.of(type.javaObjectType as Class<out Comparable<Any>>)
         }
     }
 }

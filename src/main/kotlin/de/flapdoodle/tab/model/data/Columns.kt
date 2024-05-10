@@ -1,5 +1,6 @@
 package de.flapdoodle.tab.model.data
 
+import de.flapdoodle.reflection.TypeInfo
 import kotlin.reflect.KClass
 
 data class Columns<K: Comparable<K>>(
@@ -33,9 +34,9 @@ data class Columns<K: Comparable<K>>(
         return columnIdMap[id]
     }
 
-    fun <V: Any> add(columnId: ColumnId, key: K, valueType: KClass<V>, value: V?): Columns<K> {
+    fun <V: Any> add(columnId: ColumnId, key: K, valueType: TypeInfo<V>, value: V?): Columns<K> {
         val c: Column<K, out Any> = column(columnId)
-        require(c.valueType == valueType) {"value type mismatch: $valueType != ${c.valueType}"}
+        require(c.valueType.isAssignable(valueType)) {"value type mismatch: $valueType != ${c.valueType}"}
         val column = (c as Column<K, V>).add(key, value)
         return copy(columns = columns.map {
             if (it.id == column.id) column else it

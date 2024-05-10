@@ -1,13 +1,13 @@
 package de.flapdoodle.tab.model.data
 
 import de.flapdoodle.kfx.colors.HashedColors
-import de.flapdoodle.tab.model.calculations.adapter.Null
+import de.flapdoodle.reflection.TypeInfo
 import javafx.scene.paint.Color
 import kotlin.reflect.KClass
 
 data class SingleValue<T : Any>(
     val name: String,
-    val valueType: KClass<T>,
+    val valueType: TypeInfo<T>,
     val value: T? = null,
     override val id: SingleValueId = SingleValueId(),
     val color: Color = HashedColors.hashedColor(name.hashCode() + id.hashCode())
@@ -27,10 +27,14 @@ data class SingleValue<T : Any>(
 
     companion object {
         fun <K : Any> of(name: String, value: K, id: SingleValueId): SingleValue<K> {
-            return SingleValue(name, value::class as KClass<K>, value, id)
+            return SingleValue(name, TypeInfo.of(value::class.javaObjectType as Class<K>), value, id)
         }
 
         fun <K: Any> ofNull(name: String, valueType: KClass<K>, id: SingleValueId): SingleValue<K> {
+            return SingleValue(name, TypeInfo.of(valueType.javaObjectType), null, id)
+        }
+
+        fun <K: Any> ofNull(name: String, valueType: TypeInfo<K>, id: SingleValueId): SingleValue<K> {
             return SingleValue(name, valueType, null, id)
         }
 

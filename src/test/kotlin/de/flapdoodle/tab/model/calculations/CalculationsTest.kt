@@ -1,6 +1,7 @@
 package de.flapdoodle.tab.model.calculations
 
 import de.flapdoodle.kfx.types.Id
+import de.flapdoodle.reflection.TypeInfo
 import de.flapdoodle.tab.model.Node
 import de.flapdoodle.tab.model.calculations.Calculation
 import de.flapdoodle.tab.model.calculations.Calculations
@@ -146,11 +147,11 @@ class CalculationsTest {
     private fun <K: Comparable<K>> calculations(indexType: KClass<K>, vararg calculation: Calculation<K>): Calculations<K> {
         val agg = calculation.filterIsInstance<Calculation.Aggregation<K>>()
         val tab = calculation.filterIsInstance<Calculation.Tabular<K>>()
-        return Calculations(indexType, aggregations = agg, tabular = tab)
+        return Calculations(TypeInfo.of(indexType.javaObjectType), aggregations = agg, tabular = tab)
     }
 
     private fun <K: Comparable<K>> aggregate(indexType: KClass<K>, name: String, formula: String): Calculation.Aggregation<K> {
-        return Calculation.Aggregation(indexType, name, EvalFormulaAdapter(formula), SingleValueId())
+        return Calculation.Aggregation(TypeInfo.of(indexType.javaObjectType), name, EvalFormulaAdapter(formula), SingleValueId())
     }
 
     private fun <K: Comparable<K>> tabular(
@@ -159,6 +160,6 @@ class CalculationsTest {
         formula: String,
         columnId: ColumnId
     ): Calculation.Tabular<K> {
-        return Calculation.Tabular(indexType, name, EvalFormulaAdapter(formula), InterpolationType.Linear, columnId)
+        return Calculation.Tabular(TypeInfo.of(indexType.javaObjectType), name, EvalFormulaAdapter(formula), InterpolationType.Linear, columnId)
     }
 }

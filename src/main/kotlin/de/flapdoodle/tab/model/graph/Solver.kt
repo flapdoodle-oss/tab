@@ -88,7 +88,7 @@ object Solver {
     }
 
     private fun <K: Comparable<K>> dataOf(
-        indexType: KClass<K>,
+        indexType: TypeInfo<K>,
         source: Source,
         model: Tab2Model
     ): Data {
@@ -153,12 +153,12 @@ object Solver {
     }
 
     private fun <T: Any> singleValueAsEvaluated(data: SingleValue<T>): Evaluated<T> {
-        return Evaluated.ofNullable(data.valueType.javaObjectType, data.value)
+        return Evaluated.ofNullable(data.valueType, data.value)
     }
 
     private fun <V: Any> columnAsEvaluated(data: Column<*, V>): Evaluated<out Any> {
         return Evaluated.ofNullable(
-            IndexMap.IndexMapTypeInfo(TypeInfo.of(data.valueType.javaObjectType)),
+            IndexMap.IndexMapTypeInfo(data.valueType),
             IndexMap.asMap(data)
         )
     }
@@ -279,7 +279,7 @@ object Solver {
         result: Map<K, Evaluated<out Any>>,
         calculation: Calculation.Tabular<K>
     ): Column<K, out Any> {
-        val valueTypes = result.values.map { it.wrapped()::class }.toSet()
+        val valueTypes = result.values.map { it.type() }.toSet()
         require(valueTypes.size == 1) { "more than one value type: $result"}
         val valueType = valueTypes.toList().one { true }
 

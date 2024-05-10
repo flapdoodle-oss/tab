@@ -1,10 +1,13 @@
 package de.flapdoodle.tab.ui.views
 
 import de.flapdoodle.kfx.controls.fields.TypedTextField
+import de.flapdoodle.kfx.controls.fields.ValidatingTextField
 import de.flapdoodle.kfx.layout.grid.WeightGridTable
 import de.flapdoodle.kfx.types.Id
+import de.flapdoodle.reflection.TypeInfo
 import de.flapdoodle.tab.model.change.ModelChange
 import de.flapdoodle.tab.model.data.SingleValue
+import de.flapdoodle.tab.ui.Converters
 import de.flapdoodle.tab.ui.ModelChangeListener
 import de.flapdoodle.tab.ui.views.dialogs.NewValueDialog
 import javafx.beans.property.SimpleObjectProperty
@@ -50,7 +53,7 @@ class InlineConstantUIAdapter(
                 onAction = EventHandler {
                     val newValue = NewValueDialog.open()
                     if (newValue!=null) {
-                        modelChangeListener.change(ModelChange.AddValue(nodeId, SingleValue(newValue.name, newValue.type)))
+                        modelChangeListener.change(ModelChange.AddValue(nodeId, SingleValue(newValue.name, TypeInfo.of(newValue.type.javaObjectType))))
                     }
                 }
             }
@@ -65,8 +68,9 @@ class InlineConstantUIAdapter(
         children.add(content)
     }
 
-    private fun <T: Any> textField(id: Id<out de.flapdoodle.tab.model.Node.Constants>, value: SingleValue<T>, modelChangeListener: ModelChangeListener): TypedTextField<T> {
-        return TypedTextField(value.valueType).apply {
+    private fun <T: Any> textField(id: Id<out de.flapdoodle.tab.model.Node.Constants>, value: SingleValue<T>, modelChangeListener: ModelChangeListener): ValidatingTextField<T> {
+        val converter = Converters.validatingConverter(value.valueType)
+        return ValidatingTextField(converter).apply {
             set(value.value)
             prefWidth = 60.0
             valueProperty().addListener { observable, oldValue, newValue ->

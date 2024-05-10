@@ -1,5 +1,6 @@
 package de.flapdoodle.tab.io.mapper
 
+import de.flapdoodle.reflection.TypeInfo
 import de.flapdoodle.tab.io.adapter.ToFileMapping
 import de.flapdoodle.tab.io.adapter.ToModelMapping
 import de.flapdoodle.tab.io.file.FileNode
@@ -22,14 +23,14 @@ class DefaultTableMapper(
 
     override fun toModel(toModelMapping: ToModelMapping, src: FileNode): de.flapdoodle.tab.model.Node.Table<Comparable<Any>> {
         requireNotNull(src.table) { "table is not set" }
-        return toModel(toModelMapping, src, src.table, toModelMapping.indexType(src.table.indexType) as KClass<Comparable<Any>>)
+        return toModel(toModelMapping, src, src.table, toModelMapping.indexType(src.table.indexType) as TypeInfo<Comparable<Any>>)
     }
 
     private fun <T: Comparable<T>> toModel(
         toModelMapping: ToModelMapping,
         src: FileNode,
         table: FileNode.Table,
-        indexType: KClass<T>
+        indexType: TypeInfo<T>
     ): de.flapdoodle.tab.model.Node.Table<T> {
         return de.flapdoodle.tab.model.Node.Table(
             name = src.name,

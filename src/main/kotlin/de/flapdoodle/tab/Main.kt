@@ -3,6 +3,7 @@ package de.flapdoodle.tab
 import de.flapdoodle.kfx.extensions.withAnchors
 import de.flapdoodle.kfx.layout.grid.WeightGridPane
 import de.flapdoodle.kfx.types.Id
+import de.flapdoodle.reflection.TypeInfo
 import de.flapdoodle.tab.model.Position
 import de.flapdoodle.tab.model.change.ModelChange
 import de.flapdoodle.tab.model.data.Column
@@ -92,15 +93,15 @@ class Main(
           button.onAction = EventHandler {
             val vertexId = selectedVertex.value
             modelWrapper.changeModel {
-              val node = de.flapdoodle.tab.model.Node.Table("Table", Int::class)
-              val nameColumn = Column("Name", node.indexType, String::class)
-              val ageColumn = Column("Age", node.indexType, Int::class)
+              val node = de.flapdoodle.tab.model.Node.Table("Table", TypeInfo.of(Int::class.javaObjectType))
+              val nameColumn = Column("Name", node.indexType, TypeInfo.of(String::class.javaObjectType))
+              val ageColumn = Column("Age", node.indexType, TypeInfo.of(Int::class.javaObjectType))
 
               val tableNode = node
                 .apply(ModelChange.AddColumn(node.id, nameColumn))
                 .apply(ModelChange.AddColumn(node.id, ageColumn))
 
-              val calcNode = de.flapdoodle.tab.model.Node.Calculated("Calc", Int::class)
+              val calcNode = de.flapdoodle.tab.model.Node.Calculated("Calc", TypeInfo.of(Int::class.javaObjectType))
               it.addNode(tableNode.copy(position = Position(30.0, 30.0)))
                 .apply(ModelChange.SetColumns(tableNode.id, 1, listOf(nameColumn.id to "Klaus", ageColumn.id to 22)))
                 .apply(ModelChange.SetColumns(tableNode.id, 2, listOf(ageColumn.id to 24)))

@@ -1,6 +1,7 @@
 package de.flapdoodle.tab.io.adapter
 
 import de.flapdoodle.kfx.types.Id
+import de.flapdoodle.reflection.TypeInfo
 import kotlin.reflect.KClass
 
 class ToFileMapping(
@@ -11,8 +12,8 @@ class ToFileMapping(
 ) {
     fun idFor(id: Id<out Any>) = toFileIdMapper.idFor(id)
 
-    fun valueType(valueType: KClass<out Any>) = typeMapper.toFile(valueType)
-    fun indexType(valueType: KClass<out Any>) = indexTypeMapper.toFile(valueType)
+    fun valueType(valueType: TypeInfo<out Any>) = typeMapper.toFile(valueType)
+    fun indexType(valueType: TypeInfo<out Any>) = indexTypeMapper.toFile(valueType)
 
-    fun <T: Any> value(valueType: KClass<T>, value: T) = valueMapper.toFile(valueType, value)
+    fun <T: Any> value(valueType: TypeInfo<T>, value: T) = valueMapper.toFile(valueType, value)
 }

@@ -1,5 +1,6 @@
 package de.flapdoodle.tab.io.mapper
 
+import de.flapdoodle.reflection.TypeInfo
 import de.flapdoodle.tab.io.MemorizingMapping
 import de.flapdoodle.tab.model.data.Column
 import javafx.scene.paint.Color
@@ -13,8 +14,8 @@ class DefaultColumnMapperTest {
 
         val src = Column(
             name = "value",
-            indexType = String::class,
-            valueType = Int::class,
+            indexType = TypeInfo.of(String::class.javaObjectType),
+            valueType = TypeInfo.of(Int::class.javaObjectType),
             color = Color.AQUA,
             values = mapOf(
                 "Foo" to 1,
@@ -25,7 +26,7 @@ class DefaultColumnMapperTest {
         val testee = DefaultColumnMapper
 
         val mapped = testee.toFile(memorizingMapping.toFileMapping(), src)
-        val readBack = testee.toModel(memorizingMapping.toModelMapping(), String::class, mapped)
+        val readBack = testee.toModel(memorizingMapping.toModelMapping(), TypeInfo.of(String::class.javaObjectType), mapped)
 
         assertThat(readBack).isEqualTo(src)
     }

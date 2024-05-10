@@ -1,6 +1,7 @@
 package de.flapdoodle.tab.ui.views.dialogs
 
 import de.flapdoodle.kfx.layout.grid.WeightGridPane
+import de.flapdoodle.reflection.TypeInfo
 import de.flapdoodle.tab.config.IndexTypes
 import javafx.scene.control.*
 import javafx.scene.control.ButtonBar.ButtonData
@@ -35,13 +36,13 @@ class NewTableDialog : Dialog<de.flapdoodle.tab.model.Node.Table<out Comparable<
 
         setResultConverter { dialogButton: ButtonType? ->
             if (dialogButton?.buttonData == ButtonData.OK_DONE) {
-                val type = typeField.selectionModel.selectedItem
-                nodeOf(nameField.text, type as KClass<out Comparable<Any>>)
+                val type = TypeInfo.of(typeField.selectionModel.selectedItem.javaObjectType)
+                nodeOf(nameField.text, type as TypeInfo<out Comparable<Any>>)
             } else null
         }
     }
 
-    private fun <K: Comparable<K>> nodeOf(name: String?, indexType: KClass<K>?): de.flapdoodle.tab.model.Node.Table<K>? {
+    private fun <K: Comparable<K>> nodeOf(name: String?, indexType: TypeInfo<K>?): de.flapdoodle.tab.model.Node.Table<K>? {
         if (name!=null && indexType!=null) {
             return de.flapdoodle.tab.model.Node.Table(
                 name = name,

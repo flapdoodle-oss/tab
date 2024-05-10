@@ -1,5 +1,6 @@
 package de.flapdoodle.tab.io.mapper
 
+import de.flapdoodle.reflection.TypeInfo
 import de.flapdoodle.tab.io.MemorizingMapping
 import de.flapdoodle.tab.model.data.SingleValue
 import javafx.scene.paint.Color
@@ -14,7 +15,7 @@ class DefaultSingleValueMapperTest {
 
         val src = SingleValue(
             name = "value",
-            valueType = Double::class,
+            valueType = TypeInfo.of(Double::class.javaObjectType),
             value = 1231.2,
             color = Color.RED
         )

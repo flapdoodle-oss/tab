@@ -1,6 +1,7 @@
 package de.flapdoodle.tab.io.mapper
 
 import de.flapdoodle.kfx.types.Id
+import de.flapdoodle.reflection.TypeInfo
 import de.flapdoodle.tab.io.MemorizingMapping
 import de.flapdoodle.tab.model.Node
 import de.flapdoodle.tab.model.Position
@@ -20,9 +21,9 @@ class DefaultCalculatedMapperTest {
     fun mapCalculated() {
         val memorizingMapping = MemorizingMapping()
 
-        val src = de.flapdoodle.tab.model.Node.Calculated(
+        val src = Node.Calculated(
             name = "name",
-            indexType = Int::class,
+            indexType = TypeInfo.of(Int::class.javaObjectType),
             position = Position(10.0, 20.0)
         )
 
@@ -40,20 +41,20 @@ class DefaultCalculatedMapperTest {
 
         val src = de.flapdoodle.tab.model.Node.Calculated(
             name = "calculated",
-            indexType = Int::class,
+            indexType = TypeInfo.of(Int::class.javaObjectType),
             calculations = Calculations(
-                indexType = Int::class,
+                indexType = TypeInfo.of(Int::class.javaObjectType),
                 aggregations = listOf(
                     Calculation.Aggregation(
                         name = "x+2",
-                        indexType = Int::class,
+                        indexType = TypeInfo.of(Int::class.javaObjectType),
                         formula = EvalFormulaAdapter("x+2")
                     )
                 ),
                 tabular = listOf(
                     Calculation.Tabular(
                         name = "x+y",
-                        indexType = Int::class,
+                        indexType = TypeInfo.of(Int::class.javaObjectType),
                         formula = EvalFormulaAdapter("x+y")
                     )
                 ),
@@ -62,11 +63,11 @@ class DefaultCalculatedMapperTest {
                         name = "x",
                         mapTo = (Calculation.Aggregation(
                             name = "x+2",
-                            indexType = Int::class,
+                            indexType = TypeInfo.of(Int::class.javaObjectType),
                             formula = EvalFormulaAdapter("x+2")
                         ).variables() + Calculation.Tabular(
                             name = "x+y",
-                            indexType = Int::class,
+                            indexType = TypeInfo.of(Int::class.javaObjectType),
                             formula = EvalFormulaAdapter("x+y")
                         ).variables()).filter {
                             it.name=="x"
@@ -77,10 +78,10 @@ class DefaultCalculatedMapperTest {
                         name = "y",
                         mapTo = Calculation.Tabular(
                             name = "x+y",
-                            indexType = Int::class,
+                            indexType = TypeInfo.of(Int::class.javaObjectType),
                             formula = EvalFormulaAdapter("x+y")
                         ).variables().filter { it.name == "y" }.toSet(),
-                        source = Source.ColumnSource(Id.nextId(de.flapdoodle.tab.model.Node.Table::class), ColumnId(), Int::class)
+                        source = Source.ColumnSource(Id.nextId(de.flapdoodle.tab.model.Node.Table::class), ColumnId(), TypeInfo.of(Int::class.javaObjectType))
                     )
                 )
             )

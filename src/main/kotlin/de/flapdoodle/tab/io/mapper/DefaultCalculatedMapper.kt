@@ -1,5 +1,6 @@
 package de.flapdoodle.tab.io.mapper
 
+import de.flapdoodle.reflection.TypeInfo
 import de.flapdoodle.tab.io.adapter.ToFileMapping
 import de.flapdoodle.tab.io.adapter.ToModelMapping
 import de.flapdoodle.tab.io.file.FileNode
@@ -28,14 +29,14 @@ class DefaultCalculatedMapper(
 
     override fun toModel(toModelMapping: ToModelMapping, src: FileNode): de.flapdoodle.tab.model.Node.Calculated<Comparable<Any>> {
         requireNotNull(src.calculated) { "calculated is not set" }
-        return toModel(toModelMapping, src, src.calculated, toModelMapping.indexType(src.calculated.indexType) as KClass<Comparable<Any>>)
+        return toModel(toModelMapping, src, src.calculated, toModelMapping.indexType(src.calculated.indexType) as TypeInfo<Comparable<Any>>)
     }
 
     private fun <T: Comparable<T>> toModel(
         toModelMapping: ToModelMapping,
         src: FileNode,
         calculated: FileNode.Calculated,
-        indexType: KClass<T>
+        indexType: TypeInfo<T>
     ): de.flapdoodle.tab.model.Node.Calculated<T> {
         return de.flapdoodle.tab.model.Node.Calculated(
             name = src.name,

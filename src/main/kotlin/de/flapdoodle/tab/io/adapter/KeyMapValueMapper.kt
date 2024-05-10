@@ -1,5 +1,6 @@
 package de.flapdoodle.tab.io.adapter
 
+import de.flapdoodle.reflection.TypeInfo
 import java.math.BigDecimal
 import java.math.BigInteger
 import java.time.LocalDate
@@ -10,14 +11,14 @@ class KeyMapValueMapper(
     val mapper: List<TypedValueMapper<out Any>>
 ) : ValueMapper {
 
-    private val byType = mapper.associateBy { it.type }
+    private val byType = mapper.associateBy { TypeInfo.of(it.type.javaObjectType) }
 
-    override fun <T : Any> toFile(type: KClass<T>, value: T): String {
+    override fun <T : Any> toFile(type: TypeInfo<T>, value: T): String {
         val typedMapper = requireNotNull(byType[type]) { "not found for $type" } as TypedValueMapper<T>
         return typedMapper.toFile(value)
     }
 
-    override fun <T : Any> toModel(type: KClass<T>, value: String): T {
+    override fun <T : Any> toModel(type: TypeInfo<T>, value: String): T {
         val typedMapper = requireNotNull(byType[type]) { "not found for $type" } as TypedValueMapper<T>
         return typedMapper.toModel(value)
     }

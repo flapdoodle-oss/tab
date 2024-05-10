@@ -1,5 +1,6 @@
 package de.flapdoodle.tab.io.mapper
 
+import de.flapdoodle.reflection.TypeInfo
 import de.flapdoodle.tab.io.MemorizingMapping
 import de.flapdoodle.tab.model.Node
 import de.flapdoodle.tab.model.Position
@@ -22,7 +23,7 @@ class DefaultConstantsMapperTest {
                 values = listOf(
                     SingleValue(
                     name = "value",
-                    valueType = Int::class,
+                    valueType = TypeInfo.of(Int::class.javaObjectType),
                     value = 1231,
                     color = Color.RED
                 )

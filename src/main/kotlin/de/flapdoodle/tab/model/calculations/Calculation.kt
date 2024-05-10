@@ -2,13 +2,14 @@ package de.flapdoodle.tab.model.calculations
 
 import de.flapdoodle.eval.core.evaluables.Evaluated
 import de.flapdoodle.kfx.types.Id
+import de.flapdoodle.reflection.TypeInfo
 import de.flapdoodle.tab.model.calculations.interpolation.InterpolationType
 import de.flapdoodle.tab.model.data.ColumnId
 import de.flapdoodle.tab.model.data.SingleValueId
 import kotlin.reflect.KClass
 
 sealed class Calculation<K: Comparable<K>>(
-    private val indexType: KClass<K>,
+    private val indexType: TypeInfo<K>,
     private val name: String,
     private val formula: Formula,
     open val id: Id<Calculation<*>>
@@ -26,7 +27,7 @@ sealed class Calculation<K: Comparable<K>>(
     abstract fun changeFormula(newFormula: String): Calculation<K>
 
     data class Aggregation<K: Comparable<K>>(
-        private val indexType: KClass<K>,
+        private val indexType: TypeInfo<K>,
         private val name: String,
         private val formula: Formula,
         private val destination: SingleValueId = SingleValueId(),
@@ -41,7 +42,7 @@ sealed class Calculation<K: Comparable<K>>(
     }
 
     data class Tabular<K: Comparable<K>>(
-        private val indexType: KClass<K>,
+        private val indexType: TypeInfo<K>,
         private val name: String,
         private val formula: Formula,
         private val interpolationType: InterpolationType = InterpolationType.Linear,

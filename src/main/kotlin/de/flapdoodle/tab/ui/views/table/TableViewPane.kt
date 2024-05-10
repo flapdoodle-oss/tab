@@ -5,6 +5,7 @@ import de.flapdoodle.kfx.controls.bettertable.HeaderColumnFactory
 import de.flapdoodle.kfx.controls.bettertable.Table
 import de.flapdoodle.kfx.controls.bettertable.TableChangeListener
 import de.flapdoodle.kfx.controls.bettertable.events.ReadOnlyState
+import de.flapdoodle.reflection.TypeInfo
 import de.flapdoodle.tab.model.data.Column
 import de.flapdoodle.tab.model.data.Columns
 import javafx.beans.property.SimpleObjectProperty
@@ -76,7 +77,7 @@ class TableViewPane<K : Comparable<K>>(
         }
     }
 
-    private fun indexColumn(indexType: KClass<K>): de.flapdoodle.kfx.controls.bettertable.Column<Row<K>, K> {
+    private fun indexColumn(indexType: TypeInfo<K>): de.flapdoodle.kfx.controls.bettertable.Column<Row<K>, K> {
         return IndexColumn(indexType)
     }
 
@@ -91,10 +92,10 @@ class TableViewPane<K : Comparable<K>>(
         ): Row<K>
     }
 
-    data class IndexColumn<K: Comparable<K>>(val indexType: KClass<K>):
+    data class IndexColumn<K: Comparable<K>>(val indexType: TypeInfo<K>):
         de.flapdoodle.kfx.controls.bettertable.Column<Row<K>, K>(
             label = "#",
-            property = ColumnProperty(indexType, { row -> row.index }),
+            property = ColumnProperty(Hack.classOf(indexType), { row -> row.index }),
             editable = false
     ), TableColumn<K, K> {
         override fun applyChange(row: Row<K>, change: TableChangeListener.CellChange<Row<K>, out Any>): Row<K> {
@@ -105,7 +106,7 @@ class TableViewPane<K : Comparable<K>>(
     data class NormalColumn<K: Comparable<K>, V: Any>(val column: Column<K, V>) :
         de.flapdoodle.kfx.controls.bettertable.Column<Row<K>, V>(
             label = column.name,
-            property = ColumnProperty(column.valueType, { row -> row.get(column) }),
+            property = ColumnProperty(Hack.classOf(column.valueType), { row -> row.get(column) }),
             editable = false
         ), TableColumn<K, V> {
         override fun applyChange(row: Row<K>, change: TableChangeListener.CellChange<Row<K>, out Any>): Row<K> {

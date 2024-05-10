@@ -1,6 +1,7 @@
 package de.flapdoodle.tab.ui.views.dialogs
 
 import de.flapdoodle.kfx.layout.grid.WeightGridPane
+import de.flapdoodle.reflection.TypeInfo
 import de.flapdoodle.tab.model.calculations.interpolation.InterpolationType
 import de.flapdoodle.tab.model.data.Column
 import javafx.scene.control.*
@@ -11,7 +12,7 @@ import java.time.LocalDate
 import kotlin.reflect.KClass
 
 class NewColumnDialog<K: Comparable<K>>(
-    val indexType: KClass<in K>
+    val indexType: TypeInfo<in K>
 ) : Dialog<Column<K, out Any>>() {
 
     private val name = Label("Name")
@@ -52,7 +53,7 @@ class NewColumnDialog<K: Comparable<K>>(
                 Column(
                     name = nameField.text,
                     indexType = indexType,
-                    valueType = typeField.selectionModel.selectedItem,
+                    valueType = TypeInfo.of(typeField.selectionModel.selectedItem.javaObjectType),
                     interpolationType = interpolationField.selectionModel.selectedItem ?: InterpolationType.Linear
                 )
             } else null
@@ -60,7 +61,7 @@ class NewColumnDialog<K: Comparable<K>>(
     }
 
     companion object {
-        fun <K: Comparable<K>> open(indexType: KClass<in K>): Column<K, out Any>? {
+        fun <K: Comparable<K>> open(indexType: TypeInfo<in K>): Column<K, out Any>? {
             val dialog = NewColumnDialog(indexType)
             return dialog.showAndWait().orElse(null)
         }

@@ -1,5 +1,6 @@
 package de.flapdoodle.tab.ui
 
+import de.flapdoodle.reflection.TypeInfo
 import de.flapdoodle.tab.model.Tab2Model
 import de.flapdoodle.tab.model.calculations.Calculation
 import de.flapdoodle.tab.model.calculations.Calculations
@@ -18,23 +19,38 @@ import java.math.BigInteger
 class ModelSolverWrapperTest {
     @Test
     fun singleTableConnecton() {
-        val x = Column("x", Int::class, Int::class)
+        val x = Column("x", TypeInfo.of(Int::class.javaObjectType), TypeInfo.of(Int::class.javaObjectType))
             .add(0, 1)
             .add(1,2)
             .add(3,10)
 
-        val y = Column("y", Int::class, Int::class)
+        val y = Column("y", TypeInfo.of(Int::class.javaObjectType), TypeInfo.of(Int::class.javaObjectType))
             .add(0, 2)
             .add(1,4)
             .add(3,20)
 
         val table = de.flapdoodle.tab.model.Node.Table(
-            "table", Int::class, Columns(listOf(x, y))
+            "table", TypeInfo.of(Int::class.javaObjectType), Columns(listOf(x, y))
         )
         val destination = ColumnId()
-        val formula = de.flapdoodle.tab.model.Node.Calculated("calc", Int::class, Calculations(Int::class,
-            tabular = listOf(Calculation.Tabular(Int::class,"y", EvalFormulaAdapter("x+2"), InterpolationType.Linear, destination))
-        ).let { c -> c.connect(c.inputs()[0].id, Source.ColumnSource(table.id, x.id, Int::class)) })
+        val formula = de.flapdoodle.tab.model.Node.Calculated("calc",
+            TypeInfo.of(Int::class.javaObjectType),
+            Calculations(
+                TypeInfo.of(Int::class.javaObjectType),
+                tabular = listOf(
+                    Calculation.Tabular(
+                        TypeInfo.of(Int::class.javaObjectType),
+                        "y",
+                        EvalFormulaAdapter("x+2"),
+                        InterpolationType.Linear,
+                        destination
+                    )
+                )
+            ).let { c -> c.connect(c.inputs()[0].id, Source.ColumnSource(
+                table.id,
+                x.id,
+                TypeInfo.of(Int::class.javaObjectType)
+            )) })
 
         val source = Tab2Model(listOf(table, formula))
         val wrapper = ModelSolverWrapper(source)

@@ -1,5 +1,6 @@
 package de.flapdoodle.tab.io.mapper
 
+import de.flapdoodle.reflection.TypeInfo
 import de.flapdoodle.tab.io.adapter.ToFileMapping
 import de.flapdoodle.tab.io.adapter.ToModelMapping
 import de.flapdoodle.tab.io.file.FileColor
@@ -27,7 +28,7 @@ object DefaultSingleValueMapper : Mapper<SingleValue<out Any>, FileSingleValue> 
         return typedToModel(toModelMapping, src, toModelMapping.valueType(src.valueType))
     }
 
-    private fun <T: Any> typedToModel(toModelMapping: ToModelMapping, src: FileSingleValue, valueType: KClass<T>): SingleValue<T> {
+    private fun <T: Any> typedToModel(toModelMapping: ToModelMapping, src: FileSingleValue, valueType: TypeInfo<T>): SingleValue<T> {
         return SingleValue(
             name = src.name,
             valueType = valueType,

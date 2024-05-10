@@ -5,6 +5,7 @@ import de.flapdoodle.kfx.types.ranges.RangeFactory
 import de.flapdoodle.kfx.controls.charts.Serie
 import de.flapdoodle.kfx.controls.charts.SmallChart
 import de.flapdoodle.kfx.converters.Converters
+import de.flapdoodle.reflection.TypeInfo
 import de.flapdoodle.tab.model.data.Column
 import de.flapdoodle.tab.model.data.Columns
 import javafx.beans.property.SimpleObjectProperty
@@ -27,8 +28,8 @@ class SmallChartPane<K : Comparable<K>>(
     private val lineChart = if (indexRangeFactory!=null) SmallChart(series,
         indexRangeFactory,
         RangeFactories.number(BigDecimal::class),
-        Converters.validatingFor(node.indexType, Locale.GERMANY),
-        Converters.validatingFor(BigDecimal::class, Locale.GERMANY))
+        de.flapdoodle.tab.ui.Converters.validatingConverter(node.indexType),
+        de.flapdoodle.tab.ui.Converters.validatingConverter(BigDecimal::class))
     else null
 
     init {
@@ -45,20 +46,22 @@ class SmallChartPane<K : Comparable<K>>(
     }
 
 
-    private fun indexRangeFactory(indexType: KClass<K>): RangeFactory<K>? {
+    private fun indexRangeFactory(indexType: TypeInfo<K>): RangeFactory<K>? {
+        // TODO umbauen
         return when (indexType) {
-            LocalDate::class -> RangeFactories.localDate() as RangeFactory<K>
-            Double::class -> RangeFactories.number(Double::class) as RangeFactory<K>
-            Int::class -> RangeFactories.number(Int::class) as RangeFactory<K>
-            String::class -> null
+            TypeInfo.of(LocalDate::class.java) -> RangeFactories.localDate() as RangeFactory<K>
+            TypeInfo.of(Double::class.javaObjectType) -> RangeFactories.number(Double::class) as RangeFactory<K>
+            TypeInfo.of(Int::class.javaObjectType) -> RangeFactories.number(Int::class) as RangeFactory<K>
+            TypeInfo.of(String::class.java) -> null
             else -> throw IllegalArgumentException("not implemented: $indexType")
         }
     }
 
     companion object {
+        private val numberType = TypeInfo.of(Number::class.java)
 
         private fun <K : Comparable<K>> seriesOf(columns: Columns<K>): List<Serie<K, BigDecimal>> {
-            val filtered = columns.filter { Number::class.java.isAssignableFrom(it.valueType.javaObjectType) }
+            val filtered = columns.filter { numberType.isAssignable(it.valueType) }
             val index = filtered.index()
             val mapped = filtered.columns().map { c ->
                 columAsSeries(index, c as Column<K, out Number>)

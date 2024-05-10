@@ -1,5 +1,6 @@
 package de.flapdoodle.tab.io.mapper
 
+import de.flapdoodle.reflection.TypeInfo
 import de.flapdoodle.tab.io.MemorizingMapping
 import de.flapdoodle.tab.model.Node
 import de.flapdoodle.tab.model.Position
@@ -17,13 +18,13 @@ class DefaultTableMapperTest {
 
         val src = de.flapdoodle.tab.model.Node.Table(
             name = "name",
-            indexType = Int::class,
+            indexType = TypeInfo.of(Int::class.javaObjectType),
             position = Position(10.0, 20.0),
             columns = Columns(listOf(
                 Column(
                     name = "column",
-                    indexType = Int::class,
-                    valueType = String::class,
+                    indexType = TypeInfo.of(Int::class.javaObjectType),
+                    valueType = TypeInfo.of(String::class.javaObjectType),
                     id = ColumnId(),
                     color = Color.YELLOW,
                     values = mapOf(

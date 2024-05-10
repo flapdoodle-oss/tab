@@ -3,6 +3,7 @@ package de.flapdoodle.tab.ui
 import de.flapdoodle.kfx.collections.Change
 import de.flapdoodle.kfx.collections.Diff
 import de.flapdoodle.kfx.types.Id
+import de.flapdoodle.reflection.TypeInfo
 import de.flapdoodle.tab.model.Tab2Model
 import de.flapdoodle.tab.model.calculations.InputSlot
 import de.flapdoodle.tab.model.connections.Source
@@ -146,9 +147,9 @@ sealed class Action {
             val missingValues = expectedValues.filter { !existingValues.contains(it.first) }
 
             return node.columns.columns() +
-                    missingColumns.map { Column(it.second.name(), node.indexType, Unit::class, it.second.interpolationType(), emptyMap(), it.first) } +
+                    missingColumns.map { Column(it.second.name(), node.indexType, TypeInfo.of(Unit::class.javaObjectType), it.second.interpolationType(), emptyMap(), it.first) } +
                     node.values.values +
-                    missingValues.map { SingleValue(it.second.name(), Unit::class, null, it.first) }
+                    missingValues.map { SingleValue(it.second.name(), TypeInfo.of(Unit::class.javaObjectType), null, it.first) }
         }
     }
 }

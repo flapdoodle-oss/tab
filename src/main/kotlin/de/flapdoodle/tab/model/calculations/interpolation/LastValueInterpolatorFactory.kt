@@ -1,10 +1,11 @@
 package de.flapdoodle.tab.model.calculations.interpolation
 
 import de.flapdoodle.eval.core.evaluables.Evaluated
+import de.flapdoodle.reflection.TypeInfo
 import kotlin.reflect.KClass
 
 class LastValueInterpolatorFactory<K: Comparable<K>, V: Any>(
-    val valueType: KClass<V>
+    val valueType: TypeInfo<V>
 ) : InterpolatorFactory<K, V> {
 
     override fun interpolatorFor(index: Set<K>, values: Map<out K, V>): Interpolator<K, V> {
@@ -15,9 +16,9 @@ class LastValueInterpolatorFactory<K: Comparable<K>, V: Any>(
                 it <= offset
             }
             if (firstIndex!=null)
-                Evaluated.ofNullable(valueType.javaObjectType, values[firstIndex])
+                Evaluated.ofNullable(valueType, values[firstIndex])
             else
-                Evaluated.ofNull(valueType.javaObjectType)
+                Evaluated.ofNull(valueType)
         }
 
     }

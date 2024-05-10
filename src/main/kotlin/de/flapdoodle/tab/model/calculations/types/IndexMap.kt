@@ -7,8 +7,8 @@ import kotlin.reflect.KClass
 
 data class IndexMap<K : Comparable<K>, V : Any>(
     private val map: Map<K, V>,
-    private val indexType: KClass<in K>,
-    private val valueType: KClass<V>
+    private val indexType: TypeInfo<in K>,
+    private val valueType: TypeInfo<V>
 ) {
     private val orderedValues = map.entries.sortedBy { it.key }.map { it.value }
 

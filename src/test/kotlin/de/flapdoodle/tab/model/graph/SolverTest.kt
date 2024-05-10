@@ -1,5 +1,6 @@
 package de.flapdoodle.tab.model.graph
 
+import de.flapdoodle.reflection.TypeInfo
 import de.flapdoodle.tab.model.Node
 import de.flapdoodle.tab.model.Tab2Model
 import de.flapdoodle.tab.model.calculations.Calculation
@@ -31,7 +32,7 @@ class SolverTest {
 
     @Test
     fun singleConnecton() {
-        val x = SingleValue("x", Int::class, 1)
+        val x = SingleValue("x", TypeInfo.of(Int::class.javaObjectType), 1)
 
         val constants = de.flapdoodle.tab.model.Node.Constants(
             "const", SingleValues(
@@ -39,32 +40,32 @@ class SolverTest {
             )
         )
         val destination = SingleValueId()
-        val formula = de.flapdoodle.tab.model.Node.Calculated("calc", String::class, Calculations(String::class,
-            listOf(Calculation.Aggregation<String>(String::class,"y", EvalFormulaAdapter("x+2"), destination))
+        val formula = de.flapdoodle.tab.model.Node.Calculated("calc", TypeInfo.of(String::class.javaObjectType), Calculations(TypeInfo.of(String::class.javaObjectType),
+            listOf(Calculation.Aggregation<String>(TypeInfo.of(String::class.javaObjectType),"y", EvalFormulaAdapter("x+2"), destination))
         ).let { c -> c.connect(c.inputs()[0].id, Source.ValueSource(constants.id, x.id)) })
 
         val source = Tab2Model(listOf(constants, formula))
         val changed = Solver.solve(source)
 
         assertThat(changed.node(formula.id).value(destination))
-            .isEqualTo(SingleValue("y", BigInteger::class, BigInteger.valueOf(3), destination))
+            .isEqualTo(SingleValue("y", TypeInfo.of(BigInteger::class.javaObjectType), BigInteger.valueOf(3), destination))
 
     }
 
     @Test
     fun singleTableConnection() {
-        val x = Column("x", Int::class, Int::class)
+        val x = Column("x", TypeInfo.of(Int::class.javaObjectType), TypeInfo.of(Int::class.javaObjectType))
             .add(0, 1)
             .add(1,2)
             .add(3,10)
 
         val table = de.flapdoodle.tab.model.Node.Table(
-            "table", Int::class, Columns(listOf(x))
+            "table", TypeInfo.of(Int::class.javaObjectType), Columns(listOf(x))
         )
         val destination = ColumnId()
-        val formula = de.flapdoodle.tab.model.Node.Calculated("calc", Int::class, Calculations(Int::class,
-            tabular = listOf(Calculation.Tabular(Int::class,"y", EvalFormulaAdapter("x+2"), InterpolationType.Linear, destination))
-        ).let { c -> c.connect(c.inputs()[0].id, Source.ColumnSource(table.id, x.id, Int::class)) })
+        val formula = de.flapdoodle.tab.model.Node.Calculated("calc", TypeInfo.of(Int::class.javaObjectType), Calculations(TypeInfo.of(Int::class.javaObjectType),
+            tabular = listOf(Calculation.Tabular(TypeInfo.of(Int::class.javaObjectType),"y", EvalFormulaAdapter("x+2"), InterpolationType.Linear, destination))
+        ).let { c -> c.connect(c.inputs()[0].id, Source.ColumnSource(table.id, x.id, TypeInfo.of(Int::class.javaObjectType))) })
 
         val source = Tab2Model(listOf(table, formula))
         val changed = Solver.solve(source)
@@ -81,18 +82,18 @@ class SolverTest {
 
     @Test
     fun tableAggregation() {
-        val x = Column("x", Int::class, Int::class)
+        val x = Column("x", TypeInfo.of(Int::class.javaObjectType), TypeInfo.of(Int::class.javaObjectType))
             .add(0, 1)
             .add(1,2)
             .add(3,10)
 
         val table = de.flapdoodle.tab.model.Node.Table(
-            "table", Int::class, Columns(listOf(x))
+            "table", TypeInfo.of(Int::class.javaObjectType), Columns(listOf(x))
         )
         val destination = SingleValueId()
-        val formula = de.flapdoodle.tab.model.Node.Calculated("calc", Int::class, Calculations(Int::class,
-            aggregations = listOf(Calculation.Aggregation<Int>(Int::class,"y", EvalFormulaAdapter("sum(x)"), destination))
-        ).let { c -> c.connect(c.inputs()[0].id, Source.ColumnSource(table.id, x.id, Int::class)) })
+        val formula = de.flapdoodle.tab.model.Node.Calculated("calc", TypeInfo.of(Int::class.javaObjectType), Calculations(TypeInfo.of(Int::class.javaObjectType),
+            aggregations = listOf(Calculation.Aggregation<Int>(TypeInfo.of(Int::class.javaObjectType),"y", EvalFormulaAdapter("sum(x)"), destination))
+        ).let { c -> c.connect(c.inputs()[0].id, Source.ColumnSource(table.id, x.id, TypeInfo.of(Int::class.javaObjectType))) })
 
         val source = Tab2Model(listOf(table, formula))
         val changed = Solver.solve(source)
@@ -105,23 +106,23 @@ class SolverTest {
 
     @Test
     fun singleTableConnectionReconnected() {
-        val x = Column("x", Int::class, Int::class)
+        val x = Column("x", TypeInfo.of(Int::class.javaObjectType), TypeInfo.of(Int::class.javaObjectType))
             .add(0, 1)
             .add(1,2)
             .add(3,10)
 
-        val y = Column("y", Int::class, Int::class)
+        val y = Column("y", TypeInfo.of(Int::class.javaObjectType), TypeInfo.of(Int::class.javaObjectType))
             .add(0, 2)
             .add(1,4)
             .add(3,20)
 
         val table = de.flapdoodle.tab.model.Node.Table(
-            "table", Int::class, Columns(listOf(x, y))
+            "table", TypeInfo.of(Int::class.javaObjectType), Columns(listOf(x, y))
         )
         val destination = ColumnId()
-        val formula = de.flapdoodle.tab.model.Node.Calculated("calc", Int::class, Calculations(Int::class,
-            tabular = listOf(Calculation.Tabular(Int::class,"y", EvalFormulaAdapter("x+2"), InterpolationType.Linear, destination))
-        ).let { c -> c.connect(c.inputs()[0].id, Source.ColumnSource(table.id, x.id, Int::class)) })
+        val formula = de.flapdoodle.tab.model.Node.Calculated("calc", TypeInfo.of(Int::class.javaObjectType), Calculations(TypeInfo.of(Int::class.javaObjectType),
+            tabular = listOf(Calculation.Tabular(TypeInfo.of(Int::class.javaObjectType),"y", EvalFormulaAdapter("x+2"), InterpolationType.Linear, destination))
+        ).let { c -> c.connect(c.inputs()[0].id, Source.ColumnSource(table.id, x.id, TypeInfo.of(Int::class.javaObjectType))) })
 
         val source = Tab2Model(listOf(table, formula))
         val reconnected = source.connect(table.id, Either.left(y.id), formula.id, Either.right(formula.calculations.inputs()[0].id))
@@ -139,23 +140,23 @@ class SolverTest {
 
     @Test
     fun singleTableReconnectToDifferentType() {
-        val x = Column("x", Int::class, Int::class)
+        val x = Column("x", TypeInfo.of(Int::class.javaObjectType), TypeInfo.of(Int::class.javaObjectType))
             .add(0, 1)
             .add(1,2)
             .add(3,10)
 
-        val y = Column("y", Int::class, String::class)
+        val y = Column("y", TypeInfo.of(Int::class.javaObjectType), TypeInfo.of(String::class.javaObjectType))
             .add(0, "2")
             .add(1,"4")
             .add(3,"20")
 
         val table = de.flapdoodle.tab.model.Node.Table(
-            "table", Int::class, Columns(listOf(x, y))
+            "table", TypeInfo.of(Int::class.javaObjectType), Columns(listOf(x, y))
         )
         val destination = ColumnId()
-        val formula = de.flapdoodle.tab.model.Node.Calculated("calc", Int::class, Calculations(Int::class,
-            tabular = listOf(Calculation.Tabular(Int::class,"y", EvalFormulaAdapter("x"), InterpolationType.Linear, destination))
-        ).let { c -> c.connect(c.inputs()[0].id, Source.ColumnSource(table.id, x.id, Int::class)) })
+        val formula = de.flapdoodle.tab.model.Node.Calculated("calc", TypeInfo.of(Int::class.javaObjectType), Calculations(TypeInfo.of(Int::class.javaObjectType),
+            tabular = listOf(Calculation.Tabular(TypeInfo.of(Int::class.javaObjectType),"y", EvalFormulaAdapter("x"), InterpolationType.Linear, destination))
+        ).let { c -> c.connect(c.inputs()[0].id, Source.ColumnSource(table.id, x.id, TypeInfo.of(Int::class.javaObjectType))) })
 
         val source = Tab2Model(listOf(table, formula))
         val reconnected = source.connect(table.id, Either.left(y.id), formula.id, Either.right(formula.calculations.inputs()[0].id))
@@ -173,17 +174,27 @@ class SolverTest {
 
     @Test
     fun tablesAndValues() {
-        val a = Column("a", Int::class, Int::class)
+        val a = Column(
+            name = "a",
+            indexType = TypeInfo.of(Int::class.javaObjectType),
+            valueType = TypeInfo.of(Int::class.javaObjectType),
+            interpolationType = InterpolationType.LastValue
+        )
             .add(0, 1)
             .add(1,2)
             .add(3,10)
 
-        val b = Column("b", Int::class, Int::class)
+        val b = Column(
+            name = "b",
+            indexType = TypeInfo.of(Int::class.javaObjectType),
+            valueType = TypeInfo.of(Int::class.javaObjectType),
+            interpolationType = InterpolationType.LastValue
+        )
             .add(0, 5)
             .add(2,10)
             .add(3,5)
 
-        val x = SingleValue("x", Int::class, 1)
+        val x = SingleValue("x", TypeInfo.of(Int::class.javaObjectType), 1)
 
         val constants = de.flapdoodle.tab.model.Node.Constants(
             "const", SingleValues(
@@ -192,14 +203,14 @@ class SolverTest {
         )
 
         val table = de.flapdoodle.tab.model.Node.Table(
-            "table", Int::class, Columns(listOf(a, b))
+            "table", TypeInfo.of(Int::class.javaObjectType), Columns(listOf(a, b))
         )
         val destination = ColumnId()
-        val formula = de.flapdoodle.tab.model.Node.Calculated("calc", Int::class, Calculations(Int::class,
-            tabular = listOf(Calculation.Tabular(Int::class,"y", EvalFormulaAdapter("x+b+c"), InterpolationType.Linear, destination))
+        val formula = de.flapdoodle.tab.model.Node.Calculated("calc", TypeInfo.of(Int::class.javaObjectType), Calculations(TypeInfo.of(Int::class.javaObjectType),
+            tabular = listOf(Calculation.Tabular(TypeInfo.of(Int::class.javaObjectType),"y", EvalFormulaAdapter("x+b+c"), InterpolationType.Linear, destination))
         ).let { c ->
-            c.connect(c.inputs()[0].id, Source.ColumnSource(table.id, a.id, Int::class))
-                .connect(c.inputs()[1].id, Source.ColumnSource(table.id, b.id, Int::class))
+            c.connect(c.inputs()[0].id, Source.ColumnSource(table.id, a.id, TypeInfo.of(Int::class.javaObjectType)))
+                .connect(c.inputs()[1].id, Source.ColumnSource(table.id, b.id, TypeInfo.of(Int::class.javaObjectType)))
                 .connect(c.inputs()[2].id, Source.ValueSource(constants.id, x.id))
         })
 

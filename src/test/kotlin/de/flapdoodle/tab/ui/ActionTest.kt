@@ -1,14 +1,13 @@
 package de.flapdoodle.tab.ui
 
 import de.flapdoodle.kfx.types.Id
+import de.flapdoodle.reflection.TypeInfo
 import de.flapdoodle.tab.model.Node
 import de.flapdoodle.tab.model.Tab2Model
 import de.flapdoodle.tab.model.calculations.Calculation
 import de.flapdoodle.tab.model.calculations.Calculations
-import de.flapdoodle.tab.model.calculations.adapter.Eval
 import de.flapdoodle.tab.model.calculations.adapter.EvalFormulaAdapter
 import de.flapdoodle.tab.model.change.ModelChange
-import de.flapdoodle.tab.model.connections.Source
 import de.flapdoodle.tab.model.data.Column
 import de.flapdoodle.tab.model.data.ColumnId
 import de.flapdoodle.tab.model.data.Columns
@@ -51,13 +50,18 @@ class ActionTest {
 
         val table = Node.Table(
             name = "table",
-            indexType = Int::class,
+            indexType = TypeInfo.of(Int::class.javaObjectType),
             id = tableId
         )
         val tableWithColumn = table.copy(
             columns = Columns(
                 columns = listOf(
-                    Column(name = "x", indexType = Int::class, valueType = Int::class, id = columnId)
+                    Column(
+                        name = "x",
+                        indexType = TypeInfo.of(Int::class.javaObjectType),
+                        valueType = TypeInfo.of(Int::class.javaObjectType),
+                        id = columnId
+                    )
                 )
             )
         )
@@ -97,24 +101,29 @@ class ActionTest {
 
         val table = Node.Table(
             name = "table",
-            indexType = Int::class,
+            indexType = TypeInfo.of(Int::class.javaObjectType),
             id = tableId,
             columns = Columns(
                 columns = listOf(
-                    Column(name = "x", indexType = Int::class, valueType = Int::class, id = columnId)
+                    Column(
+                        name = "x",
+                        indexType = TypeInfo.of(Int::class.javaObjectType),
+                        valueType = TypeInfo.of(Int::class.javaObjectType),
+                        id = columnId
+                    )
                 )
             )
         )
 
         val calculated = Node.Calculated(
             name = "calculated",
-            indexType = Int::class,
+            indexType = TypeInfo.of(Int::class.javaObjectType),
             id = calculatedId,
             calculations = Calculations(
-                indexType = Int::class,
+                indexType = TypeInfo.of(Int::class.javaObjectType),
                 tabular = listOf(
                     Calculation.Tabular(
-                        indexType = Int::class,
+                        indexType = TypeInfo.of(Int::class.javaObjectType),
                         name = "x",
                         formula = EvalFormulaAdapter("x")
                     )
@@ -170,10 +179,13 @@ class ActionTest {
 
         var model = emptyModel()
         if (random.nextBoolean()) {
-            model = model.addNode(Node.Table("table#" + random.nextInt(), String::class))
+            model = model.addNode(Node.Table("table#" + random.nextInt(), TypeInfo.of(String::class.javaObjectType)))
         }
         if (random.nextBoolean()) {
-            model = model.addNode(Node.Calculated("calculated#" + random.nextInt(), Double::class))
+            model = model.addNode(Node.Calculated(
+                "calculated#" + random.nextInt(),
+                TypeInfo.of(Double::class.javaObjectType)
+            ))
         }
         if (random.nextBoolean()) {
             model = model.addNode(Node.Constants("consts#" + random.nextInt()))
@@ -190,14 +202,14 @@ class ActionTest {
             .addNode(
                 Node.Table(
                     name = "source",
-                    indexType = String::class,
+                    indexType = TypeInfo.of(String::class.javaObjectType),
                     id = tableId
                 )
             )
             .addNode(
                 Node.Calculated(
                     name = "calc",
-                    indexType = String::class,
+                    indexType = TypeInfo.of(String::class.javaObjectType),
                     id = calculatedId
                 )
             )
@@ -206,8 +218,8 @@ class ActionTest {
                     id = tableId,
                     column = Column(
                         name = "x",
-                        indexType = String::class,
-                        valueType = Double::class
+                        indexType = TypeInfo.of(String::class.javaObjectType),
+                        valueType = TypeInfo.of(Double::class.javaObjectType)
                     )
                 )
             )
@@ -240,3 +252,4 @@ class ActionTest {
 
     private fun emptyModel() = Tab2Model()
 }
+

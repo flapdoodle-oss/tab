@@ -1,6 +1,7 @@
 package de.flapdoodle.tab.io.adapter
 
 import de.flapdoodle.kfx.types.Id
+import de.flapdoodle.reflection.TypeInfo
 import kotlin.reflect.KClass
 
 class ToModelMapping(
@@ -12,7 +13,7 @@ class ToModelMapping(
     fun <T : Any> nextId(id: String, type: KClass<T>): Id<T> = toModelIdMapper.nextId(id, type)
 
     fun valueType(valueType: String) = typeMapper.toModel(valueType)
-    fun <T: Any> value(valueType: KClass<T>, value: String) = valueMapper.toModel(valueType, value)
+    fun <T: Any> value(valueType: TypeInfo<T>, value: String) = valueMapper.toModel(valueType, value)
 
     fun indexType(valueType: String) = indexTypeMapper.toModel(valueType)
 }

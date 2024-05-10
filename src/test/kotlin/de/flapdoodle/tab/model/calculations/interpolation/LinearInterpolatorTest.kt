@@ -1,5 +1,6 @@
 package de.flapdoodle.tab.model.calculations.interpolation
 
+import de.flapdoodle.reflection.TypeInfo
 import de.flapdoodle.tab.model.calculations.interpolation.LinearInterpolator
 import de.flapdoodle.tab.model.calculations.interpolation.linear.LinearInterpolation
 import org.assertj.core.api.Assertions.assertThat
@@ -16,8 +17,8 @@ class LinearInterpolatorTest {
     fun singlePointInterpolation() {
         val testee = LinearInterpolator(
             values =  mapOf(3 to BigDecimal.valueOf(10.0)),
-            interpolation = LinearInterpolation.interpolation(Int::class, BigDecimal::class)!!,
-            valueType = BigDecimal::class
+            interpolation = LinearInterpolation.interpolation(TypeInfo.of(Int::class.javaObjectType), TypeInfo.of(BigDecimal::class.javaObjectType))!!,
+            valueType = TypeInfo.of(BigDecimal::class.javaObjectType)
         )
 
         assertThat(testee.interpolated(0).wrapped())
@@ -32,8 +33,8 @@ class LinearInterpolatorTest {
     fun twoPointInterpolation() {
         val testee = LinearInterpolator(
             values =  mapOf(3 to BigDecimal.valueOf(10.0), 6 to BigDecimal.valueOf(20.0)),
-            interpolation = LinearInterpolation.interpolation(Int::class, BigDecimal::class)!!,
-            valueType = BigDecimal::class
+            interpolation = LinearInterpolation.interpolation(TypeInfo.of(Int::class.javaObjectType), TypeInfo.of(BigDecimal::class.javaObjectType))!!,
+            valueType = TypeInfo.of(BigDecimal::class.javaObjectType)
         )
 
         assertThat(testee.interpolated(0).wrapped())
@@ -54,8 +55,8 @@ class LinearInterpolatorTest {
     fun threePointInterpolation() {
         val testee = LinearInterpolator(
             values =  mapOf(3 to BigDecimal.valueOf(10.0), 6 to BigDecimal.valueOf(20.0), 12 to BigDecimal.valueOf(60.0)),
-            interpolation = LinearInterpolation.interpolation(Int::class, BigDecimal::class)!!,
-            valueType = BigDecimal::class
+            interpolation = LinearInterpolation.interpolation(TypeInfo.of(Int::class.javaObjectType), TypeInfo.of(BigDecimal::class.javaObjectType))!!,
+            valueType = TypeInfo.of(BigDecimal::class.javaObjectType)
         )
 
         assertThat(testee.interpolated(0).wrapped())

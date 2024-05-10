@@ -1,5 +1,6 @@
 package de.flapdoodle.tab.io.mapper
 
+import de.flapdoodle.reflection.TypeInfo
 import de.flapdoodle.tab.io.adapter.ToFileMapping
 import de.flapdoodle.tab.io.adapter.ToModelMapping
 import de.flapdoodle.tab.io.file.FileColumns
@@ -13,7 +14,7 @@ class DefaultColumnsMapper(
         return FileColumns(src.columns().map { columnMapper.toFile(toFileMapping, it) })
     }
 
-    override fun <K : Comparable<K>> toModel(toModelMapping: ToModelMapping, indexType: KClass<K>, src: FileColumns): Columns<K> {
+    override fun <K : Comparable<K>> toModel(toModelMapping: ToModelMapping, indexType: TypeInfo<K>, src: FileColumns): Columns<K> {
         return Columns(src.values.map { columnMapper.toModel(toModelMapping, indexType, it) })
     }
 }

@@ -1,5 +1,6 @@
 package de.flapdoodle.tab.io.mapper
 
+import de.flapdoodle.reflection.TypeInfo
 import de.flapdoodle.tab.io.adapter.ToFileMapping
 import de.flapdoodle.tab.io.adapter.ToModelMapping
 import de.flapdoodle.tab.io.file.FileDataId
@@ -37,7 +38,7 @@ class DefaultSourceMapper(
 
     override fun <K : Comparable<K>> toModel(
         toModelMapping: ToModelMapping,
-        indexType: KClass<K>,
+        indexType: TypeInfo<K>,
         src: FileSource
     ): Source {
         return when (val dataId = dataIdMapper.toModel(toModelMapping, src.dataId)) {
