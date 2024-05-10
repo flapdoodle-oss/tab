@@ -57,5 +57,8 @@ data class IndexMap<K : Comparable<K>, V : Any>(
             return instance is IndexMap<*, *> && instance.values().all { valueType.isInstance(it) }
         }
 
+        override fun isAssignable(other: TypeInfo<*>?): Boolean {
+            return other is IndexMapTypeInfo<out Any> && valueType.isAssignable(other.valueType)
+        }
     }
 }
