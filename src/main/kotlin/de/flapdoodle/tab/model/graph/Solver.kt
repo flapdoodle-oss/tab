@@ -182,6 +182,7 @@ object Solver {
         columns2var: List<Pair<Column<K, Any>, Variable>>,
         singleValueMap: List<Pair<Variable, Evaluated<Any>>>
     ): Tab2Model {
+        // TODO interpolator bei String als Index macht keinen Sinn!!
         val interpolated = sortAndInterpolate(columns2var)
         val result = interpolated.index.mapNotNull {
             try {
