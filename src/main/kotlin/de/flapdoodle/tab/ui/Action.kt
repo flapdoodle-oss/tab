@@ -146,7 +146,7 @@ sealed class Action {
             val missingValues = expectedValues.filter { !existingValues.contains(it.first) }
 
             return node.columns.columns() +
-                    missingColumns.map { Column(it.second.name(), node.indexType, Unit::class, emptyMap(), it.first) } +
+                    missingColumns.map { Column(it.second.name(), node.indexType, Unit::class, it.second.interpolationType(), emptyMap(), it.first) } +
                     node.values.values +
                     missingValues.map { SingleValue(it.second.name(), Unit::class, null, it.first) }
         }

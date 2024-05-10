@@ -5,6 +5,7 @@ import de.flapdoodle.tab.model.Node
 import de.flapdoodle.tab.model.calculations.Calculation
 import de.flapdoodle.tab.model.calculations.Calculations
 import de.flapdoodle.tab.model.calculations.adapter.EvalFormulaAdapter
+import de.flapdoodle.tab.model.calculations.interpolation.InterpolationType
 import de.flapdoodle.tab.model.connections.Source
 import de.flapdoodle.tab.model.data.ColumnId
 import de.flapdoodle.tab.model.data.SingleValueId
@@ -158,6 +159,6 @@ class CalculationsTest {
         formula: String,
         columnId: ColumnId
     ): Calculation.Tabular<K> {
-        return Calculation.Tabular(indexType, name, EvalFormulaAdapter(formula), columnId)
+        return Calculation.Tabular(indexType, name, EvalFormulaAdapter(formula), InterpolationType.Linear, columnId)
     }
 }

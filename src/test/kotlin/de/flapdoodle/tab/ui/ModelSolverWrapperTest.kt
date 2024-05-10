@@ -4,6 +4,7 @@ import de.flapdoodle.tab.model.Tab2Model
 import de.flapdoodle.tab.model.calculations.Calculation
 import de.flapdoodle.tab.model.calculations.Calculations
 import de.flapdoodle.tab.model.calculations.adapter.EvalFormulaAdapter
+import de.flapdoodle.tab.model.calculations.interpolation.InterpolationType
 import de.flapdoodle.tab.model.connections.Source
 import de.flapdoodle.tab.model.data.Column
 import de.flapdoodle.tab.model.data.ColumnId
@@ -32,7 +33,7 @@ class ModelSolverWrapperTest {
         )
         val destination = ColumnId()
         val formula = de.flapdoodle.tab.model.Node.Calculated("calc", Int::class, Calculations(Int::class,
-            tabular = listOf(Calculation.Tabular(Int::class,"y", EvalFormulaAdapter("x+2"), destination))
+            tabular = listOf(Calculation.Tabular(Int::class,"y", EvalFormulaAdapter("x+2"), InterpolationType.Linear, destination))
         ).let { c -> c.connect(c.inputs()[0].id, Source.ColumnSource(table.id, x.id, Int::class)) })
 
         val source = Tab2Model(listOf(table, formula))

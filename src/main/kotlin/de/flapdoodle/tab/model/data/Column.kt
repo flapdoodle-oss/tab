@@ -1,6 +1,7 @@
 package de.flapdoodle.tab.model.data
 
 import de.flapdoodle.kfx.colors.HashedColors
+import de.flapdoodle.tab.model.calculations.interpolation.InterpolationType
 import javafx.scene.paint.Color
 import kotlin.reflect.KClass
 
@@ -8,6 +9,7 @@ data class Column<K : Comparable<K>, V : Any>(
     val name: String,
     val indexType: KClass<in K>,
     val valueType: KClass<V>,
+    val interpolationType: InterpolationType = InterpolationType.Linear,
     val values: Map<K, V> = emptyMap(),
     override val id: ColumnId = ColumnId(),
     val color: Color = HashedColors.hashedColor(name.hashCode() + id.hashCode())

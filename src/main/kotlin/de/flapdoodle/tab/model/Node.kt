@@ -57,7 +57,7 @@ sealed class Node {
         override val values: SingleValues = SingleValues(),
         override val id: Id<Node.Constants> = Id.nextId(Node.Constants::class),
         override val position: Position = Position(0.0, 0.0)
-    ) : Node(), Node.HasValues {
+    ) : Node(), HasValues {
 
         fun addValue(value: SingleValue<*>): Node.Constants {
             return copy(values = values.addValue(value))
@@ -151,10 +151,10 @@ sealed class Node {
         val calculations: Calculations<K> = Calculations(indexType),
         override val columns: Columns<K> = Columns(),
         override val values: SingleValues = SingleValues(),
-        override val id: Id<Node.Calculated<*>> = Id.nextId(Node.Calculated::class),
+        override val id: Id<Calculated<*>> = Id.nextId(Calculated::class),
         override val position: Position = Position(0.0, 0.0)
     ): Node(), HasColumns<K>,
-        Node.HasValues {
+        HasValues {
 
         fun addAggregation(aggregation: Calculation.Aggregation<K>): Node.Calculated<K> {
             return copy(calculations = calculations.addAggregation(aggregation))

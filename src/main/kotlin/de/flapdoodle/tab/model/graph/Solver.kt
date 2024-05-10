@@ -2,7 +2,6 @@ package de.flapdoodle.tab.model.graph
 
 import de.flapdoodle.eval.core.evaluables.Evaluated
 import de.flapdoodle.eval.core.exceptions.BaseException
-import de.flapdoodle.eval.core.exceptions.EvaluableException
 import de.flapdoodle.graph.GraphAsDot
 import de.flapdoodle.graph.Graphs
 import de.flapdoodle.graph.VerticesAndEdges
@@ -170,20 +169,20 @@ object Solver {
         variableDataMap: Map<Variable, Data>
     ): Tab2Model {
         val (columns, values) = variableDataMap.entries.partition { it.value is Column<*, *> }
-        val columns2var = columns.map { it.value as Column<K, Any> to it.key }
+        val columnsMap = columns.map {  it.key to it.value as Column<K, Any> }
         val singleValueMap = values.map { it.key to singleValueAsEvaluated(it.value as SingleValue<Any>) }
-        return calculateTabular(updated, node, calculation, columns2var, singleValueMap)
+        return calculateTabular(updated, node, calculation, columnsMap, singleValueMap)
     }
 
     private fun <K : Comparable<K>> calculateTabular(
         updated: Tab2Model,
         node: de.flapdoodle.tab.model.Node.Calculated<K>,
         calculation: Calculation.Tabular<K>,
-        columns2var: List<Pair<Column<K, Any>, Variable>>,
+        columnsMap: List<Pair<Variable, Column<K, Any>>>,
         singleValueMap: List<Pair<Variable, Evaluated<Any>>>
     ): Tab2Model {
         // TODO interpolator bei String als Index macht keinen Sinn!!
-        val interpolated = sortAndInterpolate(columns2var)
+        val interpolated = sortAndInterpolate(columnsMap)
         val result = interpolated.index.mapNotNull {
             try {
                 val result = calculation.evaluate(interpolated.variablesAt(it) + singleValueMap.toMap())
@@ -198,18 +197,20 @@ object Solver {
         return updated.copy(nodes = updated.nodes.map { if (it.id == changedNode.id) changedNode else it })
     }
 
-    private fun <K : Comparable<K>> sortAndInterpolate(columns: List<Pair<Column<K, Any>, Variable>>): InterpolatedColumns<K> {
-        val index = columns.flatMap { it.first.index() }.toSet()
-        val map2vars = columns.map { Interpolator.valueAtOffset(it.first.valueType, it.first.values).interpolatedAt(index) to it.second }
-        return InterpolatedColumns(index, map2vars)
+    private fun <K : Comparable<K>> sortAndInterpolate(columns: List<Pair<Variable, Column<K, Any>>>): InterpolatedColumns<K> {
+        val index = columns.flatMap { it.second.index() }.toSet()
+        val map = columns.map {
+            it.first to Interpolator.valueAtOffset(it.second.valueType, it.second.values).interpolatedAt(index)
+        }
+        return InterpolatedColumns(index, map)
     }
 
     data class InterpolatedColumns<K : Any>(
         val index: Set<K>,
-        val map2vars: List<Pair<Map<K, Evaluated<out Any>>, Variable>>
+        val map2vars: List<Pair<Variable, Map<K, Evaluated<out Any>>>>
     ) {
         fun variablesAt(index: K): Map<Variable, Evaluated<out Any>> {
-            return map2vars.map { it.second to it.first[index]!! }.toMap()
+            return map2vars.map { it.first to it.second[index]!! }.toMap()
         }
     }
 
@@ -272,11 +273,11 @@ object Solver {
         val valueType = valueTypes.toList().one { true }
 
         val column = Column(
-            calculation.name(),
-            calculation.indexType(),
-            valueType,
-            emptyMap(),
-            calculation.destination()
+            name = calculation.name(),
+            indexType = calculation.indexType(),
+            valueType = valueType,
+            values = emptyMap(),
+            id = calculation.destination()
         )
         return column.set(result.mapValues { it.value.wrapped() })
     }
