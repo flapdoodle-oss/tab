@@ -1,24 +1,30 @@
 package de.flapdoodle.tab.model.calculations.interpolation
 
-fun interface Interpolator<K: Any, V: Any> {
-    fun interpolated(offset: K): V?
+import de.flapdoodle.eval.core.evaluables.Evaluated
+import kotlin.reflect.KClass
 
-    fun interpolatedAt(index: Set<K>): Map<K, V?> {
+fun interface Interpolator<K: Any, V: Any> {
+    fun interpolated(offset: K): Evaluated<V>
+
+    fun interpolatedAt(index: Set<K>): Map<K, Evaluated<V>> {
         return interpolate(index, this)
     }
 
     companion object {
-        fun <K: Comparable<K>, V: Any> valueAtOffset(values: Map<K, V>): Interpolator<K, V> {
+        fun <K: Comparable<K>, V: Any> valueAtOffset(valueType: KClass<V>, values: Map<K, V>): Interpolator<K, V> {
             val index = values.keys.toSortedSet()
             return Interpolator { offset ->
                 val firstIndex = index.lastOrNull {
                     it <= offset
                 }
-                if (firstIndex!=null) values[firstIndex] else null
+                if (firstIndex!=null)
+                    Evaluated.ofNullable(valueType.java, values[firstIndex])
+                else
+                    Evaluated.ofNull(valueType.java)
             }
         }
 
-        fun <K: Any, V: Any> interpolate(index: Set<K>, interpolator: Interpolator<K, V>): Map<K, V?> {
+        fun <K: Any, V: Any> interpolate(index: Set<K>, interpolator: Interpolator<K, V>): Map<K, Evaluated<V>> {
             return index.associateWith { interpolator.interpolated(it) }
         }
     }

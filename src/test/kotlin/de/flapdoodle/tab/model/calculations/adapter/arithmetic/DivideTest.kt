@@ -1,5 +1,6 @@
 package de.flapdoodle.tab.model.calculations.adapter.arithmetic
 
+import de.flapdoodle.eval.core.evaluables.Evaluated
 import de.flapdoodle.tab.model.calculations.adapter.arithmetic.Divide
 import de.flapdoodle.types.Either
 import org.assertj.core.api.Assertions.assertThat
@@ -15,7 +16,7 @@ class DivideTest {
 
         valueSet.forEach { dividend ->
             valueSet.forEach { divisor ->
-                val eval = testee.find(listOf(dividend, divisor).toMutableList())
+                val eval = testee.find(listOf(Evaluated.value(dividend), Evaluated.value(divisor)).toMutableList())
                 assertThat(eval)
                     .describedAs("${dividend.javaClass} / ${divisor.javaClass}")
                     .extracting(Either<*,*>::isLeft)

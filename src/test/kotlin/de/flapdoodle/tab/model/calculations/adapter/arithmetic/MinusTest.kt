@@ -1,5 +1,6 @@
 package de.flapdoodle.tab.model.calculations.adapter.arithmetic
 
+import de.flapdoodle.eval.core.evaluables.Evaluated
 import de.flapdoodle.tab.model.calculations.adapter.arithmetic.Minus
 import de.flapdoodle.types.Either
 import org.assertj.core.api.Assertions
@@ -16,7 +17,7 @@ class MinusTest {
 
         valueSet.forEach { first ->
             valueSet.forEach { second ->
-                val eval = testee.find(listOf(first, second).toMutableList())
+                val eval = testee.find(listOf(Evaluated.value(first), Evaluated.value(second)).toMutableList())
                 Assertions.assertThat(eval)
                     .describedAs("${first.javaClass} + ${second.javaClass}")
                     .extracting(Either<*,*>::isLeft)

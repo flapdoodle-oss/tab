@@ -3,6 +3,7 @@ package de.flapdoodle.tab.model.calculations.adapter
 import de.flapdoodle.eval.core.Expression
 import de.flapdoodle.eval.core.ExpressionFactory
 import de.flapdoodle.eval.core.VariableResolver
+import de.flapdoodle.eval.core.evaluables.Evaluated
 import de.flapdoodle.eval.core.evaluables.OperatorMap
 import de.flapdoodle.eval.core.evaluables.OperatorMapping
 import de.flapdoodle.eval.core.evaluables.Precedence
@@ -19,10 +20,10 @@ object Eval {
 
     private val constants = VariableResolver.empty().withVariables(
         mapOf(
-            "true" to true,
-            "false" to false,
-            "PI" to BigDecimal("3.1415926535897932384626433832795028841971693993751058209749445923078164062862089986280348253421170679"),
-            "E" to BigDecimal("2.71828182845904523536028747135266249775724709369995957496696762772407663")
+            "true" to Evaluated.value(true),
+            "false" to Evaluated.value(false),
+            "PI" to Evaluated.value(BigDecimal("3.1415926535897932384626433832795028841971693993751058209749445923078164062862089986280348253421170679")),
+            "E" to Evaluated.value(BigDecimal("2.71828182845904523536028747135266249775724709369995957496696762772407663"))
         ))
 
     private val operatorMap = OperatorMap.builder()

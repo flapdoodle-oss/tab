@@ -2,6 +2,7 @@ package de.flapdoodle.tab.model.calculations.adapter
 
 import de.flapdoodle.eval.core.Expression
 import de.flapdoodle.eval.core.VariableResolver
+import de.flapdoodle.eval.core.evaluables.Evaluated
 import de.flapdoodle.tab.model.calculations.Formula
 import de.flapdoodle.tab.model.calculations.Variable
 
@@ -20,14 +21,10 @@ data class EvalFormulaAdapter(
         return "EvalFormulaAdapter(formula=$formula, variablesWithHash=$variablesWithHash)"
     }
 
-    override fun evaluate(values: Map<Variable, Any?>): Any? {
+    override fun evaluate(values: Map<Variable, Evaluated<out Any>>): Evaluated<out Any> {
         var resolver = VariableResolver.empty()
         values.forEach { variable, value ->
-            resolver = if (value != null) {
-                resolver.with(variable.name, value)
-            } else {
-                resolver.with(variable.name, Null)
-            }
+            resolver = resolver.with(variable.name, value)
         }
         return expression.evaluate(resolver)
     }

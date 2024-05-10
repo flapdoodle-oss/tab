@@ -1,10 +1,12 @@
 package de.flapdoodle.tab.model.graph
 
+import de.flapdoodle.eval.core.evaluables.Evaluated
 import de.flapdoodle.eval.core.exceptions.BaseException
 import de.flapdoodle.eval.core.exceptions.EvaluableException
 import de.flapdoodle.graph.GraphAsDot
 import de.flapdoodle.graph.Graphs
 import de.flapdoodle.graph.VerticesAndEdges
+import de.flapdoodle.reflection.TypeInfo
 import de.flapdoodle.tab.model.Tab2Model
 import de.flapdoodle.tab.model.calculations.Calculation
 import de.flapdoodle.tab.model.calculations.Variable
@@ -134,10 +136,10 @@ object Solver {
         calculation: Calculation.Aggregation<K>,
         variableDataMap: Map<Variable, Data>
     ): Tab2Model {
-        val valueMap: Map<Variable, Any?> = variableDataMap.map { (v, data) ->
+        val valueMap: Map<Variable, Evaluated<*>> = variableDataMap.map { (v, data) ->
             v to when (data) {
-                is SingleValue<*> -> data.value
-                is Column<*,*> -> IndexMap.asMap(data)
+                is SingleValue<out Any> -> singleValueAsEvaluated(data)
+                is Column<*,*> -> columnAsEvaluated(data)
             }
         }.toMap()
         val result = try {
@@ -150,6 +152,17 @@ object Solver {
         return model.copy(nodes = model.nodes.map { if (it.id == changedNode.id) changedNode else it })
     }
 
+    private fun <T: Any> singleValueAsEvaluated(data: SingleValue<T>): Evaluated<T> {
+        return Evaluated.ofNullable(data.valueType.java, data.value)
+    }
+
+    private fun <V: Any> columnAsEvaluated(data: Column<*, V>): Evaluated<out Any> {
+        return Evaluated.ofNullable(
+            IndexMap.IndexMapTypeInfo(TypeInfo.of(data.valueType.java)),
+            IndexMap.asMap(data)
+        )
+    }
+
     private fun <K : Comparable<K>> calculateTabular(
         updated: Tab2Model,
         node: de.flapdoodle.tab.model.Node.Calculated<K>,
@@ -158,7 +171,7 @@ object Solver {
     ): Tab2Model {
         val (columns, values) = variableDataMap.entries.partition { it.value is Column<*, *> }
         val columns2var = columns.map { it.value as Column<K, Any> to it.key }
-        val singleValueMap = values.map { it.key to (it.value as SingleValue<Any>).value }
+        val singleValueMap = values.map { it.key to singleValueAsEvaluated(it.value as SingleValue<Any>) }
         return calculateTabular(updated, node, calculation, columns2var, singleValueMap)
     }
 
@@ -167,7 +180,7 @@ object Solver {
         node: de.flapdoodle.tab.model.Node.Calculated<K>,
         calculation: Calculation.Tabular<K>,
         columns2var: List<Pair<Column<K, Any>, Variable>>,
-        singleValueMap: List<Pair<Variable, Any?>>
+        singleValueMap: List<Pair<Variable, Evaluated<Any>>>
     ): Tab2Model {
         val interpolated = sortAndInterpolate(columns2var)
         val result = interpolated.index.mapNotNull {
@@ -186,36 +199,36 @@ object Solver {
 
     private fun <K : Comparable<K>> sortAndInterpolate(columns: List<Pair<Column<K, Any>, Variable>>): InterpolatedColumns<K> {
         val index = columns.flatMap { it.first.index() }.toSet()
-        val map2vars = columns.map { Interpolator.valueAtOffset(it.first.values).interpolatedAt(index) to it.second }
+        val map2vars = columns.map { Interpolator.valueAtOffset(it.first.valueType, it.first.values).interpolatedAt(index) to it.second }
         return InterpolatedColumns(index, map2vars)
     }
 
     data class InterpolatedColumns<K : Any>(
         val index: Set<K>,
-        val map2vars: List<Pair<Map<K, Any?>, Variable>>
+        val map2vars: List<Pair<Map<K, Evaluated<out Any>>, Variable>>
     ) {
-        fun variablesAt(index: K): Map<Variable, Any?> {
-            return map2vars.map { it.second to it.first[index] }.toMap()
+        fun variablesAt(index: K): Map<Variable, Evaluated<out Any>> {
+            return map2vars.map { it.second to it.first[index]!! }.toMap()
         }
     }
 
     private fun <K : Comparable<K>> setValue(
         node: de.flapdoodle.tab.model.Node.Calculated<K>,
         calculation: Calculation.Aggregation<K>,
-        result: Any?
+        result: Evaluated<out Any>?
     ): de.flapdoodle.tab.model.Node.Calculated<K> {
         // TODO oder bei result==null entfernen?
         val changedNode = if (node.values.find(calculation.destination()) == null) {
-            val newSingleValue = if (result != null) {
-                SingleValue.of(calculation.name(), result, calculation.destination())
+            val newSingleValue = if (result != null && !result.isNull) {
+                SingleValue.of(calculation.name(), result.wrapped(), calculation.destination())
             } else {
                 SingleValue.ofNull(calculation.name(), calculation.destination())
             }
             node.copy(values = node.values.addValue(newSingleValue))
         } else {
             node.copy(values = node.values.change(calculation.destination()) { old ->
-                if (result != null) {
-                    SingleValue.of(old.name, result, old.id)
+                if (result != null && !result.isNull) {
+                    SingleValue.of(old.name, result.wrapped(), old.id)
                 } else {
                     SingleValue.ofNull(old.name, old.id)
                 }
@@ -227,7 +240,7 @@ object Solver {
     private fun <K : Comparable<K>> setTable(
         node: de.flapdoodle.tab.model.Node.Calculated<K>,
         calculation: Calculation.Tabular<K>,
-        result: Map<K, Any>
+        result: Map<K, Evaluated<out Any>>
     ): de.flapdoodle.tab.model.Node.Calculated<K> {
         // TODO multiple value types in result
         val newColumn = column(result, calculation)
@@ -250,10 +263,10 @@ object Solver {
     }
 
     private fun <K : Comparable<K>> column(
-        result: Map<K, Any>,
+        result: Map<K, Evaluated<out Any>>,
         calculation: Calculation.Tabular<K>
     ): Column<K, out Any> {
-        val valueTypes = result.values.map { it::class }.toSet()
+        val valueTypes = result.values.map { it.wrapped()::class }.toSet()
         require(valueTypes.size == 1) { "more than one value type: $result"}
         val valueType = valueTypes.toList().one { true }
 
@@ -264,7 +277,7 @@ object Solver {
             emptyMap(),
             calculation.destination()
         )
-        return column.set(result)
+        return column.set(result.mapValues { it.value.wrapped() })
     }
 
 

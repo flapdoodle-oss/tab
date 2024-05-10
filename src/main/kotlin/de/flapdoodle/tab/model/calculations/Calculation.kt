@@ -1,5 +1,6 @@
 package de.flapdoodle.tab.model.calculations
 
+import de.flapdoodle.eval.core.evaluables.Evaluated
 import de.flapdoodle.kfx.types.Id
 import de.flapdoodle.tab.model.data.ColumnId
 import de.flapdoodle.tab.model.data.SingleValueId
@@ -18,7 +19,7 @@ sealed class Calculation<K: Comparable<K>>(
     override fun name() = name
     fun formula() = formula
     
-    fun evaluate(values: Map<Variable, Any?>) = formula.evaluate(values)
+    fun evaluate(values: Map<Variable, Evaluated<out Any>>) = formula.evaluate(values)
     fun variables() = formula.variables()
 
     abstract fun changeFormula(newFormula: String): Calculation<K>
