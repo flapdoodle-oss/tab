@@ -14,13 +14,10 @@ class LinearInterpolatorTest {
 
     @Test
     fun singlePointInterpolation() {
-        val testee = LinearInterpolator<Int, BigDecimal>(
+        val testee = LinearInterpolator(
             values =  mapOf(3 to BigDecimal.valueOf(10.0)),
             interpolation = LinearInterpolation.interpolation(Int::class, BigDecimal::class)!!,
             valueType = BigDecimal::class
-//            indexDistance = { s, e -> e.toDouble() - s.toDouble() },
-//            deltaValue = { s, e -> e.subtract(s) },
-//            interpolate = { s, delta, factor -> s.plus(delta.multiply(BigDecimal.valueOf(factor), mc))}
         )
 
         assertThat(testee.interpolated(0).wrapped())
@@ -33,13 +30,10 @@ class LinearInterpolatorTest {
 
     @Test
     fun twoPointInterpolation() {
-        val testee = LinearInterpolator<Int, BigDecimal>(
+        val testee = LinearInterpolator(
             values =  mapOf(3 to BigDecimal.valueOf(10.0), 6 to BigDecimal.valueOf(20.0)),
             interpolation = LinearInterpolation.interpolation(Int::class, BigDecimal::class)!!,
             valueType = BigDecimal::class
-//            indexDistance = { s, e -> e.toDouble() - s.toDouble() },
-//            deltaValue = { s, e -> e.subtract(s) },
-//            interpolate = { s, delta, factor -> s.plus(delta.multiply(BigDecimal.valueOf(factor), mc))}
         )
 
         assertThat(testee.interpolated(0).wrapped())
@@ -58,13 +52,10 @@ class LinearInterpolatorTest {
 
     @Test
     fun threePointInterpolation() {
-        val testee = LinearInterpolator<Int, BigDecimal>(
+        val testee = LinearInterpolator(
             values =  mapOf(3 to BigDecimal.valueOf(10.0), 6 to BigDecimal.valueOf(20.0), 12 to BigDecimal.valueOf(60.0)),
             interpolation = LinearInterpolation.interpolation(Int::class, BigDecimal::class)!!,
             valueType = BigDecimal::class
-//            indexDistance = { s, e -> e.toDouble() - s.toDouble() },
-//            deltaValue = { s, e -> e.subtract(s) },
-//            interpolate = { s, delta, factor -> s.plus(delta.multiply(BigDecimal.valueOf(factor)))}
         )
 
         assertThat(testee.interpolated(0).wrapped())

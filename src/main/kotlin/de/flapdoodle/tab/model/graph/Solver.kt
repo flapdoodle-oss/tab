@@ -9,6 +9,7 @@ import de.flapdoodle.reflection.TypeInfo
 import de.flapdoodle.tab.model.Tab2Model
 import de.flapdoodle.tab.model.calculations.Calculation
 import de.flapdoodle.tab.model.calculations.Variable
+import de.flapdoodle.tab.model.calculations.interpolation.DefaultInterpolatorFactoryLookup
 import de.flapdoodle.tab.model.calculations.interpolation.Interpolator
 import de.flapdoodle.tab.model.calculations.types.IndexMap
 import de.flapdoodle.tab.model.connections.Source
@@ -197,12 +198,30 @@ object Solver {
         return updated.copy(nodes = updated.nodes.map { if (it.id == changedNode.id) changedNode else it })
     }
 
-    private fun <K : Comparable<K>> sortAndInterpolate(columns: List<Pair<Variable, Column<K, Any>>>): InterpolatedColumns<K> {
+    private fun <K : Comparable<K>> sortAndInterpolate(columns: List<Pair<Variable, Column<K, Any>>>): InterpolatorColumns<K> {
         val index = columns.flatMap { it.second.index() }.toSet()
-        val map = columns.map {
-            it.first to Interpolator.valueAtOffset(it.second.valueType, it.second.values).interpolatedAt(index)
+        val map = columns.map { (variable, column) ->
+            variable to interpolatorFor(index, column) // Interpolator.valueAtOffset(column.valueType, column.values).interpolatedAt(index)
         }
-        return InterpolatedColumns(index, map)
+        return InterpolatorColumns(index, map)
+    }
+
+    private fun <K: Comparable<K>, V: Any> interpolatorFor(index: Set<K>, column: Column<K, V>): Interpolator<in K, V> {
+        val factory = DefaultInterpolatorFactoryLookup.interpolatorFactoryFor(
+            column.interpolationType,
+            column.indexType,
+            column.valueType
+        )
+        return factory.interpolatorFor(index, column.values)
+    }
+
+    data class InterpolatorColumns<K : Any>(
+        val index: Set<K>,
+        val varsMap: List<Pair<Variable, Interpolator<in K, Any>>>
+    ) {
+        fun variablesAt(index: K): Map<Variable, Evaluated<out Any>> {
+            return varsMap.map { it.first to it.second.interpolated(index) }.toMap()
+        }
     }
 
     data class InterpolatedColumns<K : Any>(
