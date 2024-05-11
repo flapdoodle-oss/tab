@@ -6,7 +6,6 @@ import de.flapdoodle.graph.GraphAsDot
 import de.flapdoodle.graph.Graphs
 import de.flapdoodle.graph.VerticesAndEdges
 import de.flapdoodle.reflection.TypeInfo
-import de.flapdoodle.tab.extensions.change
 import de.flapdoodle.tab.model.Tab2Model
 import de.flapdoodle.tab.model.calculations.Calculation
 import de.flapdoodle.tab.model.calculations.Variable
@@ -19,7 +18,6 @@ import de.flapdoodle.tab.model.data.Data
 import de.flapdoodle.tab.model.data.SingleValue
 import de.flapdoodle.tab.types.one
 import org.jgrapht.graph.DefaultEdge
-import kotlin.reflect.KClass
 
 object Solver {
     private val debug = false
@@ -295,23 +293,32 @@ object Solver {
         result: Map<K, Evaluated<out Any>>
     ): de.flapdoodle.tab.model.Node.Calculated<K> {
         // TODO multiple value types in result
-        val newColumn = column(result, calculation)
-        val existingColumn = node.columns.find(calculation.destination())
+        if (result.isNotEmpty()) {
+            val newColumn = column(result, calculation)
+            val existingColumn = node.columns.find(calculation.destination())
 
-        val changedNode = if (existingColumn == null) {
-            node.copy(columns = node.columns.addColumn(newColumn))
-        } else {
-            if (existingColumn.valueType != newColumn.valueType) {
-                node.copy(columns = node.columns.change(calculation.destination()) { old ->
-                    newColumn
-                })
+            val changedNode = if (existingColumn == null) {
+                node.copy(columns = node.columns.addColumn(newColumn))
             } else {
-                node.copy(columns = node.columns.change(calculation.destination()) { old ->
-                    newColumn.copy(id = old.id, color = old.color)
-                })
+                if (existingColumn.valueType != newColumn.valueType) {
+                    node.copy(columns = node.columns.change(calculation.destination()) { old ->
+                        newColumn
+                    })
+                } else {
+                    node.copy(columns = node.columns.change(calculation.destination()) { old ->
+                        newColumn.copy(id = old.id, color = old.color)
+                    })
+                }
+            }
+            return changedNode
+        } else {
+            val existingColumn = node.columns.find(calculation.destination())
+            return if (existingColumn != null) {
+                node.copy(columns = node.columns.remove(calculation.destination()))
+            } else {
+                node
             }
         }
-        return changedNode
     }
 
     private fun <K : Comparable<K>> clearTable(
@@ -325,6 +332,7 @@ object Solver {
         result: Map<K, Evaluated<out Any>>,
         calculation: Calculation.Tabular<K>
     ): Column<K, out Any> {
+        require(result.isNotEmpty()) { "result is empty" }
         val valueTypes = result.values.map { it.type() }.toSet()
         require(valueTypes.size == 1) { "more than one value type: $result"}
         val valueType = valueTypes.toList().one { true }
