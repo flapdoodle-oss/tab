@@ -46,13 +46,13 @@ class SmallChartPane<K : Comparable<K>>(
     }
 
 
-    private fun indexRangeFactory(indexType: TypeInfo<K>): RangeFactory<K>? {
+    private fun indexRangeFactory(indexType: TypeInfo<K>): RangeFactory<K> {
         // TODO umbauen
         return when (indexType) {
             TypeInfo.of(LocalDate::class.java) -> RangeFactories.localDate() as RangeFactory<K>
             TypeInfo.of(Double::class.javaObjectType) -> RangeFactories.number(Double::class) as RangeFactory<K>
             TypeInfo.of(Int::class.javaObjectType) -> RangeFactories.number(Int::class) as RangeFactory<K>
-            TypeInfo.of(String::class.java) -> null
+            TypeInfo.of(String::class.java) -> RangeFactories.category()
             else -> throw IllegalArgumentException("not implemented: $indexType")
         }
     }

@@ -30,12 +30,13 @@ data class SingleValue<T : Any>(
             return SingleValue(name, TypeInfo.of(value::class.javaObjectType as Class<K>), value, id)
         }
 
+        @Deprecated("don't use")
         fun <K: Any> ofNull(name: String, valueType: KClass<K>, id: SingleValueId): SingleValue<K> {
             return SingleValue(name, TypeInfo.of(valueType.javaObjectType), null, id)
         }
 
-        fun <K: Any> ofNull(name: String, valueType: TypeInfo<K>, id: SingleValueId): SingleValue<K> {
-            return SingleValue(name, valueType, null, id)
+        fun <K: Any> ofNullable(name: String, valueType: TypeInfo<K>, value: K?, id: SingleValueId): SingleValue<K> {
+            return SingleValue(name, valueType, value, id)
         }
 
     }

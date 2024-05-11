@@ -132,7 +132,7 @@ class TablePane<K : Comparable<K>>(
     data class IndexColumn<K: Comparable<K>>(val indexType: TypeInfo<K>):
         de.flapdoodle.kfx.controls.bettertable.Column<Row<K>, K>(
             label = "#",
-            property = ColumnProperty(Hack.classOf(indexType),{ row -> row.index }),
+            property = ColumnProperty(indexType,{ row -> row.index }),
             editable = true
     ), TableColumn<K, K> {
         override fun applyChange(row: Row<K>, change: TableChangeListener.CellChange<Row<K>, out Any>): Row<K> {
@@ -143,7 +143,7 @@ class TablePane<K : Comparable<K>>(
     data class NormalColumn<K: Comparable<K>, V: Any>(val column: Column<K, V>) :
         de.flapdoodle.kfx.controls.bettertable.Column<Row<K>, V>(
             label = column.name,
-            property = ColumnProperty(Hack.classOf(column.valueType), { row -> row.get(column) }),
+            property = ColumnProperty(column.valueType, { row -> row.get(column) }),
             editable = true
         ), TableColumn<K, V> {
             init {

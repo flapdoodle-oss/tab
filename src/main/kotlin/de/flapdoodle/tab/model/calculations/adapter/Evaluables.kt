@@ -10,6 +10,7 @@ import de.flapdoodle.eval.core.evaluables.TypedEvaluableByNumberOfArguments
 import de.flapdoodle.eval.core.exceptions.EvaluableException
 import de.flapdoodle.eval.core.parser.Token
 import de.flapdoodle.eval.core.validation.ParameterValidator
+import de.flapdoodle.reflection.TypeInfo
 import de.flapdoodle.types.Either
 import java.math.BigDecimal
 import java.math.BigInteger
@@ -23,6 +24,10 @@ open class Evaluables(
 
     override fun find(values: MutableList<out Evaluated<*>>): Either<TypedEvaluable<*>, EvaluableException> {
         return TypedEvaluableByArguments.find(list, values)
+    }
+
+    override fun findType(valueTypes: MutableList<out TypeInfo<*>>): Either<TypedEvaluable<*>, EvaluableException> {
+        return TypedEvaluableByArguments.findType(list, valueTypes)
     }
 
     override fun filterByNumberOfArguments(numberOfArguments: Int): Optional<out TypedEvaluableByArguments> {

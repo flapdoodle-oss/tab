@@ -6,6 +6,7 @@ import de.flapdoodle.graph.GraphAsDot
 import de.flapdoodle.graph.Graphs
 import de.flapdoodle.graph.VerticesAndEdges
 import de.flapdoodle.reflection.TypeInfo
+import de.flapdoodle.tab.extensions.change
 import de.flapdoodle.tab.model.Tab2Model
 import de.flapdoodle.tab.model.calculations.Calculation
 import de.flapdoodle.tab.model.calculations.Variable
@@ -82,9 +83,10 @@ object Solver {
             return calculate(model, node, calculation, variableDataMap)
         } else {
             println("missing sources: $missingSources")
+            return clear(model, node, calculation)
         }
 
-        return model
+//        return model
     }
 
     private fun <K: Comparable<K>> dataOf(
@@ -130,6 +132,17 @@ object Solver {
         }
     }
 
+    private fun <K : Comparable<K>> clear(
+        model: Tab2Model,
+        node: de.flapdoodle.tab.model.Node.Calculated<K>,
+        calculation: Calculation<K>
+    ): Tab2Model {
+        return when (calculation) {
+            is Calculation.Aggregation<K> -> clearAggregate(model, node, calculation)
+            is Calculation.Tabular<K> -> clearTabular(model, node, calculation)
+        }
+    }
+
     private fun <K : Comparable<K>> calculateAggregate(
         model: Tab2Model,
         node: de.flapdoodle.tab.model.Node.Calculated<K>,
@@ -145,10 +158,23 @@ object Solver {
         val result = try {
              calculation.evaluate(valueMap)
         } catch (ex: BaseException) {
-            ex.printStackTrace()
-            null
+            try {
+                Evaluated.ofNull(calculation.evaluateType(valueMap))
+            } catch (ex: BaseException) {
+                ex.printStackTrace()
+                null
+            }
         }
         val changedNode: de.flapdoodle.tab.model.Node.Calculated<K> = setValue(node, calculation, result)
+        return model.copy(nodes = model.nodes.map { if (it.id == changedNode.id) changedNode else it })
+    }
+
+    private fun <K : Comparable<K>> clearAggregate(
+        model: Tab2Model,
+        node: de.flapdoodle.tab.model.Node.Calculated<K>,
+        calculation: Calculation.Aggregation<K>
+    ): Tab2Model {
+        val changedNode: de.flapdoodle.tab.model.Node.Calculated<K> = clearValue(node, calculation)
         return model.copy(nodes = model.nodes.map { if (it.id == changedNode.id) changedNode else it })
     }
 
@@ -197,6 +223,15 @@ object Solver {
         return updated.copy(nodes = updated.nodes.map { if (it.id == changedNode.id) changedNode else it })
     }
 
+    private fun <K : Comparable<K>> clearTabular(
+        updated: Tab2Model,
+        node: de.flapdoodle.tab.model.Node.Calculated<K>,
+        calculation: Calculation.Tabular<K>
+    ): Tab2Model {
+        val changedNode: de.flapdoodle.tab.model.Node.Calculated<K> = clearTable(node, calculation)
+        return updated.copy(nodes = updated.nodes.map { if (it.id == changedNode.id) changedNode else it })
+    }
+
     private fun <K : Comparable<K>> sortAndInterpolate(columns: List<Pair<Variable, Column<K, Any>>>): InterpolatorColumns<K> {
         val index = columns.flatMap { it.second.index() }.toSet()
         val map = columns.map { (variable, column) ->
@@ -223,31 +258,35 @@ object Solver {
         }
     }
 
-    private fun <K : Comparable<K>> setValue(
+    private fun <K : Comparable<K>, V: Any> setValue(
         node: de.flapdoodle.tab.model.Node.Calculated<K>,
         calculation: Calculation.Aggregation<K>,
-        result: Evaluated<out Any>?
+        result: Evaluated<V>?
     ): de.flapdoodle.tab.model.Node.Calculated<K> {
-        // TODO oder bei result==null entfernen?
         val changedNode = if (node.values.find(calculation.destination()) == null) {
-            val newSingleValue = if (result != null && !result.isNull) {
-                SingleValue.of(calculation.name(), result.wrapped(), calculation.destination())
+            val newSingleValue = if (result != null) {
+                SingleValue.ofNullable(calculation.name(), result.type(), result.wrapped(), calculation.destination())
             } else {
-                // TODO type aus evaluated entnehmen
                 SingleValue.ofNull(calculation.name(), Unit::class, calculation.destination())
             }
             node.copy(values = node.values.addValue(newSingleValue))
         } else {
             node.copy(values = node.values.change(calculation.destination()) { old ->
-                if (result != null && !result.isNull) {
-                    SingleValue.of(old.name, result.wrapped(), old.id)
+                if (result != null) {
+                    SingleValue.ofNullable(old.name, result.type(), result.wrapped(), old.id)
                 } else {
-                    // TODO type aus evaluated entnehmen
                     SingleValue.ofNull(old.name, Unit::class, old.id)
                 }
             })
         }
         return changedNode
+    }
+
+    private fun <K : Comparable<K>> clearValue(
+        node: de.flapdoodle.tab.model.Node.Calculated<K>,
+        calculation: Calculation.Aggregation<K>
+    ): de.flapdoodle.tab.model.Node.Calculated<K> {
+        return node.copy(values = node.values.remove(calculation.destination()))
     }
 
     private fun <K : Comparable<K>> setTable(
@@ -273,6 +312,13 @@ object Solver {
             }
         }
         return changedNode
+    }
+
+    private fun <K : Comparable<K>> clearTable(
+        node: de.flapdoodle.tab.model.Node.Calculated<K>,
+        calculation: Calculation.Tabular<K>
+    ): de.flapdoodle.tab.model.Node.Calculated<K> {
+        return node.copy(columns = node.columns.remove(calculation.destination()))
     }
 
     private fun <K : Comparable<K>> column(

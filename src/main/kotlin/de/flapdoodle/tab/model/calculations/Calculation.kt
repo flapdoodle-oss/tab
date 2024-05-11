@@ -20,8 +20,9 @@ sealed class Calculation<K: Comparable<K>>(
     fun indexType() = indexType
     override fun name() = name
     fun formula() = formula
-    
+
     fun evaluate(values: Map<Variable, Evaluated<out Any>>) = formula.evaluate(values)
+    fun evaluateType(values: Map<Variable, Evaluated<out Any>>) = formula.evaluateType(values)
     fun variables() = formula.variables()
 
     abstract fun changeFormula(newFormula: String): Calculation<K>

@@ -2,7 +2,9 @@ package de.flapdoodle.tab.model.calculations.adapter
 
 import de.flapdoodle.eval.core.Expression
 import de.flapdoodle.eval.core.VariableResolver
+import de.flapdoodle.eval.core.VariableTypeResolver
 import de.flapdoodle.eval.core.evaluables.Evaluated
+import de.flapdoodle.reflection.TypeInfo
 import de.flapdoodle.tab.model.calculations.Formula
 import de.flapdoodle.tab.model.calculations.Variable
 
@@ -27,6 +29,14 @@ data class EvalFormulaAdapter(
             resolver = resolver.with(variable.name, value)
         }
         return expression.evaluate(resolver)
+    }
+
+    override fun evaluateType(values: Map<Variable, Evaluated<out Any>>): TypeInfo<out Any> {
+        var resolver = VariableTypeResolver.empty()
+        values.forEach { variable, value ->
+            resolver = resolver.with(variable.name, value.type())
+        }
+        return expression.evaluateType(resolver)
     }
 
 

@@ -7,16 +7,8 @@ import java.util.*
 import kotlin.reflect.KClass
 
 object Converters {
-
-    private val localeConverterMap: Map<TypeInfo<out Any>, ValidatingConverter<out Any>> =
-        Converters.validatingConverters(Locale.getDefault()).associate { (clazz, converter) ->
-            TypeInfo.of(clazz) to converter
-        }
-
     fun <T : Any> validatingConverter(type: TypeInfo<T>): ValidatingConverter<T> {
-        val converter = localeConverterMap[type] ?: throw RuntimeException("converter not found: $type")
-        @Suppress("UNCHECKED_CAST")
-        return converter as ValidatingConverter<T>
+        return Converters.validatingFor(type, Locale.getDefault())
     }
 
     fun <T : Any> validatingConverter(type: KClass<T>): ValidatingConverter<T> {
