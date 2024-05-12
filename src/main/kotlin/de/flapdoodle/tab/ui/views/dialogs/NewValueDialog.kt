@@ -1,19 +1,25 @@
 package de.flapdoodle.tab.ui.views.dialogs
 
+import de.flapdoodle.kfx.controls.fields.ChoiceBoxes
 import de.flapdoodle.kfx.layout.grid.WeightGridPane
+import de.flapdoodle.tab.config.ValueTypes
+import de.flapdoodle.tab.ui.resources.Labels
+import de.flapdoodle.tab.ui.resources.ResourceBundles
+import javafx.geometry.HPos
 import javafx.scene.control.*
 import javafx.scene.control.ButtonBar.ButtonData
 import kotlin.reflect.KClass
 
 class NewValueDialog : Dialog<NewValueDialog.NewValue>() {
 
-    private val name = Label("Name")
+    private val name = Labels.translated(NewValueDialog::class,"name","Name")
     private val nameField = TextField()
-    private val type = Label("Type")
-    private val typeField = ChoiceBox<KClass<out Any>>().apply {
-        items.addAll(Int::class, Double::class, String::class)
-        value = Int::class
-    }
+    private val type = Labels.translated(NewValueDialog::class,"type","Type")
+    private val typeField = ChoiceBoxes.forTypes(
+        ResourceBundles.valueTypes(),
+        ValueTypes.all(),
+        Int::class
+    )
 
     init {
         dialogPane.buttonTypes.addAll(ButtonType.OK, ButtonType.CANCEL)
@@ -27,7 +33,7 @@ class NewValueDialog : Dialog<NewValueDialog.NewValue>() {
             WeightGridPane.setPosition(name, 0, 0)
             WeightGridPane.setPosition(nameField, 1, 0)
             WeightGridPane.setPosition(type, 0, 1)
-            WeightGridPane.setPosition(typeField, 1, 1)
+            WeightGridPane.setPosition(typeField, 1, 1, HPos.LEFT)
 
             children.addAll(name, nameField, type, typeField)
         }

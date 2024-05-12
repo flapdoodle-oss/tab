@@ -14,6 +14,7 @@ import javafx.beans.property.SimpleObjectProperty
 import javafx.event.EventHandler
 import javafx.scene.control.Button
 import javafx.scene.control.Label
+import javafx.scene.control.TextField
 
 class InlineConstantUIAdapter(
     node: de.flapdoodle.tab.model.Node.Constants,
@@ -48,6 +49,14 @@ class InlineConstantUIAdapter(
         indexOf = SingleValue<out Any>::id,
         columns = listOf(nameColumn, valueColumn, actionColumn),
         footerFactory = { values, columns ->
+            val label = Label("   ").apply {
+                minWidth = USE_PREF_SIZE
+            }
+            val field = TextField().apply {
+                isEditable = false
+                isDisable = true
+            }
+
             val button = Button("+").apply {
 //                maxWidth = 200.0
                 onAction = EventHandler {
@@ -57,7 +66,11 @@ class InlineConstantUIAdapter(
                     }
                 }
             }
-            mapOf(actionColumn to button)
+            mapOf(
+                nameColumn to label,
+                valueColumn to field,
+                actionColumn to button
+            )
         }
     ).apply {
         verticalSpace().value = 10.0

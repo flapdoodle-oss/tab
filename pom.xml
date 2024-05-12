@@ -644,7 +644,7 @@
         <dependency>
             <groupId>de.flapdoodle.kfx</groupId>
             <artifactId>de.flapdoodle.kfx</artifactId>
-            <version>1.5.1</version>
+            <version>1.5.2-SNAPSHOT</version>
         </dependency>
 <!--        <dependency>-->
 <!--            <groupId>org.fxmisc.easybind</groupId>-->

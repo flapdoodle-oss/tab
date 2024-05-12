@@ -1,9 +1,12 @@
 package de.flapdoodle.tab.ui.views.dialogs
 
+import de.flapdoodle.kfx.controls.fields.ChoiceBoxes
 import de.flapdoodle.kfx.layout.grid.WeightGridPane
 import de.flapdoodle.reflection.TypeInfo
+import de.flapdoodle.tab.config.ValueTypes
 import de.flapdoodle.tab.model.calculations.interpolation.InterpolationType
 import de.flapdoodle.tab.model.data.Column
+import de.flapdoodle.tab.ui.resources.ResourceBundles
 import javafx.scene.control.*
 import javafx.scene.control.ButtonBar.ButtonData
 import java.math.BigDecimal
@@ -18,16 +21,19 @@ class NewColumnDialog<K: Comparable<K>>(
     private val name = Label("Name")
     private val nameField = TextField()
     private val type = Label("Type")
-    private val typeField = ChoiceBox<KClass<out Any>>().apply {
-        items.addAll(Int::class, Double::class, BigInteger::class, BigDecimal::class, String::class, LocalDate::class)
-        value = Int::class
-    }
+
+    private val typeField = ChoiceBoxes.forTypes(
+        ResourceBundles.valueTypes(),
+        ValueTypes.all(),
+        Int::class
+    )
 
     private val interpolation = Label("Interpolation")
-    private val interpolationField = ChoiceBox<InterpolationType>().apply {
-        items.addAll(InterpolationType.values())
-        value = InterpolationType.Linear
-    }
+    private val interpolationField = ChoiceBoxes.forEnums(
+        resourceBundle = ResourceBundles.enumTypes(),
+        enumType = InterpolationType::class,
+        default = InterpolationType.Linear
+    )
 
     init {
         dialogPane.buttonTypes.addAll(ButtonType.OK, ButtonType.CANCEL)

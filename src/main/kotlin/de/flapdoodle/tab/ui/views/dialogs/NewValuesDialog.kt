@@ -1,6 +1,7 @@
 package de.flapdoodle.tab.ui.views.dialogs
 
 import de.flapdoodle.kfx.layout.grid.WeightGridPane
+import de.flapdoodle.tab.ui.resources.Labels
 import javafx.scene.control.ButtonBar.ButtonData
 import javafx.scene.control.ButtonType
 import javafx.scene.control.Dialog
@@ -9,7 +10,7 @@ import javafx.scene.control.TextField
 
 class NewValuesDialog : Dialog<de.flapdoodle.tab.model.Node.Constants>() {
 
-    private val name = Label("Name")
+    private val name = Labels.translated(NewValuesDialog::class,"name","Name")
     private val nameField = TextField()
 
     init {

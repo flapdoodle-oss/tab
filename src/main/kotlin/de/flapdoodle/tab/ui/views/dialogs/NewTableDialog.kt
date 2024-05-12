@@ -1,22 +1,24 @@
 package de.flapdoodle.tab.ui.views.dialogs
 
+import de.flapdoodle.kfx.controls.fields.ChoiceBoxes
 import de.flapdoodle.kfx.layout.grid.WeightGridPane
 import de.flapdoodle.reflection.TypeInfo
 import de.flapdoodle.tab.config.IndexTypes
+import de.flapdoodle.tab.ui.resources.ResourceBundles
 import javafx.scene.control.*
 import javafx.scene.control.ButtonBar.ButtonData
-import kotlin.reflect.KClass
 
 class NewTableDialog : Dialog<de.flapdoodle.tab.model.Node.Table<out Comparable<*>>>() {
 
     private val name = Label("Name")
     private val nameField = TextField()
     private val type = Label("Type")
-    private val typeField = ChoiceBox<KClass<out Comparable<*>>>().apply {
-        items.addAll(IndexTypes.all())
-        value = Int::class
-    }
-
+    private val typeField = ChoiceBoxes.forTypes(
+        ResourceBundles.indexTypes(),
+        IndexTypes.all(),
+        Int::class
+    )
+    
     init {
         dialogPane.buttonTypes.addAll(ButtonType.OK, ButtonType.CANCEL)
         dialogPane.content = WeightGridPane().apply {
