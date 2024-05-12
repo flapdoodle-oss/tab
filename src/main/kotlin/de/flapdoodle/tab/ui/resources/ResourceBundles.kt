@@ -5,12 +5,14 @@ import java.util.*
 
 object ResourceBundles {
     private val labels = I18N.resourceBundle(Locale.getDefault(), "labels")
+    private val messages = I18N.resourceBundle(Locale.getDefault(), "messages")
 
     private val enumTypesResourceBundle = I18N.resourceBundle(Locale.getDefault(), "enumTypes")
     private val typesResourceBundle = I18N.resourceBundle(Locale.getDefault(), "valueTypes")
     private val indexTypesResourceBundle = I18N.resourceBundle(Locale.getDefault(), "indexTypes")
 
     fun labels() = labels
+    fun messages() = messages
 
     fun enumTypes() = enumTypesResourceBundle
     fun valueTypes() = typesResourceBundle
