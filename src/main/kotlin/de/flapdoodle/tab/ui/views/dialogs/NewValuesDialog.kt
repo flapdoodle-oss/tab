@@ -1,5 +1,6 @@
 package de.flapdoodle.tab.ui.views.dialogs
 
+import de.flapdoodle.kfx.controls.fields.ValidatingField
 import de.flapdoodle.kfx.controls.fields.ValidatingTextField
 import de.flapdoodle.kfx.i18n.I18N
 import de.flapdoodle.kfx.layout.grid.WeightGridPane
@@ -32,16 +33,7 @@ class NewValuesDialog : Dialog<de.flapdoodle.tab.model.Node.Constants>() {
             children.addAll(name, nameField)
         }
         val okButton = dialogPane.lookupButton(ButtonType.OK)
-        okButton.isDisable = true
-
-        nameField.valueProperty().addListener { observable, oldValue, newValue ->
-            if (newValue == null || newValue.isBlank()) {
-                nameField.setErrorMessage(Messages.message("name.not_set"))
-                okButton.isDisable=true
-            } else {
-                okButton.isDisable=false
-            }
-        }
+        okButton.disableProperty().bind(ValidatingField.invalidInputs(nameField))
 
         setResultConverter { dialogButton: ButtonType? ->
             if (dialogButton?.buttonData == ButtonData.OK_DONE) {

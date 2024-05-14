@@ -1,6 +1,7 @@
 package de.flapdoodle.tab.ui.views.dialogs
 
 import de.flapdoodle.kfx.controls.fields.ChoiceBoxes
+import de.flapdoodle.kfx.controls.fields.ValidatingField
 import de.flapdoodle.kfx.controls.fields.ValidatingTextField
 import de.flapdoodle.kfx.layout.grid.WeightGridPane
 import de.flapdoodle.tab.config.ValueTypes
@@ -18,9 +19,10 @@ class NewValueDialog : Dialog<NewValueDialog.NewValue>() {
     private val nameField = ValidatingTextField(Converters.validatingConverter(String::class))
     private val type = Labels.translated(NewValueDialog::class,"type","Type")
     private val typeField = ChoiceBoxes.forTypes(
-        ResourceBundles.valueTypes(),
-        ValueTypes.all(),
-        Int::class
+        resourceBundle = ResourceBundles.valueTypes(),
+        classes = ValueTypes.all(),
+        default = Int::class,
+        validate = { null }
     )
 
     init {
@@ -39,6 +41,8 @@ class NewValueDialog : Dialog<NewValueDialog.NewValue>() {
 
             children.addAll(name, nameField, type, typeField)
         }
+        val okButton = dialogPane.lookupButton(ButtonType.OK)
+        okButton.disableProperty().bind(ValidatingField.invalidInputs(nameField, typeField))
 
         setResultConverter { dialogButton: ButtonType? ->
             if (dialogButton?.buttonData == ButtonData.OK_DONE) {
