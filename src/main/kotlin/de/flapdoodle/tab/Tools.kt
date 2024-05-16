@@ -1,6 +1,7 @@
 package de.flapdoodle.tab
 
 import de.flapdoodle.kfx.extensions.bindCss
+import de.flapdoodle.kfx.extensions.cssClassName
 import de.flapdoodle.kfx.types.Id
 import de.flapdoodle.tab.extensions.change
 import de.flapdoodle.tab.model.Node
@@ -27,6 +28,7 @@ class Tools(
     private val context = Labels.with(Tools::class)
 
     init {
+        cssClassName("tools")
 //        bindCss("tools")
 
         items.addAll(
@@ -82,10 +84,12 @@ class Tools(
     }
 
     private fun button(fallback: String): Button {
-        return Button(context.text(fallback.lowercase(), fallback))
+        return button(fallback.lowercase(), fallback)
     }
 
     private fun button(key: String, fallback: String): Button {
-        return Button(context.text(key, fallback))
+        val button = Button(context.text(key, fallback))
+        button.cssClassName("button-"+key)
+        return button
     }
 }

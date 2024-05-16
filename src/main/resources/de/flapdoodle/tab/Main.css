@@ -1,0 +1,12 @@
+.main .tools .button {
+    /*-fx-padding: 2px 4px;*/
+}
+
+.main .tools .button-table {
+    -fx-graphic: url(icons/table.png);
+    -fx-graphic-text-gap: 2px;
+    -fx-content-display: left;
+}
+
+.main .tools .button-values {
+}

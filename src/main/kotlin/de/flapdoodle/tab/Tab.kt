@@ -11,12 +11,7 @@ class Tab : Application() {
     override fun start(stage: Stage) {
         val modelWrapper = ModelSolverWrapper(Tab2Model())
 
-        val root = BorderPane().apply {
-            top = AppMenu(modelWrapper)
-            center = Main(modelWrapper)
-        }
-
-        stage.scene= Scene(root, 800.0, 600.0)
+        stage.scene= Scene(Main(modelWrapper), 800.0, 600.0)
         stage.show()
     }
 
