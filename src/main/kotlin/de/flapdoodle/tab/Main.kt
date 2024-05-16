@@ -50,7 +50,9 @@ class Main(
 
     top = Tools(
       adapter = adapter::execute,
-      modelChangeAdapter = modelWrapper::changeModel
+      modelChangeAdapter = modelWrapper::changeModel,
+      selectedVertex = selectedVertex,
+      selectedEdge
     )
     center = WeightGridPane()
       .withAnchors(all = 0.0)
@@ -67,48 +69,5 @@ class Main(
           WeightGridPane.setPosition(button, 1, 0)
         })
       }
-    bottom = FlowPane().also { flowPane ->
-      flowPane.children.addAll(
-        Button("x").also { button ->
-          button.visibleProperty().bind(selectedVertex.map { it != null })
-          button.managedProperty().bind(button.visibleProperty())
-          button.onAction = EventHandler {
-            val vertexId = selectedVertex.value
-            modelWrapper.changeModel { it.removeNode(vertexId) }
-          }
-        },
-        Button("-").also { button ->
-          button.visibleProperty().bind(selectedEdge.map { it != null })
-          button.managedProperty().bind(button.visibleProperty())
-          button.onAction = EventHandler {
-            val edge = selectedEdge.value
-            modelWrapper.changeModel { it.disconnect(edge.id, edge.input, edge.source) }
-          }
-        },
-        Button("*").also { button ->
-          button.onAction = EventHandler {
-            val vertexId = selectedVertex.value
-            modelWrapper.changeModel {
-              val node = de.flapdoodle.tab.model.Node.Table("Table", TypeInfo.of(Int::class.javaObjectType))
-              val nameColumn = Column("Name", node.indexType, TypeInfo.of(String::class.javaObjectType))
-              val ageColumn = Column("Age", node.indexType, TypeInfo.of(Int::class.javaObjectType))
-
-              val tableNode = node
-                .apply(ModelChange.AddColumn(node.id, nameColumn))
-                .apply(ModelChange.AddColumn(node.id, ageColumn))
-
-              val calcNode = de.flapdoodle.tab.model.Node.Calculated("Calc", TypeInfo.of(Int::class.javaObjectType))
-              it.addNode(tableNode.copy(position = Position(30.0, 30.0)))
-                .apply(ModelChange.SetColumns(tableNode.id, 1, listOf(nameColumn.id to "Klaus", ageColumn.id to 22)))
-                .apply(ModelChange.SetColumns(tableNode.id, 2, listOf(ageColumn.id to 24)))
-                .apply(ModelChange.SetColumns(tableNode.id, 3, listOf(nameColumn.id to "Susi", ageColumn.id to 45)))
-                .apply(ModelChange.SetColumns(tableNode.id, 10, listOf(nameColumn.id to "Peter")))
-                .addNode(calcNode.copy(position = Position(200.0, 30.0)))
-                .apply(ModelChange.AddTabular(calcNode.id,"Copy","x"))
-            }
-          }
-        }
-      )
-    }
   }
 }
