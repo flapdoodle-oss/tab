@@ -39,6 +39,7 @@ class NewColumnDialog<K: Comparable<K>>(
     )
 
     init {
+        title = Labels.text(NewColumnDialog::class,"title","New Column")
         dialogPane.buttonTypes.addAll(ButtonType.OK, ButtonType.CANCEL)
         dialogPane.content = WeightGridPane().apply {
             horizontalSpaceProperty().value = 10.0

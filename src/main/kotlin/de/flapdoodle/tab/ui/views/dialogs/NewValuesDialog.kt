@@ -17,6 +17,7 @@ class NewValuesDialog : Dialog<de.flapdoodle.tab.model.Node.Constants>() {
         .and { v -> v.mapNullable { if (it.isNullOrBlank()) throw RequiredFieldNotSet("not set") else it } })
 
     init {
+        title = Labels.text(NewValuesDialog::class,"title","New Values")
         dialogPane.buttonTypes.addAll(ButtonType.OK, ButtonType.CANCEL)
         dialogPane.content = WeightGridPane().apply {
             horizontalSpaceProperty().value = 10.0

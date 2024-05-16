@@ -26,6 +26,7 @@ class NewTableDialog : Dialog<de.flapdoodle.tab.model.Node.Table<out Comparable<
     )
     
     init {
+        title = Labels.text(NewTableDialog::class,"title","New Table")
         dialogPane.buttonTypes.addAll(ButtonType.OK, ButtonType.CANCEL)
         dialogPane.content = WeightGridPane().apply {
             horizontalSpaceProperty().value = 10.0

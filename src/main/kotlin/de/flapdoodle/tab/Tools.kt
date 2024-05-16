@@ -3,20 +3,25 @@ package de.flapdoodle.tab
 import de.flapdoodle.tab.model.Position
 import de.flapdoodle.tab.model.Tab2Model
 import de.flapdoodle.tab.ui.commands.Command
+import de.flapdoodle.tab.ui.resources.Labels
 import de.flapdoodle.tab.ui.views.dialogs.NewCalculationDialog
 import de.flapdoodle.tab.ui.views.dialogs.NewTableDialog
 import de.flapdoodle.tab.ui.views.dialogs.NewValuesDialog
 import javafx.event.EventHandler
 import javafx.scene.control.Button
+import javafx.scene.control.ToolBar
 import javafx.scene.layout.FlowPane
+import javafx.scene.layout.HBox
 
-class Toolbar(
+class Tools(
     val adapter: (Command) -> Unit,
     val modelChangeAdapter: ((Tab2Model) -> Tab2Model) -> Unit
-) : FlowPane() {
+) : ToolBar() {
+    private val context = Labels.with(Tools::class)
+
     init {
-        children.addAll(
-            Button("Values").also { button ->
+        items.addAll(
+            button("Values").also { button ->
                 button.onAction = EventHandler {
                     val node = NewValuesDialog.open()
                     if (node != null) {
@@ -26,7 +31,7 @@ class Toolbar(
                     }
                 }
             },
-            Button("Table").also { button ->
+            button("Table").also { button ->
                 button.onAction = EventHandler {
                     val node = NewTableDialog.open()
                     if (node != null) {
@@ -37,7 +42,7 @@ class Toolbar(
                     }
                 }
             },
-            Button("Calculated").also { button ->
+            button("Calculated").also { button ->
                 button.onAction = EventHandler {
                     val node = NewCalculationDialog.open()
                     if (node != null) {
@@ -48,5 +53,9 @@ class Toolbar(
                 }
             }
         )
+    }
+
+    private fun button(fallback: String): Button {
+        return Button(context.text(fallback.lowercase(), fallback))
     }
 }

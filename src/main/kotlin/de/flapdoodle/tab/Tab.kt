@@ -21,21 +21,6 @@ import javafx.stage.Stage
 class Tab : Application() {
     private val context = Labels.with(Tab::class)
 
-    private fun menu(key: String, fallback: String): Menu {
-        return Menu(context.text(key, fallback))
-    }
-    private fun menu(fallback: String): Menu {
-        return Menu(context.text(fallback.lowercase(), fallback))
-    }
-
-    private fun menuItem(key: String, fallback: String): MenuItem {
-        return MenuItem(context.text(key, fallback))
-    }
-
-    private fun menuItem(fallback: String): MenuItem {
-        return MenuItem(context.text(fallback.lowercase(), fallback))
-    }
-
     override fun start(stage: Stage) {
         val modelWrapper = ModelSolverWrapper(Tab2Model())
 
@@ -96,5 +81,20 @@ class Tab : Application() {
         // wird nur aufgerufen, wenn jemand auf close window clickt..
         println("stop called.. ")
         super.stop()
+    }
+
+    private fun menu(key: String, fallback: String): Menu {
+        return Menu(context.text(key, fallback))
+    }
+    private fun menu(fallback: String): Menu {
+        return Menu(context.text(fallback.lowercase(), fallback))
+    }
+
+    private fun menuItem(key: String, fallback: String): MenuItem {
+        return MenuItem(context.text(key, fallback))
+    }
+
+    private fun menuItem(fallback: String): MenuItem {
+        return MenuItem(context.text(fallback.lowercase(), fallback))
     }
 }

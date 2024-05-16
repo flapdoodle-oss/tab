@@ -26,6 +26,7 @@ class NewValueDialog : Dialog<NewValueDialog.NewValue>() {
     )
 
     init {
+        title = Labels.text(NewValueDialog::class,"title","New Value")
         dialogPane.buttonTypes.addAll(ButtonType.OK, ButtonType.CANCEL)
         dialogPane.content = WeightGridPane().apply {
             horizontalSpaceProperty().value = 10.0

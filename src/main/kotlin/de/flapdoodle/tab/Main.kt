@@ -10,9 +10,6 @@ import de.flapdoodle.tab.model.data.Column
 import de.flapdoodle.tab.ui.ModelSolverWrapper
 import de.flapdoodle.tab.ui.Tab2ModelAdapter
 import de.flapdoodle.tab.ui.commands.Command
-import de.flapdoodle.tab.ui.views.dialogs.NewCalculationDialog
-import de.flapdoodle.tab.ui.views.dialogs.NewTableDialog
-import de.flapdoodle.tab.ui.views.dialogs.NewValuesDialog
 import javafx.beans.property.SimpleObjectProperty
 import javafx.event.EventHandler
 import javafx.scene.control.Button
@@ -20,7 +17,6 @@ import javafx.scene.input.KeyCode
 import javafx.scene.input.KeyEvent
 import javafx.scene.layout.BorderPane
 import javafx.scene.layout.FlowPane
-import java.util.concurrent.atomic.AtomicInteger
 
 class Main(
   private val modelWrapper: ModelSolverWrapper
@@ -52,7 +48,7 @@ class Main(
       }
     }
 
-    top = Toolbar(
+    top = Tools(
       adapter = adapter::execute,
       modelChangeAdapter = modelWrapper::changeModel
     )
