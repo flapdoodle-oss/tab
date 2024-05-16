@@ -1,5 +1,6 @@
 package de.flapdoodle.tab
 
+import de.flapdoodle.kfx.extensions.bindCss
 import de.flapdoodle.kfx.types.Id
 import de.flapdoodle.tab.extensions.change
 import de.flapdoodle.tab.model.Node
@@ -14,6 +15,7 @@ import de.flapdoodle.tab.ui.views.dialogs.NewValuesDialog
 import javafx.beans.property.ReadOnlyObjectProperty
 import javafx.event.EventHandler
 import javafx.scene.control.Button
+import javafx.scene.control.Separator
 import javafx.scene.control.ToolBar
 
 class Tools(
@@ -25,6 +27,8 @@ class Tools(
     private val context = Labels.with(Tools::class)
 
     init {
+//        bindCss("tools")
+
         items.addAll(
             button("Values").also { button ->
                 button.onAction = EventHandler {
@@ -57,6 +61,7 @@ class Tools(
                     }
                 }
             },
+            Separator(),
             button("deleteVertex", "delete Node").also { button ->
                 button.visibleProperty().bind(selectedVertex.map { it != null })
                 button.managedProperty().bind(button.visibleProperty())
