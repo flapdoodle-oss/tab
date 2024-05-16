@@ -2,21 +2,19 @@ package de.flapdoodle.tab.ui.views.dialogs
 
 import de.flapdoodle.kfx.controls.fields.ValidatingField
 import de.flapdoodle.kfx.controls.fields.ValidatingTextField
-import de.flapdoodle.kfx.i18n.I18N
 import de.flapdoodle.kfx.layout.grid.WeightGridPane
 import de.flapdoodle.tab.ui.Converters
 import de.flapdoodle.tab.ui.resources.Labels
-import de.flapdoodle.tab.ui.resources.Messages
+import de.flapdoodle.tab.ui.resources.RequiredFieldNotSet
 import javafx.scene.control.ButtonBar.ButtonData
 import javafx.scene.control.ButtonType
 import javafx.scene.control.Dialog
-import javafx.scene.control.Label
-import javafx.scene.control.TextField
 
 class NewValuesDialog : Dialog<de.flapdoodle.tab.model.Node.Constants>() {
 
-    private val name = Labels.translated(NewValuesDialog::class,"name","Name")
-    private val nameField = ValidatingTextField(Converters.validatingConverter(String::class))
+    private val name = Labels.label(NewValuesDialog::class,"name","Name")
+    private val nameField = ValidatingTextField(converter = Converters.validatingConverter(String::class)
+        .and { v -> v.mapNullable { if (it.isNullOrBlank()) throw RequiredFieldNotSet("not set") else it } })
 
     init {
         dialogPane.buttonTypes.addAll(ButtonType.OK, ButtonType.CANCEL)

@@ -1,22 +1,28 @@
 package de.flapdoodle.tab.ui.views.dialogs
 
 import de.flapdoodle.kfx.controls.fields.ChoiceBoxes
+import de.flapdoodle.kfx.controls.fields.ValidatingField
+import de.flapdoodle.kfx.controls.fields.ValidatingTextField
 import de.flapdoodle.kfx.layout.grid.WeightGridPane
 import de.flapdoodle.reflection.TypeInfo
 import de.flapdoodle.tab.config.IndexTypes
+import de.flapdoodle.tab.ui.Converters
+import de.flapdoodle.tab.ui.resources.Labels
+import de.flapdoodle.tab.ui.resources.RequiredFieldNotSet
 import de.flapdoodle.tab.ui.resources.ResourceBundles
+import javafx.geometry.HPos
 import javafx.scene.control.*
 import javafx.scene.control.ButtonBar.ButtonData
 
 class NewTableDialog : Dialog<de.flapdoodle.tab.model.Node.Table<out Comparable<*>>>() {
 
-    private val name = Label("Name")
-    private val nameField = TextField()
-    private val type = Label("Type")
+    private val name = Labels.label(NewTableDialog::class,"name","Name")
+    private val nameField = ValidatingTextField(Converters.validatingConverter(String::class)
+        .and { v -> v.mapNullable { if (it.isNullOrBlank()) throw RequiredFieldNotSet("not set") else it } })
+    private val type = Labels.label(NewTableDialog::class,"type","IndexType")
     private val typeField = ChoiceBoxes.forTypes(
         ResourceBundles.indexTypes(),
-        IndexTypes.all(),
-        Int::class
+        IndexTypes.all()
     )
     
     init {
@@ -31,10 +37,12 @@ class NewTableDialog : Dialog<de.flapdoodle.tab.model.Node.Table<out Comparable<
             WeightGridPane.setPosition(name, 0, 0)
             WeightGridPane.setPosition(nameField, 1, 0)
             WeightGridPane.setPosition(type, 0, 1)
-            WeightGridPane.setPosition(typeField, 1, 1)
+            WeightGridPane.setPosition(typeField, 1, 1, HPos.LEFT)
 
             children.addAll(name, nameField, type, typeField)
         }
+        val okButton = dialogPane.lookupButton(ButtonType.OK)
+        okButton.disableProperty().bind(ValidatingField.invalidInputs(nameField, typeField))
 
         setResultConverter { dialogButton: ButtonType? ->
             if (dialogButton?.buttonData == ButtonData.OK_DONE) {

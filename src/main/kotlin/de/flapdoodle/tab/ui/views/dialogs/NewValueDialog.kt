@@ -7,6 +7,7 @@ import de.flapdoodle.kfx.layout.grid.WeightGridPane
 import de.flapdoodle.tab.config.ValueTypes
 import de.flapdoodle.tab.ui.Converters
 import de.flapdoodle.tab.ui.resources.Labels
+import de.flapdoodle.tab.ui.resources.RequiredFieldNotSet
 import de.flapdoodle.tab.ui.resources.ResourceBundles
 import javafx.geometry.HPos
 import javafx.scene.control.*
@@ -15,14 +16,13 @@ import kotlin.reflect.KClass
 
 class NewValueDialog : Dialog<NewValueDialog.NewValue>() {
 
-    private val name = Labels.translated(NewValueDialog::class,"name","Name")
-    private val nameField = ValidatingTextField(Converters.validatingConverter(String::class))
-    private val type = Labels.translated(NewValueDialog::class,"type","Type")
+    private val name = Labels.label(NewValueDialog::class,"name","Name")
+    private val nameField = ValidatingTextField(Converters.validatingConverter(String::class)
+        .and { v -> v.mapNullable { if (it.isNullOrBlank()) throw RequiredFieldNotSet("not set") else it } })
+    private val type = Labels.label(NewValueDialog::class,"type","Type")
     private val typeField = ChoiceBoxes.forTypes(
         resourceBundle = ResourceBundles.valueTypes(),
         classes = ValueTypes.all(),
-        default = Int::class,
-        validate = { null }
     )
 
     init {
