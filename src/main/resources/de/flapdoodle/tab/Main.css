@@ -5,8 +5,8 @@
 .main .tools .button-table {
     -fx-graphic: url(icons/table.png);
     -fx-graphic-text-gap: 2px;
-    -fx-content-display: left;
+    -fx-content-display: left; /* graphic-only; */
 }
-
+          
 .main .tools .button-values {
 }
