@@ -16,6 +16,7 @@ import de.flapdoodle.kfx.extensions.unsubscribeOnDetach
 import de.flapdoodle.kfx.extensions.withAnchors
 import de.flapdoodle.kfx.types.Id
 import de.flapdoodle.kfx.types.LayoutBounds
+import de.flapdoodle.tab.model.Size
 import de.flapdoodle.tab.model.Tab2Model
 import de.flapdoodle.tab.model.calculations.InputSlot
 import de.flapdoodle.tab.model.connections.Source
@@ -116,14 +117,7 @@ class Tab2ModelAdapter(
 
                     graphEditor.addVertex(Vertex(node.name, vertexActions).also { vertex ->
                         val vertexContent = nodeUIAdapterFactory.adapterOf(node, modelChangeListener)
-                        if (nodeSize!=null) {
-                            vertex.resizeTo(LayoutBounds(
-                                node.position.x, node.position.y,
-                                nodeSize.width, nodeSize.height
-                            ))
-                        } else {
-                            vertex.layoutPosition = Point2D(node.position.x, node.position.y)
-                        }
+                        resizeVertex(vertex, node.position, node.size)
                         vertex.content = vertexContent
                         vertexMapping.add(
                             node.id, vertex.vertexId,
@@ -135,9 +129,10 @@ class Tab2ModelAdapter(
 
                 is Action.ChangeNode -> {
                     vertexMapping.with(action.id) {
-                        it.vertex.nameProperty().value = action.node.name
-                        it.vertex.layoutPosition = Point2D(action.node.position.x, action.node.position.y)
-                        it.content.update(action.node)
+                        val node = action.node
+                        it.vertex.nameProperty().value = node.name
+                        resizeVertex(it.vertex, node.position, node.size)
+                        it.content.update(node)
                     }
                 }
 
@@ -231,6 +226,17 @@ class Tab2ModelAdapter(
         }
     }
 
+    private fun resizeVertex(vertex: Vertex, position: de.flapdoodle.tab.model.Position, size: Size?) {
+        if (size!=null) {
+            vertex.resizeTo(LayoutBounds(
+                position.x,position.y,
+                size.width, size.height
+            ))
+        } else {
+            vertex.layoutPosition = Point2D(position.x, position.y)
+        }
+    }
+
     private fun vertexActions(
         model: ReadOnlyObjectProperty<Tab2Model>
     ): (VertexId) -> List<Node> {
@@ -239,8 +245,10 @@ class Tab2ModelAdapter(
                 onAction = EventHandler {
                     val nodeId = nodeOfVertex(id)
                     val node = model.value.node(nodeId)
-                    val changed = Change.openWith(node)
-                    // TODO hier fehlt was
+                    val modelChange = Change.openWith(node)
+                    if (modelChange!=null) {
+                        modelChangeListener.change(modelChange)
+                    }
                 }
             }
         ) }

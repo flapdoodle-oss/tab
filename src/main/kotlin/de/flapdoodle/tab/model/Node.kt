@@ -10,7 +10,6 @@ import de.flapdoodle.tab.model.change.ModelChange
 import de.flapdoodle.tab.model.connections.Source
 import de.flapdoodle.tab.model.data.*
 import de.flapdoodle.tab.types.one
-import kotlin.reflect.KClass
 
 sealed class Node {
     abstract fun removeConnectionsFrom(id: Id<out Node>): Node
@@ -73,6 +72,9 @@ sealed class Node {
         override fun apply(change: ModelChange): Node.Constants {
             if (change is ModelChange.ConstantsChange && change.id==id) {
                 when (change) {
+                    is ModelChange.ChangeConstantsProperties -> {
+                        return copy(name = change.name)
+                    }
                     is ModelChange.AddValue -> {
                         return addValue(change.value)
                     }
