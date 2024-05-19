@@ -1,7 +1,7 @@
 package de.flapdoodle.tab.ui.views
 
-import de.flapdoodle.kfx.controls.fields.TypedTextField
 import de.flapdoodle.kfx.controls.fields.ValidatingTextField
+import de.flapdoodle.kfx.extensions.bindCss
 import de.flapdoodle.kfx.layout.grid.WeightGridTable
 import de.flapdoodle.kfx.types.Id
 import de.flapdoodle.reflection.TypeInfo
@@ -9,6 +9,7 @@ import de.flapdoodle.tab.model.change.ModelChange
 import de.flapdoodle.tab.model.data.SingleValue
 import de.flapdoodle.tab.ui.Converters
 import de.flapdoodle.tab.ui.ModelChangeListener
+import de.flapdoodle.tab.ui.resources.Labels
 import de.flapdoodle.tab.ui.views.dialogs.NewValue
 import javafx.beans.property.SimpleObjectProperty
 import javafx.event.EventHandler
@@ -16,7 +17,7 @@ import javafx.scene.control.Button
 import javafx.scene.control.Label
 import javafx.scene.control.TextField
 
-class InlineConstantUIAdapter(
+class ConstantUIAdapter(
     node: de.flapdoodle.tab.model.Node.Constants,
     val modelChangeListener: ModelChangeListener
 ) : NodeUIAdapter() {
@@ -35,7 +36,7 @@ class InlineConstantUIAdapter(
     val actionColumn = WeightGridTable.Column<SingleValue<out Any>>(
         weight = 0.0,
         nodeFactory = { value ->
-            val button = Button("-").apply {
+            val button = button("delete","-").apply {
                 onAction = EventHandler {
                     modelChangeListener.change(ModelChange.RemoveValue(nodeId, value.id))
                 }
@@ -57,7 +58,7 @@ class InlineConstantUIAdapter(
                 isDisable = true
             }
 
-            val button = Button("+").apply {
+            val button = button("add","+").apply {
 //                maxWidth = 200.0
                 onAction = EventHandler {
                     val newValue = NewValue.open()
@@ -78,6 +79,7 @@ class InlineConstantUIAdapter(
     }
 
     init {
+        bindCss("constants-ui")
         children.add(content)
     }
 

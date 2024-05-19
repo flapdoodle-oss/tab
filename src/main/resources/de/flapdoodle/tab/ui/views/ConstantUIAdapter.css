@@ -1,0 +1,9 @@
+.constants-ui .button-delete {
+    /*-fx-graphic: url(../../icons/table.png);*/
+    -fx-content-display: left /*graphic-only*/;
+}
+
+.constants-ui .button-add {
+    /*-fx-graphic: url(../../icons/table.png);*/
+    -fx-content-display: left /*graphic-only*/;
+}
