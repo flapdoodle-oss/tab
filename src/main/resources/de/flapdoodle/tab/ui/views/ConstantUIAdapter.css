@@ -7,3 +7,8 @@
     /*-fx-graphic: url(../../icons/table.png);*/
     -fx-content-display: left /*graphic-only*/;
 }
+
+.constants-ui .table .weight-grid-pane {
+    /*horizontal-space: 2px;*/
+    /*vertical-space: 2px;*/
+}

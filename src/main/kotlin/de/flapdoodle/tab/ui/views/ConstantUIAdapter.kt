@@ -2,6 +2,7 @@ package de.flapdoodle.tab.ui.views
 
 import de.flapdoodle.kfx.controls.fields.ValidatingTextField
 import de.flapdoodle.kfx.extensions.bindCss
+import de.flapdoodle.kfx.extensions.cssClassName
 import de.flapdoodle.kfx.layout.grid.WeightGridTable
 import de.flapdoodle.kfx.types.Id
 import de.flapdoodle.reflection.TypeInfo
@@ -16,6 +17,8 @@ import javafx.event.EventHandler
 import javafx.scene.control.Button
 import javafx.scene.control.Label
 import javafx.scene.control.TextField
+import javafx.scene.layout.Background
+import javafx.scene.shape.Rectangle
 
 class ConstantUIAdapter(
     node: de.flapdoodle.tab.model.Node.Constants,
@@ -28,6 +31,13 @@ class ConstantUIAdapter(
         weight = 0.0,
         nodeFactory = { Label(it.name).apply {
             minWidth = USE_PREF_SIZE
+        } to WeightGridTable.ChangeListener { } })
+    val colorColumn =WeightGridTable.Column<SingleValue<out Any>>(
+        weight = 0.0,
+        nodeFactory = { Rectangle().also { r ->
+            r.width = 10.0
+            r.height = 10.0
+            r.fill = it.color
         } to WeightGridTable.ChangeListener { } })
     val valueColumn = WeightGridTable.Column<SingleValue<out Any>>(
         weight = 10.0,
@@ -48,7 +58,7 @@ class ConstantUIAdapter(
     val content = WeightGridTable(
         model = model,
         indexOf = SingleValue<out Any>::id,
-        columns = listOf(nameColumn, valueColumn, actionColumn),
+        columns = listOf(colorColumn, nameColumn, valueColumn, actionColumn),
         footerFactory = { values, columns ->
             val label = Label("   ").apply {
                 minWidth = USE_PREF_SIZE
@@ -74,8 +84,9 @@ class ConstantUIAdapter(
             )
         }
     ).apply {
-        verticalSpace().value = 10.0
-        horizontalSpace().value = 10.0
+        cssClassName("table")
+//        verticalSpace().value = 10.0
+//        horizontalSpace().value = 10.0
     }
 
     init {
