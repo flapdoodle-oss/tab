@@ -3,7 +3,7 @@ package de.flapdoodle.tab.ui.views.dialogs
 import de.flapdoodle.tab.model.Node
 import de.flapdoodle.tab.model.change.ModelChange
 
-class Change {
+class ChangeNode {
 
     companion object {
         fun openWith(node: Node): ModelChange? {

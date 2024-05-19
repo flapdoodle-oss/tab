@@ -28,7 +28,7 @@ import de.flapdoodle.tab.ui.events.Event2ModelEvent
 import de.flapdoodle.tab.ui.events.ModelEventListener
 import de.flapdoodle.tab.ui.views.DefaultNodeUIAdapterFactory
 import de.flapdoodle.tab.ui.views.NodeUIAdapter
-import de.flapdoodle.tab.ui.views.dialogs.Change
+import de.flapdoodle.tab.ui.views.dialogs.ChangeNode
 import de.flapdoodle.types.Either
 import javafx.beans.property.ReadOnlyObjectProperty
 import javafx.beans.property.ReadOnlyProperty
@@ -245,7 +245,7 @@ class Tab2ModelAdapter(
                 onAction = EventHandler {
                     val nodeId = nodeOfVertex(id)
                     val node = model.value.node(nodeId)
-                    val modelChange = Change.openWith(node)
+                    val modelChange = ChangeNode.openWith(node)
                     if (modelChange!=null) {
                         modelChangeListener.change(modelChange)
                     }

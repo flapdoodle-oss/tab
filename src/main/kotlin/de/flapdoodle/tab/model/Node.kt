@@ -81,6 +81,9 @@ sealed class Node {
                     is ModelChange.ChangeValue -> {
                         return copy(values = values.set(change.valueId, change.value))
                     }
+                    is ModelChange.ChangeValueProperties -> {
+                        return copy(values = values.change(change.valueId) { it.copy(name = change.name) })
+                    }
                     is ModelChange.RemoveValue -> {
                         return copy(values = values.remove(change.valueId))
                     }
