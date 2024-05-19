@@ -2,7 +2,7 @@ package de.flapdoodle.tab.ui.views.calculations
 
 import de.flapdoodle.tab.model.change.ModelChange
 import de.flapdoodle.tab.ui.ModelChangeListener
-import de.flapdoodle.tab.ui.views.dialogs.NewExpressionDialog
+import de.flapdoodle.tab.ui.views.dialogs.NewExpression
 import javafx.beans.property.SimpleObjectProperty
 import javafx.scene.layout.VBox
 
@@ -92,7 +92,7 @@ class CalculationsPane<K: Comparable<K>>(
 //    }
 
     private val aggregationsPane = AbstractCalculationListPane(node, "Aggregations", modelChangeListener, SimpleObjectProperty(node.calculations.aggregations())) {
-        val newExpression = NewExpressionDialog.open()
+        val newExpression = NewExpression.open()
         if (newExpression!=null) {
             modelChangeListener.change(
                 ModelChange.AddAggregation(
@@ -104,7 +104,7 @@ class CalculationsPane<K: Comparable<K>>(
         }
     }
     private val tabularPane = AbstractCalculationListPane(node, "Tabular", modelChangeListener, SimpleObjectProperty(node.calculations.tabular())) {
-        val newExpression = NewExpressionDialog.open()
+        val newExpression = NewExpression.open()
         if (newExpression!=null) {
             modelChangeListener.change(
                 ModelChange.AddTabular(

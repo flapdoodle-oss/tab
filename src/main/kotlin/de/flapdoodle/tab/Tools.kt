@@ -8,7 +8,7 @@ import de.flapdoodle.tab.model.Tab2Model
 import de.flapdoodle.tab.ui.Tab2ModelAdapter
 import de.flapdoodle.tab.ui.commands.Command
 import de.flapdoodle.tab.ui.resources.Labels
-import de.flapdoodle.tab.ui.views.dialogs.NewCalculationDialog
+import de.flapdoodle.tab.ui.views.dialogs.NewCalculation
 import de.flapdoodle.tab.ui.views.dialogs.NewTable
 import de.flapdoodle.tab.ui.views.dialogs.NewValues
 import javafx.beans.property.ReadOnlyObjectProperty
@@ -53,7 +53,7 @@ class Tools(
             },
             button("Calculated").also { button ->
                 button.onAction = EventHandler {
-                    val node = NewCalculationDialog.open()
+                    val node = NewCalculation.open()
                     if (node != null) {
                         adapter(Command.AskForPosition(onSuccess = { pos ->
                             modelChangeAdapter { it.addNode(node.copy(position = Position(pos.x, pos.y))) }
