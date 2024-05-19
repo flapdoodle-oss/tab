@@ -6,7 +6,6 @@ import de.flapdoodle.tab.model.Size
 import de.flapdoodle.tab.model.calculations.InputSlot
 import de.flapdoodle.tab.model.data.DataId
 import de.flapdoodle.types.Either
-import javafx.geometry.Dimension2D
 
 sealed class ModelEvent {
   data class TryToConnect(val node: Id<out de.flapdoodle.tab.model.Node>, val dataOrInput: Either<DataId, Id<InputSlot<*>>>): ModelEvent()

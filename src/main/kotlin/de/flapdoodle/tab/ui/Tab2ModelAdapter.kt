@@ -27,11 +27,15 @@ import de.flapdoodle.tab.ui.events.Event2ModelEvent
 import de.flapdoodle.tab.ui.events.ModelEventListener
 import de.flapdoodle.tab.ui.views.DefaultNodeUIAdapterFactory
 import de.flapdoodle.tab.ui.views.NodeUIAdapter
+import de.flapdoodle.tab.ui.views.dialogs.Change
 import de.flapdoodle.types.Either
 import javafx.beans.property.ReadOnlyObjectProperty
 import javafx.beans.property.ReadOnlyProperty
 import javafx.beans.property.SimpleObjectProperty
+import javafx.event.EventHandler
 import javafx.geometry.Point2D
+import javafx.scene.Node
+import javafx.scene.control.Button
 import javafx.scene.layout.AnchorPane
 
 class Tab2ModelAdapter(
@@ -57,6 +61,8 @@ class Tab2ModelAdapter(
 
     private val selectedVertices = SimpleObjectProperty<Set<Id<out de.flapdoodle.tab.model.Node>>>(emptySet())
     private val selectedEdges = SimpleObjectProperty<Set<Output2Input>>(emptySet())
+
+    private val vertexActions = vertexActions(model)
 
     init {
         children.add(graphEditor)
@@ -108,7 +114,7 @@ class Tab2ModelAdapter(
                     val node = action.node
                     val nodeSize = node.size
 
-                    graphEditor.addVertex(Vertex(node.name).also { vertex ->
+                    graphEditor.addVertex(Vertex(node.name, vertexActions).also { vertex ->
                         val vertexContent = nodeUIAdapterFactory.adapterOf(node, modelChangeListener)
                         if (nodeSize!=null) {
                             vertex.resizeTo(LayoutBounds(
@@ -223,6 +229,21 @@ class Tab2ModelAdapter(
                 }
             }
         }
+    }
+
+    private fun vertexActions(
+        model: ReadOnlyObjectProperty<Tab2Model>
+    ): (VertexId) -> List<Node> {
+        return { id -> listOf(
+            Button("?").apply {
+                onAction = EventHandler {
+                    val nodeId = nodeOfVertex(id)
+                    val node = model.value.node(nodeId)
+                    val changed = Change.openWith(node)
+                    // TODO hier fehlt was
+                }
+            }
+        ) }
     }
 
     private fun changeSelection(vertex: Id<out de.flapdoodle.tab.model.Node>, selection: Boolean) {
