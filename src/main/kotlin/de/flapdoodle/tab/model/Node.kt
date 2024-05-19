@@ -113,6 +113,9 @@ sealed class Node {
         override fun apply(change: ModelChange): Table<K> {
             if (change is ModelChange.TableChange) {
                 when (change) {
+                    is ModelChange.ChangeTableProperties -> {
+                        return copy(name = change.name)
+                    }
                     is ModelChange.AddColumn<out Comparable<*>> -> {
                         if (change.id == id) {
                             require(indexType==change.column.indexType) {"type mismatch: ${change.column}"}

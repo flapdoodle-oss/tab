@@ -15,6 +15,7 @@ sealed class ModelChange {
     data class RemoveValue(override val id: Id<out de.flapdoodle.tab.model.Node.Constants>, val valueId: SingleValueId): ConstantsChange(id)
 
     sealed class TableChange(open val id: Id<out de.flapdoodle.tab.model.Node.Table<out Comparable<*>>>): ModelChange()
+    data class ChangeTableProperties(override val id: Id<out de.flapdoodle.tab.model.Node.Table<out Comparable<*>>>, val name: String): TableChange(id)
     data class AddColumn<K: Comparable<K>>(override val id: Id<out de.flapdoodle.tab.model.Node.Table<out Comparable<*>>>, val column: Column<K, out Any>): TableChange(id)
     data class SetColumns<K: Comparable<K>>(
         override val id: Id<out de.flapdoodle.tab.model.Node.Table<out Comparable<*>>>,
