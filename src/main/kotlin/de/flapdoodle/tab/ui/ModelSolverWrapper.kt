@@ -47,6 +47,12 @@ class ModelSolverWrapper(initalModel: Tab2Model = Tab2Model()) {
                 }
                 true
             }
+            is ModelEvent.VertexResized -> {
+                changeModel { current ->
+                    current.resizeTo(event.node, event.position, event.size)
+                }
+                true
+            }
             else -> {
                 true
             }

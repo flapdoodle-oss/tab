@@ -19,9 +19,11 @@ sealed class Node {
     abstract val name: String
     abstract val id: Id<out Node>
     abstract val position: Position
+    abstract val size: Size?
 
     abstract fun apply(change: ModelChange): Node
     abstract fun moveTo(position: Position): Node
+    abstract fun resizeTo(position: Position, size: Size): Node
 
 //    fun data(id: DataId): Data {
 //        return when (id) {
@@ -57,7 +59,8 @@ sealed class Node {
         override val name: String,
         override val values: SingleValues = SingleValues(),
         override val id: Id<Node.Constants> = Id.nextId(Node.Constants::class),
-        override val position: Position = Position(0.0, 0.0)
+        override val position: Position = Position(0.0, 0.0),
+        override val size: Size? = null
     ) : Node(), HasValues {
 
         fun addValue(value: SingleValue<*>): Node.Constants {
@@ -87,6 +90,10 @@ sealed class Node {
         override fun moveTo(position: Position): Node {
             return copy(position = position)
         }
+
+        override fun resizeTo(position: Position, size: Size): Node {
+            return copy(position = position, size=size)
+        }
     }
 
     data class Table<K: Comparable<K>> (
@@ -94,7 +101,8 @@ sealed class Node {
         override val indexType: TypeInfo<K>,
         override val columns: Columns<K> = Columns(),
         override val id: Id<Table<*>> = Id.nextId(Table::class),
-        override val position: Position = Position(0.0, 0.0)
+        override val position: Position = Position(0.0, 0.0),
+        override val size: Size? = null
     ) : Node(), HasColumns<K> {
 
         override fun removeConnectionsFrom(id: Id<out Node>) = this
@@ -144,6 +152,10 @@ sealed class Node {
         override fun moveTo(position: Position): Node {
             return copy(position = position)
         }
+
+        override fun resizeTo(position: Position, size: Size): Node {
+            return copy(position = position, size = size)
+        }
     }
 
     data class Calculated<K: Comparable<K>>(
@@ -153,7 +165,8 @@ sealed class Node {
         override val columns: Columns<K> = Columns(),
         override val values: SingleValues = SingleValues(),
         override val id: Id<Calculated<*>> = Id.nextId(Calculated::class),
-        override val position: Position = Position(0.0, 0.0)
+        override val position: Position = Position(0.0, 0.0),
+        override val size: Size? = null
     ): Node(), HasColumns<K>,
         HasValues {
 
@@ -220,6 +233,10 @@ sealed class Node {
 
         override fun moveTo(position: Position): Node {
             return copy(position = position)
+        }
+
+        override fun resizeTo(position: Position, size: Size): Node {
+            return copy(position = position, size = size)
         }
     }
 }

@@ -55,6 +55,11 @@ data class Tab2Model(
         return copy(nodes = nodes.change(Node::id, nodeId) { it.moveTo(position) })
     }
 
+    fun resizeTo(nodeId: Id<out Node>, position: Position, size: Size): Tab2Model {
+        val node = node(nodeId)
+        return copy(nodes = nodes.change(Node::id, nodeId) { it.resizeTo(position, size) })
+    }
+
     fun disconnect(endId: Id<out Node>, input: Id<InputSlot<*>>, source: Source): Tab2Model {
         val end = node(endId)
         val removed = end.removeConnectionFrom(input, source.node, source.id)

@@ -17,6 +17,7 @@ class DefaultCalculatedMapper(
         return FileNode(
             name = src.name,
             position = src.position,
+            size = src.size,
             id = toFileMapping.idFor(src.id),
             calculated = FileNode.Calculated(
                 indexType = toFileMapping.indexType(src.indexType),

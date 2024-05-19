@@ -7,6 +7,7 @@ import de.flapdoodle.kfx.controls.grapheditor.types.SlotId
 import de.flapdoodle.kfx.controls.grapheditor.types.VertexId
 import de.flapdoodle.kfx.types.Id
 import de.flapdoodle.tab.model.Position
+import de.flapdoodle.tab.model.Size
 import de.flapdoodle.tab.model.calculations.InputSlot
 import de.flapdoodle.tab.model.data.DataId
 import de.flapdoodle.types.Either
@@ -48,6 +49,16 @@ class Event2ModelEvent(
                     ModelEvent.VertexMoved(
                         nodeId,
                         Position(event.layoutPosition.x, event.layoutPosition.y)
+                    )
+                )
+            }
+            is Event.VertexResized -> {
+                val nodeId = vertexIdMapper(event.vertexId)
+                delegate.onEvent(
+                    ModelEvent.VertexResized(
+                        nodeId,
+                        Position(event.layoutPosition.x, event.layoutPosition.y),
+                        Size(event.size.width, event.size.height)
                     )
                 )
             }

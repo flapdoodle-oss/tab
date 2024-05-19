@@ -13,6 +13,7 @@ class DefaultTableMapper(
         return FileNode(
             name = src.name,
             position = src.position,
+            size = src.size,
             id = toFileMapping.idFor(src.id),
             table = FileNode.Table(
                 indexType = toFileMapping.indexType(src.indexType),

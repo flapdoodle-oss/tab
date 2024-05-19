@@ -15,6 +15,7 @@ import de.flapdoodle.kfx.extensions.layoutPosition
 import de.flapdoodle.kfx.extensions.unsubscribeOnDetach
 import de.flapdoodle.kfx.extensions.withAnchors
 import de.flapdoodle.kfx.types.Id
+import de.flapdoodle.kfx.types.LayoutBounds
 import de.flapdoodle.tab.model.Tab2Model
 import de.flapdoodle.tab.model.calculations.InputSlot
 import de.flapdoodle.tab.model.connections.Source
@@ -104,14 +105,25 @@ class Tab2ModelAdapter(
 
             when (action) {
                 is Action.AddNode -> {
-                    graphEditor.addVertex(Vertex(action.node.name).also { vertex ->
-                        val vertexContent = nodeUIAdapterFactory.adapterOf(action.node, modelChangeListener)
-                        vertex.layoutPosition = Point2D(action.node.position.x, action.node.position.y)
+                    val node = action.node
+                    val nodeSize = node.size
+
+                    graphEditor.addVertex(Vertex(node.name).also { vertex ->
+                        val vertexContent = nodeUIAdapterFactory.adapterOf(node, modelChangeListener)
+                        if (nodeSize!=null) {
+                            vertex.resizeTo(LayoutBounds(
+                                node.position.x, node.position.y,
+                                nodeSize.width, nodeSize.height
+                            ))
+                        } else {
+                            vertex.layoutPosition = Point2D(node.position.x, node.position.y)
+                        }
                         vertex.content = vertexContent
-                        vertexMapping.add(action.node.id, vertex.vertexId,
+                        vertexMapping.add(
+                            node.id, vertex.vertexId,
                             VertexAndContent(vertex, vertexContent)
                         )
-                        Subscriptions.add(vertex, vertex.selectedProperty().subscribe { it -> changeSelection(action.node.id, it) })
+                        Subscriptions.add(vertex, vertex.selectedProperty().subscribe { it -> changeSelection(node.id, it) })
                     })
                 }
 

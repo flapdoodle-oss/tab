@@ -13,6 +13,7 @@ class DefaultConstantsMapper(
         return FileNode(
             src.name,
             src.position,
+            src.size,
             toFileMapping.idFor(src.id),
             constants = FileNode.Constants(
                 singleValuesMapper.toFile(toFileMapping, src.values)
