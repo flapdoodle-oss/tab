@@ -1,9 +1,7 @@
 package de.flapdoodle.tab
 
-import de.flapdoodle.kfx.extensions.bindCss
 import de.flapdoodle.kfx.extensions.cssClassName
 import de.flapdoodle.kfx.types.Id
-import de.flapdoodle.tab.extensions.change
 import de.flapdoodle.tab.model.Node
 import de.flapdoodle.tab.model.Position
 import de.flapdoodle.tab.model.Tab2Model
@@ -12,7 +10,7 @@ import de.flapdoodle.tab.ui.commands.Command
 import de.flapdoodle.tab.ui.resources.Labels
 import de.flapdoodle.tab.ui.views.dialogs.NewCalculationDialog
 import de.flapdoodle.tab.ui.views.dialogs.NewTableDialog
-import de.flapdoodle.tab.ui.views.dialogs.NewValuesDialog
+import de.flapdoodle.tab.ui.views.dialogs.NewValues
 import javafx.beans.property.ReadOnlyObjectProperty
 import javafx.event.EventHandler
 import javafx.scene.control.Button
@@ -34,7 +32,7 @@ class Tools(
         items.addAll(
             button("Values").also { button ->
                 button.onAction = EventHandler {
-                    val node = NewValuesDialog.open()
+                    val node = NewValues.open()
                     if (node != null) {
                         adapter(Command.AskForPosition(onSuccess = { pos ->
                             modelChangeAdapter { it.addNode(node.copy(position = Position(pos.x, pos.y))) }
