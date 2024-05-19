@@ -24,7 +24,7 @@ import javafx.scene.layout.StackPane
 
 class Main(
   private val modelWrapper: ModelSolverWrapper
-) : StackPane() {
+) : WeightGridPane() {
   private val selectedVertex = SimpleObjectProperty<Id<out de.flapdoodle.tab.model.Node>>()
   private val selectedEdge = SimpleObjectProperty<Tab2ModelAdapter.Output2Input>()
 
@@ -53,32 +53,20 @@ class Main(
     selectedEdge = selectedEdge
   )
 
-  private val all = WeightGridPane()
-    .apply {
-      setColumnWeight(0, 1.0)
-      setRowWeight(0,0.0)
-      setRowWeight(1,0.0)
-      setRowWeight(2,1.0)
-  }
-
   init {
     bindCss("main")
-    
+
     addEventFilter(KeyEvent.KEY_RELEASED) { event ->
       if (event.code == KeyCode.ESCAPE) {
         adapter.execute(Command.Abort())
       }
     }
-    all.children.add(menu.apply {
-      WeightGridPane.setPosition(this, 0, 0)
-    })
-    all.children.add(tools.apply {
-      WeightGridPane.setPosition(this, 0, 1)
-    })
-    all.children.add(adapter.apply {
-      WeightGridPane.setPosition(this, 0, 2)
-    })
+    
+    columnWeights(1.0)
+    rowWeights(0.0, 0.0, 1.0)
 
-    children.add(all)
+    add(menu, 0, 0)
+    add(tools, 0, 1)
+    add(adapter, 0, 2)
   }
 }
