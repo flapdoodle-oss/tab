@@ -17,11 +17,8 @@ class NewValues() : DialogContent<Node.Constants>() {
 
     init {
         bindCss("new-values")
-//        horizontalSpaceProperty().value = 10.0
-//        verticalSpaceProperty().value = 10.0
 
         columnWeights(1.0, 3.0)
-
         add(name, 0, 0)
         add(nameField, 1, 0)
     }

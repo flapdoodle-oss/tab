@@ -1,6 +1,5 @@
 package de.flapdoodle.tab.ui.views.table
 
-import de.flapdoodle.kfx.controls.fields.TypedLabel
 import de.flapdoodle.kfx.controls.fields.ValidatedLabel
 import de.flapdoodle.kfx.layout.grid.WeightGridTable
 import de.flapdoodle.tab.model.change.ModelChange
@@ -8,7 +7,7 @@ import de.flapdoodle.tab.model.data.Column
 import de.flapdoodle.tab.model.data.SingleValue
 import de.flapdoodle.tab.ui.Converters
 import de.flapdoodle.tab.ui.ModelChangeListener
-import de.flapdoodle.tab.ui.views.dialogs.NewColumnDialog
+import de.flapdoodle.tab.ui.views.dialogs.NewColumn
 import javafx.beans.property.SimpleObjectProperty
 import javafx.event.EventHandler
 import javafx.scene.control.Button
@@ -48,8 +47,8 @@ class ColumnsPane<K: Comparable<K>>(
         footerFactory = { values, columns ->
             val button = Button("+").apply {
                 onAction = EventHandler {
-                    val column = NewColumnDialog.open(node.indexType)
-                    if (column!=null) {
+                    val column = NewColumn.open(node.indexType)
+                    if (column != null) {
                         modelChangeListener.change(ModelChange.AddColumn(nodeId, column))
                     }
                 }

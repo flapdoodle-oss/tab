@@ -9,7 +9,7 @@ import de.flapdoodle.tab.ui.Tab2ModelAdapter
 import de.flapdoodle.tab.ui.commands.Command
 import de.flapdoodle.tab.ui.resources.Labels
 import de.flapdoodle.tab.ui.views.dialogs.NewCalculationDialog
-import de.flapdoodle.tab.ui.views.dialogs.NewTableDialog
+import de.flapdoodle.tab.ui.views.dialogs.NewTable
 import de.flapdoodle.tab.ui.views.dialogs.NewValues
 import javafx.beans.property.ReadOnlyObjectProperty
 import javafx.event.EventHandler
@@ -42,7 +42,7 @@ class Tools(
             },
             button("Table").also { button ->
                 button.onAction = EventHandler {
-                    val node = NewTableDialog.open()
+                    val node = NewTable.open()
                     if (node != null) {
                         val changed = node // fakeDummy(node)
                         adapter(Command.AskForPosition(onSuccess = { pos ->

@@ -9,7 +9,7 @@ import de.flapdoodle.tab.model.change.ModelChange
 import de.flapdoodle.tab.model.data.SingleValue
 import de.flapdoodle.tab.ui.Converters
 import de.flapdoodle.tab.ui.ModelChangeListener
-import de.flapdoodle.tab.ui.views.dialogs.NewValueDialog
+import de.flapdoodle.tab.ui.views.dialogs.NewValue
 import javafx.beans.property.SimpleObjectProperty
 import javafx.event.EventHandler
 import javafx.scene.control.Button
@@ -60,7 +60,7 @@ class InlineConstantUIAdapter(
             val button = Button("+").apply {
 //                maxWidth = 200.0
                 onAction = EventHandler {
-                    val newValue = NewValueDialog.open()
+                    val newValue = NewValue.open()
                     if (newValue!=null) {
                         modelChangeListener.change(ModelChange.AddValue(nodeId, SingleValue(newValue.name, TypeInfo.of(newValue.type.javaObjectType))))
                     }
