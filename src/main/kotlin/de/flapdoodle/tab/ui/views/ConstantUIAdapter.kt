@@ -17,8 +17,11 @@ import de.flapdoodle.tab.ui.views.colors.ColorDot
 import de.flapdoodle.tab.ui.views.dialogs.ChangeValue
 import de.flapdoodle.tab.ui.views.dialogs.NewValue
 import javafx.beans.property.SimpleObjectProperty
+import javafx.event.ActionEvent
 import javafx.event.EventHandler
+import javafx.geometry.HPos
 import javafx.scene.Node
+import javafx.scene.control.Button
 import javafx.scene.control.Label
 import javafx.scene.control.TextField
 
@@ -33,6 +36,7 @@ class ConstantUIAdapter(
 
     private val nameColumn = WeightGridTable.Column<SingleValue<out Any>>(
         weight = 0.0,
+        horizontalPosition = HPos.LEFT,
         cellFactory = {
             TableCell.with(Labels.label(it.name), SingleValue<out Any>::name, Label::setText)
         })
@@ -52,10 +56,12 @@ class ConstantUIAdapter(
     private val changeColumn = WeightGridTable.Column<SingleValue<out Any>>(
         weight = 0.0,
         cellFactory = { value ->
-            TableCell(Buttons.change(context) {
-                val change = ChangeValue.openWith(node.id, value)
+            TableCell.with<SingleValue<out Any>, Button, EventHandler<ActionEvent>>(Buttons.change(context), { v -> EventHandler {
+                val change = ChangeValue.openWith(node.id, v)
                 if (change != null) modelChangeListener.change(change)
-            })
+            }}, Button::setOnAction).apply {
+                updateCell(value)
+            }
         }
     )
 

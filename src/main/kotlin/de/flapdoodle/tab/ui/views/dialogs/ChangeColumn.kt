@@ -33,10 +33,12 @@ class ChangeColumn<K : Comparable<K>>(
     private val interpolationField = ChoiceBoxes.forEnums(
         resourceBundle = ResourceBundles.enumTypes(),
         enumType = InterpolationType::class,
-        default = InterpolationType.Linear
+        default = column.interpolationType
     )
 
     init {
+        println("try to change column: $column")
+
         bindCss("change-column")
 
         columnWeights(1.0, 3.0)
@@ -47,7 +49,7 @@ class ChangeColumn<K : Comparable<K>>(
         add(interpolationField, 1, 2, HPos.LEFT)
 
         nameField.set(column.name)
-        interpolationField.value = column.interpolationType
+//        interpolationField.value = column.interpolationType
     }
 
     override fun isValidProperty(): ObservableValue<Boolean> {
@@ -55,7 +57,7 @@ class ChangeColumn<K : Comparable<K>>(
     }
 
     override fun result(): ModelChange.ChangeColumnProperties<K>? {
-        return if (column.name!= nameField.text && column.interpolationType != interpolationField.selectionModel.selectedItem) {
+        return if (column.name!= nameField.text || column.interpolationType != interpolationField.selectionModel.selectedItem) {
             ModelChange.ChangeColumnProperties(nodeId, column.id, nameField.text, interpolationField.selectionModel.selectedItem)
         } else null
     }
