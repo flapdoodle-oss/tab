@@ -3,6 +3,7 @@ package de.flapdoodle.tab.ui.views
 import de.flapdoodle.kfx.controls.fields.ValidatingTextField
 import de.flapdoodle.kfx.extensions.bindCss
 import de.flapdoodle.kfx.extensions.cssClassName
+import de.flapdoodle.kfx.layout.grid.TableCell
 import de.flapdoodle.kfx.layout.grid.WeightGridTable
 import de.flapdoodle.kfx.types.Id
 import de.flapdoodle.reflection.TypeInfo
@@ -15,6 +16,8 @@ import de.flapdoodle.tab.ui.views.dialogs.ChangeValue
 import de.flapdoodle.tab.ui.views.dialogs.NewValue
 import javafx.beans.property.SimpleObjectProperty
 import javafx.event.EventHandler
+import javafx.scene.Node
+import javafx.scene.control.Button
 import javafx.scene.control.Label
 import javafx.scene.control.TextField
 
@@ -27,22 +30,23 @@ class ConstantUIAdapter(
 
     val nameColumn = WeightGridTable.Column<SingleValue<out Any>>(
         weight = 0.0,
-        nodeFactory = {
+        cellFactory = {
             val label = Label(it.name).apply {
                 minWidth = USE_PREF_SIZE
             }
-            label to WeightGridTable.ChangeListener { label.text = it.name }
+            TableCell(label) { l, v -> label.text = v.name }
         })
     
     val colorColumn =WeightGridTable.Column<SingleValue<out Any>>(
         weight = 0.0,
-        nodeFactory = { ColorDot(it.color) to WeightGridTable.ChangeListener { } })
+        cellFactory = {
+            TableCell(ColorDot(it.color)) { c, v -> c.set(v.color) }
+        })
     val valueColumn = WeightGridTable.Column<SingleValue<out Any>>(
         weight = 10.0,
-        nodeFactory = { val textField = textField(nodeId, it, modelChangeListener)
-            textField to WeightGridTable.ChangeListener {
-                //textField.set(it.value as Nothing?)
-            } })
+        cellFactory = {
+            textFieldTableCellHack(nodeId, it, modelChangeListener)
+        })
 
     val changeColumn = WeightGridTable.Column<SingleValue<out Any>>(
         weight = 0.0,
@@ -106,6 +110,15 @@ class ConstantUIAdapter(
     init {
         bindCss("constants-ui")
         children.add(content)
+    }
+
+    private fun textFieldTableCellHack(id: Id<out de.flapdoodle.tab.model.Node.Constants>, value: SingleValue<out Any>, modelChangeListener: ModelChangeListener): TableCell<SingleValue<out Any>, out Node> {
+        return textFieldTableCell(id, value, modelChangeListener) as TableCell<SingleValue<out Any>, Node>
+    }
+
+    private fun <T: Any> textFieldTableCell(id: Id<out de.flapdoodle.tab.model.Node.Constants>, value: SingleValue<T>, modelChangeListener: ModelChangeListener): TableCell<SingleValue<T>, ValidatingTextField<T>> {
+        val node: ValidatingTextField<T> = textField(id, value, modelChangeListener)
+        return TableCell(node) { t, v -> t.set(v.value) }
     }
 
     private fun <T: Any> textField(id: Id<out de.flapdoodle.tab.model.Node.Constants>, value: SingleValue<T>, modelChangeListener: ModelChangeListener): ValidatingTextField<T> {
