@@ -1,9 +1,11 @@
 package de.flapdoodle.tab.ui.views.calculations
 
+import de.flapdoodle.kfx.layout.grid.TableCell
 import de.flapdoodle.kfx.layout.grid.WeightGridTable
 import de.flapdoodle.tab.model.calculations.Calculation
 import de.flapdoodle.tab.model.change.ModelChange
 import de.flapdoodle.tab.ui.ModelChangeListener
+import de.flapdoodle.tab.ui.resources.Labels
 import javafx.beans.property.SimpleObjectProperty
 import javafx.event.EventHandler
 import javafx.scene.control.Button
@@ -19,50 +21,40 @@ class AbstractCalculationListPane<K: Comparable<K>, C: Calculation<K>>(
     val onNewExpression: () -> Unit
 ): VBox() {
     private val nodeId = node.id
-//    private val calculationsModel: SimpleObjectProperty<List<Calculation.Aggregation<K>>> = SimpleObjectProperty(node.calculations.aggregations())
 
     private val nameColumn = WeightGridTable.Column<C>(
         weight = 1.0,
-        nodeFactory = { aggregation ->
-            val label = Label(aggregation.name())
-            label to WeightGridTable.ChangeListener { label.text = it.name() }
+        cellFactory = {
+            TableCell.with(Labels.label(it.name()), Calculation<K>::name, Label::setText)
         }
     )
 
     private val formulaColumn = WeightGridTable.Column<C>(
         weight = 50.0,
-        nodeFactory = { aggregation ->
+        cellFactory = { aggregation ->
             textFieldFor(aggregation, modelChangeListener)
         }
     )
 
     private val actionColumn = WeightGridTable.Column<C>(
         weight = 1.0,
-        nodeFactory = { calculation ->
-            val button = Button("-").apply {
+        cellFactory = { calculation ->
+            TableCell(Button("-").apply {
                 onAction = EventHandler {
-                    modelChangeListener.change(ModelChange.RemoveFormula(nodeId,calculation.id))
+                    modelChangeListener.change(ModelChange.RemoveFormula(nodeId, calculation.id))
                 }
-            }
-            button to WeightGridTable.ChangeListener {}
+            })
         }
     )
 
-    private fun textFieldFor(calculation: C, modelChangeListener: ModelChangeListener): Pair<javafx.scene.Node, WeightGridTable.ChangeListener<C>> {
-        val changeFormula = {  expression: String ->
-            modelChangeListener.change(ModelChange.ChangeFormula(nodeId, calculation.id, expression))
-        }
-
+    private fun textFieldFor(calculation: C, modelChangeListener: ModelChangeListener): TableCell<C, TextField> {
         val textField = TextField(calculation.formula().expression()).apply {
             onAction = EventHandler {
-                changeFormula(text)
+                modelChangeListener.change(ModelChange.ChangeFormula(nodeId, calculation.id, text))
             }
         }
-        val changeListener = WeightGridTable.ChangeListener<C> { change ->
-            textField.textProperty().value = change.formula().expression()
-        }
 
-        return textField to changeListener
+        return TableCell(textField) { t, v -> t.text = v.formula().expression() }
     }
 
     private val aggregationsPanel = WeightGridTable(
@@ -70,7 +62,7 @@ class AbstractCalculationListPane<K: Comparable<K>, C: Calculation<K>>(
         indexOf = { it.id },
         columns = listOf(
             nameColumn,
-            WeightGridTable.Column(weight = 0.1, nodeFactory = { Label("=") to WeightGridTable.ChangeListener {  } }),
+            WeightGridTable.Column(weight = 0.1, cellFactory = { TableCell( Labels.label("=")) }),
             formulaColumn,
             actionColumn
         ),

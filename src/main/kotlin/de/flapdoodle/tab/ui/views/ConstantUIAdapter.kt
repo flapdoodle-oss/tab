@@ -11,6 +11,7 @@ import de.flapdoodle.tab.model.change.ModelChange
 import de.flapdoodle.tab.model.data.SingleValue
 import de.flapdoodle.tab.ui.Converters
 import de.flapdoodle.tab.ui.ModelChangeListener
+import de.flapdoodle.tab.ui.resources.Labels
 import de.flapdoodle.tab.ui.views.colors.ColorDot
 import de.flapdoodle.tab.ui.views.dialogs.ChangeValue
 import de.flapdoodle.tab.ui.views.dialogs.NewValue
@@ -30,9 +31,7 @@ class ConstantUIAdapter(
     private val nameColumn = WeightGridTable.Column<SingleValue<out Any>>(
         weight = 0.0,
         cellFactory = {
-            TableCell.with(Label(it.name).apply {
-                minWidth = USE_PREF_SIZE
-            }, SingleValue<out Any>::name, Label::setText)
+            TableCell.with(Labels.label(it.name), SingleValue<out Any>::name, Label::setText)
         })
 
     private val colorColumn = WeightGridTable.Column<SingleValue<out Any>>(
@@ -71,9 +70,7 @@ class ConstantUIAdapter(
         indexOf = SingleValue<out Any>::id,
         columns = listOf(colorColumn, nameColumn, valueColumn, changeColumn, deleteColumn),
         footerFactory = { values, columns ->
-            val label = Label("   ").apply {
-                minWidth = USE_PREF_SIZE
-            }
+            val label = Labels.label("   ")
             val field = TextField().apply {
                 isEditable = false
                 isDisable = true

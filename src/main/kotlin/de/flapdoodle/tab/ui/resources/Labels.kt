@@ -5,8 +5,12 @@ import javafx.scene.control.PopupControl.USE_PREF_SIZE
 import kotlin.reflect.KClass
 
 object Labels {
+    fun label(text: String): Label {
+        return Label(text).apply { minWidth = USE_PREF_SIZE }
+    }
+    
     fun label(context: KClass<out Any>, key: String, fallback: String): Label {
-        return Label(text(context,key,fallback)).apply { minWidth = USE_PREF_SIZE }
+        return label(text(context,key,fallback))
     }
 
     fun text(context: KClass<out Any>, key: String, fallback: String): String {
