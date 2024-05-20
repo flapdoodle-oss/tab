@@ -57,13 +57,6 @@ class ColumnsPane<K: Comparable<K>>(
         children.add(columnsPanel)
     }
 
-    private fun <T: Any> typedlabelWithChangeListener(value: SingleValue<T>): Pair<javafx.scene.Node, WeightGridTable.ChangeListener<SingleValue<out Any>>> {
-        val typedlabel = typedlabel(value)
-        return typedlabel to WeightGridTable.ChangeListener {
-            typedlabel.set(it.value as T?)
-        }
-    }
-
     private fun <T: Any> typedlabel(value: SingleValue<T>): ValidatedLabel<T> {
         return ValidatedLabel(Converters.validatingConverter(value.valueType)).apply {
             set(value.value)
