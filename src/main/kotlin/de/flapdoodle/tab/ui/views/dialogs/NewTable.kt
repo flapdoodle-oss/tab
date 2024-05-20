@@ -16,7 +16,7 @@ import javafx.geometry.HPos
 
 class NewTable : DialogContent<Node.Table<out Comparable<*>>>() {
 
-    private val name = Labels.label(NewTable::class,"name","Name")
+    private val name = Labels.name(NewTable::class)
     private val nameField = ValidatingTextField(Converters.validatingConverter(String::class)
         .and { v -> v.mapNullable { if (it.isNullOrBlank()) throw RequiredFieldNotSet("not set") else it } })
     private val type = Labels.label(NewTable::class,"type","IndexType")

@@ -8,26 +8,25 @@ import de.flapdoodle.tab.ui.views.table.TablePane
 import javafx.scene.control.Tab
 import javafx.scene.control.TabPane
 
-class InlineTableUIAdapter<K: Comparable<K>>(
+class TableUIAdapter<K: Comparable<K>>(
     node: de.flapdoodle.tab.model.Node.Table<K>,
     val modelChangeListener: ModelChangeListener
 ) : NodeUIAdapter() {
     val nodeId = node.id
 
     private val wrapper = WeightGridPane().apply {
-        setRowWeight(0,0.1)
-        setRowWeight(1, 1.0)
+        rowWeights(0.0, 1.0)
     }
     private val columnsPane = ColumnsPane(node, modelChangeListener).apply {
         WeightGridPane.setPosition(this, 0, 0)
     }
-    val tabPane = TabPane().apply {
+    private val tabPane = TabPane().apply {
         WeightGridPane.setPosition(this, 0, 1)
     }
     private val tablePane = TablePane(node, modelChangeListener).apply {
         WeightGridPane.setPosition(this, 0, 1)
     }
-    val chartPane = SmallChartPane(node)
+    private val chartPane = SmallChartPane(node)
 
     init {
         children.add(wrapper)

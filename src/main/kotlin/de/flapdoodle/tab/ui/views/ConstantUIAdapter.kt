@@ -11,6 +11,7 @@ import de.flapdoodle.tab.model.change.ModelChange
 import de.flapdoodle.tab.model.data.SingleValue
 import de.flapdoodle.tab.ui.Converters
 import de.flapdoodle.tab.ui.ModelChangeListener
+import de.flapdoodle.tab.ui.resources.Buttons
 import de.flapdoodle.tab.ui.resources.Labels
 import de.flapdoodle.tab.ui.views.colors.ColorDot
 import de.flapdoodle.tab.ui.views.dialogs.ChangeValue
@@ -27,6 +28,8 @@ class ConstantUIAdapter(
 ) : NodeUIAdapter() {
     val nodeId = node.id
     val model = SimpleObjectProperty(node.values.values)
+
+    private val context = Labels.with(ConstantUIAdapter::class)
 
     private val nameColumn = WeightGridTable.Column<SingleValue<out Any>>(
         weight = 0.0,
@@ -49,7 +52,7 @@ class ConstantUIAdapter(
     private val changeColumn = WeightGridTable.Column<SingleValue<out Any>>(
         weight = 0.0,
         cellFactory = { value ->
-            TableCell(button("change", "?") {
+            TableCell(Buttons.change(context) {
                 val change = ChangeValue.openWith(node.id, value)
                 if (change != null) modelChangeListener.change(change)
             })
@@ -59,7 +62,7 @@ class ConstantUIAdapter(
     private val deleteColumn = WeightGridTable.Column<SingleValue<out Any>>(
         weight = 0.0,
         cellFactory = { value ->
-            TableCell(button("delete", "-") {
+            TableCell(Buttons.delete(context) {
                 modelChangeListener.change(ModelChange.RemoveValue(nodeId, value.id))
             })
         }
@@ -76,18 +79,16 @@ class ConstantUIAdapter(
                 isDisable = true
             }
 
-            val button = button("add", "+").apply {
+            val button = Buttons.add(context) {
 //                maxWidth = 200.0
-                onAction = EventHandler {
-                    val newValue = NewValue.open()
-                    if (newValue != null) {
-                        modelChangeListener.change(
-                            ModelChange.AddValue(
-                                nodeId,
-                                SingleValue(newValue.name, TypeInfo.of(newValue.type.javaObjectType))
-                            )
+                val newValue = NewValue.open()
+                if (newValue != null) {
+                    modelChangeListener.change(
+                        ModelChange.AddValue(
+                            nodeId,
+                            SingleValue(newValue.name, TypeInfo.of(newValue.type.javaObjectType))
                         )
-                    }
+                    )
                 }
             }
             mapOf(

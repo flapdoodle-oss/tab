@@ -1,6 +1,6 @@
 package de.flapdoodle.tab.ui.views.calculations
 
-import de.flapdoodle.kfx.controls.fields.ValidatedLabel
+import de.flapdoodle.kfx.controls.labels.ValidatedLabel
 import de.flapdoodle.kfx.layout.grid.TableCell
 import de.flapdoodle.kfx.layout.grid.WeightGridTable
 import de.flapdoodle.tab.model.data.SingleValue
