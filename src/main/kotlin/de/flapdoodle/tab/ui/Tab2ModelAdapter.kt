@@ -20,9 +20,7 @@ import de.flapdoodle.tab.model.Size
 import de.flapdoodle.tab.model.Tab2Model
 import de.flapdoodle.tab.model.calculations.InputSlot
 import de.flapdoodle.tab.model.connections.Source
-import de.flapdoodle.tab.model.data.Column
-import de.flapdoodle.tab.model.data.DataId
-import de.flapdoodle.tab.model.data.SingleValue
+import de.flapdoodle.tab.model.data.*
 import de.flapdoodle.tab.ui.commands.Command
 import de.flapdoodle.tab.ui.events.Event2ModelEvent
 import de.flapdoodle.tab.ui.events.ModelEventListener
@@ -164,10 +162,15 @@ class Tab2ModelAdapter(
                 }
                 is Action.ChangeOutput -> {
                     vertexMapping.with(action.id) { vertexMapping ->
-                        slotMapping.with(action.output) {
-                            // TODO hier fehlt vieles
-                            println("TODO should do something: $action")
+                        val slot = when (action.change) {
+                            is Column<*,*> -> Slot(action.change.name, Slot.Mode.OUT, Position.RIGHT, action.change.color)
+                            is SingleValue<*> -> Slot(action.change.name, Slot.Mode.OUT, Position.RIGHT, action.change.color)
                         }
+
+                        slotMapping.with(action.output) { slot ->
+                        }
+
+                        println("TODO should do something: $action")
                     }
                 }
 

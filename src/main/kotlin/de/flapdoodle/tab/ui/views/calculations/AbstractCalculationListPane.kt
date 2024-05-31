@@ -1,5 +1,8 @@
 package de.flapdoodle.tab.ui.views.calculations
 
+import de.flapdoodle.kfx.controls.fields.ValidatingColoredTextField
+import de.flapdoodle.kfx.controls.fields.ValidatingTextField
+import de.flapdoodle.kfx.converters.Converters
 import de.flapdoodle.kfx.layout.grid.TableCell
 import de.flapdoodle.kfx.layout.grid.WeightGridTable
 import de.flapdoodle.tab.model.calculations.Calculation
@@ -12,6 +15,7 @@ import javafx.scene.control.Button
 import javafx.scene.control.Label
 import javafx.scene.control.TextField
 import javafx.scene.layout.VBox
+import java.util.*
 
 class AbstractCalculationListPane<K: Comparable<K>, C: Calculation<K>>(
     node: de.flapdoodle.tab.model.Node.Calculated<K>,
@@ -46,6 +50,20 @@ class AbstractCalculationListPane<K: Comparable<K>, C: Calculation<K>>(
             })
         }
     )
+
+    private fun coloredTextFieldFor(calculation: C, modelChangeListener: ModelChangeListener): TableCell<C, ValidatingColoredTextField<String>> {
+        val textField = ValidatingColoredTextField(Converters.validatingFor(String::class, Locale.GERMANY)).apply {
+            onAction = EventHandler {
+                val text = get()
+                if (text != null) {
+                    modelChangeListener.change(ModelChange.ChangeFormula(nodeId, calculation.id, text))
+                }
+            }
+        }
+        return TableCell(textField) { t, v ->
+            t.set(v.formula().expression())
+        }
+    }
 
     private fun textFieldFor(calculation: C, modelChangeListener: ModelChangeListener): TableCell<C, TextField> {
         val textField = TextField(calculation.formula().expression()).apply {
