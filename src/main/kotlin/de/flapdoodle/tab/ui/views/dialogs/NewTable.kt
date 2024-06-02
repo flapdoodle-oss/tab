@@ -6,6 +6,7 @@ import de.flapdoodle.kfx.controls.fields.ValidatingTextField
 import de.flapdoodle.kfx.extensions.bindCss
 import de.flapdoodle.reflection.TypeInfo
 import de.flapdoodle.tab.config.IndexTypes
+import de.flapdoodle.tab.model.Name
 import de.flapdoodle.tab.model.Node
 import de.flapdoodle.tab.ui.Converters
 import de.flapdoodle.tab.ui.resources.Labels
@@ -48,7 +49,7 @@ class NewTable : DialogContent<Node.Table<out Comparable<*>>>() {
     private fun <K: Comparable<K>> nodeOf(name: String?, indexType: TypeInfo<K>?): Node.Table<K>? {
         if (name!=null && indexType!=null) {
             return Node.Table(
-                name = name,
+                name = Name(name),
                 indexType = indexType
             )
         }

@@ -3,6 +3,7 @@ package de.flapdoodle.tab.ui.views.dialogs
 import de.flapdoodle.kfx.controls.fields.ValidatingField
 import de.flapdoodle.kfx.controls.fields.ValidatingTextField
 import de.flapdoodle.kfx.extensions.bindCss
+import de.flapdoodle.tab.model.Name
 import de.flapdoodle.tab.model.Node
 import de.flapdoodle.tab.ui.Converters
 import de.flapdoodle.tab.ui.resources.Labels
@@ -30,7 +31,7 @@ class NewValues() : DialogContent<Node.Constants>() {
 
     override fun result(): Node.Constants {
         require(nameField.text != null && !nameField.text.isBlank()) {"name not set"}
-        return Node.Constants(nameField.text)
+        return Node.Constants(Name(nameField.text))
     }
 
     companion object {

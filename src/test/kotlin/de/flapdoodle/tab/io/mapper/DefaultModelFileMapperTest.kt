@@ -4,6 +4,7 @@ import de.flapdoodle.reflection.TypeInfo
 import de.flapdoodle.tab.io.MemorizingMapping
 import de.flapdoodle.tab.io.file.FileNode
 import de.flapdoodle.tab.io.file.Tab2File
+import de.flapdoodle.tab.model.Name
 import de.flapdoodle.tab.model.Node
 import de.flapdoodle.tab.model.Position
 import de.flapdoodle.tab.model.Tab2Model
@@ -25,9 +26,11 @@ class DefaultModelFileMapperTest {
 
     @Test
     fun testDelegation() {
-        val testNode = de.flapdoodle.tab.model.Node.Constants(name = "in")
+        val testNode = de.flapdoodle.tab.model.Node.Constants(name = Name("in"))
         val testFileNode = FileNode(
             name ="out",
+            short = "short",
+            description = "descr",
             position = Position(0.0, 0.0),
             id = "id"
         )
@@ -50,7 +53,7 @@ class DefaultModelFileMapperTest {
         val memorizingMapping = MemorizingMapping()
 
         val constants = de.flapdoodle.tab.model.Node.Constants(
-            name = "const",
+            name = Name("const"),
             values = SingleValues(listOf(
                 SingleValue(
                     name = "a",
@@ -63,7 +66,7 @@ class DefaultModelFileMapperTest {
         )
 
         val table = de.flapdoodle.tab.model.Node.Table(
-            name = "table",
+            name = Name("table"),
             indexType = TypeInfo.of(Int::class.javaObjectType),
             columns = Columns(listOf(
                 Column(
@@ -89,7 +92,7 @@ class DefaultModelFileMapperTest {
         )
 
         val calculated = de.flapdoodle.tab.model.Node.Calculated(
-            name = "calculated",
+            name = Name("calculated"),
             indexType = TypeInfo.of(Int::class.javaObjectType),
             calculations = Calculations(
                 indexType = TypeInfo.of(Int::class.javaObjectType),

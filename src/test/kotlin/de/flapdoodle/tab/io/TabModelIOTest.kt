@@ -1,6 +1,7 @@
 package de.flapdoodle.tab.io
 
 import de.flapdoodle.reflection.TypeInfo
+import de.flapdoodle.tab.model.Name
 import de.flapdoodle.tab.model.Node
 import de.flapdoodle.tab.model.Position
 import de.flapdoodle.tab.model.Tab2Model
@@ -25,7 +26,7 @@ class TabModelIOTest {
     @Test
     fun emptyModel() {
         val constants = de.flapdoodle.tab.model.Node.Constants(
-            name = "const",
+            name = Name("const"),
             values = SingleValues(listOf(
                 SingleValue(
                     name = "a",
@@ -38,7 +39,7 @@ class TabModelIOTest {
         )
 
         val table = de.flapdoodle.tab.model.Node.Table(
-            name = "table",
+            name = Name("table"),
             indexType = TypeInfo.of(Int::class.javaObjectType),
             columns = Columns(listOf(
                 Column(
@@ -64,7 +65,7 @@ class TabModelIOTest {
         )
 
         val calculated = de.flapdoodle.tab.model.Node.Calculated(
-            name = "calculated",
+            name = Name("calculated"),
             indexType = TypeInfo.of(Int::class.javaObjectType),
             calculations = Calculations(
                 indexType = TypeInfo.of(Int::class.javaObjectType),

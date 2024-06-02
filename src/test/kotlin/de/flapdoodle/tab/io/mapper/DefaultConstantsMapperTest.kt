@@ -2,6 +2,7 @@ package de.flapdoodle.tab.io.mapper
 
 import de.flapdoodle.reflection.TypeInfo
 import de.flapdoodle.tab.io.MemorizingMapping
+import de.flapdoodle.tab.model.Name
 import de.flapdoodle.tab.model.Node
 import de.flapdoodle.tab.model.Position
 import de.flapdoodle.tab.model.data.SingleValue
@@ -17,7 +18,7 @@ class DefaultConstantsMapperTest {
         val memorizingMapping = MemorizingMapping()
 
         val src = de.flapdoodle.tab.model.Node.Constants(
-            name = "name",
+            name = Name("name"),
             position = Position(10.0, 20.0),
             values = SingleValues(
                 values = listOf(

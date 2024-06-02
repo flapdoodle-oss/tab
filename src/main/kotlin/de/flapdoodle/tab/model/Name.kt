@@ -1,7 +1,7 @@
 package de.flapdoodle.tab.model
 
 data class Name(
-    val short: String,
-    val long: String?,
-    val description: String?,
+    val long: String,
+    val short: String? = null,
+    val description: String? = null,
 )

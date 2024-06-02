@@ -4,6 +4,7 @@ import de.flapdoodle.reflection.TypeInfo
 import de.flapdoodle.tab.io.adapter.ToFileMapping
 import de.flapdoodle.tab.io.adapter.ToModelMapping
 import de.flapdoodle.tab.io.file.FileNode
+import de.flapdoodle.tab.model.Name
 import kotlin.reflect.KClass
 
 class DefaultTableMapper(
@@ -11,7 +12,9 @@ class DefaultTableMapper(
 ) : Mapper<de.flapdoodle.tab.model.Node.Table<out Comparable<*>>, FileNode> {
     override fun toFile(toFileMapping: ToFileMapping, src: de.flapdoodle.tab.model.Node.Table<out Comparable<*>>): FileNode {
         return FileNode(
-            name = src.name,
+            name = src.name.long,
+            short = src.name.short,
+            description = src.name.description,
             position = src.position,
             size = src.size,
             id = toFileMapping.idFor(src.id),
@@ -34,7 +37,7 @@ class DefaultTableMapper(
         indexType: TypeInfo<T>
     ): de.flapdoodle.tab.model.Node.Table<T> {
         return de.flapdoodle.tab.model.Node.Table(
-            name = src.name,
+            name = Name(src.name, src.short, src.description),
             indexType = indexType,
             columns = columnsMapper.toModel(toModelMapping, indexType, table.columns),
             id = toModelMapping.nextId(src.id, de.flapdoodle.tab.model.Node.Table::class),

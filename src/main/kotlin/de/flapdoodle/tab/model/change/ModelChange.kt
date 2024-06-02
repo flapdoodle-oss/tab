@@ -1,6 +1,7 @@
 package de.flapdoodle.tab.model.change
 
 import de.flapdoodle.kfx.types.Id
+import de.flapdoodle.tab.model.Name
 import de.flapdoodle.tab.model.Node.*
 import de.flapdoodle.tab.model.calculations.Calculation
 import de.flapdoodle.tab.model.calculations.interpolation.InterpolationType
@@ -11,14 +12,14 @@ import de.flapdoodle.tab.model.data.SingleValueId
 
 sealed class ModelChange {
     sealed class ConstantsChange(open val id: Id<out Constants>) : ModelChange()
-    data class ChangeConstantsProperties(override val id: Id<out Constants>, val name: String): ConstantsChange(id)
+    data class ChangeConstantsProperties(override val id: Id<out Constants>, val name: Name): ConstantsChange(id)
     data class AddValue(override val id: Id<out Constants>, val value: SingleValue<out Any>): ConstantsChange(id)
     data class ChangeValue(override val id: Id<out Constants>, val valueId: SingleValueId, val value: Any?): ConstantsChange(id)
     data class RemoveValue(override val id: Id<out Constants>, val valueId: SingleValueId): ConstantsChange(id)
     data class ChangeValueProperties(override val id: Id<out Constants>, val valueId: SingleValueId, val name: String): ConstantsChange(id)
 
     sealed class TableChange(open val id: Id<out Table<out Comparable<*>>>): ModelChange()
-    data class ChangeTableProperties(override val id: Id<out Table<out Comparable<*>>>, val name: String): TableChange(id)
+    data class ChangeTableProperties(override val id: Id<out Table<out Comparable<*>>>, val name: Name): TableChange(id)
     data class AddColumn<K: Comparable<K>>(override val id: Id<out Table<out Comparable<*>>>, val column: Column<K, out Any>): TableChange(id)
     data class ChangeColumnProperties<K: Comparable<K>>(
         override val id: Id<out Table<out Comparable<*>>>,

@@ -113,7 +113,7 @@ class Tab2ModelAdapter(
                     val node = action.node
                     val nodeSize = node.size
 
-                    graphEditor.addVertex(Vertex(node.name, vertexActions).also { vertex ->
+                    graphEditor.addVertex(Vertex(node.name.long, vertexActions).also { vertex ->
                         val vertexContent = nodeUIAdapterFactory.adapterOf(node, modelChangeListener)
                         resizeVertex(vertex, node.position, node.size)
                         vertex.content = vertexContent
@@ -128,7 +128,7 @@ class Tab2ModelAdapter(
                 is Action.ChangeNode -> {
                     vertexMapping.with(action.id) {
                         val node = action.node
-                        it.vertex.nameProperty().value = node.name
+                        it.vertex.nameProperty().value = node.name.long
                         resizeVertex(it.vertex, node.position, node.size)
                         it.content.update(node)
                     }

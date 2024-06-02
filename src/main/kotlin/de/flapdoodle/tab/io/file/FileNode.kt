@@ -1,10 +1,13 @@
 package de.flapdoodle.tab.io.file
 
+import de.flapdoodle.tab.model.Name
 import de.flapdoodle.tab.model.Position
 import de.flapdoodle.tab.model.Size
 
 data class FileNode(
     val name: String,
+    val short: String?,
+    val description: String?,
     val position: Position,
     val size: Size? = null,
     val id: String,

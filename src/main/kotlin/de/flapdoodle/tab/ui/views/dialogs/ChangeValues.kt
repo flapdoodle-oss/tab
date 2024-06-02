@@ -3,6 +3,7 @@ package de.flapdoodle.tab.ui.views.dialogs
 import de.flapdoodle.kfx.controls.fields.ValidatingField
 import de.flapdoodle.kfx.controls.fields.ValidatingTextField
 import de.flapdoodle.kfx.extensions.bindCss
+import de.flapdoodle.tab.model.Name
 import de.flapdoodle.tab.model.Node
 import de.flapdoodle.tab.model.change.ModelChange
 import de.flapdoodle.tab.ui.Converters
@@ -24,7 +25,7 @@ class ChangeValues(
         add(name, 0, 0)
         add(nameField, 1, 0)
 
-        nameField.set(node.name)
+        nameField.set(node.name.long)
     }
 
 
@@ -33,8 +34,8 @@ class ChangeValues(
     }
 
     override fun result(): ModelChange? {
-        return if (node.name != nameField.text)
-            ModelChange.ChangeConstantsProperties(node.id, nameField.text)
+        return if (node.name.long != nameField.text)
+            ModelChange.ChangeConstantsProperties(node.id, Name(nameField.text))
         else
             null
     }

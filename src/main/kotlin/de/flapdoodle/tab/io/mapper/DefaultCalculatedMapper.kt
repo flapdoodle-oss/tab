@@ -5,6 +5,7 @@ import de.flapdoodle.tab.io.adapter.ToFileMapping
 import de.flapdoodle.tab.io.adapter.ToModelMapping
 import de.flapdoodle.tab.io.file.FileNode
 import de.flapdoodle.tab.io.file.FileSingleValues
+import de.flapdoodle.tab.model.Name
 import de.flapdoodle.tab.model.data.SingleValues
 import kotlin.reflect.KClass
 
@@ -15,7 +16,9 @@ class DefaultCalculatedMapper(
 ) : Mapper<de.flapdoodle.tab.model.Node.Calculated<out Comparable<*>>, FileNode> {
     override fun toFile(toFileMapping: ToFileMapping, src: de.flapdoodle.tab.model.Node.Calculated<out Comparable<*>>): FileNode {
         return FileNode(
-            name = src.name,
+            name = src.name.long,
+            short = src.name.short,
+            description = src.name.description,
             position = src.position,
             size = src.size,
             id = toFileMapping.idFor(src.id),
@@ -40,7 +43,7 @@ class DefaultCalculatedMapper(
         indexType: TypeInfo<T>
     ): de.flapdoodle.tab.model.Node.Calculated<T> {
         return de.flapdoodle.tab.model.Node.Calculated(
-            name = src.name,
+            name = Name(src.name, src.short, src.description),
             indexType = indexType,
             calculations = calculationsMapper.toModel(toModelMapping, indexType, calculated.calculations),
             columns = columnsMapper.toModel(toModelMapping, indexType, calculated.columns),

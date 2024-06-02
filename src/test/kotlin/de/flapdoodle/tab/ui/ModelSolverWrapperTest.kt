@@ -1,6 +1,7 @@
 package de.flapdoodle.tab.ui
 
 import de.flapdoodle.reflection.TypeInfo
+import de.flapdoodle.tab.model.Name
 import de.flapdoodle.tab.model.Tab2Model
 import de.flapdoodle.tab.model.calculations.Calculation
 import de.flapdoodle.tab.model.calculations.Calculations
@@ -30,10 +31,10 @@ class ModelSolverWrapperTest {
             .add(3,20)
 
         val table = de.flapdoodle.tab.model.Node.Table(
-            "table", TypeInfo.of(Int::class.javaObjectType), Columns(listOf(x, y))
+            Name("table"), TypeInfo.of(Int::class.javaObjectType), Columns(listOf(x, y))
         )
         val destination = ColumnId()
-        val formula = de.flapdoodle.tab.model.Node.Calculated("calc",
+        val formula = de.flapdoodle.tab.model.Node.Calculated(Name("calc"),
             TypeInfo.of(Int::class.javaObjectType),
             Calculations(
                 TypeInfo.of(Int::class.javaObjectType),

@@ -7,6 +7,7 @@ import de.flapdoodle.kfx.extensions.bindCss
 import de.flapdoodle.kfx.layout.grid.WeightGridPane
 import de.flapdoodle.reflection.TypeInfo
 import de.flapdoodle.tab.config.IndexTypes
+import de.flapdoodle.tab.model.Name
 import de.flapdoodle.tab.model.Node
 import de.flapdoodle.tab.ui.Converters
 import de.flapdoodle.tab.ui.resources.Labels
@@ -53,7 +54,7 @@ class NewCalculation : DialogContent<Node.Calculated<out Comparable<*>>>() {
 
     private fun <K: Comparable<K>> nodeOf(name: String?, type: TypeInfo<K>?): Node.Calculated<K>? {
         if (name!=null && type!=null) {
-            return Node.Calculated(name, type)
+            return Node.Calculated(Name(name), type)
         }
         return null
     }
