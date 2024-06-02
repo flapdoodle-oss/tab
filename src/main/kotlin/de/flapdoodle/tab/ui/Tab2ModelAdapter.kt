@@ -54,7 +54,7 @@ class Tab2ModelAdapter(
 
     private class VertexAndContent(val vertex: Vertex, val content: NodeUIAdapter)
     private val vertexMapping = Mapping<Id<out de.flapdoodle.tab.model.Node>, VertexId, VertexAndContent>()
-    private val slotMapping = Mapping<DataId, SlotId, Slot>()
+    private val outputMapping = Mapping<DataId, SlotId, Slot>()
     private val inputMapping = Mapping<Id<InputSlot<*>>, SlotId, Slot>()
     private val edgeMapping = Mapping<Output2Input, EdgeId, Edge>()
 
@@ -79,7 +79,7 @@ class Tab2ModelAdapter(
     }
 
     private fun outputOrInputOfSlot(slotId: SlotId): Either<DataId, Id<InputSlot<*>>> {
-        val dataId = slotMapping.key(slotId)
+        val dataId = outputMapping.key(slotId)
         if (dataId!=null) {
             return Either.left(dataId)
         }
@@ -148,29 +148,32 @@ class Tab2ModelAdapter(
                         is Column<*,*> -> Slot(action.output.name, Slot.Mode.OUT, Position.RIGHT, action.output.color)
                         is SingleValue<*> -> Slot(action.output.name, Slot.Mode.OUT, Position.RIGHT, action.output.color)
                     }
-                    slotMapping.add(action.output.id, slot.id, slot)
+                    outputMapping.add(action.output.id, slot.id, slot)
                     vertexMapping.with(action.id) {
                         it.vertex.addConnector(slot)
                     }
                 }
                 is Action.RemoveOutput -> {
-                    slotMapping.remove(action.output) { slot ->
+                    outputMapping.remove(action.output) { slot ->
                         vertexMapping.with(action.id) {
                             it.vertex.removeConnector(slot.id)
                         }
                     }
                 }
                 is Action.ChangeOutput -> {
-                    vertexMapping.with(action.id) { vertexMapping ->
-                        val slot = when (action.change) {
-                            is Column<*,*> -> Slot(action.change.name, Slot.Mode.OUT, Position.RIGHT, action.change.color)
-                            is SingleValue<*> -> Slot(action.change.name, Slot.Mode.OUT, Position.RIGHT, action.change.color)
-                        }
+                    vertexMapping.with(action.id) {
+                        outputMapping.with(action.output) { slot ->
+                            val newSlot = when (action.change) {
+                                is Column<*,*> -> Slot(action.change.name, Slot.Mode.OUT, Position.RIGHT, action.change.color, slot.id)
+                                is SingleValue<*> -> Slot(action.change.name, Slot.Mode.OUT, Position.RIGHT, action.change.color, slot.id)
+                            }
+                            it.vertex.replaceConnector(slot.id, newSlot)
 
-                        slotMapping.with(action.output) { slot ->
+//                            outputMapping.remove(action.output)
+//                            outputMapping.add(action.output, slot.id, newSlot)
+                            outputMapping.replace(action.output, newSlot)
                         }
-
-                        println("TODO should do something: $action")
+//                        println("TODO should do something: $action")
                     }
                 }
 
@@ -201,7 +204,7 @@ class Tab2ModelAdapter(
                 is Action.AddConnection -> {
                     vertexMapping.with(action.source.node) { start ->
                         vertexMapping.with(action.id) { end ->
-                            slotMapping.with(action.source.dataId()) { startSlot ->
+                            outputMapping.with(action.source.dataId()) { startSlot ->
                                 inputMapping.with(action.input) { input ->
                                     graphEditor.addEdge(Edge(
                                         VertexSlotId(start.vertex.vertexId, startSlot.id),
