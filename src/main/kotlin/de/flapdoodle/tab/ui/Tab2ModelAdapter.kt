@@ -164,16 +164,12 @@ class Tab2ModelAdapter(
                     vertexMapping.with(action.id) {
                         outputMapping.with(action.output) { slot ->
                             val newSlot = when (action.change) {
-                                is Column<*,*> -> Slot(action.change.name, Slot.Mode.OUT, Position.RIGHT, action.change.color, slot.id)
-                                is SingleValue<*> -> Slot(action.change.name, Slot.Mode.OUT, Position.RIGHT, action.change.color, slot.id)
+                                is Column<*,*> -> slot.copy(name = action.change.name, color = action.change.color)
+                                is SingleValue<*> -> slot.copy(name = action.change.name, color = action.change.color)
                             }
                             it.vertex.replaceConnector(slot.id, newSlot)
-
-//                            outputMapping.remove(action.output)
-//                            outputMapping.add(action.output, slot.id, newSlot)
                             outputMapping.replace(action.output, newSlot)
                         }
-//                        println("TODO should do something: $action")
                     }
                 }
 
@@ -186,10 +182,13 @@ class Tab2ModelAdapter(
                 }
 
                 is Action.ChangeInput -> {
-                    vertexMapping.with(action.id) { vertexMapping ->
-                        inputMapping.with(action.input) {
-                            // TODO hier fehlt vieles
-                            println("TODO should do something: $action")
+                    // TODO schwer zu testen
+                    println("untested: $action")
+                    vertexMapping.with(action.id) {
+                        inputMapping.with(action.input) { slot ->
+                            val newSlot = slot.copy(name = action.change.name, color = action.change.color)
+                            it.vertex.replaceConnector(slot.id, newSlot)
+                            inputMapping.replace(action.input, newSlot)
                         }
                     }
                 }
