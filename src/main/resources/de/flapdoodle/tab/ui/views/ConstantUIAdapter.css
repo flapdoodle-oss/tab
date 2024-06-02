@@ -9,6 +9,6 @@
 }
 
 .constants-ui .table .weight-grid-pane {
-    /*horizontal-space: 2px;*/
-    /*vertical-space: 2px;*/
+    horizontal-space: 5px;
+    vertical-space: 5px;
 }

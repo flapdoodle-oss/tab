@@ -1,0 +1,21 @@
+.table-ui .button-delete {
+    /*-fx-graphic: url(../../icons/table.png);*/
+    -fx-content-display: left /*graphic-only*/;
+}
+
+.table-ui .button-add {
+    /*-fx-graphic: url(../../icons/table.png);*/
+    -fx-content-display: left /*graphic-only*/;
+}
+
+.table-ui .columns .table .weight-grid-pane {
+    horizontal-space: 5px;
+    vertical-space: 5px;
+}
+
+.table-ui .tab-pane .tab-header-area .tab-header-background {
+    /*-fx-background-color: transparent;*/
+    /*-fx-background-color: linear-gradient(from 0% 30% to 0% 100%, transparent, red, #c0c0c0);*/
+    -fx-background-color: linear-gradient(transparent 0%, #eeeeee30 60%, #cccccc60 90%, #c0c0c0ff 100%);
+    /*-fx-border-color: red;*/
+}

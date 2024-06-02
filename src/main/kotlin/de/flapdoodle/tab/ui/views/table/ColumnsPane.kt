@@ -1,5 +1,6 @@
 package de.flapdoodle.tab.ui.views.table
 
+import de.flapdoodle.kfx.extensions.cssClassName
 import de.flapdoodle.kfx.layout.grid.TableCell
 import de.flapdoodle.kfx.layout.grid.WeightGridTable
 import de.flapdoodle.kfx.types.Id
@@ -77,9 +78,12 @@ class ColumnsPane<K: Comparable<K>>(
             }
             mapOf(deleteColumn to button)
         }
-    )
+    ).apply {
+        cssClassName("table")
+    }
 
     init {
+        cssClassName("columns")
         children.add(columnsPanel)
     }
 

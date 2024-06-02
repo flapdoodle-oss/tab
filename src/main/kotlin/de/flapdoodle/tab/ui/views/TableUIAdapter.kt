@@ -1,5 +1,7 @@
 package de.flapdoodle.tab.ui.views
 
+import de.flapdoodle.kfx.extensions.bindCss
+import de.flapdoodle.kfx.extensions.cssClassName
 import de.flapdoodle.kfx.layout.grid.WeightGridPane
 import de.flapdoodle.tab.ui.ModelChangeListener
 import de.flapdoodle.tab.ui.views.charts.SmallChartPane
@@ -29,6 +31,8 @@ class TableUIAdapter<K: Comparable<K>>(
     private val chartPane = SmallChartPane(node)
 
     init {
+        bindCss("table-ui")
+
         children.add(wrapper)
         wrapper.children.add(columnsPane)
         wrapper.children.add(tabPane)
