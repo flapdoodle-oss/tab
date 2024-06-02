@@ -13,12 +13,12 @@ sealed class Calculation<K: Comparable<K>>(
     private val name: String,
     private val formula: Formula,
     open val id: Id<Calculation<*>>
-): de.flapdoodle.tab.model.HasName {
+) {
     // TODO verschieben?
 //    abstract val id: Id<Calculation<*>>
 
     fun indexType() = indexType
-    override fun name() = name
+    fun name() = name
     fun formula() = formula
 
     fun evaluate(values: Map<Variable, Evaluated<out Any>>) = formula.evaluate(values)
