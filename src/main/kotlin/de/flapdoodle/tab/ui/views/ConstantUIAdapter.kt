@@ -14,6 +14,7 @@ import de.flapdoodle.tab.ui.ModelChangeListener
 import de.flapdoodle.tab.ui.resources.Buttons
 import de.flapdoodle.tab.ui.resources.Labels
 import de.flapdoodle.tab.ui.views.colors.ColorDot
+import de.flapdoodle.tab.ui.views.common.DescriptionPane
 import de.flapdoodle.tab.ui.views.dialogs.ChangeValue
 import de.flapdoodle.tab.ui.views.dialogs.NewValue
 import javafx.beans.property.SimpleObjectProperty
@@ -24,6 +25,7 @@ import javafx.scene.Node
 import javafx.scene.control.Button
 import javafx.scene.control.Label
 import javafx.scene.control.TextField
+import javafx.scene.layout.VBox
 
 class ConstantUIAdapter(
     node: de.flapdoodle.tab.model.Node.Constants,
@@ -33,6 +35,8 @@ class ConstantUIAdapter(
     val model = SimpleObjectProperty(node.values.values)
 
     private val context = Labels.with(ConstantUIAdapter::class)
+
+    private val description = DescriptionPane(node.name.description)
 
     private val nameColumn = WeightGridTable.Column<SingleValue<out Any>>(
         weight = 0.0,
@@ -111,7 +115,10 @@ class ConstantUIAdapter(
 
     init {
         bindCss("constants-ui")
-        children.add(content)
+        children.add(VBox().also { vbox ->
+            vbox.children.add(description)
+            vbox.children.add(content)
+        })
     }
 
     private fun <T : Any> textFieldTableCell(
@@ -144,5 +151,6 @@ class ConstantUIAdapter(
     override fun update(node: de.flapdoodle.tab.model.Node) {
         require(node is de.flapdoodle.tab.model.Node.Constants) { "wrong type $node" }
         model.value = node.values.values
+        description.update(node.name.description)
     }
 }

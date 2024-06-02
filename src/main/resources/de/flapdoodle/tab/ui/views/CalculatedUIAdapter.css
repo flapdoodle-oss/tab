@@ -1,33 +1,26 @@
-.table-ui .description {
+.calculated-ui .description {
     -fx-padding: 10px;
     -fx-wrap-text: true;
 
     -fx-background-color: rgba(255, 233, 0, 0.16);
     -fx-background-radius: 5px;
-
+    
     -fx-border-color: rgba(210, 151, 0, 0.16);
     -fx-border-width: 1px;
     -fx-border-radius: 5px;
 }
 
-.table-ui .button-delete {
+.calculated-ui .button-delete {
     /*-fx-graphic: url(../../icons/table.png);*/
     -fx-content-display: left /*graphic-only*/;
 }
 
-.table-ui .button-add {
+.calculated-ui .button-add {
     /*-fx-graphic: url(../../icons/table.png);*/
     -fx-content-display: left /*graphic-only*/;
 }
 
-.table-ui .columns .table .weight-grid-pane {
+.calculated-ui .table .weight-grid-pane {
     horizontal-space: 5px;
     vertical-space: 5px;
-}
-
-.table-ui .tab-pane .tab-header-area .tab-header-background {
-    /*-fx-background-color: transparent;*/
-    /*-fx-background-color: linear-gradient(from 0% 30% to 0% 100%, transparent, red, #c0c0c0);*/
-    -fx-background-color: linear-gradient(transparent 0%, #eeeeee30 60%, #cccccc60 90%, #c0c0c0ff 100%);
-    /*-fx-border-color: red;*/
 }

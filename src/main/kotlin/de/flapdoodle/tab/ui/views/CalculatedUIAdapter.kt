@@ -1,19 +1,24 @@
 package de.flapdoodle.tab.ui.views
 
+import de.flapdoodle.kfx.extensions.bindCss
 import de.flapdoodle.kfx.layout.grid.WeightGridPane
 import de.flapdoodle.tab.ui.ModelChangeListener
 import de.flapdoodle.tab.ui.views.calculations.CalculationsPane
 import de.flapdoodle.tab.ui.views.calculations.ValuesPane
 import de.flapdoodle.tab.ui.views.charts.SmallChartPane
+import de.flapdoodle.tab.ui.views.common.DescriptionPane
 import de.flapdoodle.tab.ui.views.table.TableViewPane
 import javafx.scene.control.Tab
 import javafx.scene.control.TabPane
+import javafx.scene.layout.VBox
 
 class CalculatedUIAdapter<K: Comparable<K>>(
     node: de.flapdoodle.tab.model.Node.Calculated<K>,
     val modelChangeListener: ModelChangeListener
 ) : NodeUIAdapter() {
     val nodeId = node.id
+
+    private val description = DescriptionPane(node.name.description)
 
     private val wrapper = WeightGridPane().apply {
         rowWeights(0.0, 0.0, 1.0)
@@ -36,7 +41,7 @@ class CalculatedUIAdapter<K: Comparable<K>>(
     val chartPane = SmallChartPane(node)
 
     init {
-        children.add(wrapper)
+        bindCss("calculated-ui")
         wrapper.children.add(calculationsPane)
         wrapper.children.add(valuesPane)
         wrapper.children.add(tabPane)
@@ -47,6 +52,10 @@ class CalculatedUIAdapter<K: Comparable<K>>(
             isClosable = false
         })
 //        wrapper.children.add(tableViewPane)
+        children.add(VBox().also { vbox ->
+            vbox.children.add(description)
+            vbox.children.add(wrapper)
+        })
     }
 
     override fun update(node: de.flapdoodle.tab.model.Node) {
@@ -57,5 +66,6 @@ class CalculatedUIAdapter<K: Comparable<K>>(
         valuesPane.update(node)
         tableViewPane.update(node)
         chartPane.update(node)
+        description.update(node.name.description)
     }
 }
