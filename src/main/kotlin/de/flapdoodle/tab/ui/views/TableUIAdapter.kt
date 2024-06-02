@@ -4,6 +4,7 @@ import de.flapdoodle.kfx.extensions.bindCss
 import de.flapdoodle.kfx.extensions.cssClassName
 import de.flapdoodle.kfx.layout.grid.WeightGridPane
 import de.flapdoodle.tab.ui.ModelChangeListener
+import de.flapdoodle.tab.ui.resources.Labels
 import de.flapdoodle.tab.ui.views.charts.SmallChartPane
 import de.flapdoodle.tab.ui.views.common.DescriptionPane
 import de.flapdoodle.tab.ui.views.table.ColumnsPane
@@ -17,6 +18,7 @@ class TableUIAdapter<K: Comparable<K>>(
     val modelChangeListener: ModelChangeListener
 ) : NodeUIAdapter() {
     val nodeId = node.id
+    private val context = Labels.with(TableUIAdapter::class)
 
     private val description = DescriptionPane(node.name.description)
 
@@ -30,7 +32,7 @@ class TableUIAdapter<K: Comparable<K>>(
     private val tabPane = TabPane().apply {
         WeightGridPane.setPosition(this, 0, 2)
     }
-    private val tablePane = TablePane(node, modelChangeListener)
+    private val tablePane = TablePane(node, modelChangeListener, context)
     private val chartPane = SmallChartPane(node)
 
     init {
@@ -39,10 +41,10 @@ class TableUIAdapter<K: Comparable<K>>(
         wrapper.children.add(description)
         wrapper.children.add(columnsPane)
         wrapper.children.add(tabPane)
-        tabPane.tabs.add(Tab("Table", tablePane).apply {
+        tabPane.tabs.add(Tab(context.text("tab.table","Table"), tablePane).apply {
             isClosable = false
         })
-        tabPane.tabs.add(Tab("Chart", chartPane).apply {
+        tabPane.tabs.add(Tab(context.text("tab.charts","Charts"), chartPane).apply {
             isClosable = false
         })
         tabPane.isVisible = node.columns.columns().isNotEmpty()

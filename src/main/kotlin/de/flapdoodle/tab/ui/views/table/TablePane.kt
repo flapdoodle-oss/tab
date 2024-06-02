@@ -4,22 +4,21 @@ import de.flapdoodle.kfx.controls.bettertable.ColumnProperty
 import de.flapdoodle.kfx.controls.bettertable.HeaderColumnFactory
 import de.flapdoodle.kfx.controls.bettertable.Table
 import de.flapdoodle.kfx.controls.bettertable.TableChangeListener
-import de.flapdoodle.reflection.ClassTypeInfo
 import de.flapdoodle.reflection.TypeInfo
 import de.flapdoodle.tab.model.change.ModelChange
 import de.flapdoodle.tab.model.data.Column
 import de.flapdoodle.tab.model.data.Columns
 import de.flapdoodle.tab.model.diff.Diff
 import de.flapdoodle.tab.ui.ModelChangeListener
+import de.flapdoodle.tab.ui.resources.Labels
 import javafx.beans.property.SimpleObjectProperty
 import javafx.scene.layout.Background
 import javafx.scene.layout.StackPane
-import javafx.scene.paint.Color
-import kotlin.reflect.KClass
 
 class TablePane<K : Comparable<K>>(
     node: de.flapdoodle.tab.model.Node.Table<K>,
-    val modelChangeListener: ModelChangeListener
+    val modelChangeListener: ModelChangeListener,
+    val context: Labels.WithContext = Labels.with(TablePane::class)
 ) : StackPane() {
     private val nodeId = node.id
 
@@ -88,7 +87,7 @@ class TablePane<K : Comparable<K>>(
 
     }
 
-    private val table2 = Table(
+    private val table = Table(
         rows = tableRows,
         columns = tableColumns,
         changeListener = tableChangeListener,
@@ -109,13 +108,13 @@ class TablePane<K : Comparable<K>>(
     }
 
     private fun tableColumnsOff(indexType: TypeInfo<K>, columns: Columns<K>): List<de.flapdoodle.kfx.controls.bettertable.Column<Row<K>, out Any>> {
-        return listOf(indexColumn(indexType)) + columns.columns().map {
+        return listOf(indexColumn(context.text("column.index","#"), indexType)) + columns.columns().map {
             column(it)
         }
     }
 
-    private fun indexColumn(indexType: TypeInfo<K>): de.flapdoodle.kfx.controls.bettertable.Column<Row<K>, K> {
-        return IndexColumn(indexType)
+    private fun indexColumn(label: String, indexType: TypeInfo<K>): de.flapdoodle.kfx.controls.bettertable.Column<Row<K>, K> {
+        return IndexColumn(label, indexType)
     }
 
     private fun <V: Any> column(column: Column<K, V>): NormalColumn<K, V> {
@@ -129,9 +128,9 @@ class TablePane<K : Comparable<K>>(
         ): Row<K>
     }
 
-    data class IndexColumn<K: Comparable<K>>(val indexType: TypeInfo<K>):
+    data class IndexColumn<K: Comparable<K>>(override val label: String, val indexType: TypeInfo<K>):
         de.flapdoodle.kfx.controls.bettertable.Column<Row<K>, K>(
-            label = "#",
+            label = label,
             property = ColumnProperty(indexType,{ row -> row.index }),
             editable = true
     ), TableColumn<K, K> {
@@ -157,7 +156,7 @@ class TablePane<K : Comparable<K>>(
 
 
     init {
-        children.add(table2)
+        children.add(table)
     }
 
     fun update(node: de.flapdoodle.tab.model.Node.Table<K>) {

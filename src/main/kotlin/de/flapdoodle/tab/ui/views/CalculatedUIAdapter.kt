@@ -3,6 +3,7 @@ package de.flapdoodle.tab.ui.views
 import de.flapdoodle.kfx.extensions.bindCss
 import de.flapdoodle.kfx.layout.grid.WeightGridPane
 import de.flapdoodle.tab.ui.ModelChangeListener
+import de.flapdoodle.tab.ui.resources.Labels
 import de.flapdoodle.tab.ui.views.calculations.CalculationsPane
 import de.flapdoodle.tab.ui.views.calculations.ValuesPane
 import de.flapdoodle.tab.ui.views.charts.SmallChartPane
@@ -18,6 +19,7 @@ class CalculatedUIAdapter<K: Comparable<K>>(
 ) : NodeUIAdapter() {
     val nodeId = node.id
 
+    private val context = Labels.with(TableUIAdapter::class)
     private val description = DescriptionPane(node.name.description)
 
     private val wrapper = WeightGridPane().apply {
@@ -34,7 +36,7 @@ class CalculatedUIAdapter<K: Comparable<K>>(
         WeightGridPane.setPosition(this, 0, 2)
     }
 
-    val tableViewPane = TableViewPane(node).apply {
+    val tableViewPane = TableViewPane(node, context).apply {
         WeightGridPane.setPosition(this, 0, 3)
     }
 
@@ -45,10 +47,10 @@ class CalculatedUIAdapter<K: Comparable<K>>(
         wrapper.children.add(calculationsPane)
         wrapper.children.add(valuesPane)
         wrapper.children.add(tabPane)
-        tabPane.tabs.add(Tab("Table", tableViewPane).apply {
+        tabPane.tabs.add(Tab(context.text("tab.table","Table"), tableViewPane).apply {
             isClosable = false
         })
-        tabPane.tabs.add(Tab("Chart", chartPane).apply {
+        tabPane.tabs.add(Tab(context.text("tab.charts","Charts"), chartPane).apply {
             isClosable = false
         })
 //        wrapper.children.add(tableViewPane)

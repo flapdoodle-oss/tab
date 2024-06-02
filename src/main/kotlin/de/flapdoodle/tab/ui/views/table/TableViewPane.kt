@@ -8,20 +8,21 @@ import de.flapdoodle.kfx.controls.bettertable.events.ReadOnlyState
 import de.flapdoodle.reflection.TypeInfo
 import de.flapdoodle.tab.model.data.Column
 import de.flapdoodle.tab.model.data.Columns
+import de.flapdoodle.tab.ui.resources.Labels
 import javafx.beans.property.SimpleObjectProperty
 import javafx.scene.layout.Background
 import javafx.scene.layout.StackPane
-import kotlin.reflect.KClass
 
 class TableViewPane<K : Comparable<K>>(
-    node: de.flapdoodle.tab.model.Node.Calculated<K>
+    node: de.flapdoodle.tab.model.Node.Calculated<K>,
+    val context: Labels.WithContext = Labels.with(TablePane::class)
 ) : StackPane() {
     private val nodeId = node.id
 
     private var columns = node.columns
 
     private val tableRows = SimpleObjectProperty(rowsOf(columns))
-    private val indexColumn = indexColumn(node.indexType)
+    private val indexColumn = indexColumn(context.text("column.index","#"), node.indexType)
     private val tableColumns = SimpleObjectProperty(tableColumnsOff(indexColumn, columns))
 
     private val tableChangeListener: TableChangeListener<Row<K>> = object : TableChangeListener<Row<K>> {
@@ -77,8 +78,8 @@ class TableViewPane<K : Comparable<K>>(
         }
     }
 
-    private fun indexColumn(indexType: TypeInfo<K>): de.flapdoodle.kfx.controls.bettertable.Column<Row<K>, K> {
-        return IndexColumn(indexType)
+    private fun indexColumn(label: String, indexType: TypeInfo<K>): de.flapdoodle.kfx.controls.bettertable.Column<Row<K>, K> {
+        return IndexColumn(label, indexType)
     }
 
     private fun <V: Any> column(column: Column<K, V>): NormalColumn<K, V> {
@@ -92,9 +93,9 @@ class TableViewPane<K : Comparable<K>>(
         ): Row<K>
     }
 
-    data class IndexColumn<K: Comparable<K>>(val indexType: TypeInfo<K>):
+    data class IndexColumn<K: Comparable<K>>(override val label: String, val indexType: TypeInfo<K>):
         de.flapdoodle.kfx.controls.bettertable.Column<Row<K>, K>(
-            label = "#",
+            label = label,
             property = ColumnProperty(indexType, { row -> row.index }),
             editable = false
     ), TableColumn<K, K> {
