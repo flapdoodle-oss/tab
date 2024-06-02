@@ -1,5 +1,6 @@
 package de.flapdoodle.tab.ui.views.common
 
+import de.flapdoodle.kfx.extensions.bindCss
 import de.flapdoodle.kfx.extensions.cssClassName
 import de.flapdoodle.kfx.extensions.hide
 import javafx.beans.property.SimpleObjectProperty
@@ -14,7 +15,7 @@ class DescriptionPane(
     private val label = Label()
 
     init {
-        cssClassName("description")
+        bindCss("description")
         label.textProperty().bind(model)
         label.isWrapText = true
 

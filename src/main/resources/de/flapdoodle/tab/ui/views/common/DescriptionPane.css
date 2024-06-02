@@ -1,0 +1,11 @@
+.description {
+    -fx-padding: 6px;
+    -fx-wrap-text: true;
+
+    -fx-background-color: rgba(255, 233, 0, 0.16);
+    -fx-background-radius: 5px;
+
+    -fx-border-color: rgba(210, 151, 0, 0.16);
+    -fx-border-width: 1px;
+    -fx-border-radius: 5px;
+}
