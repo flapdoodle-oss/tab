@@ -206,6 +206,9 @@ sealed class Node {
         override fun apply(change: ModelChange): Node.Calculated<K> {
             if (change is ModelChange.CalculationChange) {
                 when (change) {
+                    is ModelChange.ChangeCalculationProperties -> {
+                        return copy(name = change.name)
+                    }
                     is ModelChange.ChangeFormula -> {
                         if (change.id == id) {
                             return copy(calculations = calculations.changeFormula(change.calculationId,change.formula))
@@ -213,6 +216,8 @@ sealed class Node {
                     }
                     is ModelChange.RemoveFormula -> {
                         if (change.id == id) {
+                            // TODO noch offen?
+                            throw IllegalArgumentException("not implemented")
 //                            return copy(calculations = calculations.removeFormula(change.calculationId))
                         }
                     }

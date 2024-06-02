@@ -7,13 +7,11 @@ class ChangeNode {
 
     companion object {
         fun openWith(node: Node): ModelChange? {
-            if (node is Node.Constants) {
-                return DialogWrapper.open { ChangeValues(node) }
+            return when (node) {
+                is Node.Constants -> DialogWrapper.open { ChangeValues(node) }
+                is Node.Table<out Comparable<*>> -> DialogWrapper.open { ChangeTable(node) }
+                is Node.Calculated<out Comparable<*>> -> DialogWrapper.open { ChangeCalculation(node) }
             }
-            if (node is Node.Table<out Comparable<*>>) {
-                return DialogWrapper.open { ChangeTable(node) }
-            }
-            return null
         }
     }
 }

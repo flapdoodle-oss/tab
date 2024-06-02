@@ -9,17 +9,14 @@ import de.flapdoodle.tab.ui.views.table.TableViewPane
 import javafx.scene.control.Tab
 import javafx.scene.control.TabPane
 
-class InlineCalculatedUIAdapter<K: Comparable<K>>(
+class CalculatedUIAdapter<K: Comparable<K>>(
     node: de.flapdoodle.tab.model.Node.Calculated<K>,
     val modelChangeListener: ModelChangeListener
 ) : NodeUIAdapter() {
     val nodeId = node.id
 
     private val wrapper = WeightGridPane().apply {
-        setRowWeight(0,0.0)
-        setRowWeight(1, 0.0)
-        setRowWeight(2, 10.0)
-//        setRowWeight(3, 10.0)
+        rowWeights(0.0, 0.0, 1.0)
     }
 
     val calculationsPane = CalculationsPane(node, modelChangeListener).apply {

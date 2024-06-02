@@ -14,6 +14,7 @@ import de.flapdoodle.tab.ui.resources.Labels
 import de.flapdoodle.tab.ui.resources.RequiredFieldNotSet
 import de.flapdoodle.tab.ui.resources.ResourceBundles
 import javafx.beans.value.ObservableValue
+import javafx.geometry.HPos
 import javafx.scene.control.*
 import javafx.scene.control.ButtonBar.ButtonData
 import kotlin.reflect.KClass
@@ -24,6 +25,10 @@ class NewCalculation : DialogContent<Node.Calculated<out Comparable<*>>>() {
     private val nameField = ValidatingTextField(
         Converters.validatingConverter(String::class)
         .and { v -> v.mapNullable { if (it.isNullOrBlank()) throw RequiredFieldNotSet("not set") else it } })
+    private val short = Labels.label(NewValues::class,"shortName","Short")
+    private val shortField = ValidatingTextField(converter = Converters.validatingConverter(String::class))
+    private val description = Labels.label(NewValues::class,"description","Description")
+    private val descriptionField = TextArea()
     private val type = Labels.label(NewCalculation::class,"type","IndexType")
     private val typeField = ChoiceBoxes.forTypes(
         ResourceBundles.indexTypes(),
@@ -38,8 +43,12 @@ class NewCalculation : DialogContent<Node.Calculated<out Comparable<*>>>() {
 
         add(name, 0, 0)
         add(nameField, 1, 0)
-        add(type, 0, 1)
-        add(typeField, 1, 1)
+        add(short, 0, 1)
+        add(shortField, 1, 1)
+        add(description, 0, 2)
+        add(descriptionField, 1, 2)
+        add(type, 0, 3)
+        add(typeField, 1, 3, HPos.LEFT)
 
     }
 
@@ -49,12 +58,12 @@ class NewCalculation : DialogContent<Node.Calculated<out Comparable<*>>>() {
 
     override fun result(): Node.Calculated<out Comparable<*>>? {
         val type = TypeInfo.of(typeField.selectionModel.selectedItem.javaObjectType)
-        return nodeOf(nameField.text, type as TypeInfo<out Comparable<Any>>)
+        return nodeOf(Name(nameField.text, shortField.text, descriptionField.text), type as TypeInfo<out Comparable<Any>>)
     }
 
-    private fun <K: Comparable<K>> nodeOf(name: String?, type: TypeInfo<K>?): Node.Calculated<K>? {
-        if (name!=null && type!=null) {
-            return Node.Calculated(Name(name), type)
+    private fun <K: Comparable<K>> nodeOf(name: Name, type: TypeInfo<K>?): Node.Calculated<K>? {
+        if (type!=null) {
+            return Node.Calculated(name, type)
         }
         return null
     }

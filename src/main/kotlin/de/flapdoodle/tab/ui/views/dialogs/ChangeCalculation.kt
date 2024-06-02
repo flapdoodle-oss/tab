@@ -12,10 +12,10 @@ import de.flapdoodle.tab.ui.resources.RequiredFieldNotSet
 import javafx.beans.value.ObservableValue
 import javafx.scene.control.TextArea
 
-class ChangeTable<K: Comparable<K>>(
-    private val node: Node.Table<K>
+class ChangeCalculation<K: Comparable<K>>(
+    private val node: Node.Calculated<K>
 ) : DialogContent<ModelChange>() {
-    private val name = Labels.label(ChangeTable::class, "name", "Name")
+    private val name = Labels.label(ChangeCalculation::class, "name", "Name")
     private val nameField = ValidatingTextField(converter = Converters.validatingConverter(String::class)
         .and { v -> v.mapNullable { if (it.isNullOrBlank()) throw RequiredFieldNotSet("not set") else it } })
     private val short = Labels.label(NewValues::class,"shortName","Short")
@@ -24,7 +24,7 @@ class ChangeTable<K: Comparable<K>>(
     private val descriptionField = TextArea()
 
     init {
-        bindCss("change-table")
+        bindCss("change-calculation")
 
         columnWeights(0.0, 1.0)
         add(name, 0, 0)
@@ -47,7 +47,7 @@ class ChangeTable<K: Comparable<K>>(
     override fun result(): ModelChange? {
         val newName = Name(nameField.text, shortField.text, descriptionField.text)
         return if (node.name != newName)
-            ModelChange.ChangeTableProperties(node.id, newName)
+            ModelChange.ChangeCalculationProperties(node.id, newName)
         else
             null
     }

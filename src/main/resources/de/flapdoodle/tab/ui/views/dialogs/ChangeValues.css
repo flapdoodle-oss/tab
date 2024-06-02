@@ -1,3 +1,9 @@
 .change-values {
     horizontal-space: 10px;
+    vertical-space: 10px;
+}
+
+.change-values .text-area {
+    -fx-pref-column-count: 15;
+    -fx-pref-row-count: 5;
 }
