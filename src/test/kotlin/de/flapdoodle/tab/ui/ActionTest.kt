@@ -61,7 +61,7 @@ class ActionTest {
             columns = Columns(
                 columns = listOf(
                     Column(
-                        name = "x",
+                        name = Name("x"),
                         indexType = TypeInfo.of(Int::class.javaObjectType),
                         valueType = TypeInfo.of(Int::class.javaObjectType),
                         id = columnId
@@ -110,7 +110,7 @@ class ActionTest {
             columns = Columns(
                 columns = listOf(
                     Column(
-                        name = "x",
+                        name = Name("x"),
                         indexType = TypeInfo.of(Int::class.javaObjectType),
                         valueType = TypeInfo.of(Int::class.javaObjectType),
                         id = columnId
@@ -221,7 +221,7 @@ class ActionTest {
                 ModelChange.AddColumn(
                     id = tableId,
                     column = Column(
-                        name = "x",
+                        name = Name("x"),
                         indexType = TypeInfo.of(String::class.javaObjectType),
                         valueType = TypeInfo.of(Double::class.javaObjectType)
                     )

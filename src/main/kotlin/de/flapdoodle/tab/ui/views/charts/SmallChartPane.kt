@@ -76,7 +76,7 @@ class SmallChartPane<K : Comparable<K>>(
             val values = index.map { it to c[it] }
                 .filter { it.second != null }
                 .map { it.first to bigDecimalOf(it.second!!) }
-            return Serie<K, BigDecimal>(c.name, c.color, values)
+            return Serie<K, BigDecimal>(c.name.long, c.color, values)
         }
 
         private fun bigDecimalOf(number: Number): BigDecimal {

@@ -1,6 +1,7 @@
 package de.flapdoodle.tab.model.data
 
 import de.flapdoodle.reflection.TypeInfo
+import de.flapdoodle.tab.model.Name
 import de.flapdoodle.tab.model.data.Column
 import de.flapdoodle.tab.model.data.Columns
 import org.assertj.core.api.Assertions.assertThat
@@ -9,7 +10,8 @@ import org.junit.jupiter.api.Test
 class ColumnsTest {
     @Test
     fun addColumnIndexAndValue() {
-        val column = Column("a", TypeInfo.of(String::class.javaObjectType), TypeInfo.of(Int::class.javaObjectType))
+        val column = Column(
+            Name("a"), TypeInfo.of(String::class.javaObjectType), TypeInfo.of(Int::class.javaObjectType))
 
         val testee = Columns<String>()
             .addColumn(column)
@@ -33,8 +35,8 @@ class ColumnsTest {
 
     @Test
     fun sortedIndex() {
-        val a = Column("a", TypeInfo.of(Int::class.javaObjectType), TypeInfo.of(Int::class.javaObjectType))
-        val b = Column("b", TypeInfo.of(Int::class.javaObjectType), TypeInfo.of(String::class.javaObjectType))
+        val a = Column(Name("a"), TypeInfo.of(Int::class.javaObjectType), TypeInfo.of(Int::class.javaObjectType))
+        val b = Column(Name("b"), TypeInfo.of(Int::class.javaObjectType), TypeInfo.of(String::class.javaObjectType))
 
         val testee = Columns<Int>()
             .addColumn(a)

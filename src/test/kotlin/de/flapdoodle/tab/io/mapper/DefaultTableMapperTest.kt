@@ -24,7 +24,7 @@ class DefaultTableMapperTest {
             position = Position(10.0, 20.0),
             columns = Columns(listOf(
                 Column(
-                    name = "column",
+                    name = Name("column"),
                     indexType = TypeInfo.of(Int::class.javaObjectType),
                     valueType = TypeInfo.of(String::class.javaObjectType),
                     id = ColumnId(),

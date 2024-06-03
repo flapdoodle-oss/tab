@@ -339,7 +339,7 @@ object Solver {
         val valueType = valueTypes.toList().one { true }
 
         val column = Column(
-            name = calculation.name(),
+            name = Name(calculation.name()),
             indexType = calculation.indexType(),
             valueType = valueType,
             values = emptyMap(),

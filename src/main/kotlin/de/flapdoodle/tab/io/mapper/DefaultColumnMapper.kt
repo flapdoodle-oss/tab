@@ -5,6 +5,7 @@ import de.flapdoodle.tab.io.adapter.ToFileMapping
 import de.flapdoodle.tab.io.adapter.ToModelMapping
 import de.flapdoodle.tab.io.file.FileColor
 import de.flapdoodle.tab.io.file.FileColumn
+import de.flapdoodle.tab.model.Name
 import de.flapdoodle.tab.model.data.Column
 import de.flapdoodle.tab.model.data.ColumnId
 import kotlin.reflect.KClass
@@ -16,7 +17,8 @@ object DefaultColumnMapper : ColumnMapper {
 
     private fun <K: Comparable<K>, V: Any> internalToFile(toFileMapping: ToFileMapping, src: Column<K, V>): FileColumn {
         return FileColumn(
-            name = src.name,
+            name = src.name.long,
+            short = src.name.short,
             valueType = toFileMapping.valueType(src.valueType),
             id = toFileMapping.idFor(src.id.id),
             color = FileColor.from(src.color),
@@ -37,7 +39,7 @@ object DefaultColumnMapper : ColumnMapper {
         valueType: TypeInfo<V>
     ): Column<K, V> {
         return Column(
-            name = src.name,
+            name = Name(src.name, src.short),
             indexType = indexType,
             valueType = valueType,
             id = ColumnId(toModelMapping.nextId(src.id, ColumnId::class)),

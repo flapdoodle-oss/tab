@@ -2,6 +2,7 @@ package de.flapdoodle.tab.io.mapper
 
 import de.flapdoodle.reflection.TypeInfo
 import de.flapdoodle.tab.io.MemorizingMapping
+import de.flapdoodle.tab.model.Name
 import de.flapdoodle.tab.model.data.Column
 import javafx.scene.paint.Color
 import org.assertj.core.api.Assertions.assertThat
@@ -13,7 +14,7 @@ class DefaultColumnMapperTest {
         val memorizingMapping = MemorizingMapping()
 
         val src = Column(
-            name = "value",
+            name = Name("value"),
             indexType = TypeInfo.of(String::class.javaObjectType),
             valueType = TypeInfo.of(Int::class.javaObjectType),
             color = Color.AQUA,

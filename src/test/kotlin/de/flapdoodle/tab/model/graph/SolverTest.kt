@@ -56,7 +56,7 @@ class SolverTest {
 
     @Test
     fun singleTableConnection() {
-        val x = Column("x", TypeInfo.of(Int::class.javaObjectType), TypeInfo.of(Int::class.javaObjectType))
+        val x = Column(Name("x"), TypeInfo.of(Int::class.javaObjectType), TypeInfo.of(Int::class.javaObjectType))
             .add(0, 1)
             .add(1,2)
             .add(3,10)
@@ -84,7 +84,7 @@ class SolverTest {
 
     @Test
     fun tableAggregation() {
-        val x = Column("x", TypeInfo.of(Int::class.javaObjectType), TypeInfo.of(Int::class.javaObjectType))
+        val x = Column(Name("x"), TypeInfo.of(Int::class.javaObjectType), TypeInfo.of(Int::class.javaObjectType))
             .add(0, 1)
             .add(1,2)
             .add(3,10)
@@ -108,12 +108,12 @@ class SolverTest {
 
     @Test
     fun singleTableConnectionReconnected() {
-        val x = Column("x", TypeInfo.of(Int::class.javaObjectType), TypeInfo.of(Int::class.javaObjectType))
+        val x = Column(Name("x"), TypeInfo.of(Int::class.javaObjectType), TypeInfo.of(Int::class.javaObjectType))
             .add(0, 1)
             .add(1,2)
             .add(3,10)
 
-        val y = Column("y", TypeInfo.of(Int::class.javaObjectType), TypeInfo.of(Int::class.javaObjectType))
+        val y = Column(Name("y"), TypeInfo.of(Int::class.javaObjectType), TypeInfo.of(Int::class.javaObjectType))
             .add(0, 2)
             .add(1,4)
             .add(3,20)
@@ -142,12 +142,12 @@ class SolverTest {
 
     @Test
     fun singleTableReconnectToDifferentType() {
-        val x = Column("x", TypeInfo.of(Int::class.javaObjectType), TypeInfo.of(Int::class.javaObjectType))
+        val x = Column(Name("x"), TypeInfo.of(Int::class.javaObjectType), TypeInfo.of(Int::class.javaObjectType))
             .add(0, 1)
             .add(1,2)
             .add(3,10)
 
-        val y = Column("y", TypeInfo.of(Int::class.javaObjectType), TypeInfo.of(String::class.javaObjectType))
+        val y = Column(Name("y"), TypeInfo.of(Int::class.javaObjectType), TypeInfo.of(String::class.javaObjectType))
             .add(0, "2")
             .add(1,"4")
             .add(3,"20")
@@ -177,7 +177,7 @@ class SolverTest {
     @Test
     fun tablesAndValues() {
         val a = Column(
-            name = "a",
+            name = Name("a"),
             indexType = TypeInfo.of(Int::class.javaObjectType),
             valueType = TypeInfo.of(Int::class.javaObjectType),
             interpolationType = InterpolationType.LastValue
@@ -187,7 +187,7 @@ class SolverTest {
             .add(3,10)
 
         val b = Column(
-            name = "b",
+            name = Name("b"),
             indexType = TypeInfo.of(Int::class.javaObjectType),
             valueType = TypeInfo.of(Int::class.javaObjectType),
             interpolationType = InterpolationType.LastValue

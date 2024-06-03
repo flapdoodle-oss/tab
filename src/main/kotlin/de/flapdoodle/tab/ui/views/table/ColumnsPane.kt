@@ -39,7 +39,7 @@ class ColumnsPane<K: Comparable<K>>(
 
 
     private val nameColumn = WeightGridTable.Column<Column<K, out Any>>(weight = 1.0, horizontalPosition = HPos.LEFT, cellFactory = {
-        TableCell.with(Labels.label(it.name), Column<K, out Any>::name, Label::setText)
+        TableCell.with(Labels.label(it.name.long), { it.name.long }, Label::setText)
     })
     private val interpolationColumn = WeightGridTable.Column<Column<K, out Any>>(weight = 0.0, cellFactory = {
         TableCell(Labels.label(it.interpolationType.name)) { l, v -> l.text = v.interpolationType.name}

@@ -106,7 +106,7 @@ class TableViewPane<K : Comparable<K>>(
 
     data class NormalColumn<K: Comparable<K>, V: Any>(val column: Column<K, V>) :
         de.flapdoodle.kfx.controls.bettertable.Column<Row<K>, V>(
-            label = column.name,
+            label = column.name.shortest(),
             property = ColumnProperty(column.valueType, { row -> row.get(column) }),
             editable = false
         ), TableColumn<K, V> {

@@ -2,12 +2,13 @@ package de.flapdoodle.tab.model.data
 
 import de.flapdoodle.kfx.colors.HashedColors
 import de.flapdoodle.reflection.TypeInfo
+import de.flapdoodle.tab.model.Name
 import de.flapdoodle.tab.model.calculations.interpolation.InterpolationType
 import javafx.scene.paint.Color
 import kotlin.reflect.KClass
 
 data class Column<K : Comparable<K>, V : Any>(
-    val name: String,
+    val name: Name,
     val indexType: TypeInfo<in K>,
     val valueType: TypeInfo<V>,
     val interpolationType: InterpolationType = InterpolationType.Linear,

@@ -7,6 +7,7 @@ import de.flapdoodle.kfx.extensions.bindCss
 import de.flapdoodle.kfx.layout.grid.WeightGridPane
 import de.flapdoodle.reflection.TypeInfo
 import de.flapdoodle.tab.config.ValueTypes
+import de.flapdoodle.tab.model.Name
 import de.flapdoodle.tab.model.calculations.interpolation.InterpolationType
 import de.flapdoodle.tab.model.data.Column
 import de.flapdoodle.tab.ui.Converters
@@ -24,6 +25,8 @@ class NewColumn<K : Comparable<K>>(
     private val nameField = ValidatingTextField(
         Converters.validatingConverter(String::class)
             .and { v -> v.mapNullable { if (it.isNullOrBlank()) throw RequiredFieldNotSet("not set") else it } })
+    private val short = Labels.label(NewColumn::class,"shortName","Short")
+    private val shortField = ValidatingTextField(converter = Converters.validatingConverter(String::class))
     private val type = Labels.label(NewColumn::class, "type", "Type")
 
     private val typeField = ChoiceBoxes.forTypes(
@@ -45,10 +48,12 @@ class NewColumn<K : Comparable<K>>(
 
         add(name, 0, 0)
         add(nameField, 1, 0)
-        add(type, 0, 1)
-        add(typeField, 1, 1, HPos.LEFT)
-        add(interpolation, 0, 2)
-        add(interpolationField, 1, 2, HPos.LEFT)
+        add(short, 0, 1)
+        add(shortField, 1, 1)
+        add(type, 0, 2)
+        add(typeField, 1, 2, HPos.LEFT)
+        add(interpolation, 0, 3)
+        add(interpolationField, 1, 3, HPos.LEFT)
     }
 
     override fun isValidProperty(): ObservableValue<Boolean> {
@@ -57,7 +62,7 @@ class NewColumn<K : Comparable<K>>(
 
     override fun result(): Column<K, out Any>? {
         return Column(
-            name = nameField.text,
+            name = Name(nameField.text, shortField.text),
             indexType = indexType,
             valueType = TypeInfo.of(typeField.selectionModel.selectedItem.javaObjectType),
             interpolationType = interpolationField.selectionModel.selectedItem

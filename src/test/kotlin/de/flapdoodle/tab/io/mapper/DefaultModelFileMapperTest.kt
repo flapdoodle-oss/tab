@@ -67,7 +67,7 @@ class DefaultModelFileMapperTest {
             indexType = TypeInfo.of(Int::class.javaObjectType),
             columns = Columns(listOf(
                 Column(
-                    name = "b",
+                    name = Name("b"),
                     indexType = TypeInfo.of(Int::class.javaObjectType),
                     valueType = TypeInfo.of(Double::class.javaObjectType),
                     values = mapOf(1 to 1.0, 2 to 2.0),

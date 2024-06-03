@@ -8,6 +8,7 @@ import de.flapdoodle.kfx.layout.grid.WeightGridPane
 import de.flapdoodle.kfx.types.Id
 import de.flapdoodle.reflection.TypeInfo
 import de.flapdoodle.tab.config.ValueTypes
+import de.flapdoodle.tab.model.Name
 import de.flapdoodle.tab.model.Node.Table
 import de.flapdoodle.tab.model.calculations.interpolation.InterpolationType
 import de.flapdoodle.tab.model.change.ModelChange
@@ -28,6 +29,8 @@ class ChangeColumn<K : Comparable<K>>(
     private val nameField = ValidatingTextField(
         Converters.validatingConverter(String::class)
             .and { v -> v.mapNullable { if (it.isNullOrBlank()) throw RequiredFieldNotSet("not set") else it } })
+    private val short = Labels.label(ChangeColumn::class,"shortName","Short")
+    private val shortField = ValidatingTextField(converter = Converters.validatingConverter(String::class))
 
     private val interpolation = Labels.label(ChangeColumn::class, "interpolation", "Interpolation")
     private val interpolationField = ChoiceBoxes.forEnums(
@@ -45,10 +48,13 @@ class ChangeColumn<K : Comparable<K>>(
 
         add(name, 0, 0)
         add(nameField, 1, 0)
+        add(short, 0, 1)
+        add(shortField, 1, 1)
         add(interpolation, 0, 2)
         add(interpolationField, 1, 2, HPos.LEFT)
 
-        nameField.set(column.name)
+        nameField.set(column.name.long)
+        shortField.set(column.name.short)
 //        interpolationField.value = column.interpolationType
     }
 
@@ -57,8 +63,9 @@ class ChangeColumn<K : Comparable<K>>(
     }
 
     override fun result(): ModelChange.ChangeColumnProperties<K>? {
-        return if (column.name!= nameField.text || column.interpolationType != interpolationField.selectionModel.selectedItem) {
-            ModelChange.ChangeColumnProperties(nodeId, column.id, nameField.text, interpolationField.selectionModel.selectedItem)
+        val newName = Name(nameField.text, shortField.text)
+        return if (column.name!= newName || column.interpolationType != interpolationField.selectionModel.selectedItem) {
+            ModelChange.ChangeColumnProperties(nodeId, column.id, newName, interpolationField.selectionModel.selectedItem)
         } else null
     }
 

@@ -25,7 +25,7 @@ sealed class ModelChange {
     data class ChangeColumnProperties<K: Comparable<K>>(
         override val id: Id<out Table<out Comparable<*>>>,
         val columnId: ColumnId,
-        val name: String,
+        val name: Name,
         val interpolationType: InterpolationType,
     ): TableChange(id)
     data class SetColumns<K: Comparable<K>>(

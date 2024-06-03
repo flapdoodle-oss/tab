@@ -148,7 +148,7 @@ sealed class Action {
             val missingValues = expectedValues.filter { !existingValues.contains(it.first) }
 
             return node.columns.columns() +
-                    missingColumns.map { Column(it.second.name(), node.indexType, TypeInfo.of(Unit::class.javaObjectType), it.second.interpolationType(), emptyMap(), it.first) } +
+                    missingColumns.map { Column(Name(it.second.name()), node.indexType, TypeInfo.of(Unit::class.javaObjectType), it.second.interpolationType(), emptyMap(), it.first) } +
                     node.values.values +
                     missingValues.map { SingleValue(Name(it.second.name()), TypeInfo.of(Unit::class.javaObjectType), null, it.first) }
         }

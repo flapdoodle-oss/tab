@@ -145,7 +145,7 @@ class Tab2ModelAdapter(
 
                 is Action.AddOutput -> {
                     val slot = when (action.output) {
-                        is Column<*,*> -> Slot(action.output.name, Slot.Mode.OUT, Position.RIGHT, action.output.color)
+                        is Column<*,*> -> Slot(action.output.name.shortest(), Slot.Mode.OUT, Position.RIGHT, action.output.color)
                         is SingleValue<*> -> Slot(action.output.name.shortest(), Slot.Mode.OUT, Position.RIGHT, action.output.color)
                     }
                     outputMapping.add(action.output.id, slot.id, slot)
@@ -164,7 +164,7 @@ class Tab2ModelAdapter(
                     vertexMapping.with(action.id) {
                         outputMapping.with(action.output) { slot ->
                             val newSlot = when (action.change) {
-                                is Column<*,*> -> slot.copy(name = action.change.name, color = action.change.color)
+                                is Column<*,*> -> slot.copy(name = action.change.name.shortest(), color = action.change.color)
                                 is SingleValue<*> -> slot.copy(name = action.change.name.shortest(), color = action.change.color)
                             }
                             it.vertex.replaceConnector(slot.id, newSlot)
