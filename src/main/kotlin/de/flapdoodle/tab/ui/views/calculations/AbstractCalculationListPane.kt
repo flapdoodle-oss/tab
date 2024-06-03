@@ -1,15 +1,18 @@
 package de.flapdoodle.tab.ui.views.calculations
 
 import de.flapdoodle.kfx.controls.fields.ValidatingColoredTextField
-import de.flapdoodle.kfx.controls.fields.ValidatingTextField
 import de.flapdoodle.kfx.converters.Converters
 import de.flapdoodle.kfx.layout.grid.TableCell
 import de.flapdoodle.kfx.layout.grid.WeightGridTable
 import de.flapdoodle.tab.model.calculations.Calculation
 import de.flapdoodle.tab.model.change.ModelChange
+import de.flapdoodle.tab.model.data.SingleValue
 import de.flapdoodle.tab.ui.ModelChangeListener
+import de.flapdoodle.tab.ui.resources.Buttons
 import de.flapdoodle.tab.ui.resources.Labels
+import de.flapdoodle.tab.ui.views.dialogs.ChangeValue
 import javafx.beans.property.SimpleObjectProperty
+import javafx.event.ActionEvent
 import javafx.event.EventHandler
 import javafx.scene.control.Button
 import javafx.scene.control.Label
@@ -42,13 +45,11 @@ class AbstractCalculationListPane<K: Comparable<K>, C: Calculation<K>>(
         }
     )
 
-    private val actionColumn = WeightGridTable.Column<C>(
+    private val deleteColumn = WeightGridTable.Column<C>(
         weight = 1.0,
         cellFactory = { calculation ->
-            TableCell(Button("-").apply {
-                onAction = EventHandler {
-                    modelChangeListener.change(ModelChange.RemoveFormula(nodeId, calculation.id))
-                }
+            TableCell(Buttons.delete(context) {
+                modelChangeListener.change(ModelChange.RemoveFormula(nodeId, calculation.id))
             })
         }
     )
@@ -56,11 +57,11 @@ class AbstractCalculationListPane<K: Comparable<K>, C: Calculation<K>>(
     private val changeColumn = WeightGridTable.Column<C>(
         weight = 1.0,
         cellFactory = { calculation ->
-            TableCell(Button("-").apply {
-                onAction = EventHandler {
-                    modelChangeListener.change(ModelChange.RemoveFormula(nodeId, calculation.id))
-                }
-            })
+            TableCell.with<C, Button, EventHandler<ActionEvent>>(Buttons.change(context), { v -> EventHandler { ev: ActionEvent ->
+                onChangeExpression(calculation)
+            }}, Button::setOnAction).apply {
+                updateCell(calculation)
+            }
         }
     )
 
@@ -95,7 +96,8 @@ class AbstractCalculationListPane<K: Comparable<K>, C: Calculation<K>>(
             nameColumn,
             WeightGridTable.Column(weight = 0.0, cellFactory = { TableCell( Labels.label("=")) }),
             formulaColumn,
-            actionColumn
+            changeColumn,
+            deleteColumn
         ),
         footerFactory = { values, columns ->
             val addButton = Button("+").apply {
@@ -114,7 +116,7 @@ class AbstractCalculationListPane<K: Comparable<K>, C: Calculation<K>>(
 //                    }
                 }
             }
-            mapOf(actionColumn to addButton)
+            mapOf(deleteColumn to addButton)
         }
     )
 

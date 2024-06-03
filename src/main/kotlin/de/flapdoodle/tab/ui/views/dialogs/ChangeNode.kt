@@ -10,7 +10,7 @@ class ChangeNode {
             return when (node) {
                 is Node.Constants -> DialogWrapper.open { ChangeValues(node) }
                 is Node.Table<out Comparable<*>> -> DialogWrapper.open { ChangeTable(node) }
-                is Node.Calculated<out Comparable<*>> -> DialogWrapper.open { ChangeCalculation(node) }
+                is Node.Calculated<out Comparable<*>> -> DialogWrapper.open { ChangeCalculated(node) }
             }
         }
     }

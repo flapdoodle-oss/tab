@@ -4,10 +4,8 @@ import de.flapdoodle.kfx.controls.fields.ChoiceBoxes
 import de.flapdoodle.kfx.controls.fields.ValidatingField
 import de.flapdoodle.kfx.controls.fields.ValidatingTextField
 import de.flapdoodle.kfx.extensions.bindCss
-import de.flapdoodle.kfx.layout.grid.WeightGridPane
 import de.flapdoodle.reflection.TypeInfo
 import de.flapdoodle.tab.config.IndexTypes
-import de.flapdoodle.tab.model.Name
 import de.flapdoodle.tab.model.Node
 import de.flapdoodle.tab.model.Title
 import de.flapdoodle.tab.ui.Converters
@@ -17,12 +15,10 @@ import de.flapdoodle.tab.ui.resources.ResourceBundles
 import javafx.beans.value.ObservableValue
 import javafx.geometry.HPos
 import javafx.scene.control.*
-import javafx.scene.control.ButtonBar.ButtonData
-import kotlin.reflect.KClass
 
-class NewCalculation : DialogContent<Node.Calculated<out Comparable<*>>>() {
+class NewCalculated : DialogContent<Node.Calculated<out Comparable<*>>>() {
 
-    private val name = Labels.label(NewCalculation::class,"name","Name")
+    private val name = Labels.label(NewCalculated::class,"name","Name")
     private val nameField = ValidatingTextField(
         Converters.validatingConverter(String::class)
         .and { v -> v.mapNullable { if (it.isNullOrBlank()) throw RequiredFieldNotSet("not set") else it } })
@@ -30,7 +26,7 @@ class NewCalculation : DialogContent<Node.Calculated<out Comparable<*>>>() {
     private val shortField = ValidatingTextField(converter = Converters.validatingConverter(String::class))
     private val description = Labels.label(NewValues::class,"description","Description")
     private val descriptionField = TextArea()
-    private val type = Labels.label(NewCalculation::class,"type","IndexType")
+    private val type = Labels.label(NewCalculated::class,"type","IndexType")
     private val typeField = ChoiceBoxes.forTypes(
         ResourceBundles.indexTypes(),
         IndexTypes.all()
@@ -72,7 +68,7 @@ class NewCalculation : DialogContent<Node.Calculated<out Comparable<*>>>() {
 
     companion object {
         fun open(): Node.Calculated<out Comparable<*>>? {
-            return DialogWrapper.open { NewCalculation() }
+            return DialogWrapper.open { NewCalculated() }
         }
     }
 }

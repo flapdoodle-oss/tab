@@ -3,7 +3,6 @@ package de.flapdoodle.tab.ui.views.dialogs
 import de.flapdoodle.kfx.controls.fields.ValidatingField
 import de.flapdoodle.kfx.controls.fields.ValidatingTextField
 import de.flapdoodle.kfx.extensions.bindCss
-import de.flapdoodle.tab.model.Name
 import de.flapdoodle.tab.model.Node
 import de.flapdoodle.tab.model.Title
 import de.flapdoodle.tab.model.change.ModelChange
@@ -13,10 +12,10 @@ import de.flapdoodle.tab.ui.resources.RequiredFieldNotSet
 import javafx.beans.value.ObservableValue
 import javafx.scene.control.TextArea
 
-class ChangeCalculation<K: Comparable<K>>(
+class ChangeCalculated<K: Comparable<K>>(
     private val node: Node.Calculated<K>
 ) : DialogContent<ModelChange>() {
-    private val name = Labels.label(ChangeCalculation::class, "name", "Name")
+    private val name = Labels.label(ChangeCalculated::class, "name", "Name")
     private val nameField = ValidatingTextField(converter = Converters.validatingConverter(String::class)
         .and { v -> v.mapNullable { if (it.isNullOrBlank()) throw RequiredFieldNotSet("not set") else it } })
     private val short = Labels.label(NewValues::class,"shortName","Short")
