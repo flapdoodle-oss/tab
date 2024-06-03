@@ -5,6 +5,7 @@ import de.flapdoodle.reflection.TypeInfo
 import de.flapdoodle.tab.model.Name
 import de.flapdoodle.tab.model.Node
 import de.flapdoodle.tab.model.Tab2Model
+import de.flapdoodle.tab.model.Title
 import de.flapdoodle.tab.model.calculations.Calculation
 import de.flapdoodle.tab.model.calculations.Calculations
 import de.flapdoodle.tab.model.calculations.adapter.EvalFormulaAdapter
@@ -31,7 +32,8 @@ class ActionTest {
     fun changeNodes() {
         val base = randomModel()
         val node = Node.Constants(
-            Name("x"))
+            Title("x")
+        )
 
         assertThat(Action.syncActions(base, base.addNode(node)))
             .containsExactly(
@@ -51,7 +53,7 @@ class ActionTest {
         val columnId = ColumnId()
 
         val table = Node.Table(
-            name = Name("table"),
+            name = Title("table"),
             indexType = TypeInfo.of(Int::class.javaObjectType),
             id = tableId
         )
@@ -102,7 +104,7 @@ class ActionTest {
         val calculatedId = Id.nextId(Node.Calculated::class)
 
         val table = Node.Table(
-            name = Name("table"),
+            name = Title("table"),
             indexType = TypeInfo.of(Int::class.javaObjectType),
             id = tableId,
             columns = Columns(
@@ -118,7 +120,7 @@ class ActionTest {
         )
 
         val calculated = Node.Calculated(
-            name = Name("calculated"),
+            name = Title("calculated"),
             indexType = TypeInfo.of(Int::class.javaObjectType),
             id = calculatedId,
             calculations = Calculations(
@@ -181,16 +183,16 @@ class ActionTest {
 
         var model = emptyModel()
         if (random.nextBoolean()) {
-            model = model.addNode(Node.Table(Name("table#" + random.nextInt()), TypeInfo.of(String::class.javaObjectType)))
+            model = model.addNode(Node.Table(Title("table#" + random.nextInt()), TypeInfo.of(String::class.javaObjectType)))
         }
         if (random.nextBoolean()) {
             model = model.addNode(Node.Calculated(
-                Name("calculated#" + random.nextInt()),
+                Title("calculated#" + random.nextInt()),
                 TypeInfo.of(Double::class.javaObjectType)
             ))
         }
         if (random.nextBoolean()) {
-            model = model.addNode(Node.Constants(Name("consts#" + random.nextInt())))
+            model = model.addNode(Node.Constants(Title("consts#" + random.nextInt())))
         }
         return model
     }
@@ -203,14 +205,14 @@ class ActionTest {
         val sourceModel = emptyModel()
             .addNode(
                 Node.Table(
-                    name = Name("source"),
+                    name = Title("source"),
                     indexType = TypeInfo.of(String::class.javaObjectType),
                     id = tableId
                 )
             )
             .addNode(
                 Node.Calculated(
-                    name = Name("calc"),
+                    name = Title("calc"),
                     indexType = TypeInfo.of(String::class.javaObjectType),
                     id = calculatedId
                 )

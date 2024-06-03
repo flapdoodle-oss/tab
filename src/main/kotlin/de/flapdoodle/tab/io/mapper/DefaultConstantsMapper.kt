@@ -5,6 +5,7 @@ import de.flapdoodle.tab.io.adapter.ToModelMapping
 import de.flapdoodle.tab.io.file.FileNode
 import de.flapdoodle.tab.io.file.FileSingleValues
 import de.flapdoodle.tab.model.Name
+import de.flapdoodle.tab.model.Title
 import de.flapdoodle.tab.model.data.SingleValues
 
 class DefaultConstantsMapper(
@@ -29,7 +30,7 @@ class DefaultConstantsMapper(
         require(src.constants != null) {"constants is not set"}
         
         return de.flapdoodle.tab.model.Node.Constants(
-            name = Name(src.name, src.short, src.description),
+            name = Title(src.name, src.short, src.description),
             position = src.position,
             id = toModelMapping.nextId(src.id, de.flapdoodle.tab.model.Node.Constants::class),
             values = singleValuesMapper.toModel(toModelMapping, src.constants.values)

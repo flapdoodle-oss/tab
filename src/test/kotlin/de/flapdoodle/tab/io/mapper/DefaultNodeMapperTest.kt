@@ -8,6 +8,7 @@ import de.flapdoodle.tab.io.file.FileSingleValues
 import de.flapdoodle.tab.model.Name
 import de.flapdoodle.tab.model.Node
 import de.flapdoodle.tab.model.Position
+import de.flapdoodle.tab.model.Title
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -15,7 +16,7 @@ class DefaultNodeMapperTest {
 
     @Test
     fun testDelegationForConstants() {
-        val constants = de.flapdoodle.tab.model.Node.Constants(name = Name("in"))
+        val constants = de.flapdoodle.tab.model.Node.Constants(name = Title("in"))
         val fileNodeConstants = FileNode(
             name = "out",
             short = "short",
@@ -41,7 +42,7 @@ class DefaultNodeMapperTest {
 
     @Test
     fun testDelegationForTable() {
-        val table = de.flapdoodle.tab.model.Node.Table(name = Name("inTab"), TypeInfo.of(Int::class.javaObjectType))
+        val table = de.flapdoodle.tab.model.Node.Table(name = Title("inTab"), TypeInfo.of(Int::class.javaObjectType))
         val fileNodeTable = FileNode(
             name = "outTab",
             short = "short",

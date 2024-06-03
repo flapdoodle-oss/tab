@@ -15,7 +15,7 @@ sealed class Node {
     abstract fun removeConnectionsFrom(id: Id<out Node>): Node
     abstract fun removeConnectionFrom(input: Id<InputSlot<*>>, id: Id<out Node>, source: Id<out Source>): Node
 
-    abstract val name: Name
+    abstract val name: Title
     abstract val id: Id<out Node>
     abstract val position: Position
     abstract val size: Size?
@@ -55,7 +55,7 @@ sealed class Node {
     }
 
     data class Constants(
-        override val name: Name,
+        override val name: Title,
         override val values: SingleValues = SingleValues(),
         override val id: Id<Node.Constants> = Id.nextId(Node.Constants::class),
         override val position: Position = Position(0.0, 0.0),
@@ -102,7 +102,7 @@ sealed class Node {
     }
 
     data class Table<K: Comparable<K>> (
-        override val name: Name,
+        override val name: Title,
         override val indexType: TypeInfo<K>,
         override val columns: Columns<K> = Columns(),
         override val id: Id<Table<*>> = Id.nextId(Table::class),
@@ -172,7 +172,7 @@ sealed class Node {
     }
 
     data class Calculated<K: Comparable<K>>(
-        override val name: Name,
+        override val name: Title,
         override val indexType: TypeInfo<K>,
         val calculations: Calculations<K> = Calculations(indexType),
         override val columns: Columns<K> = Columns(),

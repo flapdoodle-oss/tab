@@ -19,7 +19,7 @@ class ValuesPane<K : Comparable<K>>(
         indexOf = { it.id to it.valueType },
         columns = listOf(
             WeightGridTable.Column(weight = 0.0, cellFactory = {
-                TableCell.with(Labels.label(it.name), SingleValue<out Any>::name, Label::setText)
+                TableCell.with(Labels.label(it.name.shortest()), { value -> value.name.shortest() }, Label::setText)
             }),
             WeightGridTable.Column(weight = 0.0, cellFactory = {
                 TableCell(Labels.label("="))

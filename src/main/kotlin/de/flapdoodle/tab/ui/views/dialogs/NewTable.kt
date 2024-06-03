@@ -8,6 +8,7 @@ import de.flapdoodle.reflection.TypeInfo
 import de.flapdoodle.tab.config.IndexTypes
 import de.flapdoodle.tab.model.Name
 import de.flapdoodle.tab.model.Node
+import de.flapdoodle.tab.model.Title
 import de.flapdoodle.tab.ui.Converters
 import de.flapdoodle.tab.ui.resources.Labels
 import de.flapdoodle.tab.ui.resources.RequiredFieldNotSet
@@ -52,10 +53,10 @@ class NewTable : DialogContent<Node.Table<out Comparable<*>>>() {
 
     override fun result(): Node.Table<out Comparable<*>>? {
         val type = TypeInfo.of(typeField.selectionModel.selectedItem.javaObjectType)
-        return nodeOf(Name(nameField.text, shortField.text, descriptionField.text), type as TypeInfo<out Comparable<Any>>)
+        return nodeOf(Title(nameField.text, shortField.text, descriptionField.text), type as TypeInfo<out Comparable<Any>>)
     }
 
-    private fun <K: Comparable<K>> nodeOf(name: Name, indexType: TypeInfo<K>?): Node.Table<K>? {
+    private fun <K: Comparable<K>> nodeOf(name: Title, indexType: TypeInfo<K>?): Node.Table<K>? {
         if (indexType!=null) {
             return Node.Table(
                 name = name,

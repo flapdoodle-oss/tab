@@ -2,6 +2,7 @@ package de.flapdoodle.tab.io.mapper
 
 import de.flapdoodle.reflection.TypeInfo
 import de.flapdoodle.tab.io.MemorizingMapping
+import de.flapdoodle.tab.model.Name
 import de.flapdoodle.tab.model.data.SingleValue
 import javafx.scene.paint.Color
 import org.assertj.core.api.Assertions.assertThat
@@ -14,7 +15,7 @@ class DefaultSingleValueMapperTest {
         val memorizingMapping = MemorizingMapping()
 
         val src = SingleValue(
-            name = "value",
+            name = Name("value"),
             valueType = TypeInfo.of(Double::class.javaObjectType),
             value = 1231.2,
             color = Color.RED

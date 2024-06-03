@@ -4,6 +4,7 @@ import de.flapdoodle.kfx.collections.Change
 import de.flapdoodle.kfx.collections.Diff
 import de.flapdoodle.kfx.types.Id
 import de.flapdoodle.reflection.TypeInfo
+import de.flapdoodle.tab.model.Name
 import de.flapdoodle.tab.model.Tab2Model
 import de.flapdoodle.tab.model.calculations.InputSlot
 import de.flapdoodle.tab.model.connections.Source
@@ -149,7 +150,7 @@ sealed class Action {
             return node.columns.columns() +
                     missingColumns.map { Column(it.second.name(), node.indexType, TypeInfo.of(Unit::class.javaObjectType), it.second.interpolationType(), emptyMap(), it.first) } +
                     node.values.values +
-                    missingValues.map { SingleValue(it.second.name(), TypeInfo.of(Unit::class.javaObjectType), null, it.first) }
+                    missingValues.map { SingleValue(Name(it.second.name()), TypeInfo.of(Unit::class.javaObjectType), null, it.first) }
         }
     }
 }

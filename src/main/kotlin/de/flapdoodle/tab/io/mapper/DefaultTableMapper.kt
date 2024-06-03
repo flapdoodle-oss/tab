@@ -5,6 +5,7 @@ import de.flapdoodle.tab.io.adapter.ToFileMapping
 import de.flapdoodle.tab.io.adapter.ToModelMapping
 import de.flapdoodle.tab.io.file.FileNode
 import de.flapdoodle.tab.model.Name
+import de.flapdoodle.tab.model.Title
 import kotlin.reflect.KClass
 
 class DefaultTableMapper(
@@ -37,7 +38,7 @@ class DefaultTableMapper(
         indexType: TypeInfo<T>
     ): de.flapdoodle.tab.model.Node.Table<T> {
         return de.flapdoodle.tab.model.Node.Table(
-            name = Name(src.name, src.short, src.description),
+            name = Title(src.name, src.short, src.description),
             indexType = indexType,
             columns = columnsMapper.toModel(toModelMapping, indexType, table.columns),
             id = toModelMapping.nextId(src.id, de.flapdoodle.tab.model.Node.Table::class),

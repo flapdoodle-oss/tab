@@ -6,6 +6,7 @@ import de.flapdoodle.kfx.controls.fields.ValidatingTextField
 import de.flapdoodle.kfx.extensions.bindCss
 import de.flapdoodle.kfx.layout.grid.WeightGridPane
 import de.flapdoodle.tab.config.ValueTypes
+import de.flapdoodle.tab.model.Name
 import de.flapdoodle.tab.ui.Converters
 import de.flapdoodle.tab.ui.resources.Labels
 import de.flapdoodle.tab.ui.resources.RequiredFieldNotSet
@@ -21,6 +22,8 @@ class NewValue : DialogContent<NewValue.NewValue>() {
     private val name = Labels.label(NewValue::class,"name","Name")
     private val nameField = ValidatingTextField(Converters.validatingConverter(String::class)
         .and { v -> v.mapNullable { if (it.isNullOrBlank()) throw RequiredFieldNotSet("not set") else it } })
+    private val short = Labels.label(NewValues::class,"shortName","Short")
+    private val shortField = ValidatingTextField(converter = Converters.validatingConverter(String::class))
     private val type = Labels.label(NewValue::class,"type","Type")
     private val typeField = ChoiceBoxes.forTypes(
         resourceBundle = ResourceBundles.valueTypes(),
@@ -34,8 +37,10 @@ class NewValue : DialogContent<NewValue.NewValue>() {
 
         add(name, 0, 0)
         add(nameField, 1, 0)
-        add(type, 0, 1)
-        add(typeField, 1, 1, HPos.LEFT)
+        add(short, 0, 1)
+        add(shortField, 1, 1)
+        add(type, 0, 2)
+        add(typeField, 1, 2, HPos.LEFT)
     }
 
     override fun isValidProperty(): ObservableValue<Boolean> {
@@ -43,11 +48,11 @@ class NewValue : DialogContent<NewValue.NewValue>() {
     }
 
     override fun result(): NewValue? {
-        return NewValue(nameField.text, typeField.selectionModel.selectedItem)
+        return NewValue(Name(nameField.text, shortField.text), typeField.selectionModel.selectedItem)
     }
 
     data class NewValue(
-        val name: String,
+        val name: Name,
         val type: KClass<out Any>
     )
 

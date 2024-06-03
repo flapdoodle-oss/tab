@@ -9,6 +9,7 @@ import de.flapdoodle.reflection.TypeInfo
 import de.flapdoodle.tab.config.IndexTypes
 import de.flapdoodle.tab.model.Name
 import de.flapdoodle.tab.model.Node
+import de.flapdoodle.tab.model.Title
 import de.flapdoodle.tab.ui.Converters
 import de.flapdoodle.tab.ui.resources.Labels
 import de.flapdoodle.tab.ui.resources.RequiredFieldNotSet
@@ -58,10 +59,10 @@ class NewCalculation : DialogContent<Node.Calculated<out Comparable<*>>>() {
 
     override fun result(): Node.Calculated<out Comparable<*>>? {
         val type = TypeInfo.of(typeField.selectionModel.selectedItem.javaObjectType)
-        return nodeOf(Name(nameField.text, shortField.text, descriptionField.text), type as TypeInfo<out Comparable<Any>>)
+        return nodeOf(Title(nameField.text, shortField.text, descriptionField.text), type as TypeInfo<out Comparable<Any>>)
     }
 
-    private fun <K: Comparable<K>> nodeOf(name: Name, type: TypeInfo<K>?): Node.Calculated<K>? {
+    private fun <K: Comparable<K>> nodeOf(name: Title, type: TypeInfo<K>?): Node.Calculated<K>? {
         if (type!=null) {
             return Node.Calculated(name, type)
         }

@@ -5,6 +5,7 @@ import de.flapdoodle.kfx.controls.fields.ValidatingTextField
 import de.flapdoodle.kfx.extensions.bindCss
 import de.flapdoodle.tab.model.Name
 import de.flapdoodle.tab.model.Node
+import de.flapdoodle.tab.model.Title
 import de.flapdoodle.tab.model.change.ModelChange
 import de.flapdoodle.tab.ui.Converters
 import de.flapdoodle.tab.ui.resources.Labels
@@ -45,7 +46,7 @@ class ChangeCalculation<K: Comparable<K>>(
     }
 
     override fun result(): ModelChange? {
-        val newName = Name(nameField.text, shortField.text, descriptionField.text)
+        val newName = Title(nameField.text, shortField.text, descriptionField.text)
         return if (node.name != newName)
             ModelChange.ChangeCalculationProperties(node.id, newName)
         else

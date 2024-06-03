@@ -7,6 +7,7 @@ import de.flapdoodle.kfx.extensions.bindCss
 import de.flapdoodle.kfx.layout.grid.WeightGridPane
 import de.flapdoodle.kfx.types.Id
 import de.flapdoodle.tab.config.ValueTypes
+import de.flapdoodle.tab.model.Name
 import de.flapdoodle.tab.model.change.ModelChange
 import de.flapdoodle.tab.model.data.SingleValue
 import de.flapdoodle.tab.ui.Converters
@@ -27,6 +28,8 @@ class ChangeValue<T: Any>(
     private val name = Labels.label(ChangeValue::class,"name","Name")
     private val nameField = ValidatingTextField(Converters.validatingConverter(String::class)
         .and { v -> v.mapNullable { if (it.isNullOrBlank()) throw RequiredFieldNotSet("not set") else it } })
+    private val short = Labels.label(NewValues::class,"shortName","Short")
+    private val shortField = ValidatingTextField(converter = Converters.validatingConverter(String::class))
 
     init {
         bindCss("change-value")
@@ -35,8 +38,11 @@ class ChangeValue<T: Any>(
 
         add(name, 0, 0)
         add(nameField, 1, 0)
+        add(short, 0, 1)
+        add(shortField, 1, 1)
 
-        nameField.set(value.name)
+        nameField.set(value.name.long)
+        shortField.set(value.name.short)
     }
 
     override fun isValidProperty(): ObservableValue<Boolean> {
@@ -44,7 +50,7 @@ class ChangeValue<T: Any>(
     }
 
     override fun result(): ModelChange? {
-        return ModelChange.ChangeValueProperties(nodeId, value.id, nameField.text)
+        return ModelChange.ChangeValueProperties(nodeId, value.id, Name(nameField.text, shortField.text))
     }
 
     companion object {

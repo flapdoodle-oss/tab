@@ -6,6 +6,7 @@ import de.flapdoodle.tab.io.MemorizingMapping
 import de.flapdoodle.tab.model.Name
 import de.flapdoodle.tab.model.Node
 import de.flapdoodle.tab.model.Position
+import de.flapdoodle.tab.model.Title
 import de.flapdoodle.tab.model.calculations.Calculation
 import de.flapdoodle.tab.model.calculations.Calculations
 import de.flapdoodle.tab.model.calculations.InputSlot
@@ -23,7 +24,7 @@ class DefaultCalculatedMapperTest {
         val memorizingMapping = MemorizingMapping()
 
         val src = Node.Calculated(
-            name = Name("name"),
+            name = Title("name"),
             indexType = TypeInfo.of(Int::class.javaObjectType),
             position = Position(10.0, 20.0)
         )
@@ -41,7 +42,7 @@ class DefaultCalculatedMapperTest {
         val memorizingMapping = MemorizingMapping()
 
         val src = de.flapdoodle.tab.model.Node.Calculated(
-            name = Name("calculated"),
+            name = Title("calculated"),
             indexType = TypeInfo.of(Int::class.javaObjectType),
             calculations = Calculations(
                 indexType = TypeInfo.of(Int::class.javaObjectType),

@@ -1,10 +1,7 @@
 package de.flapdoodle.tab.io
 
 import de.flapdoodle.reflection.TypeInfo
-import de.flapdoodle.tab.model.Name
-import de.flapdoodle.tab.model.Node
-import de.flapdoodle.tab.model.Position
-import de.flapdoodle.tab.model.Tab2Model
+import de.flapdoodle.tab.model.*
 import de.flapdoodle.tab.model.calculations.Calculation
 import de.flapdoodle.tab.model.calculations.Calculations
 import de.flapdoodle.tab.model.calculations.InputSlot
@@ -26,10 +23,10 @@ class TabModelIOTest {
     @Test
     fun emptyModel() {
         val constants = de.flapdoodle.tab.model.Node.Constants(
-            name = Name("const"),
+            name = Title("const"),
             values = SingleValues(listOf(
                 SingleValue(
-                    name = "a",
+                    name = Name("a"),
                     valueType = TypeInfo.of(Int::class.javaObjectType),
                     value = 2,
                     color = Color.RED
@@ -39,7 +36,7 @@ class TabModelIOTest {
         )
 
         val table = de.flapdoodle.tab.model.Node.Table(
-            name = Name("table"),
+            name = Title("table"),
             indexType = TypeInfo.of(Int::class.javaObjectType),
             columns = Columns(listOf(
                 Column(
@@ -65,7 +62,7 @@ class TabModelIOTest {
         )
 
         val calculated = de.flapdoodle.tab.model.Node.Calculated(
-            name = Name("calculated"),
+            name = Title("calculated"),
             indexType = TypeInfo.of(Int::class.javaObjectType),
             calculations = Calculations(
                 indexType = TypeInfo.of(Int::class.javaObjectType),

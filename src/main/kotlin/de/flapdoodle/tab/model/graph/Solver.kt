@@ -6,6 +6,7 @@ import de.flapdoodle.graph.GraphAsDot
 import de.flapdoodle.graph.Graphs
 import de.flapdoodle.graph.VerticesAndEdges
 import de.flapdoodle.reflection.TypeInfo
+import de.flapdoodle.tab.model.Name
 import de.flapdoodle.tab.model.Tab2Model
 import de.flapdoodle.tab.model.calculations.Calculation
 import de.flapdoodle.tab.model.calculations.Variable
@@ -263,9 +264,9 @@ object Solver {
     ): de.flapdoodle.tab.model.Node.Calculated<K> {
         val changedNode = if (node.values.find(calculation.destination()) == null) {
             val newSingleValue = if (result != null) {
-                SingleValue.ofNullable(calculation.name(), result.type(), result.wrapped(), calculation.destination())
+                SingleValue.ofNullable(Name(calculation.name()), result.type(), result.wrapped(), calculation.destination())
             } else {
-                SingleValue.ofNull(calculation.name(), Unit::class, calculation.destination())
+                SingleValue.ofNull(Name(calculation.name()), Unit::class, calculation.destination())
             }
             node.copy(values = node.values.addValue(newSingleValue))
         } else {

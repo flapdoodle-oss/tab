@@ -6,6 +6,7 @@ import de.flapdoodle.tab.io.adapter.ToModelMapping
 import de.flapdoodle.tab.io.file.FileNode
 import de.flapdoodle.tab.io.file.FileSingleValues
 import de.flapdoodle.tab.model.Name
+import de.flapdoodle.tab.model.Title
 import de.flapdoodle.tab.model.data.SingleValues
 import kotlin.reflect.KClass
 
@@ -43,7 +44,7 @@ class DefaultCalculatedMapper(
         indexType: TypeInfo<T>
     ): de.flapdoodle.tab.model.Node.Calculated<T> {
         return de.flapdoodle.tab.model.Node.Calculated(
-            name = Name(src.name, src.short, src.description),
+            name = Title(src.name, src.short, src.description),
             indexType = indexType,
             calculations = calculationsMapper.toModel(toModelMapping, indexType, calculated.calculations),
             columns = columnsMapper.toModel(toModelMapping, indexType, calculated.columns),

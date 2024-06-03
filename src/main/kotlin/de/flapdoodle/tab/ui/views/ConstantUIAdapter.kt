@@ -42,7 +42,7 @@ class ConstantUIAdapter(
         weight = 0.0,
         horizontalPosition = HPos.LEFT,
         cellFactory = {
-            TableCell.with(Labels.label(it.name), SingleValue<out Any>::name, Label::setText)
+            TableCell.with(Labels.label(it.name.long), { it.name.long }, Label::setText)
         })
 
     private val colorColumn = WeightGridTable.Column<SingleValue<out Any>>(
