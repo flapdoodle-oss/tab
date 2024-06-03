@@ -128,7 +128,7 @@ class ActionTest {
                 tabular = listOf(
                     Calculation.Tabular(
                         indexType = TypeInfo.of(Int::class.javaObjectType),
-                        name = "x",
+                        name = Name("x"),
                         formula = EvalFormulaAdapter("x")
                     )
                 )
@@ -230,7 +230,7 @@ class ActionTest {
             .apply(
                 ModelChange.AddTabular(
                     id = calculatedId,
-                    name = "y",
+                    name = Name("y"),
                     expression = "x"
                 )
             )
@@ -243,7 +243,7 @@ class ActionTest {
         val withSecondExpression = connected.apply(
             ModelChange.AddTabular(
                 id = calculatedId,
-                name = "z",
+                name = Name("z"),
                 expression = "x"
             )
         )

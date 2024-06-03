@@ -48,14 +48,14 @@ class DefaultCalculatedMapperTest {
                 indexType = TypeInfo.of(Int::class.javaObjectType),
                 aggregations = listOf(
                     Calculation.Aggregation(
-                        name = "x+2",
+                        name = Name("x+2"),
                         indexType = TypeInfo.of(Int::class.javaObjectType),
                         formula = EvalFormulaAdapter("x+2")
                     )
                 ),
                 tabular = listOf(
                     Calculation.Tabular(
-                        name = "x+y",
+                        name = Name("x+y"),
                         indexType = TypeInfo.of(Int::class.javaObjectType),
                         formula = EvalFormulaAdapter("x+y")
                     )
@@ -64,11 +64,11 @@ class DefaultCalculatedMapperTest {
                     InputSlot(
                         name = "x",
                         mapTo = (Calculation.Aggregation(
-                            name = "x+2",
+                            name = Name("x+2"),
                             indexType = TypeInfo.of(Int::class.javaObjectType),
                             formula = EvalFormulaAdapter("x+2")
                         ).variables() + Calculation.Tabular(
-                            name = "x+y",
+                            name = Name("x+y"),
                             indexType = TypeInfo.of(Int::class.javaObjectType),
                             formula = EvalFormulaAdapter("x+y")
                         ).variables()).filter {
@@ -79,7 +79,7 @@ class DefaultCalculatedMapperTest {
                     InputSlot(
                         name = "y",
                         mapTo = Calculation.Tabular(
-                            name = "x+y",
+                            name = Name("x+y"),
                             indexType = TypeInfo.of(Int::class.javaObjectType),
                             formula = EvalFormulaAdapter("x+y")
                         ).variables().filter { it.name == "y" }.toSet(),

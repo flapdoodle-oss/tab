@@ -42,7 +42,7 @@ class ModelSolverWrapperTest {
                 tabular = listOf(
                     Calculation.Tabular(
                         TypeInfo.of(Int::class.javaObjectType),
-                        "y",
+                        Name("y"),
                         EvalFormulaAdapter("x+2"),
                         InterpolationType.Linear,
                         destination

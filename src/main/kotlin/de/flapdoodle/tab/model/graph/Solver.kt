@@ -264,9 +264,9 @@ object Solver {
     ): de.flapdoodle.tab.model.Node.Calculated<K> {
         val changedNode = if (node.values.find(calculation.destination()) == null) {
             val newSingleValue = if (result != null) {
-                SingleValue.ofNullable(Name(calculation.name()), result.type(), result.wrapped(), calculation.destination())
+                SingleValue.ofNullable(calculation.name(), result.type(), result.wrapped(), calculation.destination())
             } else {
-                SingleValue.ofNull(Name(calculation.name()), Unit::class, calculation.destination())
+                SingleValue.ofNull(calculation.name(), Unit::class, calculation.destination())
             }
             node.copy(values = node.values.addValue(newSingleValue))
         } else {
@@ -339,7 +339,7 @@ object Solver {
         val valueType = valueTypes.toList().one { true }
 
         val column = Column(
-            name = Name(calculation.name()),
+            name = calculation.name(),
             indexType = calculation.indexType(),
             valueType = valueType,
             values = emptyMap(),

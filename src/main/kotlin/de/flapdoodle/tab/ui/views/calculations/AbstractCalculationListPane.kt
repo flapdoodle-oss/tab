@@ -29,7 +29,7 @@ class AbstractCalculationListPane<K: Comparable<K>, C: Calculation<K>>(
     private val nameColumn = WeightGridTable.Column<C>(
         weight = 1.0,
         cellFactory = {
-            TableCell.with(Labels.label(it.name()), Calculation<K>::name, Label::setText)
+            TableCell.with(Labels.label(it.name().long), { it.name().long }, Label::setText)
         }
     )
 

@@ -50,8 +50,8 @@ sealed class ModelChange {
 
     sealed class CalculationChange(open val id: Id<out Calculated<out Comparable<*>>>): ModelChange()
     data class ChangeCalculationProperties(override val id: Id<out Calculated<out Comparable<*>>>, val name: Title): CalculationChange(id)
-    data class AddAggregation(override val id: Id<Calculated<*>>, val name: String, val expression: String) : CalculationChange(id)
-    data class AddTabular(override val id: Id<Calculated<*>>, val name: String, val expression: String) : CalculationChange(id)
+    data class AddAggregation(override val id: Id<Calculated<*>>, val name: Name, val expression: String) : CalculationChange(id)
+    data class AddTabular(override val id: Id<Calculated<*>>, val name: Name, val expression: String) : CalculationChange(id)
     data class ChangeFormula(
         override val id: Id<out Calculated<out Comparable<*>>>,
         val calculationId: Id<Calculation<*>>,

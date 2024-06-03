@@ -2,6 +2,7 @@ package de.flapdoodle.tab.io.mapper
 
 import de.flapdoodle.reflection.TypeInfo
 import de.flapdoodle.tab.io.MemorizingMapping
+import de.flapdoodle.tab.model.Name
 import de.flapdoodle.tab.model.calculations.Calculation
 import de.flapdoodle.tab.model.calculations.adapter.Eval
 import de.flapdoodle.tab.model.calculations.adapter.EvalFormulaAdapter
@@ -22,7 +23,7 @@ class DefaultAggregationMapperTest {
         val memorizingMapping = MemorizingMapping()
 
         val src = Calculation.Aggregation(
-            name = "name",
+            name = Name("name"),
             indexType = TypeInfo.of(Int::class.javaObjectType),
             formula = EvalFormulaAdapter("x+2")
         )
