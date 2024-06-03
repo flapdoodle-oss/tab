@@ -1,16 +1,12 @@
 package de.flapdoodle.tab.ui.views.calculations
 
-import de.flapdoodle.kfx.controls.fields.ValidatingColoredTextField
-import de.flapdoodle.kfx.converters.Converters
 import de.flapdoodle.kfx.layout.grid.TableCell
 import de.flapdoodle.kfx.layout.grid.WeightGridTable
 import de.flapdoodle.tab.model.calculations.Calculation
 import de.flapdoodle.tab.model.change.ModelChange
-import de.flapdoodle.tab.model.data.SingleValue
 import de.flapdoodle.tab.ui.ModelChangeListener
 import de.flapdoodle.tab.ui.resources.Buttons
 import de.flapdoodle.tab.ui.resources.Labels
-import de.flapdoodle.tab.ui.views.dialogs.ChangeValue
 import javafx.beans.property.SimpleObjectProperty
 import javafx.event.ActionEvent
 import javafx.event.EventHandler
@@ -18,7 +14,6 @@ import javafx.scene.control.Button
 import javafx.scene.control.Label
 import javafx.scene.control.TextField
 import javafx.scene.layout.VBox
-import java.util.*
 
 class AbstractCalculationListPane<K: Comparable<K>, C: Calculation<K>>(
     node: de.flapdoodle.tab.model.Node.Calculated<K>,
@@ -40,8 +35,26 @@ class AbstractCalculationListPane<K: Comparable<K>, C: Calculation<K>>(
 
     private val formulaColumn = WeightGridTable.Column<C>(
         weight = 50.0,
-        cellFactory = { aggregation ->
-            textFieldFor(aggregation, modelChangeListener)
+        cellFactory = { calculation ->
+            TableCell.with<C, TextField, C>(TextField(calculation.formula().expression()), { it }, { t, value ->
+                println("update: $value")
+                t.onAction = EventHandler {
+                    if (value!=null) {
+                        modelChangeListener.change(
+                            ModelChange.ChangeFormula(
+                                nodeId,
+                                value.id,
+                                value.name(),
+                                t.text
+                            )
+                        )
+                    }
+                }
+
+                t.text = value?.formula()?.expression()
+            }).apply { 
+                updateCell(calculation)
+            }
         }
     )
 
@@ -57,24 +70,17 @@ class AbstractCalculationListPane<K: Comparable<K>, C: Calculation<K>>(
     private val changeColumn = WeightGridTable.Column<C>(
         weight = 1.0,
         cellFactory = { calculation ->
-            TableCell.with<C, Button, EventHandler<ActionEvent>>(Buttons.change(context), { v -> EventHandler { ev: ActionEvent ->
-                onChangeExpression(calculation)
-            }}, Button::setOnAction).apply {
+            TableCell.with<C, Button, EventHandler<ActionEvent>>(
+                node = Buttons.change(context),
+                mapper = { v -> EventHandler { ev: ActionEvent ->
+                    onChangeExpression(v)
+                }},
+                update = Button::setOnAction
+            ).apply {
                 updateCell(calculation)
             }
         }
     )
-
-    private fun textFieldFor(calculation: C, modelChangeListener: ModelChangeListener): TableCell<C, TextField> {
-        val textField = TextField(calculation.formula().expression()).apply {
-            // TODO da fehlt das update des Inhalts
-//            onAction = EventHandler {
-//                modelChangeListener.change(ModelChange.ChangeFormula(nodeId, calculation.id, calculation.name(), text))
-//            }
-        }
-
-        return TableCell(textField) { t, v -> t.text = v.formula().expression() }
-    }
 
     private val aggregationsPanel = WeightGridTable(
         model = calculationsModel,

@@ -1,5 +1,6 @@
 package de.flapdoodle.tab.ui.views.calculations
 
+import de.flapdoodle.kfx.extensions.bindCss
 import de.flapdoodle.tab.model.calculations.Calculation
 import de.flapdoodle.tab.model.change.ModelChange
 import de.flapdoodle.tab.ui.ModelChangeListener
@@ -68,6 +69,7 @@ class CalculationsPane<K: Comparable<K>>(
     )
 
     init {
+        bindCss("calculations")
         children.add(aggregationsPane)
         children.add(tabularPane)
     }

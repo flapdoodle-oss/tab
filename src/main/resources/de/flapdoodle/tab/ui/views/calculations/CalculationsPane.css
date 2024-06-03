@@ -1,0 +1,15 @@
+.calculations .button-delete {
+    /*-fx-graphic: url(../../icons/table.png);*/
+    -fx-content-display: left /*graphic-only*/;
+}
+
+.calculations .button-add {
+    /*-fx-graphic: url(../../icons/table.png);*/
+    -fx-content-display: left /*graphic-only*/;
+}
+
+.calculations .weight-grid-pane {
+    horizontal-space: 5px;
+    vertical-space: 5px;
+    -fx-padding: 10px 0px 0px 0px;
+}
