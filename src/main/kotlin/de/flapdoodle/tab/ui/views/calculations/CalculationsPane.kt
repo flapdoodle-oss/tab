@@ -1,8 +1,10 @@
 package de.flapdoodle.tab.ui.views.calculations
 
+import de.flapdoodle.tab.model.calculations.Calculation
 import de.flapdoodle.tab.model.change.ModelChange
 import de.flapdoodle.tab.ui.ModelChangeListener
 import de.flapdoodle.tab.ui.resources.Labels
+import de.flapdoodle.tab.ui.views.dialogs.ChangeExpression
 import de.flapdoodle.tab.ui.views.dialogs.NewExpression
 import javafx.beans.property.SimpleObjectProperty
 import javafx.scene.layout.VBox
@@ -32,8 +34,11 @@ class CalculationsPane<K: Comparable<K>>(
                 )
             }
         },
-        onChangeExpression = {
-
+        onChangeExpression = { calculation: Calculation.Aggregation<K> ->
+            val changedExpression = ChangeExpression.open(calculation.name(), calculation.formula().expression())
+            if (changedExpression != null) {
+                modelChangeListener.change(ModelChange.ChangeFormula(nodeId, calculation.id, changedExpression.name, changedExpression.expression))
+            }
         }
     )
     private val tabularPane = AbstractCalculationListPane(
@@ -54,8 +59,11 @@ class CalculationsPane<K: Comparable<K>>(
                 )
             }
         },
-        onChangeExpression = {
-
+        onChangeExpression = { calculation: Calculation.Tabular<K> ->
+            val changedExpression = ChangeExpression.open(calculation.name(), calculation.formula().expression())
+            if (changedExpression != null) {
+                modelChangeListener.change(ModelChange.ChangeFormula(nodeId, calculation.id, changedExpression.name, changedExpression.expression))
+            }
         }
     )
 

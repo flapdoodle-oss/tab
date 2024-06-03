@@ -26,7 +26,7 @@ sealed class Calculation<K: Comparable<K>>(
     fun evaluateType(values: Map<Variable, Evaluated<out Any>>) = formula.evaluateType(values)
     fun variables() = formula.variables()
 
-    abstract fun changeFormula(newFormula: String): Calculation<K>
+    abstract fun changeFormula(name: Name, newFormula: String): Calculation<K>
 
     data class Aggregation<K: Comparable<K>>(
         private val indexType: TypeInfo<K>,
@@ -38,8 +38,8 @@ sealed class Calculation<K: Comparable<K>>(
 
         fun destination() = destination
 
-        override fun changeFormula(newFormula: String): Aggregation<K> {
-            return copy(formula = formula.change(newFormula))
+        override fun changeFormula(name: Name, newFormula: String): Aggregation<K> {
+            return copy(name = name, formula = formula.change(newFormula))
         }
     }
 
@@ -56,8 +56,8 @@ sealed class Calculation<K: Comparable<K>>(
 
         fun interpolationType() = interpolationType
 
-        override fun changeFormula(newFormula: String): Tabular<K> {
-            return copy(formula = formula.change(newFormula))
+        override fun changeFormula(name: Name, newFormula: String): Tabular<K> {
+            return copy(name = name, formula = formula.change(newFormula))
         }
     }
 }

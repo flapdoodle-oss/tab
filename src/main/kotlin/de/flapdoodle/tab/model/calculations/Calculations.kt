@@ -2,6 +2,7 @@ package de.flapdoodle.tab.model.calculations
 
 import de.flapdoodle.kfx.types.Id
 import de.flapdoodle.reflection.TypeInfo
+import de.flapdoodle.tab.model.Name
 import de.flapdoodle.tab.model.Node
 import de.flapdoodle.tab.model.connections.Source
 import de.flapdoodle.tab.model.data.ColumnId
@@ -53,9 +54,9 @@ data class Calculations<K: Comparable<K>>(
         return inputs.filter { it.mapTo.intersect(variable).isNotEmpty() }
     }
 
-    fun changeFormula(id: Id<Calculation<*>>, newFormula: String): Calculations<K> {
-        val changedAggregations = aggregations.change(Calculation.Aggregation<K>::id, id) { it.changeFormula(newFormula) }
-        val changedTabular = tabular.change(Calculation.Tabular<K>::id, id) { it.changeFormula(newFormula) }
+    fun changeFormula(id: Id<Calculation<*>>, name: Name, newFormula: String): Calculations<K> {
+        val changedAggregations = aggregations.change(Calculation.Aggregation<K>::id, id) { it.changeFormula(name, newFormula) }
+        val changedTabular = tabular.change(Calculation.Tabular<K>::id, id) { it.changeFormula(name, newFormula) }
         return copy(aggregations = changedAggregations, tabular = changedTabular, inputs = merge(inputs, inputSlots(changedAggregations + changedTabular)))
     }
 

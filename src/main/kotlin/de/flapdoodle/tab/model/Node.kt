@@ -211,7 +211,7 @@ sealed class Node {
                     }
                     is ModelChange.ChangeFormula -> {
                         if (change.id == id) {
-                            return copy(calculations = calculations.changeFormula(change.calculationId,change.formula))
+                            return copy(calculations = calculations.changeFormula(change.calculationId, change.name, change.formula))
                         }
                     }
                     is ModelChange.RemoveFormula -> {

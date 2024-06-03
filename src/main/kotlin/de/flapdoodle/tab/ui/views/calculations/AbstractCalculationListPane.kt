@@ -65,25 +65,12 @@ class AbstractCalculationListPane<K: Comparable<K>, C: Calculation<K>>(
         }
     )
 
-    private fun coloredTextFieldFor(calculation: C, modelChangeListener: ModelChangeListener): TableCell<C, ValidatingColoredTextField<String>> {
-        val textField = ValidatingColoredTextField(Converters.validatingFor(String::class, Locale.GERMANY)).apply {
-            onAction = EventHandler {
-                val text = get()
-                if (text != null) {
-                    modelChangeListener.change(ModelChange.ChangeFormula(nodeId, calculation.id, text))
-                }
-            }
-        }
-        return TableCell(textField) { t, v ->
-            t.set(v.formula().expression())
-        }
-    }
-
     private fun textFieldFor(calculation: C, modelChangeListener: ModelChangeListener): TableCell<C, TextField> {
         val textField = TextField(calculation.formula().expression()).apply {
-            onAction = EventHandler {
-                modelChangeListener.change(ModelChange.ChangeFormula(nodeId, calculation.id, text))
-            }
+            // TODO da fehlt das update des Inhalts
+//            onAction = EventHandler {
+//                modelChangeListener.change(ModelChange.ChangeFormula(nodeId, calculation.id, calculation.name(), text))
+//            }
         }
 
         return TableCell(textField) { t, v -> t.text = v.formula().expression() }

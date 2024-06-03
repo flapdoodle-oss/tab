@@ -55,6 +55,7 @@ sealed class ModelChange {
     data class ChangeFormula(
         override val id: Id<out Calculated<out Comparable<*>>>,
         val calculationId: Id<Calculation<*>>,
+        val name: Name,
         val formula: String
     ): CalculationChange(id)
     data class RemoveFormula(override val id: Id<Calculated<*>>, val calculationId: Id<Calculation<*>>) : CalculationChange(id)

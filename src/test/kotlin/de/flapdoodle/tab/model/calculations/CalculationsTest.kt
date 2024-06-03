@@ -55,7 +55,7 @@ class CalculationsTest {
         assertThat(b.name).isEqualTo("b")
         assertThat(c.name).isEqualTo("c")
 
-        val changed = testee.changeFormula(testee.aggregations()[0].id, "a*2-x")
+        val changed = testee.changeFormula(testee.aggregations()[0].id, Name("x"),"a*2-x")
 
         assertThat(changed.inputs())
             .hasSize(3)
@@ -82,7 +82,7 @@ class CalculationsTest {
             val (a) = testee.inputs()
             assertThat(a.mapTo).hasSize(2)
 
-            val changed = testee.changeFormula(testee.aggregations()[0].id, "a+b")
+            val changed = testee.changeFormula(testee.aggregations()[0].id, Name("1"),"a+b")
 
             assertThat(changed.inputs()).hasSize(2)
             val (a2, b) = changed.inputs()
@@ -106,7 +106,7 @@ class CalculationsTest {
             val (a) = testee.inputs()
             assertThat(a.mapTo).hasSize(2)
 
-            val changed = testee.changeFormula(testee.tabular()[0].id, "b*2")
+            val changed = testee.changeFormula(testee.tabular()[0].id, Name("1"),"b*2")
 
             assertThat(changed.inputs()).hasSize(2)
             val (a2, b) = changed.inputs()
@@ -135,7 +135,7 @@ class CalculationsTest {
 
             assertThat(testee.tabular()).hasSize(1)
 
-            val changed = testee.changeFormula(testee.tabular()[0].id, "a*2")
+            val changed = testee.changeFormula(testee.tabular()[0].id, Name("1"),"a*2")
 
             assertThat(changed.inputs()).hasSize(1)
             val (a2) = changed.inputs()
