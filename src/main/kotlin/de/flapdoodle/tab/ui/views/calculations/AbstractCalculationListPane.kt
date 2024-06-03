@@ -20,9 +20,11 @@ import java.util.*
 class AbstractCalculationListPane<K: Comparable<K>, C: Calculation<K>>(
     node: de.flapdoodle.tab.model.Node.Calculated<K>,
     val label: String,
+    val context: Labels.WithContext = Labels.with(AbstractCalculationListPane::class),
     val modelChangeListener: ModelChangeListener,
     val calculationsModel: SimpleObjectProperty<List<C>>,
-    val onNewExpression: () -> Unit
+    val onNewExpression: () -> Unit,
+    val onChangeExpression: (C) -> Unit,
 ): VBox() {
     private val nodeId = node.id
 
@@ -41,6 +43,17 @@ class AbstractCalculationListPane<K: Comparable<K>, C: Calculation<K>>(
     )
 
     private val actionColumn = WeightGridTable.Column<C>(
+        weight = 1.0,
+        cellFactory = { calculation ->
+            TableCell(Button("-").apply {
+                onAction = EventHandler {
+                    modelChangeListener.change(ModelChange.RemoveFormula(nodeId, calculation.id))
+                }
+            })
+        }
+    )
+
+    private val changeColumn = WeightGridTable.Column<C>(
         weight = 1.0,
         cellFactory = { calculation ->
             TableCell(Button("-").apply {
@@ -80,7 +93,7 @@ class AbstractCalculationListPane<K: Comparable<K>, C: Calculation<K>>(
         indexOf = { it.id },
         columns = listOf(
             nameColumn,
-            WeightGridTable.Column(weight = 0.1, cellFactory = { TableCell( Labels.label("=")) }),
+            WeightGridTable.Column(weight = 0.0, cellFactory = { TableCell( Labels.label("=")) }),
             formulaColumn,
             actionColumn
         ),

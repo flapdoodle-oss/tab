@@ -19,14 +19,14 @@ class CalculatedUIAdapter<K: Comparable<K>>(
 ) : NodeUIAdapter() {
     val nodeId = node.id
 
-    private val context = Labels.with(TableUIAdapter::class)
+    private val context = Labels.with(CalculatedUIAdapter::class)
     private val description = DescriptionPane(node.name.description)
 
     private val wrapper = WeightGridPane().apply {
         rowWeights(0.0, 0.0, 1.0)
     }
 
-    val calculationsPane = CalculationsPane(node, modelChangeListener).apply {
+    val calculationsPane = CalculationsPane(node, modelChangeListener, context).apply {
         WeightGridPane.setPosition(this, 0, 0)
     }
     val valuesPane = ValuesPane(node).apply {
