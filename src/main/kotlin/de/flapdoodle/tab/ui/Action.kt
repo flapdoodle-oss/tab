@@ -2,6 +2,7 @@ package de.flapdoodle.tab.ui
 
 import de.flapdoodle.kfx.collections.Change
 import de.flapdoodle.kfx.collections.Diff
+import de.flapdoodle.kfx.collections.OrderedDiff
 import de.flapdoodle.kfx.types.Id
 import de.flapdoodle.reflection.TypeInfo
 import de.flapdoodle.tab.model.Name
@@ -125,6 +126,7 @@ sealed class Action {
         private fun outputs(node: de.flapdoodle.tab.model.Node): List<Data> {
             return when (node) {
                 is de.flapdoodle.tab.model.Node.Calculated<out Comparable<*>> -> {
+                    // TODO sort
                     outputsOfCalculatedNode(node)
                 }
 

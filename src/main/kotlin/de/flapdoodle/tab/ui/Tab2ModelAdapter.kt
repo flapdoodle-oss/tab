@@ -182,8 +182,6 @@ class Tab2ModelAdapter(
                 }
 
                 is Action.ChangeInput -> {
-                    // TODO schwer zu testen
-                    println("untested: $action")
                     vertexMapping.with(action.id) {
                         inputMapping.with(action.input) { slot ->
                             val newSlot = slot.copy(name = action.change.name, color = action.change.color)
