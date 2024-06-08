@@ -14,6 +14,7 @@ import de.flapdoodle.kfx.controls.grapheditor.types.VertexSlotId
 import de.flapdoodle.kfx.extensions.layoutPosition
 import de.flapdoodle.kfx.extensions.unsubscribeOnDetach
 import de.flapdoodle.kfx.extensions.withAnchors
+import de.flapdoodle.kfx.logging.Logging
 import de.flapdoodle.kfx.types.Id
 import de.flapdoodle.kfx.types.LayoutBounds
 import de.flapdoodle.tab.model.Size
@@ -42,7 +43,7 @@ class Tab2ModelAdapter(
     modelEventListener: ModelEventListener,
     val modelChangeListener: ModelChangeListener
 ) : AnchorPane() {
-    private val debug = false
+    private val logger = Logging.logger(Tab2ModelAdapter::class)
 
     private val graphEditor = GraphEditor(eventListener = Event2ModelEvent(
         delegate = modelEventListener,
@@ -106,7 +107,7 @@ class Tab2ModelAdapter(
 
     private fun apply(action: List<Action>) {
         action.forEach { action ->
-            if (debug) println("action: $action")
+            logger.error { "action: $action" }
 
             when (action) {
                 is Action.AddNode -> {

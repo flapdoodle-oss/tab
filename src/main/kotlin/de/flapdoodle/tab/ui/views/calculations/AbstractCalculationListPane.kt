@@ -2,6 +2,7 @@ package de.flapdoodle.tab.ui.views.calculations
 
 import de.flapdoodle.kfx.layout.grid.TableCell
 import de.flapdoodle.kfx.layout.grid.WeightGridTable
+import de.flapdoodle.kfx.logging.Logging
 import de.flapdoodle.tab.model.calculations.Calculation
 import de.flapdoodle.tab.model.change.ModelChange
 import de.flapdoodle.tab.ui.ModelChangeListener
@@ -24,6 +25,7 @@ class AbstractCalculationListPane<K: Comparable<K>, C: Calculation<K>>(
     val onNewExpression: () -> Unit,
     val onChangeExpression: (C) -> Unit,
 ): VBox() {
+    private val logger = Logging.logger(javaClass)
     private val nodeId = node.id
 
     private val nameColumn = WeightGridTable.Column<C>(
@@ -37,7 +39,7 @@ class AbstractCalculationListPane<K: Comparable<K>, C: Calculation<K>>(
         weight = 50.0,
         cellFactory = { calculation ->
             TableCell.with<C, TextField, C>(TextField(calculation.formula().expression()), { it }, { t, value ->
-                println("update: $value")
+                logger.info { "update: $value" }
                 t.onAction = EventHandler {
                     if (value!=null) {
                         modelChangeListener.change(
