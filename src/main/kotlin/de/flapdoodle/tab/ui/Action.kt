@@ -1,11 +1,8 @@
 package de.flapdoodle.tab.ui
 
-import de.flapdoodle.kfx.collections.Change
-import de.flapdoodle.kfx.collections.Diff
 import de.flapdoodle.kfx.collections.OrderedDiff
 import de.flapdoodle.kfx.types.Id
 import de.flapdoodle.reflection.TypeInfo
-import de.flapdoodle.tab.model.Name
 import de.flapdoodle.tab.model.Tab2Model
 import de.flapdoodle.tab.model.calculations.InputSlot
 import de.flapdoodle.tab.model.connections.Source
@@ -66,8 +63,8 @@ sealed class Action {
                 }
 
                 actions = actions + nodeChanges.modified.flatMap { (old, current) ->
-                    val inputChanges = orderedInputChanges(old, current)
-                    val outputChanges = orderedOutputChanges(old, current)
+                    val inputChanges = inputChanges(old, current)
+                    val outputChanges = outputChanges(old, current)
 
                     emptyList<Action>() +
                             inputChanges.removed.map { RemoveInput(old.id, it.id) } +
@@ -105,23 +102,12 @@ sealed class Action {
             return actions
         }
 
-        private fun orderedInputChanges(old: de.flapdoodle.tab.model.Node, current: de.flapdoodle.tab.model.Node): OrderedDiff.Change<InputSlot<*>> {
+        private fun inputChanges(old: de.flapdoodle.tab.model.Node, current: de.flapdoodle.tab.model.Node): OrderedDiff.Change<InputSlot<*>> {
             return OrderedDiff.between(inputsOf(old), inputsOf(current), InputSlot<out Comparable<*>>::id)
         }
 
-        private fun inputChanges(old: de.flapdoodle.tab.model.Node, current: de.flapdoodle.tab.model.Node): Change<InputSlot<*>> {
-//            if (true) return Diff.orderedBetween(inputsOf(old), inputsOf(current), InputSlot<out Comparable<*>>::id)
-            return Diff.between(inputsOf(old), inputsOf(current), InputSlot<out Comparable<*>>::id)
-        }
-
-        private fun orderedOutputChanges(old: de.flapdoodle.tab.model.Node, current: de.flapdoodle.tab.model.Node): OrderedDiff.Change<Data> {
-//            if (true) return Diff.orderedBetween(outputs(old), outputs(current), Data::id)
+        private fun outputChanges(old: de.flapdoodle.tab.model.Node, current: de.flapdoodle.tab.model.Node): OrderedDiff.Change<Data> {
             return OrderedDiff.between(outputs(old), outputs(current), Data::id)
-        }
-
-        private fun outputChanges(old: de.flapdoodle.tab.model.Node, current: de.flapdoodle.tab.model.Node): Change<Data> {
-//            if (true) return Diff.orderedBetween(outputs(old), outputs(current), Data::id)
-            return Diff.between(outputs(old), outputs(current), Data::id)
         }
 
         private fun inputsOf(node: de.flapdoodle.tab.model.Node): List<InputSlot<*>> {
