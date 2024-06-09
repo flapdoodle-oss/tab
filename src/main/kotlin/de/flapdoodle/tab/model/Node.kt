@@ -10,6 +10,7 @@ import de.flapdoodle.tab.model.change.ModelChange
 import de.flapdoodle.tab.model.connections.Source
 import de.flapdoodle.tab.model.data.*
 import de.flapdoodle.tab.types.one
+import de.flapdoodle.tab.types.oneOrNull
 
 sealed class Node {
     abstract fun removeConnectionsFrom(id: Id<out Node>): Node
@@ -44,6 +45,10 @@ sealed class Node {
         fun column(id: ColumnId): Column<K, out Any> {
             return columns.columns().one { it.id == id }
         }
+
+        fun findColumn(id: ColumnId): Column<K, out Any>? {
+            return columns.columns().oneOrNull { it.id == id }
+        }
     }
 
     interface HasValues {
@@ -51,6 +56,10 @@ sealed class Node {
 
         fun value(id: SingleValueId): SingleValue<out Any> {
             return values.values.one { it.id == id }
+        }
+
+        fun findValue(id: SingleValueId): SingleValue<out Any>? {
+            return values.values.oneOrNull { it.id == id }
         }
     }
 

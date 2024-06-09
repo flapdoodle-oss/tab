@@ -40,6 +40,9 @@ class CalculationsPane<K: Comparable<K>>(
             if (changedExpression != null) {
                 modelChangeListener.change(ModelChange.ChangeFormula(nodeId, calculation.id, changedExpression.name, changedExpression.expression))
             }
+        },
+        outputColor = {
+            node.findValue(it.destination())?.color
         }
     )
     private val tabularPane = AbstractCalculationListPane(
@@ -65,6 +68,9 @@ class CalculationsPane<K: Comparable<K>>(
             if (changedExpression != null) {
                 modelChangeListener.change(ModelChange.ChangeFormula(nodeId, calculation.id, changedExpression.name, changedExpression.expression))
             }
+        },
+        outputColor = {
+            node.findColumn(it.destination())?.color
         }
     )
 

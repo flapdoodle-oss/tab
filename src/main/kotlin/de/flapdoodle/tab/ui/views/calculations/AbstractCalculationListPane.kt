@@ -5,18 +5,22 @@ import de.flapdoodle.kfx.layout.grid.WeightGridTable
 import de.flapdoodle.kfx.logging.Logging
 import de.flapdoodle.tab.model.calculations.Calculation
 import de.flapdoodle.tab.model.change.ModelChange
+import de.flapdoodle.tab.model.data.SingleValue
 import de.flapdoodle.tab.ui.ModelChangeListener
 import de.flapdoodle.tab.ui.resources.Buttons
 import de.flapdoodle.tab.ui.resources.Labels
+import de.flapdoodle.tab.ui.views.colors.ColorDot
 import javafx.beans.property.SimpleObjectProperty
 import javafx.event.ActionEvent
 import javafx.event.EventHandler
 import javafx.scene.control.Button
 import javafx.scene.control.Label
 import javafx.scene.control.TextField
+import javafx.scene.layout.Background
 import javafx.scene.layout.VBox
+import javafx.scene.paint.Color
 
-class AbstractCalculationListPane<K: Comparable<K>, C: Calculation<K>>(
+class AbstractCalculationListPane<K : Comparable<K>, C : Calculation<K>>(
     node: de.flapdoodle.tab.model.Node.Calculated<K>,
     val label: String,
     val context: Labels.WithContext = Labels.with(AbstractCalculationListPane::class),
@@ -24,7 +28,8 @@ class AbstractCalculationListPane<K: Comparable<K>, C: Calculation<K>>(
     val calculationsModel: SimpleObjectProperty<List<C>>,
     val onNewExpression: () -> Unit,
     val onChangeExpression: (C) -> Unit,
-): VBox() {
+    val outputColor: (C) -> Color?
+) : VBox() {
     private val logger = Logging.logger(javaClass)
     private val nodeId = node.id
 
@@ -35,13 +40,20 @@ class AbstractCalculationListPane<K: Comparable<K>, C: Calculation<K>>(
         }
     )
 
+    private val colorColumn = WeightGridTable.Column<C>(
+        weight = 0.0,
+        cellFactory = {
+            TableCell(ColorDot(outputColor(it) ?: Color.BLACK)) { c, v -> c.set(outputColor(v) ?: Color.BLACK) }
+        })
+
+
     private val formulaColumn = WeightGridTable.Column<C>(
         weight = 50.0,
         cellFactory = { calculation ->
             TableCell.with<C, TextField, C>(TextField(calculation.formula().expression()), { it }, { t, value ->
                 logger.info { "update: $value" }
                 t.onAction = EventHandler {
-                    if (value!=null) {
+                    if (value != null) {
                         modelChangeListener.change(
                             ModelChange.ChangeFormula(
                                 nodeId,
@@ -54,7 +66,7 @@ class AbstractCalculationListPane<K: Comparable<K>, C: Calculation<K>>(
                 }
 
                 t.text = value?.formula()?.expression()
-            }).apply { 
+            }).apply {
                 updateCell(calculation)
             }
         }
@@ -74,9 +86,11 @@ class AbstractCalculationListPane<K: Comparable<K>, C: Calculation<K>>(
         cellFactory = { calculation ->
             TableCell.with<C, Button, EventHandler<ActionEvent>>(
                 node = Buttons.change(context),
-                mapper = { v -> EventHandler { ev: ActionEvent ->
-                    onChangeExpression(v)
-                }},
+                mapper = { v ->
+                    EventHandler { ev: ActionEvent ->
+                        onChangeExpression(v)
+                    }
+                },
                 update = Button::setOnAction
             ).apply {
                 updateCell(calculation)
@@ -88,28 +102,16 @@ class AbstractCalculationListPane<K: Comparable<K>, C: Calculation<K>>(
         model = calculationsModel,
         indexOf = { it.id },
         columns = listOf(
+            colorColumn,
             nameColumn,
-            WeightGridTable.Column(weight = 0.0, cellFactory = { TableCell( Labels.label("=")) }),
+            WeightGridTable.Column(weight = 0.0, cellFactory = { TableCell(Labels.label("=")) }),
             formulaColumn,
             changeColumn,
             deleteColumn
         ),
         footerFactory = { values, columns ->
-            val addButton = Button("+").apply {
-                onAction = EventHandler {
+            val addButton = Buttons.add(context) {
                     onNewExpression()
-//                    val newExpression = NewExpressionDialog.open()
-//                    if (newExpression!=null) {
-//
-//                        modelChangeListener.change(
-//                            ModelChange.AddAggregation(
-//                                nodeId,
-//                                newExpression.name,
-//                                newExpression.expression
-//                            )
-//                        )
-//                    }
-                }
             }
             mapOf(deleteColumn to addButton)
         }
