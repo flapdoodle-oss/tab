@@ -17,7 +17,7 @@ data class EvalFormulaAdapter(
 
     private val variables = variablesWithHash.map { it.first }.toCollection(linkedSetOf())
 
-    override fun expression() = formula
+    override fun expression() = expression
     override fun variables(): Set<Variable> = variables
     override fun toString(): String {
         return "EvalFormulaAdapter(formula=$formula, variablesWithHash=$variablesWithHash)"
@@ -73,6 +73,38 @@ data class EvalFormulaAdapter(
         }
     }
 
+    override fun change(newExpression: Expression): EvalFormulaAdapter {
+        return if (newExpression.source() != formula) {
+            val changedExpression = newExpression
+            val byId = variablesWithHash.associateBy { it.second }
+            val byName = variablesWithHash.associateBy { it.first.name }
+            val changedVariables = changedExpression.usedVariablesWithHash().map {
+                val old = byId[it.value]?.first
+                if (old != null) {
+                    if (it.key != old.name) {
+                        old.copy(name = it.key) to it.value
+                    } else {
+                        old to it.value
+                    }
+                } else {
+                    // different hash
+                    val sameName = byName[it.key]
+                    if (sameName != null) {
+                        sameName.first to it.value
+                    } else {
+                        Variable(it.key) to it.value
+                    }
+                }
+            }
+            copy(
+                formula = newExpression.source(),
+                expression = changedExpression,
+                variablesWithHash = changedVariables
+            )
+        } else {
+            this
+        }
+    }
     // exclude expression from hash/equals
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

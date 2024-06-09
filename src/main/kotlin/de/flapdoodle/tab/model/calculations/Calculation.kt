@@ -1,5 +1,6 @@
 package de.flapdoodle.tab.model.calculations
 
+import de.flapdoodle.eval.core.Expression
 import de.flapdoodle.eval.core.evaluables.Evaluated
 import de.flapdoodle.kfx.types.Id
 import de.flapdoodle.reflection.TypeInfo
@@ -27,6 +28,7 @@ sealed class Calculation<K: Comparable<K>>(
     fun variables() = formula.variables()
 
     abstract fun changeFormula(name: Name, newFormula: String): Calculation<K>
+    abstract fun changeFormula(name: Name, newExpression: Expression): Calculation<K>
 
     data class Aggregation<K: Comparable<K>>(
         private val indexType: TypeInfo<K>,
@@ -40,6 +42,10 @@ sealed class Calculation<K: Comparable<K>>(
 
         override fun changeFormula(name: Name, newFormula: String): Aggregation<K> {
             return copy(name = name, formula = formula.change(newFormula))
+        }
+
+        override fun changeFormula(name: Name, newExpression: Expression): Aggregation<K> {
+            return copy(name = name, formula = formula.change(newExpression))
         }
     }
 
@@ -58,6 +64,10 @@ sealed class Calculation<K: Comparable<K>>(
 
         override fun changeFormula(name: Name, newFormula: String): Tabular<K> {
             return copy(name = name, formula = formula.change(newFormula))
+        }
+
+        override fun changeFormula(name: Name, newExpression: Expression): Tabular<K> {
+            return copy(name = name, formula = formula.change(newExpression))
         }
     }
 }

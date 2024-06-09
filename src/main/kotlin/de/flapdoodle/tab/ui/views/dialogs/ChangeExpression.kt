@@ -1,17 +1,19 @@
 package de.flapdoodle.tab.ui.views.dialogs
 
+import de.flapdoodle.eval.core.Expression
 import de.flapdoodle.kfx.controls.fields.ValidatingField
 import de.flapdoodle.kfx.controls.fields.ValidatingTextField
 import de.flapdoodle.kfx.extensions.bindCss
 import de.flapdoodle.tab.model.Name
 import de.flapdoodle.tab.ui.Converters
+import de.flapdoodle.tab.ui.converter.ValidatingExpressionConverter
 import de.flapdoodle.tab.ui.resources.Labels
 import de.flapdoodle.tab.ui.resources.RequiredFieldNotSet
 import javafx.beans.value.ObservableValue
 
 class ChangeExpression(
     oldName: Name,
-    oldExpression: String,
+    oldExpression: Expression?,
 ) : DialogContent<ChangeExpression.NamedExpression>() {
 
     private val name = Labels.label(ChangeExpression::class,"name","Name")
@@ -21,9 +23,7 @@ class ChangeExpression(
     private val short = Labels.label(ChangeExpression::class,"shortName","Short")
     private val shortField = ValidatingTextField(converter = Converters.validatingConverter(String::class))
     private val expression = Labels.label(ChangeExpression::class,"expression","Expression")
-    private val expressionField = ValidatingTextField(
-        Converters.validatingConverter(String::class)
-            .and { v -> v.mapNullable { if (it.isNullOrBlank()) throw RequiredFieldNotSet("not set") else it } })
+    private val expressionField = ValidatingTextField(ValidatingExpressionConverter())
 
     init {
         bindCss("change-expression")
@@ -47,17 +47,17 @@ class ChangeExpression(
     }
 
     override fun result(): NamedExpression {
-        return NamedExpression(Name(nameField.text, shortField.text), expressionField.text)
+        return NamedExpression(Name(nameField.text, shortField.text), requireNotNull(expressionField.get()) { "expression not set" })
     }
 
 
     data class NamedExpression(
         val name: Name,
-        val expression: String
+        val expression: Expression
     )
 
     companion object {
-        fun open(name: Name, expression: String): NamedExpression? {
+        fun open(name: Name, expression: Expression?): NamedExpression? {
             return DialogWrapper.open { ChangeExpression(name, expression) }
         }
     }

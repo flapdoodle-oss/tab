@@ -1,5 +1,6 @@
 package de.flapdoodle.tab.model.change
 
+import de.flapdoodle.eval.core.Expression
 import de.flapdoodle.kfx.types.Id
 import de.flapdoodle.tab.model.Name
 import de.flapdoodle.tab.model.Node.*
@@ -56,7 +57,7 @@ sealed class ModelChange {
         override val id: Id<out Calculated<out Comparable<*>>>,
         val calculationId: Id<Calculation<*>>,
         val name: Name,
-        val formula: String
+        val formula: Expression
     ): CalculationChange(id)
     data class RemoveFormula(override val id: Id<Calculated<*>>, val calculationId: Id<Calculation<*>>) : CalculationChange(id)
 }

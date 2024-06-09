@@ -11,7 +11,7 @@ import de.flapdoodle.tab.model.calculations.adapter.EvalFormulaAdapter
 class EvalFormulaAdapterMapper(): Mapper<EvalFormulaAdapter, FileFormula> {
     override fun toFile(toFileMapping: ToFileMapping, src: EvalFormulaAdapter): FileFormula {
         return FileFormula(
-            expression = src.expression(),
+            expression = src.expression().source(),
             variables = src.variables().map {
                 FileVariable(it.name, toFileMapping.idFor(it.id))
             }.toSet()

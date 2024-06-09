@@ -1,14 +1,19 @@
 package de.flapdoodle.tab.ui.views.calculations
 
+import de.flapdoodle.eval.core.Expression
 import de.flapdoodle.kfx.controls.fields.ValidatingColoredTextField
 import de.flapdoodle.kfx.converters.Converters
+import de.flapdoodle.kfx.converters.ValidatingConverter
+import de.flapdoodle.kfx.converters.ValueOrError
 import de.flapdoodle.kfx.layout.grid.TableCell
 import de.flapdoodle.kfx.layout.grid.WeightGridTable
 import de.flapdoodle.kfx.logging.Logging
 import de.flapdoodle.tab.model.calculations.Calculation
+import de.flapdoodle.tab.model.calculations.adapter.Eval
 import de.flapdoodle.tab.model.change.ModelChange
 import de.flapdoodle.tab.model.data.SingleValue
 import de.flapdoodle.tab.ui.ModelChangeListener
+import de.flapdoodle.tab.ui.converter.ValidatingExpressionConverter
 import de.flapdoodle.tab.ui.resources.Buttons
 import de.flapdoodle.tab.ui.resources.Labels
 import de.flapdoodle.tab.ui.views.colors.ColorDot
@@ -53,15 +58,15 @@ class AbstractCalculationListPane<K : Comparable<K>, C : Calculation<K>>(
     private val formulaColumn = WeightGridTable.Column<C>(
         weight = 50.0,
         cellFactory = { calculation ->
-            val textField = ValidatingColoredTextField<String>(
-                converter = Converters.validatingFor(String::class, Locale.getDefault()),
+            val textField = ValidatingColoredTextField(
+                converter = ValidatingExpressionConverter(),
                 default = calculation.formula().expression(),
                 mapColors = { v,t ->
                     emptyList()
                 }
             )
 
-            TableCell.with<C, ValidatingColoredTextField<String>, C>(textField, { it }, { t, value ->
+            TableCell.with<C, ValidatingColoredTextField<Expression>, C>(textField, { it }, { t, value ->
                 logger.info { "update: $value" }
                 t.onAction = EventHandler {
                     if (value != null) {
@@ -70,7 +75,7 @@ class AbstractCalculationListPane<K : Comparable<K>, C : Calculation<K>>(
                                 nodeId,
                                 value.id,
                                 value.name(),
-                                t.get() ?: ""
+                                requireNotNull(t.get()) {"expression not set"}
                             )
                         )
                     }

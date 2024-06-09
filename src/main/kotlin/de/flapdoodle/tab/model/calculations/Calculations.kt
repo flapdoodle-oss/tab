@@ -1,5 +1,6 @@
 package de.flapdoodle.tab.model.calculations
 
+import de.flapdoodle.eval.core.Expression
 import de.flapdoodle.kfx.types.Id
 import de.flapdoodle.reflection.TypeInfo
 import de.flapdoodle.tab.model.Name
@@ -9,6 +10,7 @@ import de.flapdoodle.tab.model.data.ColumnId
 import de.flapdoodle.tab.model.data.SingleValueId
 import de.flapdoodle.tab.types.change
 import de.flapdoodle.tab.types.one
+import de.flapdoodle.tab.ui.views.dialogs.NewExpression
 import kotlin.reflect.KClass
 
 data class Calculations<K: Comparable<K>>(
@@ -57,6 +59,12 @@ data class Calculations<K: Comparable<K>>(
     fun changeFormula(id: Id<Calculation<*>>, name: Name, newFormula: String): Calculations<K> {
         val changedAggregations = aggregations.change(Calculation.Aggregation<K>::id, id) { it.changeFormula(name, newFormula) }
         val changedTabular = tabular.change(Calculation.Tabular<K>::id, id) { it.changeFormula(name, newFormula) }
+        return copy(aggregations = changedAggregations, tabular = changedTabular, inputs = merge(inputs, inputSlots(changedAggregations + changedTabular)))
+    }
+
+    fun changeFormula(id: Id<Calculation<*>>, name: Name, newExpression: Expression): Calculations<K> {
+        val changedAggregations = aggregations.change(Calculation.Aggregation<K>::id, id) { it.changeFormula(name, newExpression) }
+        val changedTabular = tabular.change(Calculation.Tabular<K>::id, id) { it.changeFormula(name, newExpression) }
         return copy(aggregations = changedAggregations, tabular = changedTabular, inputs = merge(inputs, inputSlots(changedAggregations + changedTabular)))
     }
 
