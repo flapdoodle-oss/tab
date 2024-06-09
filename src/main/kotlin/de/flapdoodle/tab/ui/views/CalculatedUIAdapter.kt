@@ -11,6 +11,7 @@ import de.flapdoodle.tab.ui.views.common.DescriptionPane
 import de.flapdoodle.tab.ui.views.table.TableViewPane
 import javafx.scene.control.Tab
 import javafx.scene.control.TabPane
+import javafx.scene.layout.Priority
 import javafx.scene.layout.VBox
 
 class CalculatedUIAdapter<K: Comparable<K>>(
@@ -44,6 +45,7 @@ class CalculatedUIAdapter<K: Comparable<K>>(
 
     init {
         bindCss("calculated-ui")
+        VBox.setVgrow(wrapper, Priority.ALWAYS)
         wrapper.children.add(calculationsPane)
         wrapper.children.add(valuesPane)
         wrapper.children.add(tabPane)

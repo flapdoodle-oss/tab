@@ -11,6 +11,7 @@ import de.flapdoodle.tab.ui.views.table.ColumnsPane
 import de.flapdoodle.tab.ui.views.table.TablePane
 import javafx.scene.control.Tab
 import javafx.scene.control.TabPane
+import javafx.scene.layout.Priority
 import javafx.scene.layout.VBox
 
 class TableUIAdapter<K: Comparable<K>>(
@@ -23,22 +24,24 @@ class TableUIAdapter<K: Comparable<K>>(
     private val description = DescriptionPane(node.name.description)
 
     private val wrapper = WeightGridPane().apply {
-        rowWeights(1.0, 0.0, 1.0)
+        rowWeights(0.0, 1.0)
     }
 
     private val columnsPane = ColumnsPane(node, modelChangeListener).apply {
-        WeightGridPane.setPosition(this, 0, 1)
+        WeightGridPane.setPosition(this, 0, 0)
     }
     private val tabPane = TabPane().apply {
-        WeightGridPane.setPosition(this, 0, 2)
+        WeightGridPane.setPosition(this, 0, 1)
     }
+
     private val tablePane = TablePane(node, modelChangeListener, context)
     private val chartPane = SmallChartPane(node)
 
     init {
         bindCss("table-ui")
 
-        wrapper.children.add(description)
+        VBox.setVgrow(wrapper, Priority.ALWAYS)
+        
         wrapper.children.add(columnsPane)
         wrapper.children.add(tabPane)
         tabPane.tabs.add(Tab(context.text("tab.table","Table"), tablePane).apply {
