@@ -1,5 +1,7 @@
 package de.flapdoodle.tab.ui.views.calculations
 
+import de.flapdoodle.kfx.controls.fields.ValidatingColoredTextField
+import de.flapdoodle.kfx.converters.Converters
 import de.flapdoodle.kfx.layout.grid.TableCell
 import de.flapdoodle.kfx.layout.grid.WeightGridTable
 import de.flapdoodle.kfx.logging.Logging
@@ -19,6 +21,7 @@ import javafx.scene.control.TextField
 import javafx.scene.layout.Background
 import javafx.scene.layout.VBox
 import javafx.scene.paint.Color
+import java.util.*
 
 class AbstractCalculationListPane<K : Comparable<K>, C : Calculation<K>>(
     node: de.flapdoodle.tab.model.Node.Calculated<K>,
@@ -50,7 +53,15 @@ class AbstractCalculationListPane<K : Comparable<K>, C : Calculation<K>>(
     private val formulaColumn = WeightGridTable.Column<C>(
         weight = 50.0,
         cellFactory = { calculation ->
-            TableCell.with<C, TextField, C>(TextField(calculation.formula().expression()), { it }, { t, value ->
+            val textField = ValidatingColoredTextField<String>(
+                converter = Converters.validatingFor(String::class, Locale.getDefault()),
+                default = calculation.formula().expression(),
+                mapColors = { v,t ->
+                    emptyList()
+                }
+            )
+
+            TableCell.with<C, ValidatingColoredTextField<String>, C>(textField, { it }, { t, value ->
                 logger.info { "update: $value" }
                 t.onAction = EventHandler {
                     if (value != null) {
@@ -59,13 +70,13 @@ class AbstractCalculationListPane<K : Comparable<K>, C : Calculation<K>>(
                                 nodeId,
                                 value.id,
                                 value.name(),
-                                t.text
+                                t.get() ?: ""
                             )
                         )
                     }
                 }
 
-                t.text = value?.formula()?.expression()
+                t.set(value?.formula()?.expression())
             }).apply {
                 updateCell(calculation)
             }
