@@ -145,9 +145,18 @@ class Tab2ModelAdapter(
                 }
 
                 is Action.AddOutput -> {
-                    val slot = when (action.output) {
+                    var slot = when (action.output) {
                         is Column<*,*> -> Slot(action.output.name.shortest(), Slot.Mode.OUT, Position.RIGHT, action.output.color)
                         is SingleValue<*> -> Slot(action.output.name.shortest(), Slot.Mode.OUT, Position.RIGHT, action.output.color)
+                    }
+
+                    if (action.movedFrom!=null) {
+                        outputMapping.remove(action.movedFrom.id) { s ->
+                            vertexMapping.with(action.id) {
+                                it.vertex.removeConnector(s.id)
+                            }
+                            slot = slot.copy(id = s.id)
+                        }
                     }
                     outputMapping.add(action.output.id, slot.id, slot)
                     vertexMapping.with(action.id) {
@@ -175,7 +184,15 @@ class Tab2ModelAdapter(
                 }
 
                 is Action.AddInput -> {
-                    val slot = Slot(action.input.name, Slot.Mode.IN, Position.LEFT, action.input.color)
+                    var slot = Slot(action.input.name, Slot.Mode.IN, Position.LEFT, action.input.color)
+                    if (action.movedFrom!=null) {
+                        inputMapping.remove(action.movedFrom.id) { s ->
+                            vertexMapping.with(action.id) {
+                                it.vertex.removeConnector(s.id)
+                            }
+                            slot = slot.copy(id=s.id)
+                        }
+                    }
                     inputMapping.add(action.input.id, slot.id, slot)
                     vertexMapping.with(action.id) {
                         it.vertex.addConnector(slot)

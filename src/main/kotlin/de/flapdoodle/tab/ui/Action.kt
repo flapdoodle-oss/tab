@@ -16,8 +16,8 @@ import de.flapdoodle.tab.model.data.SingleValue
 
 sealed class Action {
     data class AddNode(val node: de.flapdoodle.tab.model.Node) : Action()
-    data class AddInput(val id: Id<out de.flapdoodle.tab.model.Node>, val input: InputSlot<out Comparable<*>>) : Action()
-    data class AddOutput(val id: Id<out de.flapdoodle.tab.model.Node>, val output: Data) : Action()
+    data class AddInput(val id: Id<out de.flapdoodle.tab.model.Node>, val input: InputSlot<out Comparable<*>>, val movedFrom: InputSlot<out Comparable<*>>?) : Action()
+    data class AddOutput(val id: Id<out de.flapdoodle.tab.model.Node>, val output: Data, val movedFrom: Data?) : Action()
     data class AddConnection(val source: Source, val id: Id<out de.flapdoodle.tab.model.Node>, val input: Id<InputSlot<*>>) : Action()
 
     data class ChangeNode(val id: Id<out de.flapdoodle.tab.model.Node>, val node: de.flapdoodle.tab.model.Node) : Action()
@@ -66,8 +66,8 @@ sealed class Action {
                 }
 
                 actions = actions + nodeChanges.modified.flatMap { (old, current) ->
-                    val inputChanges = inputChanges(old, current)
-                    val outputChanges = outputChanges(old, current)
+                    val inputChanges = orderedInputChanges(old, current)
+                    val outputChanges = orderedOutputChanges(old, current)
 
                     emptyList<Action>() +
                             inputChanges.removed.map { RemoveInput(old.id, it.id) } +
@@ -75,8 +75,8 @@ sealed class Action {
                             ChangeNode(current.id, current) +
                             inputChanges.modified.map { ChangeInput(current.id, it.second.id, it.second) } +
                             outputChanges.modified.map { ChangeOutput(current.id, it.second.id, it.second) } +
-                            inputChanges.added.map { AddInput(current.id, it) } +
-                            outputChanges.added.map { AddOutput(old.id, it) }
+                            inputChanges.added.map { AddInput(current.id, it.first, it.second) } +
+                            outputChanges.added.map { AddOutput(old.id, it.first, it.second) }
                 }
 
 //                if (connectionChanges.modified.isNotEmpty()) {
@@ -88,9 +88,9 @@ sealed class Action {
 
                 actions = actions + nodeChanges.added.flatMap { n ->
                     listOf(AddNode(n)) + inputsOf(n).map { inputSlot ->
-                        AddInput(n.id, inputSlot)
+                        AddInput(n.id, inputSlot, null)
                     } + outputs(n).map { out ->
-                        AddOutput(n.id, out)
+                        AddOutput(n.id, out, null)
                     }
                 }
 
@@ -105,13 +105,22 @@ sealed class Action {
             return actions
         }
 
+        private fun orderedInputChanges(old: de.flapdoodle.tab.model.Node, current: de.flapdoodle.tab.model.Node): OrderedDiff.Change<InputSlot<*>> {
+            return OrderedDiff.between(inputsOf(old), inputsOf(current), InputSlot<out Comparable<*>>::id)
+        }
+
         private fun inputChanges(old: de.flapdoodle.tab.model.Node, current: de.flapdoodle.tab.model.Node): Change<InputSlot<*>> {
-            if (false) return Diff.orderedBetween(inputsOf(old), inputsOf(current), InputSlot<out Comparable<*>>::id)
+//            if (true) return Diff.orderedBetween(inputsOf(old), inputsOf(current), InputSlot<out Comparable<*>>::id)
             return Diff.between(inputsOf(old), inputsOf(current), InputSlot<out Comparable<*>>::id)
         }
 
+        private fun orderedOutputChanges(old: de.flapdoodle.tab.model.Node, current: de.flapdoodle.tab.model.Node): OrderedDiff.Change<Data> {
+//            if (true) return Diff.orderedBetween(outputs(old), outputs(current), Data::id)
+            return OrderedDiff.between(outputs(old), outputs(current), Data::id)
+        }
+
         private fun outputChanges(old: de.flapdoodle.tab.model.Node, current: de.flapdoodle.tab.model.Node): Change<Data> {
-            if (false) return Diff.orderedBetween(outputs(old), outputs(current), Data::id)
+//            if (true) return Diff.orderedBetween(outputs(old), outputs(current), Data::id)
             return Diff.between(outputs(old), outputs(current), Data::id)
         }
 

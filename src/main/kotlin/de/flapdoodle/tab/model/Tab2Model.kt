@@ -121,7 +121,6 @@ data class Tab2Model(
     }
 
     fun apply(change: ModelChange): Tab2Model {
-        println("change: $change")
         return copy(nodes = nodes.map { it.apply(change) })
     }
 

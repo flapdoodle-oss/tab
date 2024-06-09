@@ -78,7 +78,8 @@ class ActionTest {
                 ),
                 Action.AddOutput(
                     id = tableId,
-                    output = tableWithColumn.column(columnId)
+                    output = tableWithColumn.column(columnId),
+                    null
                 )
             )
 
