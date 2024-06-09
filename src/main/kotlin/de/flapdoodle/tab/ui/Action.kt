@@ -106,12 +106,12 @@ sealed class Action {
         }
 
         private fun inputChanges(old: de.flapdoodle.tab.model.Node, current: de.flapdoodle.tab.model.Node): Change<InputSlot<*>> {
-//            return Diff.orderedBetween(inputsOf(old), inputsOf(current), InputSlot<out Comparable<*>>::id)
+            if (false) return Diff.orderedBetween(inputsOf(old), inputsOf(current), InputSlot<out Comparable<*>>::id)
             return Diff.between(inputsOf(old), inputsOf(current), InputSlot<out Comparable<*>>::id)
         }
 
         private fun outputChanges(old: de.flapdoodle.tab.model.Node, current: de.flapdoodle.tab.model.Node): Change<Data> {
-//            return Diff.orderedBetween(outputs(old), outputs(current), Data::id)
+            if (false) return Diff.orderedBetween(outputs(old), outputs(current), Data::id)
             return Diff.between(outputs(old), outputs(current), Data::id)
         }
 
