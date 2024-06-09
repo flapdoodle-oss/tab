@@ -6,6 +6,7 @@ import de.flapdoodle.tab.model.Name
 import de.flapdoodle.tab.model.Node
 import de.flapdoodle.tab.model.calculations.Calculation
 import de.flapdoodle.tab.model.calculations.Calculations
+import de.flapdoodle.tab.model.calculations.adapter.Eval
 import de.flapdoodle.tab.model.calculations.adapter.EvalFormulaAdapter
 import de.flapdoodle.tab.model.calculations.interpolation.InterpolationType
 import de.flapdoodle.tab.model.connections.Source
@@ -55,7 +56,7 @@ class CalculationsTest {
         assertThat(b.name).isEqualTo("b")
         assertThat(c.name).isEqualTo("c")
 
-        val changed = testee.changeFormula(testee.aggregations()[0].id, Name("x"),"a*2-x")
+        val changed = testee.changeFormula(testee.aggregations()[0].id, Name("x"), Eval.parse("a*2-x"))
 
         assertThat(changed.inputs())
             .hasSize(3)
@@ -71,7 +72,7 @@ class CalculationsTest {
 
         @Test
         fun addNewVar() {
-            val sourceA = Source.ValueSource(Id.Companion.nextId(de.flapdoodle.tab.model.Node::class), SingleValueId())
+            val sourceA = Source.ValueSource(Id.Companion.nextId(Node::class), SingleValueId())
 
             val testee = calculations(Int::class,
                 aggregate(Int::class,"1", "a+1"),
@@ -82,7 +83,7 @@ class CalculationsTest {
             val (a) = testee.inputs()
             assertThat(a.mapTo).hasSize(2)
 
-            val changed = testee.changeFormula(testee.aggregations()[0].id, Name("1"),"a+b")
+            val changed = testee.changeFormula(testee.aggregations()[0].id, Name("1"),Eval.parse("a+b"))
 
             assertThat(changed.inputs()).hasSize(2)
             val (a2, b) = changed.inputs()
@@ -95,7 +96,7 @@ class CalculationsTest {
 
         @Test
         fun renameOneVariable() {
-            val sourceA = Source.ValueSource(Id.Companion.nextId(de.flapdoodle.tab.model.Node::class), SingleValueId())
+            val sourceA = Source.ValueSource(Id.Companion.nextId(Node::class), SingleValueId())
 
             val testee = calculations(Int::class,
                 aggregate(Int::class,"1", "a+1"),
@@ -106,7 +107,7 @@ class CalculationsTest {
             val (a) = testee.inputs()
             assertThat(a.mapTo).hasSize(2)
 
-            val changed = testee.changeFormula(testee.tabular()[0].id, Name("1"),"b*2")
+            val changed = testee.changeFormula(testee.tabular()[0].id, Name("1"),Eval.parse("b*2"))
 
             assertThat(changed.inputs()).hasSize(2)
             val (a2, b) = changed.inputs()
@@ -120,7 +121,7 @@ class CalculationsTest {
 
         @Test
         fun removeVar() {
-            val sourceA = Source.ValueSource(Id.Companion.nextId(de.flapdoodle.tab.model.Node::class), SingleValueId())
+            val sourceA = Source.ValueSource(Id.Companion.nextId(Node::class), SingleValueId())
 
             val testee = calculations(Int::class,
                 aggregate(Int::class,"1", "a+1"),
@@ -135,7 +136,7 @@ class CalculationsTest {
 
             assertThat(testee.tabular()).hasSize(1)
 
-            val changed = testee.changeFormula(testee.tabular()[0].id, Name("1"),"a*2")
+            val changed = testee.changeFormula(testee.tabular()[0].id, Name("1"),Eval.parse("a*2"))
 
             assertThat(changed.inputs()).hasSize(1)
             val (a2) = changed.inputs()

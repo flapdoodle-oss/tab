@@ -1,5 +1,6 @@
 package de.flapdoodle.tab.model.calculations
 
+import de.flapdoodle.tab.model.calculations.adapter.Eval
 import de.flapdoodle.tab.model.calculations.adapter.EvalFormulaAdapter
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -17,12 +18,12 @@ class EvalAdapterTest {
         assertThat(X.name).isEqualTo("X")
         assertThat(c.name).isEqualTo("c")
 
-        val changeName = testee.change("b*2+X-c")
+        val changeName = testee.change(Eval.parse("b*2+X-c"))
 
         assertThat(changeName.variables())
             .containsExactly(a.copy(name = "b"), X, c)
 
-        val changePositionAndFormula = changeName.change("2*b+X*d")
+        val changePositionAndFormula = changeName.change(Eval.parse("2*b+X*d"))
 
         assertThat(changePositionAndFormula.variables())
             .hasSize(3)

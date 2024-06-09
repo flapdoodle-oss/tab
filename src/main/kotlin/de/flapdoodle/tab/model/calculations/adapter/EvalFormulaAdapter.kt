@@ -39,40 +39,6 @@ data class EvalFormulaAdapter(
         return expression.evaluateType(resolver)
     }
 
-
-    override fun change(newFormula: String): EvalFormulaAdapter {
-        return if (newFormula != formula) {
-            val changedExpression = Eval.parse(newFormula)
-            val byId = variablesWithHash.associateBy { it.second }
-            val byName = variablesWithHash.associateBy { it.first.name }
-            val changedVariables = changedExpression.usedVariablesWithHash().map {
-                val old = byId[it.value]?.first
-                if (old!=null) {
-                    if (it.key != old.name) {
-                        old.copy(name = it.key) to it.value
-                    } else {
-                        old to it.value
-                    }
-                } else {
-                    // different hash
-                    val sameName = byName[it.key]
-                    if (sameName!=null) {
-                        sameName.first to it.value
-                    } else {
-                        Variable(it.key) to it.value
-                    }
-                }
-            }
-            copy(
-                formula = newFormula,
-                expression = changedExpression,
-                variablesWithHash = changedVariables
-            )
-        } else {
-            this
-        }
-    }
-
     override fun change(newExpression: Expression): EvalFormulaAdapter {
         return if (newExpression.source() != formula) {
             val changedExpression = newExpression

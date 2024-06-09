@@ -61,7 +61,7 @@ class AbstractCalculationListPane<K : Comparable<K>, C : Calculation<K>>(
             val textField = ValidatingColoredTextField(
                 converter = ValidatingExpressionConverter(),
                 default = calculation.formula().expression(),
-                mapColors = { v,t ->
+                mapColors = { v: Expression?, t ->
                     emptyList()
                 }
             )
