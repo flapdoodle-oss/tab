@@ -11,8 +11,7 @@ import de.flapdoodle.tab.model.calculations.Variable
 data class EvalFormulaAdapter(
     private val formula: String,
     private val expression: Expression = Eval.parse(formula),
-    private val variablesWithHash: List<Pair<Variable, Int>> = expression.usedVariablesWithHash()
-        .map { Variable(it.key) to it.value }
+    private val variablesWithHash: List<Pair<Variable, Int>> = Eval.variablesWithHash(expression)
 ): Formula {
 
     private val variables = variablesWithHash.map { it.first }.toCollection(linkedSetOf())

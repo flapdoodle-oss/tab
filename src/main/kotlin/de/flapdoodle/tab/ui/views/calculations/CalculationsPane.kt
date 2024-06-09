@@ -15,14 +15,15 @@ class CalculationsPane<K: Comparable<K>>(
     val modelChangeListener: ModelChangeListener,
     val context: Labels.WithContext = Labels.with(CalculationsPane::class)
 ) : VBox() {
-    private val nodeId = node.id
+    private var currentNode = node
+    private val nodeId = currentNode.id
 
     private val aggregationsPane = AbstractCalculationListPane(
-        node = node,
+        nodeId = currentNode.id,
         label = context.text("title.aggregations","Aggregations"),
         context = context,
         modelChangeListener = modelChangeListener,
-        calculationsModel = SimpleObjectProperty(node.calculations.aggregations()),
+        calculationsModel = SimpleObjectProperty(currentNode.calculations.aggregations()),
         onNewExpression = {
             val newExpression = NewExpression.open()
             if (newExpression!=null) {
@@ -42,15 +43,18 @@ class CalculationsPane<K: Comparable<K>>(
             }
         },
         outputColor = {
-            node.findValue(it.destination())?.color
+            currentNode.findValue(it.destination())?.color
+        },
+        inputColor = { name ->
+            currentNode.calculations.inputs().firstOrNull { it.name == name }?.color
         }
     )
     private val tabularPane = AbstractCalculationListPane(
-        node = node,
+        nodeId = currentNode.id,
         label = context.text("title.tabular","Tabular"),
         context = context,
         modelChangeListener = modelChangeListener,
-        calculationsModel = SimpleObjectProperty(node.calculations.tabular()),
+        calculationsModel = SimpleObjectProperty(currentNode.calculations.tabular()),
         onNewExpression = {
             val newExpression = NewExpression.open()
             if (newExpression!=null) {
@@ -70,7 +74,10 @@ class CalculationsPane<K: Comparable<K>>(
             }
         },
         outputColor = {
-            node.findColumn(it.destination())?.color
+            currentNode.findColumn(it.destination())?.color
+        },
+        inputColor = { name ->
+            currentNode.calculations.inputs().firstOrNull { it.name == name }?.color
         }
     )
 
@@ -81,6 +88,7 @@ class CalculationsPane<K: Comparable<K>>(
     }
 
     fun update(node: de.flapdoodle.tab.model.Node.Calculated<K>) {
+        currentNode = node
         aggregationsPane.update(node.calculations.aggregations())
         tabularPane.update(node.calculations.tabular())
     }

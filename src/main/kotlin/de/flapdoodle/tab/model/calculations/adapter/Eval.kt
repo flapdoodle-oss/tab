@@ -8,6 +8,7 @@ import de.flapdoodle.eval.core.evaluables.OperatorMap
 import de.flapdoodle.eval.core.evaluables.OperatorMapping
 import de.flapdoodle.eval.core.evaluables.Precedence
 import de.flapdoodle.eval.core.evaluables.TypedEvaluableMap
+import de.flapdoodle.tab.model.calculations.Variable
 import de.flapdoodle.tab.model.calculations.adapter.arithmetic.Divide
 import de.flapdoodle.tab.model.calculations.adapter.arithmetic.Minus
 import de.flapdoodle.tab.model.calculations.adapter.arithmetic.Multiply
@@ -87,4 +88,8 @@ object Eval {
         return expressionFactory.parse(formula)
     }
 
+    fun variablesWithHash(expression: Expression): List<Pair<Variable, Int>> {
+        return expression.usedVariablesWithHash()
+            .map { Variable(it.key) to it.value }
+    }
 }

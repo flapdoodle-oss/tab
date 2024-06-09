@@ -2,12 +2,15 @@ package de.flapdoodle.tab.ui.views.calculations
 
 import de.flapdoodle.eval.core.Expression
 import de.flapdoodle.kfx.controls.fields.ValidatingColoredTextField
+import de.flapdoodle.kfx.controls.labels.ColoredLabel
 import de.flapdoodle.kfx.converters.Converters
 import de.flapdoodle.kfx.converters.ValidatingConverter
 import de.flapdoodle.kfx.converters.ValueOrError
 import de.flapdoodle.kfx.layout.grid.TableCell
 import de.flapdoodle.kfx.layout.grid.WeightGridTable
 import de.flapdoodle.kfx.logging.Logging
+import de.flapdoodle.kfx.types.Id
+import de.flapdoodle.tab.model.Node
 import de.flapdoodle.tab.model.calculations.Calculation
 import de.flapdoodle.tab.model.calculations.adapter.Eval
 import de.flapdoodle.tab.model.change.ModelChange
@@ -29,17 +32,17 @@ import javafx.scene.paint.Color
 import java.util.*
 
 class AbstractCalculationListPane<K : Comparable<K>, C : Calculation<K>>(
-    node: de.flapdoodle.tab.model.Node.Calculated<K>,
+    val nodeId: Id<Node.Calculated<*>>,
     val label: String,
     val context: Labels.WithContext = Labels.with(AbstractCalculationListPane::class),
     val modelChangeListener: ModelChangeListener,
     val calculationsModel: SimpleObjectProperty<List<C>>,
     val onNewExpression: () -> Unit,
     val onChangeExpression: (C) -> Unit,
-    val outputColor: (C) -> Color?
+    val outputColor: (C) -> Color?,
+    val inputColor: (String) -> Color?
 ) : VBox() {
     private val logger = Logging.logger(javaClass)
-    private val nodeId = node.id
 
     private val nameColumn = WeightGridTable.Column<C>(
         weight = 1.0,
@@ -61,8 +64,26 @@ class AbstractCalculationListPane<K : Comparable<K>, C : Calculation<K>>(
             val textField = ValidatingColoredTextField(
                 converter = ValidatingExpressionConverter(),
                 default = calculation.formula().expression(),
-                mapColors = { v: Expression?, t ->
-                    emptyList()
+                mapColors = { expression: Expression?, t ->
+                    if (expression!=null) {
+                        val variables = expression.variables()
+
+                        val list = variables.names().flatMap { name ->
+                            val color = inputColor(name)
+                            if (color!=null) {
+                                variables.positionsOf(name).map { p ->
+                                    ColoredLabel.Part(p, p+name.length, color)
+                                }
+                            } else {
+                                emptyList<ColoredLabel.Part>()
+                            }
+
+                        }
+                        list
+                    }
+                    else {
+                        emptyList<ColoredLabel.Part>()
+                    }
                 }
             )
 
@@ -81,6 +102,8 @@ class AbstractCalculationListPane<K : Comparable<K>, C : Calculation<K>>(
                     }
                 }
 
+                // HACK to force a change for color mapping
+                t.set(null)
                 t.set(value?.formula()?.expression())
             }).apply {
                 updateCell(calculation)
