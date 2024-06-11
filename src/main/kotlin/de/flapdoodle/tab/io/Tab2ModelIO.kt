@@ -16,31 +16,19 @@ object Tab2ModelIO {
         .add(KotlinJsonAdapterFactory())
         .build()
 
-    private val modelAdapter = de.flapdoodle.tab.io.Tab2ModelIO.moshi.adapter(Tab2File::class.java)
+    private val modelAdapter = moshi.adapter(Tab2File::class.java)
         .indent("  ")
         
 
     fun asJson(model: Tab2Model): String {
         val file = DefaultModelFileMapper().toFile(ToFileMapping(), model)
-//        val persistable = PersistableTabModel.toPersistable(model)
-//        val file = TabFile(
-//            model = persistable,
-//            nodePositions = PersistableNodePositions.toPersistable(nodePositions)
-//        )
-//        return modelAdapter.toJson(file)
-        return de.flapdoodle.tab.io.Tab2ModelIO.modelAdapter.toJson(file)
+        return modelAdapter.toJson(file)
     }
 
     fun fromJson(json: String): Tab2Model {
-        val file = de.flapdoodle.tab.io.Tab2ModelIO.modelAdapter.fromJson(json)
+        val file = modelAdapter.fromJson(json)
         require(file!=null) {"could not parse $json"}
         return DefaultModelFileMapper().toModel(ToModelMapping(), file)
-//        val context = FromPersistableContext()
-//
-//        val model = PersistableTabModel.from(context, file.model)
-//        val nodePositions = PersistableNodePositions.from(context, file.nodePositions)
-//
-//        return Pair(model,nodePositions)
     }
 
 }

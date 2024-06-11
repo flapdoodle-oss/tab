@@ -1,6 +1,7 @@
 package de.flapdoodle.tab.ui
 
 import de.flapdoodle.tab.model.Tab2Model
+import de.flapdoodle.tab.prefs.TabPref
 import javafx.stage.FileChooser
 import javafx.stage.Window
 import java.nio.file.Files
@@ -11,9 +12,13 @@ object IO {
         val fileChooser = fileChooser()
         fileChooser.title = "Open File"
         fileChooser.initialFileName = "newFile.tab"
+        TabPref.fileDirectory()?.let {
+            fileChooser.initialDirectory = it.toFile()
+        }
         val file = fileChooser.showSaveDialog(window)
         println("write to $file")
         if (file!=null) {
+            TabPref.storeFileDirectory(file.toPath().parent)
             val json = de.flapdoodle.tab.io.Tab2ModelIO.asJson(model)
             Files.write(file.toPath(),json.toByteArray(Charsets.UTF_8), StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE)
         }
@@ -22,9 +27,13 @@ object IO {
     fun load(window: Window): Tab2Model? {
         val fileChooser = fileChooser()
         fileChooser.title = "Open File"
+        TabPref.fileDirectory()?.let {
+            fileChooser.initialDirectory = it.toFile()
+        }
         val file = fileChooser.showOpenDialog(window)
         println("load $file")
         if (file!=null) {
+            TabPref.storeFileDirectory(file.toPath().parent)
             val content = Files.readAllBytes(file.toPath())
             //model.value(TabModel())
             try {

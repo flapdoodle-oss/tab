@@ -1,5 +1,7 @@
 package de.flapdoodle.tab.prefs
 
+import java.nio.file.Path
+import java.nio.file.Paths
 import java.util.prefs.Preferences
 
 object TabPref {
@@ -31,5 +33,17 @@ object TabPref {
         prefs.putDouble("y", windowPosition.y)
         prefs.putDouble("width", windowPosition.width)
         prefs.putDouble("height", windowPosition.height)
+    }
+
+    fun storeFileDirectory(path: Path?) {
+        if (path!=null) {
+            val prefs = preferences()
+            prefs.put("directory", path.toString())
+        }
+    }
+
+    fun fileDirectory(): Path? {
+        val prefs = preferences()
+        return prefs.get("directory",null)?.let { Paths.get(it) }
     }
 }
