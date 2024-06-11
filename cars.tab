@@ -98,8 +98,12 @@
     {
       "name": "Berechnungen",
       "position": {
-        "x": 790.0,
-        "y": 81.0
+        "x": 541.0,
+        "y": 104.0
+      },
+      "size": {
+        "width": 1026.0,
+        "height": 668.0
       },
       "id": "6",
       "calculated": {

@@ -21,6 +21,14 @@ class ModelSolverWrapper(initalModel: Tab2Model = Tab2Model()) {
         model.value = solved
     }
 
+    internal fun replaceModel(change: (Tab2Model) -> Tab2Model) {
+        val changed = change(model.value)
+        val solved = Solver.solve(changed)
+        history = listOf(solved) + history.subList(offset + 1, history.size)
+        offset = 0
+        model.value = solved
+    }
+
     private fun validModelChange(change: (Tab2Model) -> Tab2Model): Boolean {
         try {
             change(model.value)

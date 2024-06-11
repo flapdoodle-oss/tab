@@ -5,22 +5,30 @@ import de.flapdoodle.tab.prefs.TabPref
 import javafx.stage.FileChooser
 import javafx.stage.Window
 import java.nio.file.Files
+import java.nio.file.Path
 import java.nio.file.StandardOpenOption
 
 object IO {
-    fun save(model: Tab2Model, window: Window) {
+    fun save(model: Tab2Model, window: Window): Tab2Model? {
         val fileChooser = fileChooser()
         fileChooser.title = "Open File"
-        fileChooser.initialFileName = "newFile.tab"
-        TabPref.fileDirectory()?.let {
-            fileChooser.initialDirectory = it.toFile()
+        fileChooser.initialFileName = model.path?.fileName?.toString() ?: "newFile.tab"
+        val initialDirectory = model.path?.parent ?: TabPref.fileDirectory()
+        if (initialDirectory!=null) {
+            fileChooser.initialDirectory = initialDirectory.toFile()
         }
+
         val file = fileChooser.showSaveDialog(window)
         println("write to $file")
-        if (file!=null) {
-            TabPref.storeFileDirectory(file.toPath().parent)
+        return if (file!=null) {
+            val path = file.toPath()
+
+            TabPref.storeFileDirectory(path.parent)
             val json = de.flapdoodle.tab.io.Tab2ModelIO.asJson(model)
-            Files.write(file.toPath(),json.toByteArray(Charsets.UTF_8), StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE)
+            Files.write(path,json.toByteArray(Charsets.UTF_8), StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE)
+            model.copy(path = path)
+        } else {
+            null
         }
     }
 
@@ -33,12 +41,13 @@ object IO {
         val file = fileChooser.showOpenDialog(window)
         println("load $file")
         if (file!=null) {
-            TabPref.storeFileDirectory(file.toPath().parent)
-            val content = Files.readAllBytes(file.toPath())
+            val path = file.toPath()
+            TabPref.storeFileDirectory(path.parent)
+            val content = Files.readAllBytes(path)
             //model.value(TabModel())
             try {
                 val model = de.flapdoodle.tab.io.Tab2ModelIO.fromJson(String(content, Charsets.UTF_8))
-                return model
+                return model.copy(path = path)
             } catch (ex: Exception) {
                 ex.printStackTrace()
             }

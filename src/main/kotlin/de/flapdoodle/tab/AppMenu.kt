@@ -28,7 +28,10 @@ class AppMenu(
             })
             files.items.add(menuItem("Save").also { item ->
                 item.onAction = EventHandler {
-                    IO.save(modelWrapper.model().value, scene.window)
+                    val saved = IO.save(modelWrapper.model().value, scene.window)
+                    if (saved!=null) {
+                        modelWrapper.replaceModel { saved }
+                    }
                 }
             })
             files.items.add(menuItem("Load").also { item ->

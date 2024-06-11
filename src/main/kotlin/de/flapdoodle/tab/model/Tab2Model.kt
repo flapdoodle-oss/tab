@@ -12,9 +12,12 @@ import de.flapdoodle.tab.model.data.SingleValueId
 import de.flapdoodle.tab.types.change
 import de.flapdoodle.tab.types.one
 import de.flapdoodle.types.Either
+import java.nio.file.Path
 
 data class Tab2Model(
-    val nodes: List<Node> = emptyList()
+    val nodes: List<Node> = emptyList(),
+    // dont persist
+    val path: Path? = null
 ) {
     private val nodesById = nodes.associateBy { it.id }
 
