@@ -514,7 +514,7 @@
         <javafx.version>21</javafx.version>
         <javafx.maven.plugin.version>0.0.8</javafx.maven.plugin.version>
 
-        <kotlin.version>1.9.22</kotlin.version>
+        <kotlin.version>2.0.0</kotlin.version>
         <main.class>kotlin.KotlinHelloKt</main.class>
         <kotlin.compiler.incremental>true</kotlin.compiler.incremental>
         <kotlin.compiler.languageVersion>1.9</kotlin.compiler.languageVersion>
@@ -551,7 +551,7 @@
         <dependency>
             <groupId>org.assertj</groupId>
             <artifactId>assertj-core</artifactId>
-            <version>3.25.3</version>
+            <version>3.26.0</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -644,7 +644,7 @@
         <dependency>
             <groupId>de.flapdoodle.kfx</groupId>
             <artifactId>de.flapdoodle.kfx</artifactId>
-            <version>1.5.2-SNAPSHOT</version>
+            <version>1.6.1-SNAPSHOT</version>
         </dependency>
 <!--        <dependency>-->
 <!--            <groupId>org.fxmisc.easybind</groupId>-->
