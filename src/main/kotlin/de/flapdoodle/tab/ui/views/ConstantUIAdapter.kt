@@ -26,6 +26,7 @@ import javafx.scene.control.Button
 import javafx.scene.control.Label
 import javafx.scene.control.TextField
 import javafx.scene.layout.VBox
+import javafx.scene.paint.Color
 
 class ConstantUIAdapter(
     node: de.flapdoodle.tab.model.Node.Constants,
@@ -41,14 +42,14 @@ class ConstantUIAdapter(
     private val nameColumn = WeightGridTable.Column<SingleValue<out Any>>(
         weight = 0.0,
         horizontalPosition = HPos.LEFT,
-        cellFactory = {
-            TableCell.with(Labels.label(it.name.long), { it.name.long }, Label::setText)
+        cellFactory = { value ->
+            Labels.tableCell(value) { it.name.long }
         })
 
     private val colorColumn = WeightGridTable.Column<SingleValue<out Any>>(
         weight = 0.0,
         cellFactory = {
-            TableCell(ColorDot(it.color)) { c, v -> c.set(v.color) }
+            ColorDot.tableCell(it, SingleValue<out Any>::color)
         })
 
     private val valueColumn = WeightGridTable.Column<SingleValue<out Any>>(
@@ -60,11 +61,9 @@ class ConstantUIAdapter(
     private val changeColumn = WeightGridTable.Column<SingleValue<out Any>>(
         weight = 0.0,
         cellFactory = { value ->
-            TableCell.with<SingleValue<out Any>, Button, EventHandler<ActionEvent>>(Buttons.change(context), { v -> EventHandler {
-                val change = ChangeValue.openWith(node.id, v)
+            Buttons.tableCell(value, Buttons.change(context)) {
+                val change = ChangeValue.openWith(node.id, it)
                 if (change != null) modelChangeListener.change(change)
-            }}, Button::setOnAction).apply {
-                updateCell(value)
             }
         }
     )
@@ -72,9 +71,9 @@ class ConstantUIAdapter(
     private val deleteColumn = WeightGridTable.Column<SingleValue<out Any>>(
         weight = 0.0,
         cellFactory = { value ->
-            TableCell(Buttons.delete(context) {
-                modelChangeListener.change(ModelChange.RemoveValue(nodeId, value.id))
-            })
+            Buttons.tableCell(value, Buttons.delete(context)) {
+                modelChangeListener.change(ModelChange.RemoveValue(nodeId, it.id))
+            }
         }
     )
 
