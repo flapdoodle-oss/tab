@@ -20,10 +20,27 @@ data class Tab2Model(
     val path: Path? = null
 ) {
     private val nodesById = nodes.associateBy { it.id }
+    private val sources = nodes.associate { it.id to it.sources() }
 
     init {
         val collisions = nodes.groupBy { it.id }.filter { it.value.size > 1 }
         require(collisions.isEmpty()) { "node id collisions: ${collisions.keys}" }
+
+        sources.forEach { (id, sources) ->
+            sources.forEach { s ->
+                val sourceNode = requireNotNull(nodesById[s.node]) { "node ${s.node} for $s from $id not found" }
+                when (s) {
+                    is Source.ValueSource -> {
+                        require(sourceNode is Node.HasValues) {"source node does not has values: $sourceNode"}
+                        requireNotNull(sourceNode.findValue(s.valueId)) {"source ${s.valueId} not found: $sourceNode"}
+                    }
+                    is Source.ColumnSource<*> -> {
+                        require(sourceNode is Node.HasColumns<*>) {"source node does not has columns: $sourceNode"}
+                        requireNotNull(sourceNode.findColumn(s.columnId)) {"source ${s.columnId} not found: $sourceNode"}
+                    }
+                }
+            }
+        }
     }
 
     fun addNode(node: Node): Tab2Model {
@@ -140,16 +157,6 @@ data class Tab2Model(
             val oldInputs = nodeAndInputs(old.nodes)
             val currentInputs = nodeAndInputs(current.nodes)
             return Diff.between(oldInputs, currentInputs) { it.source to (it.destination to it.inputSlot.id) }
-        }
-
-        private fun nodeAndInputsY(nodes: List<Node>): List<Pair<Source, Pair<Id<Node.Calculated<*>>, InputSlot<out Comparable<*>>>>> {
-            return nodes.filterIsInstance<Node.Calculated<out Comparable<*>>>().flatMap { node ->
-                node.calculations.inputs().map { node to it }
-            }.filter {
-                it.second.source != null
-            }.map {
-                it.second.source!! to (it.first.id to it.second)
-            }
         }
 
         private fun nodeAndInputs(nodes: List<Node>): List<SourceAndDestination> {
