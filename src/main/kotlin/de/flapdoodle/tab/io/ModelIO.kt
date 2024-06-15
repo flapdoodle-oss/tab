@@ -9,7 +9,7 @@ import de.flapdoodle.tab.io.file.Tab2File
 import de.flapdoodle.tab.io.mapper.DefaultModelFileMapper
 import de.flapdoodle.tab.model.Model
 
-object Tab2ModelIO {
+object ModelIO {
     private val moshi = Moshi.Builder()
 //        .add(JsonTabModel.Adapter)
         .add(BigDecimalAdapter)

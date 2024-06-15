@@ -13,9 +13,7 @@ import de.flapdoodle.tab.model.data.SingleValue
 import de.flapdoodle.tab.model.data.SingleValues
 import de.flapdoodle.tab.model.graph.Solver
 import javafx.scene.paint.Color
-import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 
 class TabModelIOTest {
@@ -99,9 +97,9 @@ class TabModelIOTest {
 
         val solved = Solver.solve(src)
 
-        val json = de.flapdoodle.tab.io.Tab2ModelIO.asJson(solved)
-        val readBack = de.flapdoodle.tab.io.Tab2ModelIO.fromJson(json)
-        val jsonAgain = de.flapdoodle.tab.io.Tab2ModelIO.asJson(readBack)
+        val json = de.flapdoodle.tab.io.ModelIO.asJson(solved)
+        val readBack = de.flapdoodle.tab.io.ModelIO.fromJson(json)
+        val jsonAgain = de.flapdoodle.tab.io.ModelIO.asJson(readBack)
         assertThat(json).isEqualTo(jsonAgain)
     }
 }

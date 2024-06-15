@@ -23,7 +23,7 @@ object IO {
             val path = file.toPath()
 
             TabPref.storeFileDirectory(path.parent)
-            val json = de.flapdoodle.tab.io.Tab2ModelIO.asJson(model)
+            val json = de.flapdoodle.tab.io.ModelIO.asJson(model)
             Files.write(path,json.toByteArray(Charsets.UTF_8), StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE)
             model.copy(path = path)
         } else {
@@ -45,7 +45,7 @@ object IO {
             val content = Files.readAllBytes(path)
             //model.value(TabModel())
             try {
-                val model = de.flapdoodle.tab.io.Tab2ModelIO.fromJson(String(content, Charsets.UTF_8))
+                val model = de.flapdoodle.tab.io.ModelIO.fromJson(String(content, Charsets.UTF_8))
                 return model.copy(path = path)
             } catch (ex: Exception) {
                 ex.printStackTrace()
