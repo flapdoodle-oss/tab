@@ -14,6 +14,7 @@ import de.flapdoodle.tab.model.connections.Source
 import de.flapdoodle.tab.model.data.SingleValue
 import de.flapdoodle.tab.model.data.SingleValues
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import java.math.BigDecimal
 
@@ -25,16 +26,16 @@ class DisconnectTest {
         assertThat(modifier).isEmpty()
     }
 
-    @Test
-    fun modifierForEachConnection() {
-        val indexType = TypeInfo.of(Int::class.java)
+    @Nested
+    inner class RemoveSources {
+        private val indexType = TypeInfo.of(Int::class.java)
 
-        val singleValue = SingleValue(
+        private val singleValue = SingleValue(
             name = Name("y"),
             valueType = TypeInfo.of(BigDecimal::class.java)
         )
 
-        val constants = Node.Constants(
+        private val constants = Node.Constants(
             name = Title("const"),
             values = SingleValues(
                 listOf(
@@ -43,7 +44,7 @@ class DisconnectTest {
             )
         )
 
-        val inputSlot = InputSlot<Int>(
+        private val inputSlot = InputSlot<Int>(
             name = "y",
             mapTo = setOf(Variable("y")),
             source = Source.ValueSource(
@@ -52,7 +53,7 @@ class DisconnectTest {
             )
         )
 
-        val calculated = Node.Calculated<Int>(
+        private val calculated = Node.Calculated<Int>(
             name = Title("calc"),
             indexType = indexType,
             calculations = Calculations(
@@ -72,27 +73,56 @@ class DisconnectTest {
             )
         )
 
-        val modifier = Disconnect.removeConnections(calculated, constants.id)
-        
-        assertThat(modifier)
-            .hasSize(1)
-            .allSatisfy {
-                assertThat(it.nodeId).isEqualTo(calculated.id)
-                assertThat(it.input).isEqualTo(inputSlot.id)
-                assertThat(it.source.node).isEqualTo(constants.id)
-                assertThat(it.source.dataId()).isEqualTo(singleValue.id)
-            }
+        @Test
+        fun modifierForEachConnection() {
+            val modifier = Disconnect.removeConnections(calculated, constants.id)
 
-        val withModifications = modifier[0].modify(listOf(constants, calculated))
+            assertThat(modifier)
+                .hasSize(1)
+                .allSatisfy {
+                    assertThat(it.nodeId).isEqualTo(calculated.id)
+                    assertThat(it.input).isEqualTo(inputSlot.id)
+                    assertThat(it.source.node).isEqualTo(constants.id)
+                    assertThat(it.source.dataId()).isEqualTo(singleValue.id)
+                }
 
-        assertThat(withModifications)
-            .hasSize(2)
+            val withModifications = modifier[0].modify(listOf(constants, calculated))
 
-        assertThat(withModifications[1].id).isEqualTo(calculated.id)
-        assertThat((withModifications[1] as Node.Calculated<*>).calculations.inputs())
-            .hasSize(1)
-            .allSatisfy {
-                assertThat(it.source).isNull()
-            }
+            assertThat(withModifications)
+                .hasSize(2)
+
+            assertThat(withModifications[1].id).isEqualTo(calculated.id)
+            assertThat((withModifications[1] as Node.Calculated<*>).calculations.inputs())
+                .hasSize(1)
+                .allSatisfy {
+                    assertThat(it.source).isNull()
+                }
+        }
+
+        @Test
+        fun modifierForEachSource() {
+            val modifier = Disconnect.removeSource(calculated, constants.id, singleValue.id)
+
+            assertThat(modifier)
+                .hasSize(1)
+                .allSatisfy {
+                    assertThat(it.nodeId).isEqualTo(calculated.id)
+                    assertThat(it.input).isEqualTo(inputSlot.id)
+                    assertThat(it.source.node).isEqualTo(constants.id)
+                    assertThat(it.source.dataId()).isEqualTo(singleValue.id)
+                }
+
+            val withModifications = modifier[0].modify(listOf(constants, calculated))
+
+            assertThat(withModifications)
+                .hasSize(2)
+
+            assertThat(withModifications[1].id).isEqualTo(calculated.id)
+            assertThat((withModifications[1] as Node.Calculated<*>).calculations.inputs())
+                .hasSize(1)
+                .allSatisfy {
+                    assertThat(it.source).isNull()
+                }
+        }
     }
 }

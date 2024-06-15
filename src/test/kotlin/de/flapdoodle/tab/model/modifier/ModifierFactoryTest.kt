@@ -9,6 +9,7 @@ import de.flapdoodle.tab.model.calculations.Variable
 import de.flapdoodle.tab.model.calculations.adapter.EvalFormulaAdapter
 import de.flapdoodle.tab.model.changes.Change
 import de.flapdoodle.tab.model.connections.Source
+import de.flapdoodle.tab.model.data.Column
 import de.flapdoodle.tab.model.data.SingleValue
 import de.flapdoodle.tab.model.data.SingleValues
 import de.flapdoodle.types.Either
@@ -84,7 +85,8 @@ class ModifierFactoryTest {
             )
         )
 
-        val connectChanges = ModifierFactory.changes(listOf(constants, calculated), Change.Connect(
+        val connectChanges = ModifierFactory.changes(
+            listOf(constants, calculated), Change.Connect(
                 startId = constants.id,
                 startDataOrInput = Either.left(singleValue.id),
                 endId = calculated.id,
@@ -102,11 +104,13 @@ class ModifierFactoryTest {
                 assertThat(it.inputId).isEqualTo(inputSlot.id)
             })
 
-        val disconnectChanges = ModifierFactory.changes(listOf(constants, calculated), Change.Disconnect(
-            endId = calculated.id,
-            input = inputSlot.id,
-            source = Source.ValueSource(constants.id, singleValue.id)
-        ))
+        val disconnectChanges = ModifierFactory.changes(
+            listOf(constants, calculated), Change.Disconnect(
+                endId = calculated.id,
+                input = inputSlot.id,
+                source = Source.ValueSource(constants.id, singleValue.id)
+            )
+        )
 
         assertThat(disconnectChanges)
             .hasSize(1)
@@ -117,6 +121,24 @@ class ModifierFactoryTest {
                 assertThat(it.source.node).isEqualTo(constants.id)
                 assertThat(it.source.dataId()).isEqualTo(singleValue.id)
             })
+    }
+
+    @Test
+    fun addRemoveColumns() {
+        val table = Node.Table(
+            name = Title("table"), indexType = TypeInfo.of(Int::class.java)
+        )
+
+        val column = Column(
+            name = Name("c"),
+            indexType = TypeInfo.of(Long::class.java),
+            valueType = TypeInfo.of(Long::class.java)
+        )
+
+        assertThat(changesFor(Change.Table.AddColumn(table.id, column)))
+            .containsExactly(AddColumn(table.id, column))
+        assertThat(changesFor(Change.Table.RemoveColumn(table.id, column.id)))
+            .containsExactly(RemoveColumn(table.id, column.id))
     }
 
     private fun changesFor(change: Change): List<Modifier> {
