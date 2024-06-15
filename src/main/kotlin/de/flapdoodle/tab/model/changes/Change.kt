@@ -2,12 +2,12 @@ package de.flapdoodle.tab.model.changes
 
 import de.flapdoodle.kfx.types.Id
 import de.flapdoodle.tab.model.*
+import de.flapdoodle.tab.model.Node.Constants
 import de.flapdoodle.tab.model.calculations.InputSlot
 import de.flapdoodle.tab.model.calculations.interpolation.InterpolationType
+import de.flapdoodle.tab.model.change.ModelChange.ConstantsChange
 import de.flapdoodle.tab.model.connections.Source
-import de.flapdoodle.tab.model.data.Column
-import de.flapdoodle.tab.model.data.ColumnId
-import de.flapdoodle.tab.model.data.DataId
+import de.flapdoodle.tab.model.data.*
 import de.flapdoodle.types.Either
 
 sealed class Change {
@@ -29,6 +29,14 @@ sealed class Change {
         val input: Id<InputSlot<*>>,
         val source: Source
     ): Change()
+
+    sealed class Constants(open val id: Id<out Node.Constants>) : Change() {
+        data class Properties(override val id: Id<out Node.Constants>, val name: Title): Constants(id)
+        data class AddValue(override val id: Id<out Node.Constants>, val value: SingleValue<out Any>): Constants(id)
+        data class ChangeValue(override val id: Id<out Node.Constants>, val valueId: SingleValueId, val value: Any?): Constants(id)
+        data class RemoveValue(override val id: Id<out Node.Constants>, val valueId: SingleValueId): Constants(id)
+        data class ValueProperties(override val id: Id<out Node.Constants>, val valueId: SingleValueId, val name: Name): Constants(id)
+    }
 
     sealed class Table(open val id: Id<out Node.Table<out Comparable<*>>>) : Change() {
         data class Properties(override val id: Id<out Node.Table<out Comparable<*>>>, val name: Title) :

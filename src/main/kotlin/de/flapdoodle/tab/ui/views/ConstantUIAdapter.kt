@@ -7,11 +7,10 @@ import de.flapdoodle.kfx.layout.grid.TableCell
 import de.flapdoodle.kfx.layout.grid.WeightGridTable
 import de.flapdoodle.kfx.types.Id
 import de.flapdoodle.reflection.TypeInfo
-import de.flapdoodle.tab.model.change.ModelChange
+import de.flapdoodle.tab.model.changes.Change
 import de.flapdoodle.tab.model.data.SingleValue
 import de.flapdoodle.tab.ui.ChangeListener
 import de.flapdoodle.tab.ui.Converters
-import de.flapdoodle.tab.ui.ModelChangeListener
 import de.flapdoodle.tab.ui.resources.Buttons
 import de.flapdoodle.tab.ui.resources.Labels
 import de.flapdoodle.tab.ui.views.colors.ColorDot
@@ -26,7 +25,6 @@ import javafx.scene.layout.VBox
 
 class ConstantUIAdapter(
     node: de.flapdoodle.tab.model.Node.Constants,
-    val modelChangeListener: ModelChangeListener,
     val changeListener: ChangeListener
 ) : NodeUIAdapter() {
     val nodeId = node.id
@@ -52,7 +50,7 @@ class ConstantUIAdapter(
     private val valueColumn = WeightGridTable.Column<SingleValue<out Any>>(
         weight = 10.0,
         cellFactory = {
-            textFieldTableCell(nodeId, it, modelChangeListener) as TableCell<SingleValue<out Any>, Node>
+            textFieldTableCell(nodeId, it, changeListener) as TableCell<SingleValue<out Any>, Node>
         })
 
     private val changeColumn = WeightGridTable.Column<SingleValue<out Any>>(
@@ -60,7 +58,7 @@ class ConstantUIAdapter(
         cellFactory = { value ->
             Buttons.tableCell(value, Buttons.change(context)) {
                 val change = ChangeValue.openWith(node.id, it)
-                if (change != null) modelChangeListener.change(change)
+                if (change != null) changeListener.change(change)
             }
         }
     )
@@ -69,7 +67,7 @@ class ConstantUIAdapter(
         weight = 0.0,
         cellFactory = { value ->
             Buttons.tableCell(value, Buttons.delete(context)) {
-                modelChangeListener.change(ModelChange.RemoveValue(nodeId, it.id))
+                changeListener.change(Change.Constants.RemoveValue(nodeId, it.id))
             }
         }
     )
@@ -89,8 +87,8 @@ class ConstantUIAdapter(
 //                maxWidth = 200.0
                 val newValue = NewValue.open()
                 if (newValue != null) {
-                    modelChangeListener.change(
-                        ModelChange.AddValue(
+                    changeListener.change(
+                        Change.Constants.AddValue(
                             nodeId,
                             SingleValue(newValue.name, TypeInfo.of(newValue.type.javaObjectType))
                         )
@@ -120,7 +118,7 @@ class ConstantUIAdapter(
     private fun <T : Any> textFieldTableCell(
         id: Id<out de.flapdoodle.tab.model.Node.Constants>,
         value: SingleValue<T>,
-        modelChangeListener: ModelChangeListener
+        modelChangeListener: ChangeListener
     ): TableCell<SingleValue<T>, ValidatingTextField<T>> {
         return TableCell.with(
             textField(id, value, modelChangeListener),
@@ -132,14 +130,14 @@ class ConstantUIAdapter(
     private fun <T : Any> textField(
         id: Id<out de.flapdoodle.tab.model.Node.Constants>,
         value: SingleValue<T>,
-        modelChangeListener: ModelChangeListener
+        modelChangeListener: ChangeListener
     ): ValidatingTextField<T> {
         val converter = Converters.validatingConverter(value.valueType)
         return ValidatingTextField(converter).apply {
             set(value.value)
             prefWidth = 60.0
             valueProperty().addListener { observable, oldValue, newValue ->
-                modelChangeListener.change(ModelChange.ChangeValue(id, value.id, newValue))
+                modelChangeListener.change(Change.Constants.ChangeValue(id, value.id, newValue))
             }
         }
     }

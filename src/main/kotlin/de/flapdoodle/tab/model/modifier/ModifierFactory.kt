@@ -12,7 +12,20 @@ object ModifierFactory {
             is Change.Resize -> listOf(Resize(change.id, change.position, change.size))
             is Change.Connect -> listOf(Connect.map(nodes, change))
             is Change.Disconnect -> listOf(Disconnect.removeConnection(nodes, change.endId, change.input, change.source))
+            is Change.Constants -> constantChanges(nodes, change)
             is Change.Table -> tableChanges(nodes, change)
+            else -> throw IllegalArgumentException("not implemented: $change")
+        }
+    }
+
+    // VisibleForTesting
+    internal fun constantChanges(nodes: List<Node>, change: Change.Constants): List<Modifier> {
+        return when (change) {
+            is Change.Constants.Properties -> listOf(ConstantProperties(change.id, change.name))
+            is Change.Constants.AddValue -> listOf(AddValue(change.id, change.value))
+            is Change.Constants.ChangeValue -> listOf(ChangeValue(change.id, change.valueId, change.value))
+            is Change.Constants.ValueProperties -> listOf(ValueProperties(change.id, change.valueId, change.name))
+            is Change.Constants.RemoveValue -> Disconnect.removeSource(nodes, change.id, change.valueId) + RemoveValue(change.id, change.valueId)
             else -> throw IllegalArgumentException("not implemented: $change")
         }
     }

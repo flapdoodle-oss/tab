@@ -6,6 +6,7 @@ import de.flapdoodle.kfx.extensions.bindCss
 import de.flapdoodle.kfx.types.Id
 import de.flapdoodle.tab.model.Name
 import de.flapdoodle.tab.model.change.ModelChange
+import de.flapdoodle.tab.model.changes.Change
 import de.flapdoodle.tab.model.data.SingleValue
 import de.flapdoodle.tab.ui.Converters
 import de.flapdoodle.tab.ui.resources.Labels
@@ -15,7 +16,7 @@ import javafx.beans.value.ObservableValue
 class ChangeValue<T: Any>(
     private val nodeId: Id<out de.flapdoodle.tab.model.Node.Constants>,
     private val value: SingleValue<T>
-) : DialogContent<ModelChange>() {
+) : DialogContent<Change.Constants.ValueProperties>() {
 
     private val name = Labels.label(ChangeValue::class,"name","Name")
     private val nameField = ValidatingTextField(Converters.validatingConverter(String::class)
@@ -41,13 +42,13 @@ class ChangeValue<T: Any>(
         return ValidatingField.invalidInputs(nameField)
     }
 
-    override fun result(): ModelChange? {
-        return ModelChange.ChangeValueProperties(nodeId, value.id, Name(nameField.text, shortField.text))
+    override fun result(): Change.Constants.ValueProperties {
+        return Change.Constants.ValueProperties(nodeId, value.id, Name(nameField.text, shortField.text))
     }
 
     companion object {
 
-        fun openWith(nodeId: Id<out de.flapdoodle.tab.model.Node.Constants>, value: SingleValue<out Any>): ModelChange? {
+        fun openWith(nodeId: Id<out de.flapdoodle.tab.model.Node.Constants>, value: SingleValue<out Any>): Change.Constants.ValueProperties? {
             return DialogWrapper.open { ChangeValue(nodeId, value) }
         }
     }
