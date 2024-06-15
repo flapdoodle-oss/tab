@@ -40,6 +40,7 @@ class ColumnsPane<K: Comparable<K>>(
         TableCell.with(Labels.label(it.name.long), { it.name.long }, Label::setText)
     })
     private val interpolationColumn = WeightGridTable.Column<Column<K, out Any>>(weight = 0.0, cellFactory = {
+        // TODO i18n
         TableCell(Labels.label(it.interpolationType.name)) { l, v -> l.text = v.interpolationType.name}
     })
     private val changeColumn = WeightGridTable.Column<Column<K, out Any>>(weight = 0.0, cellFactory = { column ->

@@ -5,19 +5,20 @@ import de.flapdoodle.kfx.controls.bettertable.HeaderColumnFactory
 import de.flapdoodle.kfx.controls.bettertable.Table
 import de.flapdoodle.kfx.controls.bettertable.TableChangeListener
 import de.flapdoodle.reflection.TypeInfo
-import de.flapdoodle.tab.model.change.ModelChange
+import de.flapdoodle.tab.model.Node
+import de.flapdoodle.tab.model.changes.Change
 import de.flapdoodle.tab.model.data.Column
 import de.flapdoodle.tab.model.data.Columns
 import de.flapdoodle.tab.model.diff.Diff
-import de.flapdoodle.tab.ui.ModelChangeListener
+import de.flapdoodle.tab.ui.ChangeListener
 import de.flapdoodle.tab.ui.resources.Labels
 import javafx.beans.property.SimpleObjectProperty
 import javafx.scene.layout.Background
 import javafx.scene.layout.StackPane
 
 class TablePane<K : Comparable<K>>(
-    node: de.flapdoodle.tab.model.Node.Table<K>,
-    val modelChangeListener: ModelChangeListener,
+    node: Node.Table<K>,
+    val changeListener: ChangeListener,
     val context: Labels.WithContext = Labels.with(TablePane::class)
 ) : StackPane() {
     private val nodeId = node.id
@@ -43,16 +44,16 @@ class TablePane<K : Comparable<K>>(
                 val modified = changes.changed.map { it.first.column.id to it.second.value }
                 val added = changes.new.map { it.column.id to it.value }
 
-                modelChangeListener.change(
-                    ModelChange.SetColumns(
+                changeListener.change(
+                    Change.Table.SetColumns(
                         nodeId,
                         row.index!!,
                         changes = removed + modified + added
                     )
                 )
             } else {
-                modelChangeListener.change(
-                    ModelChange.MoveValues(
+                changeListener.change(
+                    Change.Table.MoveValues(
                         nodeId,
                         row.index!!,
                         changed.index!!
@@ -62,8 +63,8 @@ class TablePane<K : Comparable<K>>(
         }
 
         override fun removeRow(row: Row<K>) {
-            modelChangeListener.change(
-                ModelChange.RemoveValues(
+            changeListener.change(
+                Change.Table.RemoveValues(
                     nodeId,
                     row.index!!
                 )
@@ -72,8 +73,8 @@ class TablePane<K : Comparable<K>>(
 
         override fun insertRow(index: Int, row: Row<K>): Boolean {
             return if (row.index!=null) {
-                modelChangeListener.change(
-                    ModelChange.SetColumns(
+                changeListener.change(
+                    Change.Table.SetColumns(
                         nodeId,
                         row.index,
                         changes = row.values.map { change ->
