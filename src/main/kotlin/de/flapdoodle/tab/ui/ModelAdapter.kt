@@ -118,7 +118,7 @@ class ModelAdapter(
                     val nodeSize = node.size
 
                     graphEditor.addVertex(Vertex(node.name.long, vertexActions).also { vertex ->
-                        val vertexContent = nodeUIAdapterFactory.adapterOf(node, modelChangeListener)
+                        val vertexContent = nodeUIAdapterFactory.adapterOf(node, modelChangeListener, changeListener)
                         resizeVertex(vertex, node.position, node.size)
                         vertex.content = vertexContent
                         vertexMapping.add(

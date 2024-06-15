@@ -2,6 +2,7 @@ package de.flapdoodle.tab.ui.views
 
 import de.flapdoodle.kfx.extensions.bindCss
 import de.flapdoodle.kfx.layout.grid.WeightGridPane
+import de.flapdoodle.tab.ui.ChangeListener
 import de.flapdoodle.tab.ui.ModelChangeListener
 import de.flapdoodle.tab.ui.resources.Labels
 import de.flapdoodle.tab.ui.views.charts.SmallChartPane
@@ -15,7 +16,8 @@ import javafx.scene.layout.VBox
 
 class TableUIAdapter<K: Comparable<K>>(
     node: de.flapdoodle.tab.model.Node.Table<K>,
-    val modelChangeListener: ModelChangeListener
+    val modelChangeListener: ModelChangeListener,
+    val changeListener: ChangeListener
 ) : NodeUIAdapter() {
     val nodeId = node.id
     private val context = Labels.with(TableUIAdapter::class)

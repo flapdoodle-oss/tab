@@ -9,6 +9,7 @@ import de.flapdoodle.kfx.types.Id
 import de.flapdoodle.reflection.TypeInfo
 import de.flapdoodle.tab.model.change.ModelChange
 import de.flapdoodle.tab.model.data.SingleValue
+import de.flapdoodle.tab.ui.ChangeListener
 import de.flapdoodle.tab.ui.Converters
 import de.flapdoodle.tab.ui.ModelChangeListener
 import de.flapdoodle.tab.ui.resources.Buttons
@@ -25,7 +26,8 @@ import javafx.scene.layout.VBox
 
 class ConstantUIAdapter(
     node: de.flapdoodle.tab.model.Node.Constants,
-    val modelChangeListener: ModelChangeListener
+    val modelChangeListener: ModelChangeListener,
+    val changeListener: ChangeListener
 ) : NodeUIAdapter() {
     val nodeId = node.id
     val model = SimpleObjectProperty(node.values.values)
