@@ -82,5 +82,17 @@ class RemoveConnectionTest {
                 assertThat(it.source.node).isEqualTo(constants.id)
                 assertThat(it.source.dataId()).isEqualTo(singleValue.id)
             }
+
+        val withModifications = modifier[0].modify(listOf(constants, calculated))
+
+        assertThat(withModifications)
+            .hasSize(2)
+
+        assertThat(withModifications[1].id).isEqualTo(calculated.id)
+        assertThat((withModifications[1] as Node.Calculated<*>).calculations.inputs())
+            .hasSize(1)
+            .allSatisfy {
+                assertThat(it.source).isNull()
+            }
     }
 }

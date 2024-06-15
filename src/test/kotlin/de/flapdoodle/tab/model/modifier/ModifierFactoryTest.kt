@@ -1,31 +1,35 @@
 package de.flapdoodle.tab.model.modifier
 
-import de.flapdoodle.tab.model.Change
-import de.flapdoodle.tab.model.Node
-import de.flapdoodle.tab.model.Title
+import de.flapdoodle.tab.model.*
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import java.util.*
 
 class ModifierFactoryTest {
     @Test
-    fun addNode() {
+    fun addAndRemoveNode() {
         val node = randomNode()
 
-        val changes = ModifierFactory.changes(emptyList(), Change.AddNode(node))
-
-        assertThat(changes)
+        assertThat(changesFor(Change.AddNode(node)))
             .containsExactly(AddNode(node))
+        assertThat(changesFor(Change.RemoveNode(node.id)))
+            .containsExactly(RemoveNode(node.id))
     }
 
     @Test
-    fun removeNode() {
+    fun moveAndResize() {
         val node = randomNode()
+        val position = Position(10.0, 20.0)
+        val size = Size(3.0, 4.0)
 
-        val changes = ModifierFactory.changes(listOf(node), Change.RemoveNode(node.id))
+        assertThat(changesFor(Change.Move(node.id, position)))
+            .containsExactly(Move(node.id, position))
+        assertThat(changesFor(Change.Resize(node.id, position, size)))
+            .containsExactly(Resize(node.id, position, size))
+    }
 
-        assertThat(changes)
-            .containsExactly(RemoveNode(node.id))
+    private fun changesFor(change: Change): List<Modifier> {
+        return ModifierFactory.changes(emptyList(), change)
     }
 
     private fun randomNode(): Node {
