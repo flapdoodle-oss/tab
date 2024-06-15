@@ -19,7 +19,6 @@ import de.flapdoodle.kfx.types.Id
 import de.flapdoodle.kfx.types.LayoutBounds
 import de.flapdoodle.tab.model.Model
 import de.flapdoodle.tab.model.Size
-import de.flapdoodle.tab.model.Tab2Model
 import de.flapdoodle.tab.model.calculations.InputSlot
 import de.flapdoodle.tab.model.connections.Source
 import de.flapdoodle.tab.model.data.*
@@ -39,12 +38,12 @@ import javafx.scene.Node
 import javafx.scene.control.Button
 import javafx.scene.layout.AnchorPane
 
-class Tab2ModelAdapter(
+class ModelAdapter(
     model: ReadOnlyObjectProperty<Model>,
     modelEventListener: ModelEventListener,
     val modelChangeListener: ModelChangeListener
 ) : AnchorPane() {
-    private val logger = Logging.logger(Tab2ModelAdapter::class)
+    private val logger = Logging.logger(ModelAdapter::class)
 
     private val graphEditor = GraphEditor(eventListener = Event2ModelEvent(
         delegate = modelEventListener,

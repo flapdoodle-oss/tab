@@ -4,7 +4,7 @@ import de.flapdoodle.kfx.extensions.cssClassName
 import de.flapdoodle.kfx.types.Id
 import de.flapdoodle.tab.model.*
 import de.flapdoodle.tab.model.changes.Change
-import de.flapdoodle.tab.ui.Tab2ModelAdapter
+import de.flapdoodle.tab.ui.ModelAdapter
 import de.flapdoodle.tab.ui.commands.Command
 import de.flapdoodle.tab.ui.resources.Labels
 import de.flapdoodle.tab.ui.views.dialogs.NewCalculated
@@ -20,7 +20,7 @@ class Tools(
     val adapter: (Command) -> Unit,
     val modelChangeAdapter: ((Model) -> Model) -> Unit,
     val selectedVertex: ReadOnlyObjectProperty<Id<out Node>>,
-    val selectedEdge: ReadOnlyObjectProperty<Tab2ModelAdapter.Output2Input>
+    val selectedEdge: ReadOnlyObjectProperty<ModelAdapter.Output2Input>
 ) : ToolBar() {
     private val context = Labels.with(Tools::class)
 
