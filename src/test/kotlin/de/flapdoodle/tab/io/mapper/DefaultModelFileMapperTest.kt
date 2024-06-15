@@ -34,13 +34,13 @@ class DefaultModelFileMapperTest {
 
         val testee = DefaultModelFileMapper(nodeMapper = StaticTestMapper(testNode, testFileNode))
 
-        val result = testee.toFile(MemorizingMapping().toFileMapping(), Tab2Model(listOf(testNode)))
+        val result = testee.toFile(MemorizingMapping().toFileMapping(), Model(nodes = listOf(testNode)))
         assertThat(result.nodes)
             .hasSize(1)
             .containsExactly(testFileNode)
 
         val readBack = testee.toModel(MemorizingMapping().toModelMapping(), Tab2File(listOf(testFileNode)))
-        assertThat(readBack.nodes)
+        assertThat(readBack.nodes())
             .hasSize(1)
             .containsExactly(testNode)
     }
@@ -116,7 +116,7 @@ class DefaultModelFileMapperTest {
             )
         )
 
-        val src = Tab2Model(
+        val src = Model(
             nodes = listOf(
                 constants,
                 table,

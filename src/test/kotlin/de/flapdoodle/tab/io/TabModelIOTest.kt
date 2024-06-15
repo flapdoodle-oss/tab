@@ -89,7 +89,7 @@ class TabModelIOTest {
             )
         )
 
-        val src = Tab2Model(
+        val src = Model(
             nodes = listOf(
                 constants,
                 table,

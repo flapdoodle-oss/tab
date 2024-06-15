@@ -1,5 +1,6 @@
 package de.flapdoodle.tab
 
+import de.flapdoodle.tab.model.Model
 import de.flapdoodle.tab.model.Tab2Model
 import de.flapdoodle.tab.prefs.TabPref
 import de.flapdoodle.tab.ui.ModelSolverWrapper
@@ -10,7 +11,7 @@ import javafx.stage.Stage
 
 class Tab : Application() {
     override fun start(stage: Stage) {
-        val modelWrapper = ModelSolverWrapper(Tab2Model())
+        val modelWrapper = ModelSolverWrapper(Model())
 
         val windowSize = TabPref.windowPosition()
 

@@ -1,10 +1,7 @@
 package graph
 
 import de.flapdoodle.reflection.TypeInfo
-import de.flapdoodle.tab.model.Name
-import de.flapdoodle.tab.model.Node
-import de.flapdoodle.tab.model.Tab2Model
-import de.flapdoodle.tab.model.Title
+import de.flapdoodle.tab.model.*
 import de.flapdoodle.tab.model.calculations.Calculation
 import de.flapdoodle.tab.model.calculations.Calculations
 import de.flapdoodle.tab.model.calculations.adapter.EvalFormulaAdapter
@@ -20,13 +17,13 @@ import java.math.BigInteger
 class SolverTest {
     @Test
     fun emptyModelDoesNotTriggerAnything() {
-        val result = Solver.solve(Tab2Model())
-        assertThat(result.nodes).isEmpty()
+        val result = Solver.solve(Model())
+        assertThat(result.nodes()).isEmpty()
     }
 
     @Test
     fun singleNodeWithNoConnections() {
-        val source = Tab2Model(listOf(Node.Constants(Title("const"))))
+        val source = Model(nodes = listOf(Node.Constants(Title("const"))))
         val changed = Solver.solve(source)
 
         assertThat(changed).isEqualTo(source)
@@ -46,7 +43,7 @@ class SolverTest {
             listOf(Calculation.Aggregation<String>(TypeInfo.of(String::class.javaObjectType),Name("y"), EvalFormulaAdapter("x+2"), destination))
         ).let { c -> c.connect(c.inputs()[0].id, Source.ValueSource(constants.id, x.id)) })
 
-        val source = Tab2Model(listOf(constants, formula))
+        val source = Model(nodes = listOf(constants, formula))
         val changed = Solver.solve(source)
 
         assertThat(changed.node(formula.id).value(destination))
@@ -69,7 +66,7 @@ class SolverTest {
             tabular = listOf(Calculation.Tabular(TypeInfo.of(Int::class.javaObjectType),Name("y"), EvalFormulaAdapter("x+2"), InterpolationType.Linear, destination))
         ).let { c -> c.connect(c.inputs()[0].id, Source.ColumnSource(table.id, x.id, TypeInfo.of(Int::class.javaObjectType))) })
 
-        val source = Tab2Model(listOf(table, formula))
+        val source = Model(listOf(table, formula))
         val changed = Solver.solve(source)
 
         val data = changed.node(formula.id).column(destination)
@@ -97,7 +94,7 @@ class SolverTest {
             aggregations = listOf(Calculation.Aggregation<Int>(TypeInfo.of(Int::class.javaObjectType),Name("y"), EvalFormulaAdapter("sum(x)"), destination))
         ).let { c -> c.connect(c.inputs()[0].id, Source.ColumnSource(table.id, x.id, TypeInfo.of(Int::class.javaObjectType))) })
 
-        val source = Tab2Model(listOf(table, formula))
+        val source = Model(listOf(table, formula))
         val changed = Solver.solve(source)
 
         val data = changed.node(formula.id).value(destination)
@@ -126,8 +123,8 @@ class SolverTest {
             tabular = listOf(Calculation.Tabular(TypeInfo.of(Int::class.javaObjectType),Name("y"), EvalFormulaAdapter("x+2"), InterpolationType.Linear, destination))
         ).let { c -> c.connect(c.inputs()[0].id, Source.ColumnSource(table.id, x.id, TypeInfo.of(Int::class.javaObjectType))) })
 
-        val source = Tab2Model(listOf(table, formula))
-        val reconnected = source.connect(table.id, Either.left(y.id), formula.id, Either.right(formula.calculations.inputs()[0].id))
+        val source = Model(listOf(table, formula))
+        val reconnected = source.apply(Change.Connect(table.id, Either.left(y.id), formula.id, Either.right(formula.calculations.inputs()[0].id)))
         val changed = Solver.solve(reconnected)
 
         val data = changed.node(formula.id).column(destination)
@@ -160,8 +157,8 @@ class SolverTest {
             tabular = listOf(Calculation.Tabular(TypeInfo.of(Int::class.javaObjectType),Name("y"), EvalFormulaAdapter("x"), InterpolationType.Linear, destination))
         ).let { c -> c.connect(c.inputs()[0].id, Source.ColumnSource(table.id, x.id, TypeInfo.of(Int::class.javaObjectType))) })
 
-        val source = Tab2Model(listOf(table, formula))
-        val reconnected = source.connect(table.id, Either.left(y.id), formula.id, Either.right(formula.calculations.inputs()[0].id))
+        val source = Model(listOf(table, formula))
+        val reconnected = source.apply(Change.Connect(table.id, Either.left(y.id), formula.id, Either.right(formula.calculations.inputs()[0].id)))
         val changed = Solver.solve(reconnected)
 
         val data = changed.node(formula.id).column(destination)
@@ -216,7 +213,7 @@ class SolverTest {
                 .connect(c.inputs()[2].id, Source.ValueSource(constants.id, x.id))
         })
 
-        val source = Tab2Model(listOf(constants, table, formula))
+        val source = Model(listOf(constants, table, formula))
         val changed = Solver.solve(source)
 
         val data = changed.node(formula.id).column(destination)

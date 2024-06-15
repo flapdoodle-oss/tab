@@ -2,7 +2,7 @@ package de.flapdoodle.tab.ui
 
 import de.flapdoodle.reflection.TypeInfo
 import de.flapdoodle.tab.model.Name
-import de.flapdoodle.tab.model.Tab2Model
+import de.flapdoodle.tab.model.Model
 import de.flapdoodle.tab.model.Title
 import de.flapdoodle.tab.model.calculations.Calculation
 import de.flapdoodle.tab.model.calculations.Calculations
@@ -54,7 +54,7 @@ class ModelSolverWrapperTest {
                 TypeInfo.of(Int::class.javaObjectType)
             )) })
 
-        val source = Tab2Model(listOf(table, formula))
+        val source = Model(listOf(table, formula))
         val wrapper = ModelSolverWrapper(source)
 //        val changed = Solver.solve(source)
 

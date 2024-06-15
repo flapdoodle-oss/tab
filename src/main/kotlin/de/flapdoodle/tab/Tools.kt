@@ -2,9 +2,7 @@ package de.flapdoodle.tab
 
 import de.flapdoodle.kfx.extensions.cssClassName
 import de.flapdoodle.kfx.types.Id
-import de.flapdoodle.tab.model.Node
-import de.flapdoodle.tab.model.Position
-import de.flapdoodle.tab.model.Tab2Model
+import de.flapdoodle.tab.model.*
 import de.flapdoodle.tab.ui.Tab2ModelAdapter
 import de.flapdoodle.tab.ui.commands.Command
 import de.flapdoodle.tab.ui.resources.Labels
@@ -19,7 +17,7 @@ import javafx.scene.control.ToolBar
 
 class Tools(
     val adapter: (Command) -> Unit,
-    val modelChangeAdapter: ((Tab2Model) -> Tab2Model) -> Unit,
+    val modelChangeAdapter: ((Model) -> Model) -> Unit,
     val selectedVertex: ReadOnlyObjectProperty<Id<out Node>>,
     val selectedEdge: ReadOnlyObjectProperty<Tab2ModelAdapter.Output2Input>
 ) : ToolBar() {
@@ -35,7 +33,7 @@ class Tools(
                     val node = NewValues.open()
                     if (node != null) {
                         adapter(Command.AskForPosition(onSuccess = { pos ->
-                            modelChangeAdapter { it.addNode(node.copy(position = Position(pos.x, pos.y))) }
+                            modelChangeAdapter { it.apply(Change.AddNode(node.copy(position = Position(pos.x, pos.y)))) }
                         }))
                     }
                 }
@@ -46,7 +44,7 @@ class Tools(
                     if (node != null) {
                         val changed = node // fakeDummy(node)
                         adapter(Command.AskForPosition(onSuccess = { pos ->
-                            modelChangeAdapter { it.addNode(changed.copy(position = Position(pos.x, pos.y))) }
+                            modelChangeAdapter { it.apply(Change.AddNode(changed.copy(position = Position(pos.x, pos.y)))) }
                         }))
                     }
                 }
@@ -56,7 +54,7 @@ class Tools(
                     val node = NewCalculated.open()
                     if (node != null) {
                         adapter(Command.AskForPosition(onSuccess = { pos ->
-                            modelChangeAdapter { it.addNode(node.copy(position = Position(pos.x, pos.y))) }
+                            modelChangeAdapter { it.apply(Change.AddNode(node.copy(position = Position(pos.x, pos.y)))) }
                         }))
                     }
                 }
@@ -67,7 +65,7 @@ class Tools(
                 button.managedProperty().bind(button.visibleProperty())
                 button.onAction = EventHandler {
                     val vertexId = selectedVertex.value
-                    modelChangeAdapter { it.removeNode(vertexId) }
+                    modelChangeAdapter { it.apply(Change.RemoveNode(vertexId)) }
                 }
             },
             button("deleteEdge","delete Connection").also { button ->
@@ -75,7 +73,7 @@ class Tools(
                 button.managedProperty().bind(button.visibleProperty())
                 button.onAction = EventHandler {
                     val edge = selectedEdge.value
-                    modelChangeAdapter { it.disconnect(edge.id, edge.input, edge.source) }
+                    modelChangeAdapter { it.apply(Change.Disconnect(edge.id, edge.input, edge.source)) }
                 }
             },
             )

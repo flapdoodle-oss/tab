@@ -3,6 +3,7 @@ package de.flapdoodle.tab.ui
 import de.flapdoodle.kfx.collections.OrderedDiff
 import de.flapdoodle.kfx.types.Id
 import de.flapdoodle.reflection.TypeInfo
+import de.flapdoodle.tab.model.Model
 import de.flapdoodle.tab.model.Tab2Model
 import de.flapdoodle.tab.model.calculations.InputSlot
 import de.flapdoodle.tab.model.connections.Source
@@ -40,11 +41,11 @@ sealed class Action {
     data class RemoveNode(val id: Id<out de.flapdoodle.tab.model.Node>) : Action()
 
     companion object {
-        fun syncActions(old: Tab2Model, current: Tab2Model): List<Action> {
+        fun syncActions(old: Model, current: Model): List<Action> {
             var actions = emptyList<Action>()
             if (old != current) {
-                val nodeChanges = Tab2Model.nodeChanges(old, current)
-                val connectionChanges = Tab2Model.connectionChanges(old, current)
+                val nodeChanges = Model.nodeChanges(old, current)
+                val connectionChanges = Model.connectionChanges(old, current)
 
                 actions = actions + connectionChanges.removed.map {
                     RemoveConnection(it.source, it.destination, it.inputSlot.id)

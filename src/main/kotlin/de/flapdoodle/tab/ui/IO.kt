@@ -1,5 +1,6 @@
 package de.flapdoodle.tab.ui
 
+import de.flapdoodle.tab.model.Model
 import de.flapdoodle.tab.model.Tab2Model
 import de.flapdoodle.tab.prefs.TabPref
 import javafx.stage.FileChooser
@@ -9,7 +10,7 @@ import java.nio.file.Path
 import java.nio.file.StandardOpenOption
 
 object IO {
-    fun save(model: Tab2Model, window: Window): Tab2Model? {
+    fun save(model: Model, window: Window): Model? {
         val fileChooser = fileChooser()
         fileChooser.title = "Open File"
         fileChooser.initialFileName = model.path?.fileName?.toString() ?: "newFile.tab"
@@ -32,7 +33,7 @@ object IO {
         }
     }
 
-    fun load(window: Window): Tab2Model? {
+    fun load(window: Window): Model? {
         val fileChooser = fileChooser()
         fileChooser.title = "Open File"
         TabPref.fileDirectory()?.let {

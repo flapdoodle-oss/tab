@@ -1,5 +1,6 @@
 package de.flapdoodle.tab
 
+import de.flapdoodle.tab.model.Model
 import de.flapdoodle.tab.model.Tab2Model
 import de.flapdoodle.tab.ui.IO
 import de.flapdoodle.tab.ui.ModelSolverWrapper
@@ -23,7 +24,7 @@ class AppMenu(
         menus.add(menu("Files").also { files ->
             files.items.add(menuItem("New").also { item ->
                 item.onAction = EventHandler {
-                    modelWrapper.changeModel { Tab2Model() }
+                    modelWrapper.changeModel { Model() }
                 }
             })
             files.items.add(menuItem("Save").also { item ->

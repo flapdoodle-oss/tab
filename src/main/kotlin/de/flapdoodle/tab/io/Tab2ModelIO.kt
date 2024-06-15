@@ -7,6 +7,7 @@ import de.flapdoodle.tab.io.adapter.ToFileMapping
 import de.flapdoodle.tab.io.adapter.ToModelMapping
 import de.flapdoodle.tab.io.file.Tab2File
 import de.flapdoodle.tab.io.mapper.DefaultModelFileMapper
+import de.flapdoodle.tab.model.Model
 import de.flapdoodle.tab.model.Tab2Model
 
 object Tab2ModelIO {
@@ -20,12 +21,12 @@ object Tab2ModelIO {
         .indent("  ")
         
 
-    fun asJson(model: Tab2Model): String {
+    fun asJson(model: Model): String {
         val file = DefaultModelFileMapper().toFile(ToFileMapping(), model)
         return modelAdapter.toJson(file)
     }
 
-    fun fromJson(json: String): Tab2Model {
+    fun fromJson(json: String): Model {
         val file = modelAdapter.fromJson(json)
         require(file!=null) {"could not parse $json"}
         return DefaultModelFileMapper().toModel(ToModelMapping(), file)

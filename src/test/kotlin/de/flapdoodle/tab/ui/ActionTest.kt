@@ -2,10 +2,7 @@ package de.flapdoodle.tab.ui
 
 import de.flapdoodle.kfx.types.Id
 import de.flapdoodle.reflection.TypeInfo
-import de.flapdoodle.tab.model.Name
-import de.flapdoodle.tab.model.Node
-import de.flapdoodle.tab.model.Tab2Model
-import de.flapdoodle.tab.model.Title
+import de.flapdoodle.tab.model.*
 import de.flapdoodle.tab.model.calculations.Calculation
 import de.flapdoodle.tab.model.calculations.Calculations
 import de.flapdoodle.tab.model.calculations.adapter.EvalFormulaAdapter
@@ -35,11 +32,11 @@ class ActionTest {
             Title("x")
         )
 
-        assertThat(Action.syncActions(base, base.addNode(node)))
+        assertThat(Action.syncActions(base, base.apply(Change.AddNode(node))))
             .containsExactly(
                 Action.AddNode(node)
             )
-        assertThat(Action.syncActions(base.addNode(node), base))
+        assertThat(Action.syncActions(base.apply(Change.AddNode(node)), base))
             .containsExactly(
                 Action.RemoveNode(node.id)
             )
@@ -70,7 +67,7 @@ class ActionTest {
             )
         )
 
-        assertThat(Action.syncActions(base.addNode(table), base.addNode(tableWithColumn)))
+        assertThat(Action.syncActions(base.apply(Change.AddNode(table)), base.apply(Change.AddNode(tableWithColumn))))
             .containsExactly(
                 Action.ChangeNode(
                     id = tableId,
@@ -83,7 +80,7 @@ class ActionTest {
                 )
             )
 
-        assertThat(Action.syncActions(base.addNode(tableWithColumn), base.addNode(table)))
+        assertThat(Action.syncActions(base.apply(Change.AddNode(tableWithColumn)), base.apply(Change.AddNode(table))))
             .containsExactly(
                 Action.RemoveOutput(
                     id = tableId,
@@ -136,11 +133,11 @@ class ActionTest {
             )
         )
 
-        val withTableAndCalculation = base.addNode(table).addNode(calculated)
+        val withTableAndCalculation = base.apply(Change.AddNode(table)).apply(Change.AddNode(calculated))
         val inputSlotId = calculated.calculations.inputs()[0].id
-        val connected = withTableAndCalculation.connect(tableId, Either.left(columnId), calculatedId, Either.right(
+        val connected = withTableAndCalculation.apply(Change.Connect(tableId, Either.left(columnId), calculatedId, Either.right(
             inputSlotId
-        ))
+        )))
 
         assertThat(Action.syncActions(withTableAndCalculation, connected))
             .containsExactly(
@@ -179,21 +176,21 @@ class ActionTest {
             )
     }
 
-    private fun randomModel(): Tab2Model {
+    private fun randomModel(): Model {
         val random = ThreadLocalRandom.current()
 
         var model = emptyModel()
         if (random.nextBoolean()) {
-            model = model.addNode(Node.Table(Title("table#" + random.nextInt()), TypeInfo.of(String::class.javaObjectType)))
+            model = model.apply(Change.AddNode(Node.Table(Title("table#" + random.nextInt()), TypeInfo.of(String::class.javaObjectType))))
         }
         if (random.nextBoolean()) {
-            model = model.addNode(Node.Calculated(
+            model = model.apply(Change.AddNode(Node.Calculated(
                 Title("calculated#" + random.nextInt()),
                 TypeInfo.of(Double::class.javaObjectType)
-            ))
+            )))
         }
         if (random.nextBoolean()) {
-            model = model.addNode(Node.Constants(Title("consts#" + random.nextInt())))
+            model = model.apply(Change.AddNode(Node.Constants(Title("consts#" + random.nextInt()))))
         }
         return model
     }
@@ -204,20 +201,20 @@ class ActionTest {
         val calculatedId = Id.nextId(Node.Calculated::class)
 
         val sourceModel = emptyModel()
-            .addNode(
+            .apply(Change.AddNode(
                 Node.Table(
                     name = Title("source"),
                     indexType = TypeInfo.of(String::class.javaObjectType),
                     id = tableId
                 )
-            )
-            .addNode(
+            ))
+            .apply(Change.AddNode(
                 Node.Calculated(
                     name = Title("calc"),
                     indexType = TypeInfo.of(String::class.javaObjectType),
                     id = calculatedId
                 )
-            )
+            ))
             .apply(
                 ModelChange.AddColumn(
                     id = tableId,
@@ -239,7 +236,7 @@ class ActionTest {
         val columnX = (sourceModel.node(tableId) as Node.Table<String>).columns.columns()[0]
         val inputX = (sourceModel.node(calculatedId) as Node.Calculated<String>).calculations.inputs()[0]
 
-        val connected = sourceModel.connect(tableId, Either.left(columnX.id), calculatedId, Either.right(inputX.id))
+        val connected = sourceModel.apply(Change.Connect(tableId, Either.left(columnX.id), calculatedId, Either.right(inputX.id)))
 
         val withSecondExpression = connected.apply(
             ModelChange.AddTabular(
@@ -255,6 +252,6 @@ class ActionTest {
 
     }
 
-    private fun emptyModel() = Tab2Model()
+    private fun emptyModel() = Model()
 }
 

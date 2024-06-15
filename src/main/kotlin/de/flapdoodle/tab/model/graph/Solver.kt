@@ -6,6 +6,7 @@ import de.flapdoodle.graph.GraphAsDot
 import de.flapdoodle.graph.Graphs
 import de.flapdoodle.graph.VerticesAndEdges
 import de.flapdoodle.reflection.TypeInfo
+import de.flapdoodle.tab.model.Model
 import de.flapdoodle.tab.model.Name
 import de.flapdoodle.tab.model.Tab2Model
 import de.flapdoodle.tab.model.calculations.Calculation
@@ -23,7 +24,7 @@ import org.jgrapht.graph.DefaultEdge
 object Solver {
     private val debug = false
 
-    fun solve(model: Tab2Model): Tab2Model {
+    fun solve(model: Model): Model {
         val roots = verticesAndEdges(model)
         var updated = model
         roots.forEach { ve ->
@@ -32,7 +33,7 @@ object Solver {
         return updated
     }
 
-    private fun update(model: Tab2Model, ve: VerticesAndEdges<Vertex, DefaultEdge>): Tab2Model {
+    private fun update(model: Model, ve: VerticesAndEdges<Vertex, DefaultEdge>): Model {
         var updated = model
         if (ve.loops().isEmpty()) {
             ve.vertices().forEach { updated = update(updated, it) }
@@ -42,7 +43,7 @@ object Solver {
         return updated
     }
 
-    private fun update(model: Tab2Model, vertex: Vertex): Tab2Model {
+    private fun update(model: Model, vertex: Vertex): Model {
         val node = model.node(vertex.node)
         return if (node is de.flapdoodle.tab.model.Node.Calculated<*>) {
             update(vertex, node, model)
@@ -54,8 +55,8 @@ object Solver {
     private fun <K : Comparable<K>> update(
         vertex: Vertex,
         node: de.flapdoodle.tab.model.Node.Calculated<K>,
-        model: Tab2Model
-    ): Tab2Model {
+        model: Model
+    ): Model {
         return update(model, node, when (vertex) {
                 is Vertex.Column -> node.calculations.tabular(vertex.columnId)
                 is Vertex.SingleValue -> node.calculations.aggregation(vertex.valueId)
@@ -64,10 +65,10 @@ object Solver {
     }
 
     private fun <K : Comparable<K>> update(
-        model: Tab2Model,
+        model: Model,
         node: de.flapdoodle.tab.model.Node.Calculated<K>,
         calculation: Calculation<K>
-    ): Tab2Model {
+    ): Model {
         val sourceVariables = calculation.variables()
         val neededInputs = node.calculations.inputSlots(sourceVariables)
         val missingSources = neededInputs.filter { it.source == null }
@@ -91,7 +92,7 @@ object Solver {
     private fun <K: Comparable<K>> dataOf(
         indexType: TypeInfo<K>,
         source: Source,
-        model: Tab2Model
+        model: Model
     ): Data {
         val node = model.node(source.node)
         val data = when (source) {
@@ -120,11 +121,11 @@ object Solver {
     }
 
     private fun <K : Comparable<K>> calculate(
-        model: Tab2Model,
+        model: Model,
         node: de.flapdoodle.tab.model.Node.Calculated<K>,
         calculation: Calculation<K>,
         variableDataMap: Map<Variable, Data>
-    ): Tab2Model {
+    ): Model {
         return when (calculation) {
             is Calculation.Aggregation<K> -> calculateAggregate(model, node, calculation, variableDataMap)
             is Calculation.Tabular<K> -> calculateTabular(model, node, calculation, variableDataMap)
@@ -132,10 +133,10 @@ object Solver {
     }
 
     private fun <K : Comparable<K>> clear(
-        model: Tab2Model,
+        model: Model,
         node: de.flapdoodle.tab.model.Node.Calculated<K>,
         calculation: Calculation<K>
-    ): Tab2Model {
+    ): Model {
         return when (calculation) {
             is Calculation.Aggregation<K> -> clearAggregate(model, node, calculation)
             is Calculation.Tabular<K> -> clearTabular(model, node, calculation)
@@ -143,11 +144,11 @@ object Solver {
     }
 
     private fun <K : Comparable<K>> calculateAggregate(
-        model: Tab2Model,
+        model: Model,
         node: de.flapdoodle.tab.model.Node.Calculated<K>,
         calculation: Calculation.Aggregation<K>,
         variableDataMap: Map<Variable, Data>
-    ): Tab2Model {
+    ): Model {
         val valueMap: Map<Variable, Evaluated<*>> = variableDataMap.map { (v, data) ->
             v to when (data) {
                 is SingleValue<out Any> -> singleValueAsEvaluated(data)
@@ -165,16 +166,16 @@ object Solver {
             }
         }
         val changedNode: de.flapdoodle.tab.model.Node.Calculated<K> = setValue(node, calculation, result)
-        return model.copy(nodes = model.nodes.map { if (it.id == changedNode.id) changedNode else it })
+        return model.copy(nodes = model.nodes().map { if (it.id == changedNode.id) changedNode else it })
     }
 
     private fun <K : Comparable<K>> clearAggregate(
-        model: Tab2Model,
+        model: Model,
         node: de.flapdoodle.tab.model.Node.Calculated<K>,
         calculation: Calculation.Aggregation<K>
-    ): Tab2Model {
+    ): Model {
         val changedNode: de.flapdoodle.tab.model.Node.Calculated<K> = clearValue(node, calculation)
-        return model.copy(nodes = model.nodes.map { if (it.id == changedNode.id) changedNode else it })
+        return model.copy(nodes = model.nodes().map { if (it.id == changedNode.id) changedNode else it })
     }
 
     private fun <T: Any> singleValueAsEvaluated(data: SingleValue<T>): Evaluated<T> {
@@ -189,11 +190,11 @@ object Solver {
     }
 
     private fun <K : Comparable<K>> calculateTabular(
-        updated: Tab2Model,
+        updated: Model,
         node: de.flapdoodle.tab.model.Node.Calculated<K>,
         calculation: Calculation.Tabular<K>,
         variableDataMap: Map<Variable, Data>
-    ): Tab2Model {
+    ): Model {
         val (columns, values) = variableDataMap.entries.partition { it.value is Column<*, *> }
         val columnsMap = columns.map {  it.key to it.value as Column<K, Any> }
         val singleValueMap = values.map { it.key to singleValueAsEvaluated(it.value as SingleValue<Any>) }
@@ -201,12 +202,12 @@ object Solver {
     }
 
     private fun <K : Comparable<K>> calculateTabular(
-        updated: Tab2Model,
+        updated: Model,
         node: de.flapdoodle.tab.model.Node.Calculated<K>,
         calculation: Calculation.Tabular<K>,
         columnsMap: List<Pair<Variable, Column<K, Any>>>,
         singleValueMap: List<Pair<Variable, Evaluated<Any>>>
-    ): Tab2Model {
+    ): Model {
         val interpolated = sortAndInterpolate(columnsMap)
         val result = interpolated.index.mapNotNull {
             try {
@@ -219,16 +220,16 @@ object Solver {
         }.toMap()
 
         val changedNode: de.flapdoodle.tab.model.Node.Calculated<K> = setTable(node, calculation, result)
-        return updated.copy(nodes = updated.nodes.map { if (it.id == changedNode.id) changedNode else it })
+        return updated.copy(nodes = updated.nodes().map { if (it.id == changedNode.id) changedNode else it })
     }
 
     private fun <K : Comparable<K>> clearTabular(
-        updated: Tab2Model,
+        updated: Model,
         node: de.flapdoodle.tab.model.Node.Calculated<K>,
         calculation: Calculation.Tabular<K>
-    ): Tab2Model {
+    ): Model {
         val changedNode: de.flapdoodle.tab.model.Node.Calculated<K> = clearTable(node, calculation)
-        return updated.copy(nodes = updated.nodes.map { if (it.id == changedNode.id) changedNode else it })
+        return updated.copy(nodes = updated.nodes().map { if (it.id == changedNode.id) changedNode else it })
     }
 
     private fun <K : Comparable<K>> sortAndInterpolate(columns: List<Pair<Variable, Column<K, Any>>>): InterpolatorColumns<K> {
@@ -350,11 +351,11 @@ object Solver {
 
 
     private fun verticesAndEdges(
-        model: Tab2Model
+        model: Model
     ): Collection<VerticesAndEdges<Vertex, DefaultEdge>> {
         val graph = Graphs.with(Graphs.directedGraphBuilder<Vertex>())
             .build { builder ->
-                model.nodes.forEach { node ->
+                model.nodes().forEach { node ->
                     when (node) {
                         is de.flapdoodle.tab.model.Node.Constants -> {
                             node.values.forEach { value ->

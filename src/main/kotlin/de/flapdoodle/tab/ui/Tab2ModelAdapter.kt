@@ -17,6 +17,7 @@ import de.flapdoodle.kfx.extensions.withAnchors
 import de.flapdoodle.kfx.logging.Logging
 import de.flapdoodle.kfx.types.Id
 import de.flapdoodle.kfx.types.LayoutBounds
+import de.flapdoodle.tab.model.Model
 import de.flapdoodle.tab.model.Size
 import de.flapdoodle.tab.model.Tab2Model
 import de.flapdoodle.tab.model.calculations.InputSlot
@@ -39,7 +40,7 @@ import javafx.scene.control.Button
 import javafx.scene.layout.AnchorPane
 
 class Tab2ModelAdapter(
-    model: ReadOnlyObjectProperty<Tab2Model>,
+    model: ReadOnlyObjectProperty<Model>,
     modelEventListener: ModelEventListener,
     val modelChangeListener: ModelChangeListener
 ) : AnchorPane() {
@@ -66,7 +67,7 @@ class Tab2ModelAdapter(
 
     init {
         children.add(graphEditor)
-        apply(Action.syncActions(Tab2Model(), model.value))
+        apply(Action.syncActions(Model(), model.value))
 
         unsubscribeOnDetach {
             model.subscribe { old, current ->
@@ -259,7 +260,7 @@ class Tab2ModelAdapter(
     }
 
     private fun vertexActions(
-        model: ReadOnlyObjectProperty<Tab2Model>
+        model: ReadOnlyObjectProperty<Model>
     ): (VertexId) -> List<Node> {
         return { id -> listOf(
             Button("?").apply {
