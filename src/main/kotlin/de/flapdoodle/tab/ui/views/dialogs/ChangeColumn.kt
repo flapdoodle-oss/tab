@@ -9,6 +9,7 @@ import de.flapdoodle.tab.model.Name
 import de.flapdoodle.tab.model.Node.Table
 import de.flapdoodle.tab.model.calculations.interpolation.InterpolationType
 import de.flapdoodle.tab.model.change.ModelChange
+import de.flapdoodle.tab.model.changes.Change
 import de.flapdoodle.tab.model.data.Column
 import de.flapdoodle.tab.ui.Converters
 import de.flapdoodle.tab.ui.resources.Labels
@@ -20,7 +21,7 @@ import javafx.geometry.HPos
 class ChangeColumn<K : Comparable<K>>(
     private val nodeId: Id<out Table<*>>,
     private val column: Column<K, out Any>
-) : DialogContent<ModelChange.ChangeColumnProperties<K>>() {
+) : DialogContent<Change.Table.ColumnProperties>() {
 
     private val name = Labels.name(ChangeColumn::class)
     private val nameField = ValidatingTextField(
@@ -59,15 +60,15 @@ class ChangeColumn<K : Comparable<K>>(
         return ValidatingField.invalidInputs(nameField, interpolationField)
     }
 
-    override fun result(): ModelChange.ChangeColumnProperties<K>? {
+    override fun result(): Change.Table.ColumnProperties? {
         val newName = Name(nameField.text, shortField.text)
         return if (column.name!= newName || column.interpolationType != interpolationField.selectionModel.selectedItem) {
-            ModelChange.ChangeColumnProperties(nodeId, column.id, newName, interpolationField.selectionModel.selectedItem)
+            Change.Table.ColumnProperties(nodeId, column.id, newName, interpolationField.selectionModel.selectedItem)
         } else null
     }
 
     companion object {
-        fun <K : Comparable<K>> open(nodeId: Id<out Table<*>>, column: Column<K, out Any>): ModelChange.ChangeColumnProperties<K>? {
+        fun <K : Comparable<K>> open(nodeId: Id<out Table<*>>, column: Column<K, out Any>): Change.Table.ColumnProperties? {
             return DialogWrapper.open { ChangeColumn(nodeId, column) }
         }
     }

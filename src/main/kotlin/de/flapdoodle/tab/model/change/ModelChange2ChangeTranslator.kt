@@ -7,7 +7,7 @@ object ModelChange2ChangeTranslator {
         return when (change) {
             is ModelChange.ChangeTableProperties -> Change.Table.Properties(change.id, change.name)
             is ModelChange.AddColumn<out Comparable<*>> -> Change.Table.AddColumn(change.id, change.column)
-            is ModelChange.ChangeColumnProperties<out Comparable<*>> -> Change.Table.ColumnProperties(
+            is ModelChange.ChangeColumnProperties -> Change.Table.ColumnProperties(
                 change.id,
                 change.columnId,
                 change.name,

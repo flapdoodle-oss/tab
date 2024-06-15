@@ -137,7 +137,7 @@ sealed class Node {
                             return copy(columns = columns.addColumn(change.column as Column<K, out Any>))
                         }
                     }
-                    is ModelChange.ChangeColumnProperties<out Comparable<*>> -> {
+                    is ModelChange.ChangeColumnProperties -> {
                         if (change.id == id) {
                             return copy(columns = columns.change(change.columnId) { it.copy(name = change.name, interpolationType = change.interpolationType) })
                         }

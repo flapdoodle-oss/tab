@@ -28,7 +28,7 @@ class TableUIAdapter<K: Comparable<K>>(
         rowWeights(0.0, 1.0)
     }
 
-    private val columnsPane = ColumnsPane(node, modelChangeListener).apply {
+    private val columnsPane = ColumnsPane(node, changeListener).apply {
         WeightGridPane.setPosition(this, 0, 0)
     }
     private val tabPane = TabPane().apply {

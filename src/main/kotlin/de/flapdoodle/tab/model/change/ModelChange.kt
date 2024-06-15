@@ -23,7 +23,7 @@ sealed class ModelChange {
     sealed class TableChange(open val id: Id<out Table<out Comparable<*>>>): ModelChange()
     data class ChangeTableProperties(override val id: Id<out Table<out Comparable<*>>>, val name: Title): TableChange(id)
     data class AddColumn<K: Comparable<K>>(override val id: Id<out Table<out Comparable<*>>>, val column: Column<K, out Any>): TableChange(id)
-    data class ChangeColumnProperties<K: Comparable<K>>(
+    data class ChangeColumnProperties(
         override val id: Id<out Table<out Comparable<*>>>,
         val columnId: ColumnId,
         val name: Name,

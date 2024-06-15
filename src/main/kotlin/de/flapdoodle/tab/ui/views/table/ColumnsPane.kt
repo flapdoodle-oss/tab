@@ -4,9 +4,9 @@ import de.flapdoodle.kfx.extensions.cssClassName
 import de.flapdoodle.kfx.layout.grid.TableCell
 import de.flapdoodle.kfx.layout.grid.WeightGridTable
 import de.flapdoodle.tab.model.Node
-import de.flapdoodle.tab.model.change.ModelChange
+import de.flapdoodle.tab.model.changes.Change
 import de.flapdoodle.tab.model.data.Column
-import de.flapdoodle.tab.ui.ModelChangeListener
+import de.flapdoodle.tab.ui.ChangeListener
 import de.flapdoodle.tab.ui.resources.Buttons
 import de.flapdoodle.tab.ui.resources.Labels
 import de.flapdoodle.tab.ui.views.colors.ColorDot
@@ -22,7 +22,7 @@ import javafx.scene.layout.StackPane
 
 class ColumnsPane<K: Comparable<K>>(
     node: Node.Table<K>,
-    modelChangeListener: ModelChangeListener
+    changeListener: ChangeListener
 ): StackPane() {
     private val nodeId = node.id
     private val context = Labels.with(ColumnsPane::class)
@@ -46,7 +46,7 @@ class ColumnsPane<K: Comparable<K>>(
         TableCell.with<Column<K, out Any>, Button, EventHandler<ActionEvent>>(Buttons.change(context), { v -> EventHandler {
             val change = ChangeColumn.open(nodeId, v)
             if (change!=null) {
-                modelChangeListener.change(change)
+                changeListener.change(change)
             }
         }}, Button::setOnAction).apply {
             updateCell(column)
@@ -54,7 +54,7 @@ class ColumnsPane<K: Comparable<K>>(
     })
     private val deleteColumn = WeightGridTable.Column<Column<K, out Any>>(weight = 0.0, cellFactory = { column ->
         TableCell(Buttons.delete(context) {
-            modelChangeListener.change(ModelChange.RemoveColumn(nodeId, column.id))
+            changeListener.change(Change.Table.RemoveColumn(nodeId, column.id))
         })
     })
     private val columnsPanel = WeightGridTable(
@@ -71,7 +71,7 @@ class ColumnsPane<K: Comparable<K>>(
             val button = Buttons.add(context, ) {
                 val column = NewColumn.open(node.indexType)
                 if (column != null) {
-                    modelChangeListener.change(ModelChange.AddColumn(nodeId, column))
+                    changeListener.change(Change.Table.AddColumn(nodeId, column))
                 }
             }
             mapOf(deleteColumn to button)
