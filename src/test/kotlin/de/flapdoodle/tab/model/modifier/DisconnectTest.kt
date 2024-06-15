@@ -17,11 +17,11 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import java.math.BigDecimal
 
-class RemoveConnectionTest {
+class DisconnectTest {
 
     @Test
     fun noChangesIfNoConnections() {
-        val modifier = RemoveConnection.removeSource(emptyList(), Id.nextId(Node::class))
+        val modifier = Disconnect.removeSource(emptyList(), Id.nextId(Node::class))
         assertThat(modifier).isEmpty()
     }
 
@@ -72,7 +72,7 @@ class RemoveConnectionTest {
             )
         )
 
-        val modifier = RemoveConnection.removeConnections(calculated, constants.id)
+        val modifier = Disconnect.removeConnections(calculated, constants.id)
         
         assertThat(modifier)
             .hasSize(1)
