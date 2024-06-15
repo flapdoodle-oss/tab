@@ -44,6 +44,7 @@ data class Columns<K: Comparable<K>>(
     }
 
     fun change(id: ColumnId, map: (Column<K, out Any>) -> Column<K, out Any>): Columns<K> {
+        require(columnIdMap.containsKey(id)) { "unknown column: $id" }
         return copy(columns = columns.map { if (it.id==id) map(it) else it })
     }
 

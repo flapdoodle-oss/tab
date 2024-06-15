@@ -2,7 +2,6 @@ package de.flapdoodle.tab.model.changes
 
 import de.flapdoodle.kfx.types.Id
 import de.flapdoodle.tab.model.*
-import de.flapdoodle.tab.model.Node.Table
 import de.flapdoodle.tab.model.calculations.InputSlot
 import de.flapdoodle.tab.model.calculations.interpolation.InterpolationType
 import de.flapdoodle.tab.model.connections.Source
@@ -40,7 +39,7 @@ sealed class Change {
             val column: Column<K, out Any>
         ) : Table(id)
 
-        data class ColumnProperties<K : Comparable<K>>(
+        data class ColumnProperties(
             override val id: Id<out Node.Table<out Comparable<*>>>,
             val columnId: ColumnId,
             val name: Name,

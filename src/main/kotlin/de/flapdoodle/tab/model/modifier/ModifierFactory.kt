@@ -20,7 +20,10 @@ object ModifierFactory {
     // VisibleForTesting
     internal fun tableChanges(nodes: List<Node>, change: Change.Table): List<Modifier> {
         return when (change) {
+            is Change.Table.Properties -> listOf(TableProperties(change.id, change.name))
             is Change.Table.AddColumn<out Comparable<*>> -> listOf(AddColumn(change.id, change.column))
+            is Change.Table.ColumnProperties -> listOf(ColumnProperties(change.id, change.columnId, change.name, change.interpolationType))
+            is Change.Table.SetColumns<out Comparable<*>> -> listOf(SetColumnValues.asModifier(change))
             is Change.Table.RemoveColumn -> Disconnect.removeSource(nodes, change.id, change.columnId)  + RemoveColumn(change.id, change.columnId)
             else -> throw IllegalArgumentException("not implemented: $change")
         }
