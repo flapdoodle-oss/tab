@@ -1,7 +1,7 @@
 package de.flapdoodle.tab.model.modifier
 
 import de.flapdoodle.kfx.types.Id
-import de.flapdoodle.tab.model.Change
+import de.flapdoodle.tab.model.changes.Change
 import de.flapdoodle.tab.model.Node
 import de.flapdoodle.tab.model.calculations.InputSlot
 import de.flapdoodle.tab.model.connections.Source

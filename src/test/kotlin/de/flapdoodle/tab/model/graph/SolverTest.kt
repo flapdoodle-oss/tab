@@ -6,6 +6,7 @@ import de.flapdoodle.tab.model.calculations.Calculation
 import de.flapdoodle.tab.model.calculations.Calculations
 import de.flapdoodle.tab.model.calculations.adapter.EvalFormulaAdapter
 import de.flapdoodle.tab.model.calculations.interpolation.InterpolationType
+import de.flapdoodle.tab.model.changes.Change
 import de.flapdoodle.tab.model.connections.Source
 import de.flapdoodle.tab.model.data.*
 import de.flapdoodle.tab.model.graph.Solver

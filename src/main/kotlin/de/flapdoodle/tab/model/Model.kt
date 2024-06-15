@@ -4,6 +4,7 @@ import de.flapdoodle.kfx.collections.Diff
 import de.flapdoodle.kfx.types.Id
 import de.flapdoodle.tab.model.calculations.InputSlot
 import de.flapdoodle.tab.model.change.ModelChange
+import de.flapdoodle.tab.model.changes.Change
 import de.flapdoodle.tab.model.connections.Source
 import de.flapdoodle.tab.model.modifier.ModifierFactory
 import de.flapdoodle.tab.types.one

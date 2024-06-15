@@ -7,6 +7,7 @@ import de.flapdoodle.tab.model.calculations.Calculations
 import de.flapdoodle.tab.model.calculations.InputSlot
 import de.flapdoodle.tab.model.calculations.Variable
 import de.flapdoodle.tab.model.calculations.adapter.EvalFormulaAdapter
+import de.flapdoodle.tab.model.changes.Change
 import de.flapdoodle.tab.model.connections.Source
 import de.flapdoodle.tab.model.data.SingleValue
 import de.flapdoodle.tab.model.data.SingleValues

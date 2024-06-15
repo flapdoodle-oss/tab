@@ -7,6 +7,7 @@ import de.flapdoodle.tab.model.calculations.Calculation
 import de.flapdoodle.tab.model.calculations.Calculations
 import de.flapdoodle.tab.model.calculations.adapter.EvalFormulaAdapter
 import de.flapdoodle.tab.model.change.ModelChange
+import de.flapdoodle.tab.model.changes.Change
 import de.flapdoodle.tab.model.data.Column
 import de.flapdoodle.tab.model.data.ColumnId
 import de.flapdoodle.tab.model.data.Columns
@@ -135,7 +136,8 @@ class ActionTest {
 
         val withTableAndCalculation = base.apply(Change.AddNode(table)).apply(Change.AddNode(calculated))
         val inputSlotId = calculated.calculations.inputs()[0].id
-        val connected = withTableAndCalculation.apply(Change.Connect(tableId, Either.left(columnId), calculatedId, Either.right(
+        val connected = withTableAndCalculation.apply(
+            Change.Connect(tableId, Either.left(columnId), calculatedId, Either.right(
             inputSlotId
         )))
 
@@ -184,7 +186,8 @@ class ActionTest {
             model = model.apply(Change.AddNode(Node.Table(Title("table#" + random.nextInt()), TypeInfo.of(String::class.javaObjectType))))
         }
         if (random.nextBoolean()) {
-            model = model.apply(Change.AddNode(Node.Calculated(
+            model = model.apply(
+                Change.AddNode(Node.Calculated(
                 Title("calculated#" + random.nextInt()),
                 TypeInfo.of(Double::class.javaObjectType)
             )))
@@ -201,14 +204,16 @@ class ActionTest {
         val calculatedId = Id.nextId(Node.Calculated::class)
 
         val sourceModel = emptyModel()
-            .apply(Change.AddNode(
+            .apply(
+                Change.AddNode(
                 Node.Table(
                     name = Title("source"),
                     indexType = TypeInfo.of(String::class.javaObjectType),
                     id = tableId
                 )
             ))
-            .apply(Change.AddNode(
+            .apply(
+                Change.AddNode(
                 Node.Calculated(
                     name = Title("calc"),
                     indexType = TypeInfo.of(String::class.javaObjectType),

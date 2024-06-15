@@ -1,5 +1,6 @@
 package de.flapdoodle.tab.model
 
+import de.flapdoodle.tab.model.changes.Change
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import java.util.*
