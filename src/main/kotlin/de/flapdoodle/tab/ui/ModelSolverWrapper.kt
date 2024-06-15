@@ -82,8 +82,15 @@ class ModelSolverWrapper(initalModel: Model = Model()) {
         }
     }
 
+    private val changeListener = ChangeListener { change ->
+        changeModel { old -> old.apply(change) }
+    }
+
     fun eventListener() = eventListener
-    fun changeListener() = modelChangeListener
+    @Deprecated("use changeListener")
+    fun modelChangeListener() = modelChangeListener
+    fun changeListener() = changeListener
+
     fun model(): ReadOnlyObjectProperty<Model> = model
     
     fun undo(): Boolean {

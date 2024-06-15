@@ -43,7 +43,8 @@ import javafx.scene.layout.AnchorPane
 class ModelAdapter(
     model: ReadOnlyObjectProperty<Model>,
     modelEventListener: ModelEventListener,
-    val modelChangeListener: ModelChangeListener
+    val modelChangeListener: ModelChangeListener,
+    val changeListener: ChangeListener
 ) : AnchorPane() {
     private val logger = Logging.logger(ModelAdapter::class)
 

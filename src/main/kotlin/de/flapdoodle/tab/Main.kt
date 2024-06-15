@@ -17,7 +17,7 @@ class Main(
   private val selectedEdge = SimpleObjectProperty<ModelAdapter.Output2Input>()
 
   private val menu = AppMenu(modelWrapper)
-  private val adapter = ModelAdapter(modelWrapper.model(), modelWrapper.eventListener(), modelWrapper.changeListener()).also { editor ->
+  private val adapter = ModelAdapter(modelWrapper.model(), modelWrapper.eventListener(), modelWrapper.modelChangeListener(), modelWrapper.changeListener()).also { editor ->
     editor.selectedNodesProperty().subscribe { selection ->
       if (selection.size == 1) {
         selectedVertex.value = selection.first()
