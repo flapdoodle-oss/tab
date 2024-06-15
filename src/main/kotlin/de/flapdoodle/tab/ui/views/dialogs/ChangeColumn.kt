@@ -4,10 +4,7 @@ import de.flapdoodle.kfx.controls.fields.ChoiceBoxes
 import de.flapdoodle.kfx.controls.fields.ValidatingField
 import de.flapdoodle.kfx.controls.fields.ValidatingTextField
 import de.flapdoodle.kfx.extensions.bindCss
-import de.flapdoodle.kfx.layout.grid.WeightGridPane
 import de.flapdoodle.kfx.types.Id
-import de.flapdoodle.reflection.TypeInfo
-import de.flapdoodle.tab.config.ValueTypes
 import de.flapdoodle.tab.model.Name
 import de.flapdoodle.tab.model.Node.Table
 import de.flapdoodle.tab.model.calculations.interpolation.InterpolationType

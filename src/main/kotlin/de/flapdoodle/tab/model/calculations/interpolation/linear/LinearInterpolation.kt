@@ -2,7 +2,6 @@ package de.flapdoodle.tab.model.calculations.interpolation.linear
 
 import de.flapdoodle.reflection.TypeInfo
 import java.math.BigDecimal
-import kotlin.reflect.KClass
 
 fun interface LinearInterpolation<K : Any, V : Any> {
     fun interpolate(start: Pair<K, V>, end: Pair<K, V>, offset: K): V

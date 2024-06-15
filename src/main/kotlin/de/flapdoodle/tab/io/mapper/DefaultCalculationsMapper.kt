@@ -5,7 +5,6 @@ import de.flapdoodle.tab.io.adapter.ToFileMapping
 import de.flapdoodle.tab.io.adapter.ToModelMapping
 import de.flapdoodle.tab.io.file.FileCalculations
 import de.flapdoodle.tab.model.calculations.Calculations
-import kotlin.reflect.KClass
 
 class DefaultCalculationsMapper(
     private val aggregationMapper: AggregationMapper = DefaultAggregationMapper(),

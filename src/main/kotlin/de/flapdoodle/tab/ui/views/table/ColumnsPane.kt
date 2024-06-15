@@ -3,11 +3,9 @@ package de.flapdoodle.tab.ui.views.table
 import de.flapdoodle.kfx.extensions.cssClassName
 import de.flapdoodle.kfx.layout.grid.TableCell
 import de.flapdoodle.kfx.layout.grid.WeightGridTable
-import de.flapdoodle.kfx.types.Id
 import de.flapdoodle.tab.model.Node
 import de.flapdoodle.tab.model.change.ModelChange
 import de.flapdoodle.tab.model.data.Column
-import de.flapdoodle.tab.model.data.SingleValue
 import de.flapdoodle.tab.ui.ModelChangeListener
 import de.flapdoodle.tab.ui.resources.Buttons
 import de.flapdoodle.tab.ui.resources.Labels

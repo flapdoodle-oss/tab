@@ -10,8 +10,6 @@ import de.flapdoodle.tab.model.data.ColumnId
 import de.flapdoodle.tab.model.data.SingleValueId
 import de.flapdoodle.tab.types.change
 import de.flapdoodle.tab.types.one
-import de.flapdoodle.tab.ui.views.dialogs.NewExpression
-import kotlin.reflect.KClass
 
 data class Calculations<K: Comparable<K>>(
     private val indexType: TypeInfo<K>,

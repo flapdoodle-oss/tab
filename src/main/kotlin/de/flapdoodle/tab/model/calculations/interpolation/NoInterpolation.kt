@@ -2,7 +2,6 @@ package de.flapdoodle.tab.model.calculations.interpolation
 
 import de.flapdoodle.eval.core.evaluables.Evaluated
 import de.flapdoodle.reflection.TypeInfo
-import kotlin.reflect.KClass
 
 class NoInterpolation<K: Comparable<K>, V: Any>(
     private val valueType: TypeInfo<V>

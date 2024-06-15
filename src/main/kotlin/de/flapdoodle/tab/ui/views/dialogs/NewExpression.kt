@@ -3,14 +3,11 @@ package de.flapdoodle.tab.ui.views.dialogs
 import de.flapdoodle.kfx.controls.fields.ValidatingField
 import de.flapdoodle.kfx.controls.fields.ValidatingTextField
 import de.flapdoodle.kfx.extensions.bindCss
-import de.flapdoodle.kfx.layout.grid.WeightGridPane
 import de.flapdoodle.tab.model.Name
 import de.flapdoodle.tab.ui.Converters
 import de.flapdoodle.tab.ui.resources.Labels
 import de.flapdoodle.tab.ui.resources.RequiredFieldNotSet
 import javafx.beans.value.ObservableValue
-import javafx.scene.control.Label
-import javafx.scene.control.TextField
 
 class NewExpression : DialogContent<NewExpression.NamedExpression>() {
 

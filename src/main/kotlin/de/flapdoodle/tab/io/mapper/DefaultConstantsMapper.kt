@@ -4,7 +4,6 @@ import de.flapdoodle.tab.io.adapter.ToFileMapping
 import de.flapdoodle.tab.io.adapter.ToModelMapping
 import de.flapdoodle.tab.io.file.FileNode
 import de.flapdoodle.tab.io.file.FileSingleValues
-import de.flapdoodle.tab.model.Name
 import de.flapdoodle.tab.model.Title
 import de.flapdoodle.tab.model.data.SingleValues
 

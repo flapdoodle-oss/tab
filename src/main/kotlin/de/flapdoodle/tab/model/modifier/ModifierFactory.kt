@@ -1,7 +1,7 @@
 package de.flapdoodle.tab.model.modifier
 
-import de.flapdoodle.tab.model.changes.Change
 import de.flapdoodle.tab.model.Node
+import de.flapdoodle.tab.model.changes.Change
 
 object ModifierFactory {
     fun changes(nodes: List<Node>, change: Change): List<Modifier> {

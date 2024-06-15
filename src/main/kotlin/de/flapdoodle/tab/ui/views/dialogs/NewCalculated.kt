@@ -14,7 +14,7 @@ import de.flapdoodle.tab.ui.resources.RequiredFieldNotSet
 import de.flapdoodle.tab.ui.resources.ResourceBundles
 import javafx.beans.value.ObservableValue
 import javafx.geometry.HPos
-import javafx.scene.control.*
+import javafx.scene.control.TextArea
 
 class NewCalculated : DialogContent<Node.Calculated<out Comparable<*>>>() {
 

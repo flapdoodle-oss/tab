@@ -2,7 +2,9 @@ package de.flapdoodle.tab
 
 import de.flapdoodle.kfx.extensions.cssClassName
 import de.flapdoodle.kfx.types.Id
-import de.flapdoodle.tab.model.*
+import de.flapdoodle.tab.model.Model
+import de.flapdoodle.tab.model.Node
+import de.flapdoodle.tab.model.Position
 import de.flapdoodle.tab.model.changes.Change
 import de.flapdoodle.tab.ui.ModelAdapter
 import de.flapdoodle.tab.ui.commands.Command

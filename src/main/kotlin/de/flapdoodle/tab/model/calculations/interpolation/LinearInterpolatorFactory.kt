@@ -2,7 +2,6 @@ package de.flapdoodle.tab.model.calculations.interpolation
 
 import de.flapdoodle.reflection.TypeInfo
 import de.flapdoodle.tab.model.calculations.interpolation.linear.LinearInterpolation
-import kotlin.reflect.KClass
 
 class LinearInterpolatorFactory<K : Comparable<K>, V : Any>(
     val valueType: TypeInfo<V>,

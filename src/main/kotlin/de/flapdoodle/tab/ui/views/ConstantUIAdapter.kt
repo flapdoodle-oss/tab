@@ -18,15 +18,10 @@ import de.flapdoodle.tab.ui.views.common.DescriptionPane
 import de.flapdoodle.tab.ui.views.dialogs.ChangeValue
 import de.flapdoodle.tab.ui.views.dialogs.NewValue
 import javafx.beans.property.SimpleObjectProperty
-import javafx.event.ActionEvent
-import javafx.event.EventHandler
 import javafx.geometry.HPos
 import javafx.scene.Node
-import javafx.scene.control.Button
-import javafx.scene.control.Label
 import javafx.scene.control.TextField
 import javafx.scene.layout.VBox
-import javafx.scene.paint.Color
 
 class ConstantUIAdapter(
     node: de.flapdoodle.tab.model.Node.Constants,

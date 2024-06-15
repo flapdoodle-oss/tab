@@ -8,7 +8,6 @@ import de.flapdoodle.tab.model.Name
 import de.flapdoodle.tab.model.calculations.interpolation.InterpolationType
 import de.flapdoodle.tab.model.data.ColumnId
 import de.flapdoodle.tab.model.data.SingleValueId
-import kotlin.reflect.KClass
 
 sealed class Calculation<K: Comparable<K>>(
     private val indexType: TypeInfo<K>,

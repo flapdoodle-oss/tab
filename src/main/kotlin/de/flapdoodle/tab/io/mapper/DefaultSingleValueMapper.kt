@@ -8,7 +8,6 @@ import de.flapdoodle.tab.io.file.FileSingleValue
 import de.flapdoodle.tab.model.Name
 import de.flapdoodle.tab.model.data.SingleValue
 import de.flapdoodle.tab.model.data.SingleValueId
-import kotlin.reflect.KClass
 
 object DefaultSingleValueMapper : Mapper<SingleValue<out Any>, FileSingleValue> {
     override fun toFile(toFileMapping: ToFileMapping, src: SingleValue<out Any>): FileSingleValue {

@@ -4,9 +4,7 @@ import de.flapdoodle.reflection.TypeInfo
 import de.flapdoodle.tab.io.adapter.ToFileMapping
 import de.flapdoodle.tab.io.adapter.ToModelMapping
 import de.flapdoodle.tab.io.file.FileNode
-import de.flapdoodle.tab.model.Name
 import de.flapdoodle.tab.model.Title
-import kotlin.reflect.KClass
 
 class DefaultTableMapper(
     private val columnsMapper: ColumnsMapper = DefaultColumnsMapper()

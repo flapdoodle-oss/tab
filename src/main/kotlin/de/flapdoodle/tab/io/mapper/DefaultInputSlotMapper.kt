@@ -8,7 +8,6 @@ import de.flapdoodle.tab.io.file.FileInputSlot
 import de.flapdoodle.tab.io.file.FileVariable
 import de.flapdoodle.tab.model.calculations.InputSlot
 import de.flapdoodle.tab.model.calculations.Variable
-import kotlin.reflect.KClass
 
 class DefaultInputSlotMapper(
     private val sourceMapper: SourceMapper = DefaultSourceMapper(),

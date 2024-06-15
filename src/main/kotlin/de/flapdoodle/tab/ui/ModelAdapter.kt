@@ -21,7 +21,9 @@ import de.flapdoodle.tab.model.Model
 import de.flapdoodle.tab.model.Size
 import de.flapdoodle.tab.model.calculations.InputSlot
 import de.flapdoodle.tab.model.connections.Source
-import de.flapdoodle.tab.model.data.*
+import de.flapdoodle.tab.model.data.Column
+import de.flapdoodle.tab.model.data.DataId
+import de.flapdoodle.tab.model.data.SingleValue
 import de.flapdoodle.tab.ui.commands.Command
 import de.flapdoodle.tab.ui.events.Event2ModelEvent
 import de.flapdoodle.tab.ui.events.ModelEventListener

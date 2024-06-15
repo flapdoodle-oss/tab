@@ -2,7 +2,6 @@ package de.flapdoodle.tab.io.adapter
 
 import de.flapdoodle.kfx.types.Id
 import de.flapdoodle.reflection.TypeInfo
-import kotlin.reflect.KClass
 
 class ToFileMapping(
     val indexTypeMapper: IndexTypeMapper = KeyMapIndexTypeMapper.defaultMapper(),

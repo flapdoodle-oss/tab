@@ -1,7 +1,6 @@
 package de.flapdoodle.tab
 
 import de.flapdoodle.tab.model.Model
-import de.flapdoodle.tab.model.Tab2Model
 import de.flapdoodle.tab.prefs.TabPref
 import de.flapdoodle.tab.ui.ModelSolverWrapper
 import javafx.application.Application

@@ -8,7 +8,6 @@ import de.flapdoodle.tab.io.adapter.ToModelMapping
 import de.flapdoodle.tab.io.file.Tab2File
 import de.flapdoodle.tab.io.mapper.DefaultModelFileMapper
 import de.flapdoodle.tab.model.Model
-import de.flapdoodle.tab.model.Tab2Model
 
 object Tab2ModelIO {
     private val moshi = Moshi.Builder()

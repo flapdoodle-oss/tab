@@ -5,7 +5,6 @@ import de.flapdoodle.reflection.TypeInfo
 import de.flapdoodle.tab.model.data.ColumnId
 import de.flapdoodle.tab.model.data.DataId
 import de.flapdoodle.tab.model.data.SingleValueId
-import kotlin.reflect.KClass
 
 sealed class Source {
     abstract val node: Id<out de.flapdoodle.tab.model.Node>

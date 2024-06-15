@@ -4,7 +4,6 @@ import de.flapdoodle.kfx.collections.OrderedDiff
 import de.flapdoodle.kfx.types.Id
 import de.flapdoodle.reflection.TypeInfo
 import de.flapdoodle.tab.model.Model
-import de.flapdoodle.tab.model.Tab2Model
 import de.flapdoodle.tab.model.calculations.InputSlot
 import de.flapdoodle.tab.model.connections.Source
 import de.flapdoodle.tab.model.data.Column

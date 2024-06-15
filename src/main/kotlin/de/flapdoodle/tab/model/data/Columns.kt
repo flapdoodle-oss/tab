@@ -1,7 +1,6 @@
 package de.flapdoodle.tab.model.data
 
 import de.flapdoodle.reflection.TypeInfo
-import kotlin.reflect.KClass
 
 data class Columns<K: Comparable<K>>(
     private val columns: List<Column<K, out Any>> = emptyList()

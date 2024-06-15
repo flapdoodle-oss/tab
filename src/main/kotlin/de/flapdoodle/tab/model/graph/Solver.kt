@@ -7,8 +7,6 @@ import de.flapdoodle.graph.Graphs
 import de.flapdoodle.graph.VerticesAndEdges
 import de.flapdoodle.reflection.TypeInfo
 import de.flapdoodle.tab.model.Model
-import de.flapdoodle.tab.model.Name
-import de.flapdoodle.tab.model.Tab2Model
 import de.flapdoodle.tab.model.calculations.Calculation
 import de.flapdoodle.tab.model.calculations.Variable
 import de.flapdoodle.tab.model.calculations.interpolation.DefaultInterpolatorFactoryLookup

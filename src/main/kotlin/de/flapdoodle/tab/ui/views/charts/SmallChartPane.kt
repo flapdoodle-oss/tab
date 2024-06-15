@@ -1,10 +1,9 @@
 package de.flapdoodle.tab.ui.views.charts
 
-import de.flapdoodle.kfx.types.ranges.RangeFactories
-import de.flapdoodle.kfx.types.ranges.RangeFactory
 import de.flapdoodle.kfx.controls.charts.Serie
 import de.flapdoodle.kfx.controls.charts.SmallChart
-import de.flapdoodle.kfx.converters.Converters
+import de.flapdoodle.kfx.types.ranges.RangeFactories
+import de.flapdoodle.kfx.types.ranges.RangeFactory
 import de.flapdoodle.reflection.TypeInfo
 import de.flapdoodle.tab.model.data.Column
 import de.flapdoodle.tab.model.data.Columns
@@ -14,7 +13,6 @@ import java.math.BigDecimal
 import java.math.BigInteger
 import java.time.LocalDate
 import java.util.*
-import kotlin.reflect.KClass
 
 class SmallChartPane<K : Comparable<K>>(
     node: de.flapdoodle.tab.model.Node.HasColumns<K>

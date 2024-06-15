@@ -3,8 +3,8 @@ package de.flapdoodle.tab
 import de.flapdoodle.kfx.extensions.bindCss
 import de.flapdoodle.kfx.layout.grid.WeightGridPane
 import de.flapdoodle.kfx.types.Id
-import de.flapdoodle.tab.ui.ModelSolverWrapper
 import de.flapdoodle.tab.ui.ModelAdapter
+import de.flapdoodle.tab.ui.ModelSolverWrapper
 import de.flapdoodle.tab.ui.commands.Command
 import javafx.beans.property.SimpleObjectProperty
 import javafx.scene.input.KeyCode

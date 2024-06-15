@@ -4,7 +4,6 @@ import de.flapdoodle.kfx.controls.fields.ChoiceBoxes
 import de.flapdoodle.kfx.controls.fields.ValidatingField
 import de.flapdoodle.kfx.controls.fields.ValidatingTextField
 import de.flapdoodle.kfx.extensions.bindCss
-import de.flapdoodle.kfx.layout.grid.WeightGridPane
 import de.flapdoodle.tab.config.ValueTypes
 import de.flapdoodle.tab.model.Name
 import de.flapdoodle.tab.ui.Converters
@@ -13,8 +12,6 @@ import de.flapdoodle.tab.ui.resources.RequiredFieldNotSet
 import de.flapdoodle.tab.ui.resources.ResourceBundles
 import javafx.beans.value.ObservableValue
 import javafx.geometry.HPos
-import javafx.scene.control.*
-import javafx.scene.control.ButtonBar.ButtonData
 import kotlin.reflect.KClass
 
 class NewValue : DialogContent<NewValue.NewValue>() {

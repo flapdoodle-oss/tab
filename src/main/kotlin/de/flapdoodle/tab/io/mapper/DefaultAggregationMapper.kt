@@ -9,7 +9,6 @@ import de.flapdoodle.tab.model.Name
 import de.flapdoodle.tab.model.calculations.Calculation
 import de.flapdoodle.tab.model.calculations.Formula
 import de.flapdoodle.tab.model.data.SingleValueId
-import kotlin.reflect.KClass
 
 class DefaultAggregationMapper(
     private val formulaMapper: Mapper<Formula, FileFormula> = DefaultFormulaMapper()

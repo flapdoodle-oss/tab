@@ -3,7 +3,6 @@ package de.flapdoodle.tab.io.adapter
 import de.flapdoodle.reflection.TypeInfo
 import java.math.BigDecimal
 import java.math.BigInteger
-import kotlin.reflect.KClass
 
 data class KeyMapTypeMapper(
     val mapping: List<Pair<TypeInfo<out Any>, String>>

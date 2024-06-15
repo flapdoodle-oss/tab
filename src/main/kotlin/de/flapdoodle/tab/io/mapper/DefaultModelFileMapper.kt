@@ -5,7 +5,6 @@ import de.flapdoodle.tab.io.adapter.ToModelMapping
 import de.flapdoodle.tab.io.file.FileNode
 import de.flapdoodle.tab.io.file.Tab2File
 import de.flapdoodle.tab.model.Model
-import de.flapdoodle.tab.model.Tab2Model
 
 class DefaultModelFileMapper(
     private val nodeMapper: Mapper<de.flapdoodle.tab.model.Node, FileNode> = DefaultNodeMapper()

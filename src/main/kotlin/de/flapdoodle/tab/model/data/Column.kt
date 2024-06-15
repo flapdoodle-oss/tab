@@ -5,7 +5,6 @@ import de.flapdoodle.reflection.TypeInfo
 import de.flapdoodle.tab.model.Name
 import de.flapdoodle.tab.model.calculations.interpolation.InterpolationType
 import javafx.scene.paint.Color
-import kotlin.reflect.KClass
 
 data class Column<K : Comparable<K>, V : Any>(
     val name: Name,

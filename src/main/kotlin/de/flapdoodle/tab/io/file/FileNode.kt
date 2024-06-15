@@ -1,6 +1,5 @@
 package de.flapdoodle.tab.io.file
 
-import de.flapdoodle.tab.model.Name
 import de.flapdoodle.tab.model.Position
 import de.flapdoodle.tab.model.Size
 

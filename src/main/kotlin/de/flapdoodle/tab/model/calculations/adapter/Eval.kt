@@ -3,11 +3,7 @@ package de.flapdoodle.tab.model.calculations.adapter
 import de.flapdoodle.eval.core.Expression
 import de.flapdoodle.eval.core.ExpressionFactory
 import de.flapdoodle.eval.core.VariableResolver
-import de.flapdoodle.eval.core.evaluables.Evaluated
-import de.flapdoodle.eval.core.evaluables.OperatorMap
-import de.flapdoodle.eval.core.evaluables.OperatorMapping
-import de.flapdoodle.eval.core.evaluables.Precedence
-import de.flapdoodle.eval.core.evaluables.TypedEvaluableMap
+import de.flapdoodle.eval.core.evaluables.*
 import de.flapdoodle.tab.model.calculations.Variable
 import de.flapdoodle.tab.model.calculations.adapter.arithmetic.Divide
 import de.flapdoodle.tab.model.calculations.adapter.arithmetic.Minus

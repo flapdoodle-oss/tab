@@ -5,7 +5,6 @@ import de.flapdoodle.tab.io.adapter.ToFileMapping
 import de.flapdoodle.tab.io.adapter.ToModelMapping
 import de.flapdoodle.tab.io.file.FileColumn
 import de.flapdoodle.tab.model.data.Column
-import kotlin.reflect.KClass
 
 interface ColumnMapper {
     fun toFile(toFileMapping: ToFileMapping, src: Column<out Comparable<*>, out Any>): FileColumn

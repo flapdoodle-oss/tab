@@ -1,12 +1,10 @@
 package de.flapdoodle.tab.ui
 
 import de.flapdoodle.tab.model.Model
-import de.flapdoodle.tab.model.Tab2Model
 import de.flapdoodle.tab.prefs.TabPref
 import javafx.stage.FileChooser
 import javafx.stage.Window
 import java.nio.file.Files
-import java.nio.file.Path
 import java.nio.file.StandardOpenOption
 
 object IO {

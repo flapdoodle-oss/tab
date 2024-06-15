@@ -1,8 +1,8 @@
 package de.flapdoodle.tab.ui
 
-import de.flapdoodle.tab.model.changes.Change
 import de.flapdoodle.tab.model.Model
 import de.flapdoodle.tab.model.change.ModelChange2ChangeTranslator
+import de.flapdoodle.tab.model.changes.Change
 import de.flapdoodle.tab.model.graph.Solver
 import de.flapdoodle.tab.ui.events.ModelEvent
 import de.flapdoodle.tab.ui.events.ModelEventListener

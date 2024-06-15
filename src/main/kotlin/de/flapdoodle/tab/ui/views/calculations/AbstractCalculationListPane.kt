@@ -16,9 +16,7 @@ import de.flapdoodle.tab.ui.resources.Buttons
 import de.flapdoodle.tab.ui.resources.Labels
 import de.flapdoodle.tab.ui.views.colors.ColorDot
 import javafx.beans.property.SimpleObjectProperty
-import javafx.event.ActionEvent
 import javafx.event.EventHandler
-import javafx.scene.control.Button
 import javafx.scene.control.Label
 import javafx.scene.layout.VBox
 import javafx.scene.paint.Color
