@@ -14,7 +14,6 @@ import de.flapdoodle.tab.model.calculations.adapter.EvalFormulaAdapter
 import de.flapdoodle.tab.model.connections.Source
 import de.flapdoodle.tab.model.data.ColumnId
 import de.flapdoodle.tab.model.data.SingleValueId
-import de.flapdoodle.tab.model.graph.Solver
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 

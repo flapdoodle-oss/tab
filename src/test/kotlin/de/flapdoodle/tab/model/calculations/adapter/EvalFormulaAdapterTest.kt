@@ -1,6 +1,5 @@
 package de.flapdoodle.tab.model.calculations.adapter
 
-import de.flapdoodle.tab.model.calculations.adapter.EvalFormulaAdapter
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 

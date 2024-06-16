@@ -1,7 +1,10 @@
 package de.flapdoodle.tab.io
 
 import de.flapdoodle.reflection.TypeInfo
-import de.flapdoodle.tab.model.*
+import de.flapdoodle.tab.model.Model
+import de.flapdoodle.tab.model.Name
+import de.flapdoodle.tab.model.Position
+import de.flapdoodle.tab.model.Title
 import de.flapdoodle.tab.model.calculations.Calculation
 import de.flapdoodle.tab.model.calculations.Calculations
 import de.flapdoodle.tab.model.calculations.InputSlot

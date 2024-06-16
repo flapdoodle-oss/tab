@@ -1,6 +1,5 @@
 package de.flapdoodle.tab.model.diff
 
-import de.flapdoodle.tab.model.diff.Diff
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test

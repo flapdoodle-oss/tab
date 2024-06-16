@@ -1,7 +1,6 @@
 package de.flapdoodle.tab.model.calculations.interpolation
 
 import de.flapdoodle.reflection.TypeInfo
-import de.flapdoodle.tab.model.calculations.interpolation.LinearInterpolator
 import de.flapdoodle.tab.model.calculations.interpolation.linear.LinearInterpolation
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.data.Percentage

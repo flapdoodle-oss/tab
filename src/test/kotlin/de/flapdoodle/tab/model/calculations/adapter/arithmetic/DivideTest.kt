@@ -1,7 +1,6 @@
 package de.flapdoodle.tab.model.calculations.adapter.arithmetic
 
 import de.flapdoodle.eval.core.evaluables.Evaluated
-import de.flapdoodle.tab.model.calculations.adapter.arithmetic.Divide
 import de.flapdoodle.types.Either
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test

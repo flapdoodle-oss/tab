@@ -2,11 +2,14 @@ package de.flapdoodle.tab.ui
 
 import de.flapdoodle.kfx.types.Id
 import de.flapdoodle.reflection.TypeInfo
-import de.flapdoodle.tab.model.*
+import de.flapdoodle.tab.model.Model
+import de.flapdoodle.tab.model.Name
+import de.flapdoodle.tab.model.Node
+import de.flapdoodle.tab.model.Title
 import de.flapdoodle.tab.model.calculations.Calculation
 import de.flapdoodle.tab.model.calculations.Calculations
 import de.flapdoodle.tab.model.calculations.adapter.EvalFormulaAdapter
-import de.flapdoodle.tab.model.change.ModelChange
+import de.flapdoodle.tab.model.calculations.interpolation.InterpolationType
 import de.flapdoodle.tab.model.changes.Change
 import de.flapdoodle.tab.model.data.Column
 import de.flapdoodle.tab.model.data.ColumnId
@@ -221,7 +224,7 @@ class ActionTest {
                 )
             ))
             .apply(
-                ModelChange.AddColumn(
+                Change.Table.AddColumn(
                     id = tableId,
                     column = Column(
                         name = Name("x"),
@@ -231,10 +234,11 @@ class ActionTest {
                 )
             )
             .apply(
-                ModelChange.AddTabular(
+                Change.Calculation.AddTabular(
                     id = calculatedId,
                     name = Name("y"),
-                    expression = "x"
+                    expression = "x",
+                    interpolationType = InterpolationType.LastValue
                 )
             )
 
@@ -244,17 +248,18 @@ class ActionTest {
         val connected = sourceModel.apply(Change.Connect(tableId, Either.left(columnX.id), calculatedId, Either.right(inputX.id)))
 
         val withSecondExpression = connected.apply(
-            ModelChange.AddTabular(
+            Change.Calculation.AddTabular(
                 id = calculatedId,
                 name = Name("z"),
-                expression = "x"
+                expression = "x",
+                interpolationType = InterpolationType.LastValue
             )
         )
 
         val actions = Action.syncActions(connected, withSecondExpression)
-        println("$actions")
-
-
+//        println("$actions")
+        // TODO hier fehlt der Test
+        assertThat(actions).isNotEmpty()
     }
 
     private fun emptyModel() = Model()

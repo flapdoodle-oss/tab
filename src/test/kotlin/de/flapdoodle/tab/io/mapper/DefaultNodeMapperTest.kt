@@ -5,8 +5,6 @@ import de.flapdoodle.tab.io.MemorizingMapping
 import de.flapdoodle.tab.io.file.FileColumns
 import de.flapdoodle.tab.io.file.FileNode
 import de.flapdoodle.tab.io.file.FileSingleValues
-import de.flapdoodle.tab.model.Name
-import de.flapdoodle.tab.model.Node
 import de.flapdoodle.tab.model.Position
 import de.flapdoodle.tab.model.Title
 import org.assertj.core.api.Assertions.assertThat

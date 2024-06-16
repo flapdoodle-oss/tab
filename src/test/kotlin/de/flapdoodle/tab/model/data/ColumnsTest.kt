@@ -2,8 +2,6 @@ package de.flapdoodle.tab.model.data
 
 import de.flapdoodle.reflection.TypeInfo
 import de.flapdoodle.tab.model.Name
-import de.flapdoodle.tab.model.data.Column
-import de.flapdoodle.tab.model.data.Columns
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 

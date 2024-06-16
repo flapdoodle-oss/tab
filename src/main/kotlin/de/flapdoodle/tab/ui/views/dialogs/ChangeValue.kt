@@ -5,7 +5,6 @@ import de.flapdoodle.kfx.controls.fields.ValidatingTextField
 import de.flapdoodle.kfx.extensions.bindCss
 import de.flapdoodle.kfx.types.Id
 import de.flapdoodle.tab.model.Name
-import de.flapdoodle.tab.model.change.ModelChange
 import de.flapdoodle.tab.model.changes.Change
 import de.flapdoodle.tab.model.data.SingleValue
 import de.flapdoodle.tab.ui.Converters

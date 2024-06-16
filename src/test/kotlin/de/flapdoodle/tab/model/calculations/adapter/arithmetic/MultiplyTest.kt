@@ -1,9 +1,7 @@
 package de.flapdoodle.tab.model.calculations.adapter.arithmetic
 
 import de.flapdoodle.eval.core.evaluables.Evaluated
-import de.flapdoodle.tab.model.calculations.adapter.arithmetic.Multiply
 import de.flapdoodle.types.Either
-import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
