@@ -2,7 +2,8 @@ package de.flapdoodle.tab.ui.views
 
 import de.flapdoodle.kfx.extensions.bindCss
 import de.flapdoodle.kfx.layout.grid.WeightGridPane
-import de.flapdoodle.tab.ui.ModelChangeListener
+import de.flapdoodle.tab.model.Node
+import de.flapdoodle.tab.ui.ChangeListener
 import de.flapdoodle.tab.ui.resources.Labels
 import de.flapdoodle.tab.ui.views.calculations.CalculationsPane
 import de.flapdoodle.tab.ui.views.calculations.ValuesPane
@@ -15,8 +16,8 @@ import javafx.scene.layout.Priority
 import javafx.scene.layout.VBox
 
 class CalculatedUIAdapter<K: Comparable<K>>(
-    node: de.flapdoodle.tab.model.Node.Calculated<K>,
-    val modelChangeListener: ModelChangeListener
+    node: Node.Calculated<K>,
+    changeListener: ChangeListener
 ) : NodeUIAdapter() {
     val nodeId = node.id
 
@@ -27,7 +28,7 @@ class CalculatedUIAdapter<K: Comparable<K>>(
         rowWeights(0.0, 0.0, 1.0)
     }
 
-    val calculationsPane = CalculationsPane(node, modelChangeListener, context).apply {
+    val calculationsPane = CalculationsPane(node, changeListener, context).apply {
         WeightGridPane.setPosition(this, 0, 0)
     }
     val valuesPane = ValuesPane(node).apply {

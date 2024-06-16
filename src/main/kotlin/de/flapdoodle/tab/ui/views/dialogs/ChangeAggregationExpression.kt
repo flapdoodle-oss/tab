@@ -11,22 +11,22 @@ import de.flapdoodle.tab.ui.resources.Labels
 import de.flapdoodle.tab.ui.resources.RequiredFieldNotSet
 import javafx.beans.value.ObservableValue
 
-class ChangeExpression(
+class ChangeAggregationExpression(
     oldName: Name,
     oldExpression: Expression?,
-) : DialogContent<ChangeExpression.NamedExpression>() {
+) : DialogContent<ChangeAggregationExpression.NamedExpression>() {
 
-    private val name = Labels.label(ChangeExpression::class,"name","Name")
+    private val name = Labels.label(ChangeAggregationExpression::class,"name","Name")
     private val nameField = ValidatingTextField(
         Converters.validatingConverter(String::class)
             .and { v -> v.mapNullable { if (it.isNullOrBlank()) throw RequiredFieldNotSet("not set") else it } })
-    private val short = Labels.label(ChangeExpression::class,"shortName","Short")
+    private val short = Labels.label(ChangeAggregationExpression::class,"shortName","Short")
     private val shortField = ValidatingTextField(converter = Converters.validatingConverter(String::class))
-    private val expression = Labels.label(ChangeExpression::class,"expression","Expression")
+    private val expression = Labels.label(ChangeAggregationExpression::class,"expression","Expression")
     private val expressionField = ValidatingTextField(ValidatingExpressionConverter())
 
     init {
-        bindCss("change-expression")
+        bindCss("change-aggregation-expression")
         
         columnWeights(1.0, 3.0)
 
@@ -58,7 +58,7 @@ class ChangeExpression(
 
     companion object {
         fun open(name: Name, expression: Expression?): NamedExpression? {
-            return DialogWrapper.open { ChangeExpression(name, expression) }
+            return DialogWrapper.open { ChangeAggregationExpression(name, expression) }
         }
     }
 }

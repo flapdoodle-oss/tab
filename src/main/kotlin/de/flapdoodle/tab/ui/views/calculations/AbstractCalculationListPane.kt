@@ -9,8 +9,8 @@ import de.flapdoodle.kfx.logging.Logging
 import de.flapdoodle.kfx.types.Id
 import de.flapdoodle.tab.model.Node
 import de.flapdoodle.tab.model.calculations.Calculation
-import de.flapdoodle.tab.model.change.ModelChange
-import de.flapdoodle.tab.ui.ModelChangeListener
+import de.flapdoodle.tab.model.changes.Change
+import de.flapdoodle.tab.ui.ChangeListener
 import de.flapdoodle.tab.ui.converter.ValidatingExpressionConverter
 import de.flapdoodle.tab.ui.resources.Buttons
 import de.flapdoodle.tab.ui.resources.Labels
@@ -25,7 +25,7 @@ class AbstractCalculationListPane<K : Comparable<K>, C : Calculation<K>>(
     val nodeId: Id<Node.Calculated<*>>,
     val label: String,
     val context: Labels.WithContext = Labels.with(AbstractCalculationListPane::class),
-    val modelChangeListener: ModelChangeListener,
+    val changeListener: ChangeListener,
     val calculationsModel: SimpleObjectProperty<List<C>>,
     val onNewExpression: () -> Unit,
     val onChangeExpression: (C) -> Unit,
@@ -80,11 +80,10 @@ class AbstractCalculationListPane<K : Comparable<K>, C : Calculation<K>>(
                 logger.info { "update: $value" }
                 t.onAction = EventHandler {
                     if (value != null) {
-                        modelChangeListener.change(
-                            ModelChange.ChangeFormula(
+                        changeListener.change(
+                            Change.Calculation.ChangeFormula(
                                 nodeId,
                                 value.id,
-                                value.name(),
                                 requireNotNull(t.get()) { "expression not set" }
                             )
                         )
@@ -102,7 +101,7 @@ class AbstractCalculationListPane<K : Comparable<K>, C : Calculation<K>>(
         weight = 1.0,
         cellFactory = { calculation ->
             Buttons.tableCell(calculation, Buttons.delete(context)) {
-                modelChangeListener.change(ModelChange.RemoveFormula(nodeId, it.id))
+                changeListener.change(Change.Calculation.RemoveFormula(nodeId, it.id))
             }
         }
     )

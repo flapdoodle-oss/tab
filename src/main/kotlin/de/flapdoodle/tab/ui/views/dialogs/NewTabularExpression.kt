@@ -1,29 +1,38 @@
 package de.flapdoodle.tab.ui.views.dialogs
 
+import de.flapdoodle.kfx.controls.fields.ChoiceBoxes
 import de.flapdoodle.kfx.controls.fields.ValidatingField
 import de.flapdoodle.kfx.controls.fields.ValidatingTextField
 import de.flapdoodle.kfx.extensions.bindCss
 import de.flapdoodle.tab.model.Name
+import de.flapdoodle.tab.model.calculations.interpolation.InterpolationType
 import de.flapdoodle.tab.ui.Converters
 import de.flapdoodle.tab.ui.resources.Labels
 import de.flapdoodle.tab.ui.resources.RequiredFieldNotSet
+import de.flapdoodle.tab.ui.resources.ResourceBundles
 import javafx.beans.value.ObservableValue
 
-class NewExpression : DialogContent<NewExpression.NamedExpression>() {
+class NewTabularExpression : DialogContent<NewTabularExpression.NamedExpression>() {
 
-    private val name = Labels.label(NewExpression::class,"name","Name")
+    private val name = Labels.label(NewTabularExpression::class,"name","Name")
     private val nameField = ValidatingTextField(
         Converters.validatingConverter(String::class)
             .and { v -> v.mapNullable { if (it.isNullOrBlank()) throw RequiredFieldNotSet("not set") else it } })
-    private val short = Labels.label(NewExpression::class,"shortName","Short")
+    private val short = Labels.label(NewTabularExpression::class,"shortName","Short")
     private val shortField = ValidatingTextField(converter = Converters.validatingConverter(String::class))
-    private val expression = Labels.label(NewExpression::class,"expression","Expression")
+    private val expression = Labels.label(NewTabularExpression::class,"expression","Expression")
     private val expressionField = ValidatingTextField(
         Converters.validatingConverter(String::class)
             .and { v -> v.mapNullable { if (it.isNullOrBlank()) throw RequiredFieldNotSet("not set") else it } })
+    private val interpolation = Labels.label(NewColumn::class, "interpolation", "Interpolation")
+    private val interpolationField = ChoiceBoxes.forEnums(
+        resourceBundle = ResourceBundles.enumTypes(),
+        enumType = InterpolationType::class,
+        default = InterpolationType.Linear
+    )
 
     init {
-        bindCss("new-expression")
+        bindCss("new-tabular-expression")
         
         columnWeights(1.0, 3.0)
 
@@ -33,6 +42,8 @@ class NewExpression : DialogContent<NewExpression.NamedExpression>() {
         add(shortField, 1, 1)
         add(expression, 0, 2)
         add(expressionField, 1, 2)
+        add(interpolation, 0, 3)
+        add(interpolationField, 1, 3)
     }
 
     override fun isValidProperty(): ObservableValue<Boolean> {
@@ -40,18 +51,19 @@ class NewExpression : DialogContent<NewExpression.NamedExpression>() {
     }
 
     override fun result(): NamedExpression {
-        return NamedExpression(Name(nameField.text, shortField.text), expressionField.text)
+        return NamedExpression(Name(nameField.text, shortField.text), expressionField.text, interpolationField.value)
     }
 
 
     data class NamedExpression(
         val name: Name,
-        val expression: String
+        val expression: String,
+        val interpolationType: InterpolationType
     )
 
     companion object {
         fun open(): NamedExpression? {
-            return DialogWrapper.open { NewExpression() }
+            return DialogWrapper.open { NewTabularExpression() }
         }
     }
 }

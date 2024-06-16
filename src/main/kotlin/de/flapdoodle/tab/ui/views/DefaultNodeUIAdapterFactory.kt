@@ -8,7 +8,7 @@ object DefaultNodeUIAdapterFactory : NodeUIAdapterFactory {
         return when (node) {
             is de.flapdoodle.tab.model.Node.Constants -> ConstantUIAdapter(node, changeListener)
             is de.flapdoodle.tab.model.Node.Table<out Comparable<*>> -> TableUIAdapter(node, changeListener)
-            is de.flapdoodle.tab.model.Node.Calculated<out Comparable<*>> -> CalculatedUIAdapter(node, modelChangeListener)
+            is de.flapdoodle.tab.model.Node.Calculated<out Comparable<*>> -> CalculatedUIAdapter(node, changeListener)
         }
     }
 

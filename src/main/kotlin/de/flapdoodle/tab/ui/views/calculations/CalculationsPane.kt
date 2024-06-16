@@ -1,18 +1,21 @@
 package de.flapdoodle.tab.ui.views.calculations
 
 import de.flapdoodle.kfx.extensions.bindCss
+import de.flapdoodle.tab.model.Node
 import de.flapdoodle.tab.model.calculations.Calculation
-import de.flapdoodle.tab.model.change.ModelChange
-import de.flapdoodle.tab.ui.ModelChangeListener
+import de.flapdoodle.tab.model.changes.Change
+import de.flapdoodle.tab.ui.ChangeListener
 import de.flapdoodle.tab.ui.resources.Labels
-import de.flapdoodle.tab.ui.views.dialogs.ChangeExpression
-import de.flapdoodle.tab.ui.views.dialogs.NewExpression
+import de.flapdoodle.tab.ui.views.dialogs.ChangeAggregationExpression
+import de.flapdoodle.tab.ui.views.dialogs.ChangeTabularExpression
+import de.flapdoodle.tab.ui.views.dialogs.NewAggregationExpression
+import de.flapdoodle.tab.ui.views.dialogs.NewTabularExpression
 import javafx.beans.property.SimpleObjectProperty
 import javafx.scene.layout.VBox
 
 class CalculationsPane<K: Comparable<K>>(
-    node: de.flapdoodle.tab.model.Node.Calculated<K>,
-    val modelChangeListener: ModelChangeListener,
+    node: Node.Calculated<K>,
+    val changeListener: ChangeListener,
     val context: Labels.WithContext = Labels.with(CalculationsPane::class)
 ) : VBox() {
     private var currentNode = node
@@ -22,13 +25,13 @@ class CalculationsPane<K: Comparable<K>>(
         nodeId = currentNode.id,
         label = context.text("title.aggregations","Aggregations"),
         context = context,
-        modelChangeListener = modelChangeListener,
+        changeListener = changeListener,
         calculationsModel = SimpleObjectProperty(currentNode.calculations.aggregations()),
         onNewExpression = {
-            val newExpression = NewExpression.open()
+            val newExpression = NewAggregationExpression.open()
             if (newExpression!=null) {
-                modelChangeListener.change(
-                    ModelChange.AddAggregation(
+                changeListener.change(
+                    Change.Calculation.AddAggregation(
                         nodeId,
                         newExpression.name,
                         newExpression.expression
@@ -37,9 +40,9 @@ class CalculationsPane<K: Comparable<K>>(
             }
         },
         onChangeExpression = { calculation: Calculation.Aggregation<K> ->
-            val changedExpression = ChangeExpression.open(calculation.name(), calculation.formula().expression())
+            val changedExpression = ChangeAggregationExpression.open(calculation.name(), calculation.formula().expression())
             if (changedExpression != null) {
-                modelChangeListener.change(ModelChange.ChangeFormula(nodeId, calculation.id, changedExpression.name, changedExpression.expression))
+                changeListener.change(Change.Calculation.ChangeAggregation(nodeId, calculation.id, changedExpression.name, changedExpression.expression))
             }
         },
         outputColor = {
@@ -53,24 +56,25 @@ class CalculationsPane<K: Comparable<K>>(
         nodeId = currentNode.id,
         label = context.text("title.tabular","Tabular"),
         context = context,
-        modelChangeListener = modelChangeListener,
+        changeListener = changeListener,
         calculationsModel = SimpleObjectProperty(currentNode.calculations.tabular()),
         onNewExpression = {
-            val newExpression = NewExpression.open()
+            val newExpression = NewTabularExpression.open()
             if (newExpression!=null) {
-                modelChangeListener.change(
-                    ModelChange.AddTabular(
+                changeListener.change(
+                    Change.Calculation.AddTabular(
                         nodeId,
                         newExpression.name,
-                        newExpression.expression
+                        newExpression.expression,
+                        newExpression.interpolationType
                     )
                 )
             }
         },
         onChangeExpression = { calculation: Calculation.Tabular<K> ->
-            val changedExpression = ChangeExpression.open(calculation.name(), calculation.formula().expression())
+            val changedExpression = ChangeTabularExpression.open(calculation.name(), calculation.formula().expression(), calculation.interpolationType())
             if (changedExpression != null) {
-                modelChangeListener.change(ModelChange.ChangeFormula(nodeId, calculation.id, changedExpression.name, changedExpression.expression))
+                changeListener.change(Change.Calculation.ChangeTabular(nodeId, calculation.id, changedExpression.name, changedExpression.expression, changedExpression.interpolationType))
             }
         },
         outputColor = {

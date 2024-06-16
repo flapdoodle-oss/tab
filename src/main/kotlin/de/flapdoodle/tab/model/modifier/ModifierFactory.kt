@@ -2,6 +2,8 @@ package de.flapdoodle.tab.model.modifier
 
 import de.flapdoodle.tab.model.Node
 import de.flapdoodle.tab.model.changes.Change
+import de.flapdoodle.tab.types.one
+import de.flapdoodle.tab.types.oneOrNull
 
 object ModifierFactory {
     fun changes(nodes: List<Node>, change: Change): List<Modifier> {
@@ -52,8 +54,22 @@ object ModifierFactory {
             is Change.Calculation.AddTabular -> listOf(AddTabular(change.id, change.name, change.expression, change.interpolationType))
             is Change.Calculation.ChangeAggregation -> listOf(ChangeAggregation(change.id,change.calculationId, change.name, change.formula))
             is Change.Calculation.ChangeTabular -> listOf(ChangeTabular(change.id,change.calculationId, change.name, change.formula, change.interpolationType))
+            is Change.Calculation.ChangeFormula -> changeFormula(nodes, change)
             is Change.Calculation.RemoveFormula -> Disconnect.removeCalculation(nodes, change.id, change.calculationId) + RemoveFormula(change.id, change.calculationId)
             else -> throw IllegalArgumentException("not implemented: $change")
         }
+    }
+
+    private fun changeFormula(nodes: List<Node>, change: Change.Calculation.ChangeFormula): List<Modifier> {
+        val calculated = nodes.one { it.id == change.id } as Node.Calculated<out Comparable<*>>
+        val aggregation = calculated.calculations.aggregations().oneOrNull { it.id == change.calculationId }
+        val tabular = calculated.calculations.tabular().oneOrNull { it.id == change.calculationId }
+
+        return listOf(if (aggregation != null) {
+            ChangeAggregation(change.id, change.calculationId, aggregation.name(), change.formula)
+        } else {
+            requireNotNull(tabular) {"calculation ${change.calculationId} not found in $calculated"}
+            ChangeTabular(change.id, change.calculationId, tabular.name(), change.formula, tabular.interpolationType())
+        })
     }
 }
