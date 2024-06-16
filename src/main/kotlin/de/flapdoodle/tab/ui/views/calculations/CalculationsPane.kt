@@ -1,10 +1,12 @@
 package de.flapdoodle.tab.ui.views.calculations
 
 import de.flapdoodle.kfx.extensions.bindCss
+import de.flapdoodle.kfx.logging.Logging
 import de.flapdoodle.tab.model.Node
 import de.flapdoodle.tab.model.calculations.Calculation
 import de.flapdoodle.tab.model.changes.Change
 import de.flapdoodle.tab.ui.ChangeListener
+import de.flapdoodle.tab.ui.ModelAdapter
 import de.flapdoodle.tab.ui.resources.Labels
 import de.flapdoodle.tab.ui.views.dialogs.ChangeAggregationExpression
 import de.flapdoodle.tab.ui.views.dialogs.ChangeTabularExpression
@@ -18,65 +20,34 @@ class CalculationsPane<K: Comparable<K>>(
     val changeListener: ChangeListener,
     val context: Labels.WithContext = Labels.with(CalculationsPane::class)
 ) : VBox() {
-    private var currentNode = node
-    private val nodeId = currentNode.id
+    private val logger = Logging.logger(CalculationsPane::class)
 
-    private val aggregationsPane = AbstractCalculationListPane(
+    private var currentNode = node
+
+    private val aggregationModel = SimpleObjectProperty(currentNode.calculations.aggregations())
+    private val aggregationsPane = AggregationCalculationsPane(
         nodeId = currentNode.id,
         label = context.text("title.aggregations","Aggregations"),
         context = context,
         changeListener = changeListener,
-        calculationsModel = SimpleObjectProperty(currentNode.calculations.aggregations()),
-        onNewExpression = {
-            val newExpression = NewAggregationExpression.open()
-            if (newExpression!=null) {
-                changeListener.change(
-                    Change.Calculation.AddAggregation(
-                        nodeId,
-                        newExpression.name,
-                        newExpression.expression
-                    )
-                )
-            }
-        },
-        onChangeExpression = { calculation: Calculation.Aggregation<K> ->
-            val changedExpression = ChangeAggregationExpression.open(calculation.name(), calculation.formula().expression())
-            if (changedExpression != null) {
-                changeListener.change(Change.Calculation.ChangeAggregation(nodeId, calculation.id, changedExpression.name, changedExpression.expression))
-            }
-        },
+        calculationsModel = aggregationModel,
         outputColor = {
+            logger.info { "find destination: ${currentNode.findValue(it.destination())}" }
+            logger.info { "${currentNode.values}" }
             currentNode.findValue(it.destination())?.color
         },
         inputColor = { name ->
             currentNode.calculations.inputs().firstOrNull { it.name == name }?.color
         }
     )
-    private val tabularPane = AbstractCalculationListPane(
+
+    private val tabularModel = SimpleObjectProperty(currentNode.calculations.tabular())
+    private val tabularPane = TabularCalculationsPane(
         nodeId = currentNode.id,
         label = context.text("title.tabular","Tabular"),
         context = context,
         changeListener = changeListener,
-        calculationsModel = SimpleObjectProperty(currentNode.calculations.tabular()),
-        onNewExpression = {
-            val newExpression = NewTabularExpression.open()
-            if (newExpression!=null) {
-                changeListener.change(
-                    Change.Calculation.AddTabular(
-                        nodeId,
-                        newExpression.name,
-                        newExpression.expression,
-                        newExpression.interpolationType
-                    )
-                )
-            }
-        },
-        onChangeExpression = { calculation: Calculation.Tabular<K> ->
-            val changedExpression = ChangeTabularExpression.open(calculation.name(), calculation.formula().expression(), calculation.interpolationType())
-            if (changedExpression != null) {
-                changeListener.change(Change.Calculation.ChangeTabular(nodeId, calculation.id, changedExpression.name, changedExpression.expression, changedExpression.interpolationType))
-            }
-        },
+        calculationsModel = tabularModel,
         outputColor = {
             currentNode.findColumn(it.destination())?.color
         },
@@ -91,9 +62,11 @@ class CalculationsPane<K: Comparable<K>>(
         children.add(tabularPane)
     }
 
-    fun update(node: de.flapdoodle.tab.model.Node.Calculated<K>) {
+    fun update(node: Node.Calculated<K>) {
+        require(currentNode.id == node.id) {"wrong node: $node"}
         currentNode = node
-        aggregationsPane.update(node.calculations.aggregations())
-        tabularPane.update(node.calculations.tabular())
+
+        aggregationModel.value = node.calculations.aggregations()
+        tabularModel.value = node.calculations.tabular()
     }
 }

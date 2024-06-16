@@ -9,27 +9,28 @@ import de.flapdoodle.tab.model.changes.Change
 import de.flapdoodle.tab.ui.ChangeListener
 import de.flapdoodle.tab.ui.resources.Buttons
 import de.flapdoodle.tab.ui.resources.Labels
+import de.flapdoodle.tab.ui.views.dialogs.ChangeAggregationExpression
+import de.flapdoodle.tab.ui.views.dialogs.NewAggregationExpression
+import javafx.beans.property.ReadOnlyObjectProperty
 import javafx.beans.property.SimpleObjectProperty
 import javafx.scene.control.Label
 import javafx.scene.layout.VBox
 import javafx.scene.paint.Color
 
-class AbstractCalculationListPane<K : Comparable<K>, C : Calculation<K>>(
+class AggregationCalculationsPane<K : Comparable<K>>(
     val nodeId: Id<Node.Calculated<*>>,
     val label: String,
-    val context: Labels.WithContext = Labels.with(AbstractCalculationListPane::class),
+    val context: Labels.WithContext = Labels.with(AggregationCalculationsPane::class),
     val changeListener: ChangeListener,
-    val calculationsModel: SimpleObjectProperty<List<C>>,
-    val onNewExpression: () -> Unit,
-    val onChangeExpression: (C) -> Unit,
-    val outputColor: (C) -> Color?,
+    val calculationsModel: ReadOnlyObjectProperty<List<Calculation.Aggregation<K>>>,
+    val outputColor: (Calculation.Aggregation<K>) -> Color?,
     val inputColor: (String) -> Color?
 ) : VBox() {
 
-    private val nameColumn = Columns.nameColumn<K, C>()
+    private val nameColumn = Columns.nameColumn<K, Calculation.Aggregation<K>>()
     private val colorColumn = Columns.colorColumn(outputColor)
 
-    private val formulaColumn = Columns.formulaColumn<K, C>(inputColor) { value, expression ->
+    private val formulaColumn = Columns.formulaColumn<K, Calculation.Aggregation<K>>(inputColor) { value, expression ->
         changeListener.change(
             Change.Calculation.ChangeFormula(
                 nodeId,
@@ -39,12 +40,15 @@ class AbstractCalculationListPane<K : Comparable<K>, C : Calculation<K>>(
         )
     }
 
-    private val deleteColumn = Columns.deleteColumn<K, C>(context) {
+    private val deleteColumn = Columns.deleteColumn<K, Calculation.Aggregation<K>>(context) {
         changeListener.change(Change.Calculation.RemoveFormula(nodeId, it.id))
     }
 
-    private val changeColumn = Columns.changeColumn<K, C>(context) {
-        onChangeExpression(it)
+    private val changeColumn = Columns.changeColumn<K, Calculation.Aggregation<K>>(context) { calculation ->
+        val changedExpression = ChangeAggregationExpression.open(calculation.name(), calculation.formula().expression())
+        if (changedExpression != null) {
+            changeListener.change(Change.Calculation.ChangeAggregation(nodeId, calculation.id, changedExpression.name, changedExpression.expression))
+        }
     }
 
     private val aggregationsPanel = WeightGridTable(
@@ -60,7 +64,16 @@ class AbstractCalculationListPane<K : Comparable<K>, C : Calculation<K>>(
         ),
         footerFactory = { values, columns ->
             val addButton = Buttons.add(context) {
-                onNewExpression()
+                val newExpression = NewAggregationExpression.open()
+                if (newExpression!=null) {
+                    changeListener.change(
+                        Change.Calculation.AddAggregation(
+                            nodeId,
+                            newExpression.name,
+                            newExpression.expression
+                        )
+                    )
+                }
             }
             mapOf(deleteColumn to addButton)
         }
@@ -69,9 +82,5 @@ class AbstractCalculationListPane<K : Comparable<K>, C : Calculation<K>>(
     init {
         children.add(Label(label))
         children.add(aggregationsPanel)
-    }
-
-    fun update(list: List<C>) {
-        calculationsModel.value = list
     }
 }

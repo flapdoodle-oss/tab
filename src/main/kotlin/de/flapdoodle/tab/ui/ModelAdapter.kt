@@ -109,7 +109,7 @@ class ModelAdapter(
 
     private fun apply(action: List<Action>) {
         action.forEach { action ->
-            logger.error { "action: $action" }
+            logger.debug { "action: $action" }
 
             when (action) {
                 is Action.AddNode -> {

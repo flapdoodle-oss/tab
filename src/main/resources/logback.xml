@@ -30,7 +30,8 @@
     <logger name="de" level="ERROR" />
     <logger name="de.flapdoodle.kfx" level="INFO" />
     <logger name="de.flapdoodle.kfx.logging" level="DEBUG" />
-    <logger name="de.flapdoodle.kfx.controls.grapheditor" level="DEBUG" />
+    <logger name="de.flapdoodle.kfx.controls.grapheditor" level="WARN" />
     <logger name="de.flapdoodle.tab" level="DEBUG" />
+    <logger name="de.flapdoodle.tab.ui.ModelAdapter" level="DEBUG" />
 
 </configuration>
