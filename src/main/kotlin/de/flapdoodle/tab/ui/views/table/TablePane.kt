@@ -21,12 +21,12 @@ class TablePane<K : Comparable<K>>(
     val changeListener: ChangeListener,
     val context: Labels.WithContext = Labels.with(TablePane::class)
 ) : StackPane() {
-    private val nodeId = node.id
+    private val nodeId = node.id         
 
     private var columns = node.columns
 
     private val tableRows = SimpleObjectProperty(rowsOf(columns))
-    private val tableColumns = SimpleObjectProperty(tableColumnsOff(node.indexType, columns))
+    private val tableColumns = SimpleObjectProperty(tableColumnsOf(node.indexType, columns))
 
     private val tableChangeListener: TableChangeListener<Row<K>> = object : TableChangeListener<Row<K>> {
         override fun changeCell(row: Row<K>, change: TableChangeListener.CellChange<Row<K>, out Any>): TableChangeListener.ChangedRow<Row<K>> {
@@ -108,7 +108,7 @@ class TablePane<K : Comparable<K>>(
         }
     }
 
-    private fun tableColumnsOff(indexType: TypeInfo<K>, columns: Columns<K>): List<de.flapdoodle.kfx.controls.bettertable.Column<Row<K>, out Any>> {
+    private fun tableColumnsOf(indexType: TypeInfo<K>, columns: Columns<K>): List<de.flapdoodle.kfx.controls.bettertable.Column<Row<K>, out Any>> {
         return listOf(indexColumn(context.text("column.index","#"), indexType)) + columns.columns().map {
             column(it)
         }
@@ -163,7 +163,7 @@ class TablePane<K : Comparable<K>>(
     fun update(node: de.flapdoodle.tab.model.Node.Table<K>) {
         // HACK
         tableRows.value = rowsOf(node.columns)
-        tableColumns.value = tableColumnsOff(node.indexType, node.columns)
+        tableColumns.value = tableColumnsOf(node.indexType, node.columns)
         columns = node.columns
     }
 
