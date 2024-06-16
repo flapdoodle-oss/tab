@@ -8,6 +8,7 @@ import de.flapdoodle.kfx.controls.bettertable.events.ReadOnlyState
 import de.flapdoodle.reflection.TypeInfo
 import de.flapdoodle.tab.model.data.Column
 import de.flapdoodle.tab.model.data.Columns
+import de.flapdoodle.tab.types.Unknown
 import de.flapdoodle.tab.ui.resources.Labels
 import javafx.beans.property.SimpleObjectProperty
 import javafx.scene.layout.Background
@@ -23,7 +24,7 @@ class TableViewPane<K : Comparable<K>>(
 
     private val tableRows = SimpleObjectProperty(rowsOf(columns))
     private val indexColumn = indexColumn(context.text("column.index","#"), node.indexType)
-    private val tableColumns = SimpleObjectProperty(tableColumnsOff(indexColumn, columns))
+    private val tableColumns = SimpleObjectProperty(tableColumnsOf(indexColumn, columns))
 
     private val tableChangeListener: TableChangeListener<Row<K>> = object : TableChangeListener<Row<K>> {
         override fun changeCell(row: Row<K>, change: TableChangeListener.CellChange<Row<K>, out Any>): TableChangeListener.ChangedRow<Row<K>> {
@@ -72,7 +73,7 @@ class TableViewPane<K : Comparable<K>>(
         }
     }
 
-    private fun tableColumnsOff(indexColumn: de.flapdoodle.kfx.controls.bettertable.Column<Row<K>, out Any>, columns: Columns<K>): List<de.flapdoodle.kfx.controls.bettertable.Column<Row<K>, out Any>> {
+    private fun tableColumnsOf(indexColumn: de.flapdoodle.kfx.controls.bettertable.Column<Row<K>, out Any>, columns: Columns<K>): List<de.flapdoodle.kfx.controls.bettertable.Column<Row<K>, out Any>> {
         return listOf(indexColumn) + columns.columns().map {
             column(it)
         }
@@ -82,8 +83,12 @@ class TableViewPane<K : Comparable<K>>(
         return IndexColumn(label, indexType)
     }
 
-    private fun <V: Any> column(column: Column<K, V>): NormalColumn<K, V> {
-        return NormalColumn(column)
+    private fun <V: Any> column(column: Column<K, V>): de.flapdoodle.kfx.controls.bettertable.Column<Row<K>, V> {
+        if (column.valueType.isAssignable(TypeInfo.of(Unknown::class.java))) {
+            return UnknownColumn(column)
+        } else {
+            return NormalColumn(column)
+        }
     }
 
     interface TableColumn<K: Comparable<K>, V: Any> {
@@ -102,6 +107,18 @@ class TableViewPane<K : Comparable<K>>(
         override fun applyChange(row: Row<K>, change: TableChangeListener.CellChange<Row<K>, out Any>): Row<K> {
             return row.copy(index = change.value as K?)
         }
+    }
+
+    data class UnknownColumn<K: Comparable<K>, V: Any>(val column: Column<K, V>) :
+        de.flapdoodle.kfx.controls.bettertable.Column<Row<K>, V>(
+            label = column.name.shortest(),
+            property = ColumnProperty(TypeInfo.of(String::class.java) as TypeInfo<V>, { row -> null }),
+            editable = false
+        ), TableColumn<K, V> {
+        override fun applyChange(row: Row<K>, change: TableChangeListener.CellChange<Row<K>, out Any>): Row<K> {
+            return row.set(ColumnValue(column, change.value as V?))
+        }
+
     }
 
     data class NormalColumn<K: Comparable<K>, V: Any>(val column: Column<K, V>) :
@@ -125,7 +142,7 @@ class TableViewPane<K : Comparable<K>>(
 //        val columnChanges = Diff.diff(columns.columns(), node.columns.columns()) { it.id }
         
         // HACK
-        tableColumns.value = tableColumnsOff(indexColumn, node.columns)
+        tableColumns.value = tableColumnsOf(indexColumn, node.columns)
         tableRows.value = rowsOf(node.columns)
         columns = node.columns
 

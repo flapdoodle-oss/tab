@@ -5,6 +5,7 @@ import de.flapdoodle.eval.core.exceptions.BaseException
 import de.flapdoodle.graph.GraphAsDot
 import de.flapdoodle.graph.Graphs
 import de.flapdoodle.graph.VerticesAndEdges
+import de.flapdoodle.kfx.logging.Logging
 import de.flapdoodle.reflection.TypeInfo
 import de.flapdoodle.tab.model.Model
 import de.flapdoodle.tab.model.calculations.Calculation
@@ -16,11 +17,13 @@ import de.flapdoodle.tab.model.connections.Source
 import de.flapdoodle.tab.model.data.Column
 import de.flapdoodle.tab.model.data.Data
 import de.flapdoodle.tab.model.data.SingleValue
+import de.flapdoodle.tab.types.Unknown
 import de.flapdoodle.tab.types.one
+import de.flapdoodle.tab.ui.ModelAdapter
 import org.jgrapht.graph.DefaultEdge
 
 object Solver {
-    private val debug = false
+    private val logger = Logging.logger(Solver::class)
 
     fun solve(model: Model): Model {
         val roots = verticesAndEdges(model)
@@ -80,7 +83,7 @@ object Solver {
             }.toMap()
             return calculate(model, node, calculation, variableDataMap)
         } else {
-            println("missing sources: $missingSources")
+            logger.info { "missing sources: $missingSources" }
             return clear(model, node, calculation)
         }
 
@@ -159,7 +162,7 @@ object Solver {
             try {
                 Evaluated.ofNull(calculation.evaluateType(valueMap))
             } catch (ex: BaseException) {
-                ex.printStackTrace()
+                logger.warning("null type evaluation failed", ex)
                 null
             }
         }
@@ -172,7 +175,8 @@ object Solver {
         node: de.flapdoodle.tab.model.Node.Calculated<K>,
         calculation: Calculation.Aggregation<K>
     ): Model {
-        val changedNode: de.flapdoodle.tab.model.Node.Calculated<K> = clearValue(node, calculation)
+        val changedNode: de.flapdoodle.tab.model.Node.Calculated<K> = setValue<K, Unit>(node, calculation, null)
+//        val changedNode: de.flapdoodle.tab.model.Node.Calculated<K> = clearValue(node, calculation)
         return model.copy(nodes = model.nodes().map { if (it.id == changedNode.id) changedNode else it })
     }
 
@@ -226,7 +230,8 @@ object Solver {
         node: de.flapdoodle.tab.model.Node.Calculated<K>,
         calculation: Calculation.Tabular<K>
     ): Model {
-        val changedNode: de.flapdoodle.tab.model.Node.Calculated<K> = clearTable(node, calculation)
+        val changedNode: de.flapdoodle.tab.model.Node.Calculated<K> = setTable(node, calculation, emptyMap())
+//        val changedNode: de.flapdoodle.tab.model.Node.Calculated<K> = clearTable(node, calculation)
         return updated.copy(nodes = updated.nodes().map { if (it.id == changedNode.id) changedNode else it })
     }
 
@@ -265,7 +270,7 @@ object Solver {
             val newSingleValue = if (result != null) {
                 SingleValue.ofNullable(calculation.name(), result.type(), result.wrapped(), calculation.destination())
             } else {
-                SingleValue.ofNull(calculation.name(), Unit::class, calculation.destination())
+                SingleValue.ofNull(calculation.name(), Unknown::class, calculation.destination())
             }
             node.copy(values = node.values.addValue(newSingleValue))
         } else {
@@ -273,7 +278,7 @@ object Solver {
                 if (result != null) {
                     SingleValue.ofNullable(old.name, result.type(), result.wrapped(), old.id)
                 } else {
-                    SingleValue.ofNull(old.name, Unit::class, old.id)
+                    SingleValue.ofNull(old.name, Unknown::class, old.id)
                 }
             })
         }
@@ -293,7 +298,7 @@ object Solver {
         result: Map<K, Evaluated<out Any>>
     ): de.flapdoodle.tab.model.Node.Calculated<K> {
         // TODO multiple value types in result
-        if (result.isNotEmpty()) {
+//        if (result.isNotEmpty()) {
             val newColumn = column(result, calculation)
             val existingColumn = node.columns.find(calculation.destination())
 
@@ -311,14 +316,14 @@ object Solver {
                 }
             }
             return changedNode
-        } else {
-            val existingColumn = node.columns.find(calculation.destination())
-            return if (existingColumn != null) {
-                node.copy(columns = node.columns.remove(calculation.destination()))
-            } else {
-                node
-            }
-        }
+//        } else {
+//            val existingColumn = node.columns.find(calculation.destination())
+//            return if (existingColumn != null) {
+//                node.copy(columns = node.columns.remove(calculation.destination()))
+//            } else {
+//                node
+//            }
+//        }
     }
 
     private fun <K : Comparable<K>> clearTable(
@@ -332,10 +337,14 @@ object Solver {
         result: Map<K, Evaluated<out Any>>,
         calculation: Calculation.Tabular<K>
     ): Column<K, out Any> {
-        require(result.isNotEmpty()) { "result is empty" }
-        val valueTypes = result.values.map { it.type() }.toSet()
-        require(valueTypes.size == 1) { "more than one value type: $result"}
-        val valueType = valueTypes.toList().one { true }
+        val valueType: TypeInfo<out Any> = if (result.isEmpty()) {
+            TypeInfo.of(Unknown::class.java)
+        } else {
+            require(result.isNotEmpty()) { "result is empty" }
+            val valueTypes = result.values.map { it.type() }.toSet()
+            require(valueTypes.size == 1) { "more than one value type: $result" }
+            valueTypes.toList().one { true }
+        }
 
         val column = Column(
             name = calculation.name(),
@@ -427,7 +436,7 @@ object Solver {
                 }
             }
 
-        if (debug) {
+        logger.debug {
             val dot = GraphAsDot.builder<Vertex> { it ->
                 when (it) {
                     is Vertex.Column -> "column(${it.node}:${it.columnId})"
@@ -435,8 +444,7 @@ object Solver {
                 }
             }
                 .build().asDot(graph)
-            println("----------------------------")
-            println(dot)
+            "----------------\n$dot\n----------------\n"
         }
 
         return Graphs.rootsOf(graph)

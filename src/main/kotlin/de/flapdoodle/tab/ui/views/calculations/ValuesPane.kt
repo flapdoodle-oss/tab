@@ -1,9 +1,13 @@
 package de.flapdoodle.tab.ui.views.calculations
 
 import de.flapdoodle.kfx.controls.labels.ValidatedLabel
+import de.flapdoodle.kfx.converters.ValidatingConverter
+import de.flapdoodle.kfx.converters.ValueOrError
 import de.flapdoodle.kfx.layout.grid.TableCell
 import de.flapdoodle.kfx.layout.grid.WeightGridTable
+import de.flapdoodle.reflection.TypeInfo
 import de.flapdoodle.tab.model.data.SingleValue
+import de.flapdoodle.tab.types.Unknown
 import de.flapdoodle.tab.ui.resources.Labels
 import javafx.beans.property.SimpleObjectProperty
 import javafx.scene.Node
@@ -37,7 +41,19 @@ class ValuesPane<K : Comparable<K>>(
     }
 
     private fun <T : Any> typedlabel(value: SingleValue<T>): ValidatedLabel<T> {
-        val converter = de.flapdoodle.tab.ui.Converters.validatingConverter(value.valueType)
+        val converter: ValidatingConverter<T> = if (value.valueType.isAssignable(TypeInfo.of(Unknown::class.java))) {
+            object : ValidatingConverter<T> {
+                override fun fromString(value: String?): ValueOrError<T> {
+                    throw IllegalArgumentException("not implemented")
+                }
+
+                override fun toString(value: T): String {
+                    return value.toString()
+                }
+            }
+        } else {
+            de.flapdoodle.tab.ui.Converters.validatingConverter(value.valueType)
+        }
         return ValidatedLabel(converter).apply {
             set(value.value)
         }

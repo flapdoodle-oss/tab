@@ -142,9 +142,13 @@ sealed class Action {
             val expectedValues = calculations.aggregations().map { it.destination() to it }
             val existingColumns = node.columns.columns().map { it.id }
             val existingValues = node.values.values.map { it.id }
-            
+
+            // TODO there must be NO missing columns and values
             val missingColumns = expectedColumns.filter { !existingColumns.contains(it.first) }
             val missingValues = expectedValues.filter { !existingValues.contains(it.first) }
+            
+            require(missingColumns.isEmpty()) {"there are missing columns: $missingColumns"}
+            require(missingValues.isEmpty()) {"there are missing values: $missingValues"}
 
             return node.columns.columns() +
                     missingColumns.map { Column(it.second.name(), node.indexType, TypeInfo.of(Unit::class.javaObjectType), it.second.interpolationType(), emptyMap(), it.first) } +
