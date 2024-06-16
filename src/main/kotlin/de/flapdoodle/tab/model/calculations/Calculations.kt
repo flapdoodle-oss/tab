@@ -44,7 +44,9 @@ data class Calculations<K: Comparable<K>>(
     }
 
     fun removeFormula(calculationId: Id<Calculation<*>>): Calculations<K> {
-        TODO("Not yet implemented")
+        val changedAggregations = aggregations.filter { it.id != calculationId }
+        val changedTabular = tabular.filter { it.id != calculationId }
+        return copy(aggregations = changedAggregations, tabular = changedTabular, inputs = merge(inputs, mergedInputSlots(changedAggregations + changedTabular)))
     }
 
     fun aggregation(id: SingleValueId): Calculation.Aggregation<K> {
