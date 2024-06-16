@@ -62,28 +62,29 @@ object Columns {
                                     ColoredLabel.Part(p, p + name.length, color)
                                 }
                             } else {
-                                emptyList<ColoredLabel.Part>()
+                                emptyList()
                             }
 
                         }
                         list
                     } else {
-                        emptyList<ColoredLabel.Part>()
+                        emptyList()
                     }
                 }
             )
 
-            TableCell.with<C, ValidatingColoredTextField<Expression>, C>(textField, { it }, { t, value ->
-                t.onAction = EventHandler {
-                    if (value != null) {
-                        onChange(value, requireNotNull(t.get()) { "expression not set" })
+            TableCell.initializedWith(calculation)
+                .node(textField)
+                .updateWith { validatingColoredTextField, value ->
+                    validatingColoredTextField.onAction = EventHandler {
+                        if (value != null) {
+                            onChange(value, requireNotNull(validatingColoredTextField.get()) { "expression not set" })
+                        }
                     }
+                    // HACK to force a change for color mapping
+                    validatingColoredTextField.set(null)
+                    validatingColoredTextField.set(value?.formula()?.expression())
                 }
-
-                // HACK to force a change for color mapping
-                t.set(null)
-                t.set(value?.formula()?.expression())
-            }).initializedWith(calculation)
         }
     )
 
