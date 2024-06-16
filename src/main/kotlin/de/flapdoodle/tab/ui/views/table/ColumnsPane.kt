@@ -39,19 +39,22 @@ class ColumnsPane<K: Comparable<K>>(
 
 
     private val nameColumn = WeightGridTable.Column<Column<K, out Any>>(weight = 1.0, horizontalPosition = HPos.LEFT, cellFactory = {
-        TableCell.with(Labels.label(it.name.long), { it.name.long }, Label::setText)
+        TableCell.initializedWith(it)
+            .node(Labels.label(""))
+            .map { it.name.long }
+            .updateWith(Label::setText)
     })
+
     private val interpolationColumn = WeightGridTable.Column<Column<K, out Any>>(weight = 0.0, cellFactory = {
         Labels.enumTableCell(it,InterpolationType::class,Column<K, out Any>::interpolationType)
     })
+
     private val changeColumn = WeightGridTable.Column<Column<K, out Any>>(weight = 0.0, cellFactory = { column ->
-        TableCell.with<Column<K, out Any>, Button, EventHandler<ActionEvent>>(Buttons.change(context), { v -> EventHandler {
-            val change = ChangeColumn.open(nodeId, v)
+        Buttons.tableCell(column, Buttons.change(context)) {
+            val change = ChangeColumn.open(nodeId, it)
             if (change!=null) {
                 changeListener.change(change)
             }
-        }}, Button::setOnAction).apply {
-            updateCell(column)
         }
     })
     private val deleteColumn = WeightGridTable.Column<Column<K, out Any>>(weight = 0.0, cellFactory = { column ->
