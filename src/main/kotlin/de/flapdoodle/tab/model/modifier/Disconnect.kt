@@ -2,10 +2,12 @@ package de.flapdoodle.tab.model.modifier
 
 import de.flapdoodle.kfx.types.Id
 import de.flapdoodle.tab.model.Node
+import de.flapdoodle.tab.model.calculations.Calculation
 import de.flapdoodle.tab.model.calculations.InputSlot
 import de.flapdoodle.tab.model.connections.Source
 import de.flapdoodle.tab.model.data.DataId
 import de.flapdoodle.tab.types.one
+import de.flapdoodle.tab.types.oneOrNull
 
 data class Disconnect(
     val nodeId: Id<Node.Calculated<*>>,
@@ -54,6 +56,20 @@ data class Disconnect(
             val node = nodes.one { it.id == endId }
             require(node is Node.Calculated<out Comparable<*>>) {"node is not calculated: $node"}
             return Disconnect(node.id, input, source)
+        }
+
+        fun removeCalculation(nodes: List<Node>, id: Id<Node.Calculated<*>>, calculationId: Id<Calculation<*>>): List<Disconnect> {
+            val source = nodes.one { it.id == id } as Node.Calculated<*>
+            val aggregation = source.calculations.aggregations().oneOrNull { it.id == calculationId }
+            val tabular = source.calculations.tabular().oneOrNull { it.id == calculationId }
+
+            val sourceDataId = if (aggregation!=null) {
+                aggregation.destination()
+            } else {
+                requireNotNull(tabular) { "could not find calculation: $calculationId in $source" } .destination()
+            }
+
+            return removeSource(nodes, id, sourceDataId)
         }
 
 

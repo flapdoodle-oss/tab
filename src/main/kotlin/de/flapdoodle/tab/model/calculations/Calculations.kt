@@ -5,6 +5,7 @@ import de.flapdoodle.kfx.types.Id
 import de.flapdoodle.reflection.TypeInfo
 import de.flapdoodle.tab.model.Name
 import de.flapdoodle.tab.model.Node
+import de.flapdoodle.tab.model.calculations.interpolation.InterpolationType
 import de.flapdoodle.tab.model.connections.Source
 import de.flapdoodle.tab.model.data.ColumnId
 import de.flapdoodle.tab.model.data.SingleValueId
@@ -15,7 +16,7 @@ data class Calculations<K: Comparable<K>>(
     private val indexType: TypeInfo<K>,
     private val aggregations: List<Calculation.Aggregation<K>> = emptyList(),
     private val tabular: List<Calculation.Tabular<K>> = emptyList(),
-    private val inputs: List<InputSlot<K>> = inputSlots(aggregations + tabular)
+    private val inputs: List<InputSlot<K>> = mergedInputSlots(aggregations + tabular)
 ) {
     init {
         val aggregationsById = aggregations.groupBy { it.id }.filter { it.value.size > 1 }
@@ -31,15 +32,19 @@ data class Calculations<K: Comparable<K>>(
     fun addAggregation(aggregation: Calculation.Aggregation<K>): Calculations<K> {
         return copy(
             aggregations = aggregations + aggregation,
-            inputs = merge(inputs, inputSlots(aggregations + aggregation + tabular))
+            inputs = merge(inputs, mergedInputSlots(aggregations + aggregation + tabular))
         )
     }
 
     fun addTabular(tab: Calculation.Tabular<K>): Calculations<K> {
         return copy(
             tabular = tabular + tab,
-            inputs = merge(inputs, inputSlots(aggregations + tabular + tab))
+            inputs = merge(inputs, mergedInputSlots(aggregations + tabular + tab))
         )
+    }
+
+    fun removeFormula(calculationId: Id<Calculation<*>>): Calculations<K> {
+        TODO("Not yet implemented")
     }
 
     fun aggregation(id: SingleValueId): Calculation.Aggregation<K> {
@@ -54,10 +59,21 @@ data class Calculations<K: Comparable<K>>(
         return inputs.filter { it.mapTo.intersect(variable).isNotEmpty() }
     }
 
+    @Deprecated("dont use")
     fun changeFormula(id: Id<Calculation<*>>, name: Name, newExpression: Expression): Calculations<K> {
         val changedAggregations = aggregations.change(Calculation.Aggregation<K>::id, id) { it.changeFormula(name, newExpression) }
         val changedTabular = tabular.change(Calculation.Tabular<K>::id, id) { it.changeFormula(name, newExpression) }
-        return copy(aggregations = changedAggregations, tabular = changedTabular, inputs = merge(inputs, inputSlots(changedAggregations + changedTabular)))
+        return copy(aggregations = changedAggregations, tabular = changedTabular, inputs = merge(inputs, mergedInputSlots(changedAggregations + changedTabular)))
+    }
+
+    fun changeAggregation(id: Id<Calculation<*>>, name: Name, newExpression: Expression): Calculations<K> {
+        val changedAggregations = aggregations.change(Calculation.Aggregation<K>::id, id) { it.changeFormula(name, newExpression) }
+        return copy(aggregations = changedAggregations, inputs = merge(inputs, mergedInputSlots(changedAggregations + tabular)))
+    }
+
+    fun changeTabular(id: Id<Calculation<*>>, name: Name, newExpression: Expression, interpolationType: InterpolationType): Calculations<K> {
+        val changedTabular = tabular.change(Calculation.Tabular<K>::id, id) { it.changeFormula(name, newExpression, interpolationType) }
+        return copy(tabular = changedTabular, inputs = merge(inputs, mergedInputSlots(aggregations + changedTabular)))
     }
 
     fun connect(input: Id<InputSlot<*>>, source: Source): Calculations<K> {
@@ -106,7 +122,7 @@ data class Calculations<K: Comparable<K>>(
             return copyFromOldIfVarsAreAsSubset.sortedBy { it.name }
         }
 
-        fun <K: Comparable<K>> inputSlots(list: List<Calculation<K>>): List<InputSlot<K>> {
+        fun <K: Comparable<K>> mergedInputSlots(list: List<Calculation<K>>): List<InputSlot<K>> {
             val nameMap = groupByName(list)
             return nameMap.map { InputSlot<K>(name = it.key, mapTo = it.value.toSet()) }
                 .sortedBy { it.name }

@@ -1,11 +1,11 @@
 package de.flapdoodle.tab.model.changes
 
+import de.flapdoodle.eval.core.Expression
 import de.flapdoodle.kfx.types.Id
 import de.flapdoodle.tab.model.*
-import de.flapdoodle.tab.model.Node.Constants
+import de.flapdoodle.tab.model.Node.Calculated
 import de.flapdoodle.tab.model.calculations.InputSlot
 import de.flapdoodle.tab.model.calculations.interpolation.InterpolationType
-import de.flapdoodle.tab.model.change.ModelChange.ConstantsChange
 import de.flapdoodle.tab.model.connections.Source
 import de.flapdoodle.tab.model.data.*
 import de.flapdoodle.types.Either
@@ -77,5 +77,25 @@ sealed class Change {
 
         data class RemoveColumn(override val id: Id<out Node.Table<out Comparable<*>>>, val columnId: ColumnId) :
             Table(id)
+    }
+
+    sealed class Calculation(open val id: Id<out Calculated<out Comparable<*>>>): Change() {
+        data class Properties(override val id: Id<out Calculated<out Comparable<*>>>, val name: Title): Calculation(id)
+        data class AddAggregation(override val id: Id<Calculated<*>>, val name: Name, val expression: String) : Calculation(id)
+        data class AddTabular(override val id: Id<Calculated<*>>, val name: Name, val expression: String, val interpolationType: InterpolationType) : Calculation(id)
+        data class ChangeAggregation(
+            override val id: Id<out Calculated<out Comparable<*>>>,
+            val calculationId: Id<de.flapdoodle.tab.model.calculations.Calculation<*>>,
+            val name: Name,
+            val formula: Expression
+        ): Calculation(id)
+        data class ChangeTabular(
+            override val id: Id<out Calculated<out Comparable<*>>>,
+            val calculationId: Id<de.flapdoodle.tab.model.calculations.Calculation<*>>,
+            val name: Name,
+            val formula: Expression,
+            val interpolationType: InterpolationType
+        ): Calculation(id)
+        data class RemoveFormula(override val id: Id<Calculated<*>>, val calculationId: Id<de.flapdoodle.tab.model.calculations.Calculation<*>>) : Calculation(id)
     }
 }

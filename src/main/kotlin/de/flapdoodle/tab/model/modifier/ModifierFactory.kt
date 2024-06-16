@@ -14,6 +14,7 @@ object ModifierFactory {
             is Change.Disconnect -> listOf(Disconnect.removeConnection(nodes, change.endId, change.input, change.source))
             is Change.Constants -> constantChanges(nodes, change)
             is Change.Table -> tableChanges(nodes, change)
+            is Change.Calculation -> calculationChanges(nodes, change)
             else -> throw IllegalArgumentException("not implemented: $change")
         }
     }
@@ -40,6 +41,18 @@ object ModifierFactory {
             is Change.Table.MoveValues<out Comparable<*>>  -> listOf(MoveColumnValues.asModifier(change))
             is Change.Table.RemoveValues<out Comparable<*>> -> listOf(RemoveColumnValues.asModifier(change))
             is Change.Table.RemoveColumn -> Disconnect.removeSource(nodes, change.id, change.columnId)  + RemoveColumn(change.id, change.columnId)
+            else -> throw IllegalArgumentException("not implemented: $change")
+        }
+    }
+
+    internal fun calculationChanges(nodes: List<Node>, change: Change.Calculation): List<Modifier> {
+        return when (change) {
+            is Change.Calculation.Properties -> listOf(CalculationProperties(change.id, change.name))
+            is Change.Calculation.AddAggregation -> listOf(AddAggregation(change.id, change.name, change.expression))
+            is Change.Calculation.AddTabular -> listOf(AddTabular(change.id, change.name, change.expression, change.interpolationType))
+            is Change.Calculation.ChangeAggregation -> listOf(ChangeAggregation(change.id,change.calculationId, change.name, change.formula))
+            is Change.Calculation.ChangeTabular -> listOf(ChangeTabular(change.id,change.calculationId, change.name, change.formula, change.interpolationType))
+            is Change.Calculation.RemoveFormula -> Disconnect.removeCalculation(nodes, change.id, change.calculationId) + RemoveFormula(change.id, change.calculationId)
             else -> throw IllegalArgumentException("not implemented: $change")
         }
     }

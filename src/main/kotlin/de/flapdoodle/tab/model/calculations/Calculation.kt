@@ -59,5 +59,12 @@ sealed class Calculation<K: Comparable<K>>(
         override fun changeFormula(name: Name, newExpression: Expression): Tabular<K> {
             return copy(name = name, formula = formula.change(newExpression))
         }
+
+        fun changeFormula(name: Name, newExpression: Expression, interpolationType: InterpolationType): Tabular<K> {
+            return copy(name = name, formula = formula.change(newExpression), interpolationType = interpolationType)
+        }
+//        fun changeFormula(name: Name, newExpression: Expression, interpolationType: InterpolationType): Tabular<K> {
+//            return copy(name = name, formula = formula.change(newExpression), interpolationType = interpolationType)
+//        }
     }
 }
