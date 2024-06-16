@@ -24,7 +24,9 @@ object Columns {
     fun <K : Comparable<K>, C : Calculation<K>> colorColumn(outputColor: (C) -> Color?, weight: Double = 0.0) = WeightGridTable.Column<C>(
         weight = weight,
         cellFactory = { c ->
-            ColorDot.tableCell(c) { outputColor(it)}
+            ColorDot.tableCell(c) {
+                outputColor(it)
+            }
         })
 
     fun <K : Comparable<K>, C : Calculation<K>> deleteColumn(context: Labels.WithContext, weight: Double = 1.0, onAction: (C) -> Unit) = WeightGridTable.Column<C>(

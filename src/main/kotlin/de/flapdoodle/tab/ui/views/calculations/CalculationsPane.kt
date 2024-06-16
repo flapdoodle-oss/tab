@@ -32,8 +32,6 @@ class CalculationsPane<K: Comparable<K>>(
         changeListener = changeListener,
         calculationsModel = aggregationModel,
         outputColor = {
-            logger.info { "find destination: ${currentNode.findValue(it.destination())}" }
-            logger.info { "${currentNode.values}" }
             currentNode.findValue(it.destination())?.color
         },
         inputColor = { name ->
