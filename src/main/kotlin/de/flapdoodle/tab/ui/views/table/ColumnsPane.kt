@@ -1,9 +1,11 @@
 package de.flapdoodle.tab.ui.views.table
 
+import de.flapdoodle.kfx.controls.labels.ValidatedLabel
 import de.flapdoodle.kfx.extensions.cssClassName
 import de.flapdoodle.kfx.layout.grid.TableCell
 import de.flapdoodle.kfx.layout.grid.WeightGridTable
 import de.flapdoodle.tab.model.Node
+import de.flapdoodle.tab.model.calculations.interpolation.InterpolationType
 import de.flapdoodle.tab.model.changes.Change
 import de.flapdoodle.tab.model.data.Column
 import de.flapdoodle.tab.ui.ChangeListener
@@ -40,8 +42,7 @@ class ColumnsPane<K: Comparable<K>>(
         TableCell.with(Labels.label(it.name.long), { it.name.long }, Label::setText)
     })
     private val interpolationColumn = WeightGridTable.Column<Column<K, out Any>>(weight = 0.0, cellFactory = {
-        // TODO i18n
-        TableCell(Labels.label(it.interpolationType.name)) { l, v -> l.text = v.interpolationType.name}
+        Labels.enumTableCell(it,InterpolationType::class,Column<K, out Any>::interpolationType)
     })
     private val changeColumn = WeightGridTable.Column<Column<K, out Any>>(weight = 0.0, cellFactory = { column ->
         TableCell.with<Column<K, out Any>, Button, EventHandler<ActionEvent>>(Buttons.change(context), { v -> EventHandler {
