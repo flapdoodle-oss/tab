@@ -43,7 +43,6 @@ import javafx.scene.layout.AnchorPane
 class ModelAdapter(
     model: ReadOnlyObjectProperty<Model>,
     modelEventListener: ModelEventListener,
-    val modelChangeListener: ModelChangeListener,
     val changeListener: ChangeListener
 ) : AnchorPane() {
     private val logger = Logging.logger(ModelAdapter::class)
@@ -118,7 +117,7 @@ class ModelAdapter(
                     val nodeSize = node.size
 
                     graphEditor.addVertex(Vertex(node.name.long, vertexActions).also { vertex ->
-                        val vertexContent = nodeUIAdapterFactory.adapterOf(node, modelChangeListener, changeListener)
+                        val vertexContent = nodeUIAdapterFactory.adapterOf(node, changeListener)
                         resizeVertex(vertex, node.position, node.size)
                         vertex.content = vertexContent
                         vertexMapping.add(
@@ -271,7 +270,7 @@ class ModelAdapter(
                     val node = model.value.node(nodeId)
                     val modelChange = ChangeNode.openWith(node)
                     if (modelChange!=null) {
-                        modelChangeListener.change(modelChange)
+                        changeListener.change(modelChange)
                     }
                 }
             }

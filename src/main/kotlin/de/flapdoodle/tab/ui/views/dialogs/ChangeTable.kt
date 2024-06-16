@@ -6,6 +6,7 @@ import de.flapdoodle.kfx.extensions.bindCss
 import de.flapdoodle.tab.model.Node
 import de.flapdoodle.tab.model.Title
 import de.flapdoodle.tab.model.change.ModelChange
+import de.flapdoodle.tab.model.changes.Change
 import de.flapdoodle.tab.ui.Converters
 import de.flapdoodle.tab.ui.resources.Labels
 import de.flapdoodle.tab.ui.resources.RequiredFieldNotSet
@@ -14,7 +15,7 @@ import javafx.scene.control.TextArea
 
 class ChangeTable<K: Comparable<K>>(
     private val node: Node.Table<K>
-) : DialogContent<ModelChange>() {
+) : DialogContent<Change.Table.Properties>() {
     private val name = Labels.label(ChangeTable::class, "name", "Name")
     private val nameField = ValidatingTextField(converter = Converters.validatingConverter(String::class)
         .and { v -> v.mapNullable { if (it.isNullOrBlank()) throw RequiredFieldNotSet("not set") else it } })
@@ -44,10 +45,10 @@ class ChangeTable<K: Comparable<K>>(
         return ValidatingField.invalidInputs(nameField)
     }
 
-    override fun result(): ModelChange? {
+    override fun result(): Change.Table.Properties? {
         val newName = Title(nameField.text, shortField.text, descriptionField.text)
         return if (node.name != newName)
-            ModelChange.ChangeTableProperties(node.id, newName)
+            Change.Table.Properties(node.id, newName)
         else
             null
     }

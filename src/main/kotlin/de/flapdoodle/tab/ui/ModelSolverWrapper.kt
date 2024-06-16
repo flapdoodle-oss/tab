@@ -1,7 +1,6 @@
 package de.flapdoodle.tab.ui
 
 import de.flapdoodle.tab.model.Model
-import de.flapdoodle.tab.model.change.ModelChange2ChangeTranslator
 import de.flapdoodle.tab.model.changes.Change
 import de.flapdoodle.tab.model.graph.Solver
 import de.flapdoodle.tab.ui.events.ModelEvent
@@ -71,24 +70,11 @@ class ModelSolverWrapper(initalModel: Model = Model()) {
         }
     }
 
-    private val modelChangeListener = ModelChangeListener { modelChange ->
-        changeModel { old ->
-            val change = ModelChange2ChangeTranslator.asChange(modelChange)
-            if (change!=null) {
-                old.apply(change)
-            } else {
-                old.apply(modelChange)
-            }
-        }
-    }
-
     private val changeListener = ChangeListener { change ->
         changeModel { old -> old.apply(change) }
     }
 
     fun eventListener() = eventListener
-    @Deprecated("use changeListener")
-    fun modelChangeListener() = modelChangeListener
     fun changeListener() = changeListener
 
     fun model(): ReadOnlyObjectProperty<Model> = model
