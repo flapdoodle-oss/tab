@@ -5,7 +5,6 @@ import de.flapdoodle.kfx.types.Id
 import de.flapdoodle.tab.model.connections.Source
 import javafx.scene.paint.Color
 
-// kommt hier der Interpolator rein?
 data class InputSlot<K: Comparable<K>>(
     val name: String,
     val mapTo: Set<Variable> = emptySet(),
