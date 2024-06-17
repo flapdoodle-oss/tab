@@ -5,10 +5,7 @@ import de.flapdoodle.eval.core.ExpressionFactory
 import de.flapdoodle.eval.core.VariableResolver
 import de.flapdoodle.eval.core.evaluables.*
 import de.flapdoodle.tab.model.calculations.Variable
-import de.flapdoodle.tab.model.calculations.adapter.arithmetic.Divide
-import de.flapdoodle.tab.model.calculations.adapter.arithmetic.Minus
-import de.flapdoodle.tab.model.calculations.adapter.arithmetic.Multiply
-import de.flapdoodle.tab.model.calculations.adapter.arithmetic.Plus
+import de.flapdoodle.tab.model.calculations.adapter.arithmetic.*
 import java.math.BigDecimal
 import java.math.BigInteger
 import java.math.MathContext
@@ -61,6 +58,7 @@ object Eval {
             .putMap("multiply", Multiply)
             .putMap("minus", Minus)
             .putMap("divide", Divide)
+            .putMap("avg", Avg)
             .build())
         .build()
 
