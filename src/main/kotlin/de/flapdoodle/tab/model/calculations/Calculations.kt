@@ -11,6 +11,7 @@ import de.flapdoodle.tab.model.data.ColumnId
 import de.flapdoodle.tab.model.data.SingleValueId
 import de.flapdoodle.tab.types.change
 import de.flapdoodle.tab.types.one
+import javafx.scene.paint.Color
 
 data class Calculations<K: Comparable<K>>(
     private val indexType: TypeInfo<K>,
@@ -73,8 +74,8 @@ data class Calculations<K: Comparable<K>>(
         return copy(aggregations = changedAggregations, inputs = merge(inputs, mergedInputSlots(changedAggregations + tabular)))
     }
 
-    fun changeTabular(id: Id<Calculation<*>>, name: Name, newExpression: Expression, interpolationType: InterpolationType): Calculations<K> {
-        val changedTabular = tabular.change(Calculation.Tabular<K>::id, id) { it.changeFormula(name, newExpression, interpolationType) }
+    fun changeTabular(id: Id<Calculation<*>>, name: Name, newExpression: Expression, color: Color, interpolationType: InterpolationType): Calculations<K> {
+        val changedTabular = tabular.change(Calculation.Tabular<K>::id, id) { it.changeFormula(name, newExpression, color, interpolationType) }
         return copy(tabular = changedTabular, inputs = merge(inputs, mergedInputSlots(aggregations + changedTabular)))
     }
 

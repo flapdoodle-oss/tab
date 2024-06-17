@@ -15,6 +15,7 @@ import de.flapdoodle.tab.model.data.Column
 import de.flapdoodle.tab.model.data.ColumnId
 import de.flapdoodle.tab.model.data.Columns
 import de.flapdoodle.types.Either
+import javafx.scene.paint.Color
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import java.util.concurrent.ThreadLocalRandom
@@ -238,6 +239,7 @@ class ActionTest {
                     id = calculatedId,
                     name = Name("y"),
                     expression = "x",
+                    color = javafx.scene.paint.Color.RED,
                     interpolationType = InterpolationType.LastValue
                 )
             )
@@ -252,6 +254,7 @@ class ActionTest {
                 id = calculatedId,
                 name = Name("z"),
                 expression = "x",
+                color = Color.RED,
                 interpolationType = InterpolationType.LastValue
             )
         )

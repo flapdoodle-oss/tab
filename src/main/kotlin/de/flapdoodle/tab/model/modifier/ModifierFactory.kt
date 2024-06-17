@@ -51,9 +51,9 @@ object ModifierFactory {
         return when (change) {
             is Change.Calculation.Properties -> listOf(CalculationProperties(change.id, change.name))
             is Change.Calculation.AddAggregation -> listOf(AddAggregation(change.id, change.name, change.expression))
-            is Change.Calculation.AddTabular -> listOf(AddTabular(change.id, change.name, change.expression, change.interpolationType))
+            is Change.Calculation.AddTabular -> listOf(AddTabular(change.id, change.name, change.expression, change.color, change.interpolationType))
             is Change.Calculation.ChangeAggregation -> listOf(ChangeAggregation(change.id,change.calculationId, change.name, change.formula))
-            is Change.Calculation.ChangeTabular -> listOf(ChangeTabular(change.id,change.calculationId, change.name, change.formula, change.interpolationType))
+            is Change.Calculation.ChangeTabular -> listOf(ChangeTabular(change.id,change.calculationId, change.name, change.formula, change.color, change.interpolationType))
             is Change.Calculation.ChangeFormula -> changeFormula(nodes, change)
             is Change.Calculation.RemoveFormula -> Disconnect.removeCalculation(nodes, change.id, change.calculationId) + RemoveFormula(change.id, change.calculationId)
             else -> throw IllegalArgumentException("not implemented: $change")
@@ -69,7 +69,7 @@ object ModifierFactory {
             ChangeAggregation(change.id, change.calculationId, aggregation.name(), change.formula)
         } else {
             requireNotNull(tabular) {"calculation ${change.calculationId} not found in $calculated"}
-            ChangeTabular(change.id, change.calculationId, tabular.name(), change.formula, tabular.interpolationType())
+            ChangeTabular(change.id, change.calculationId, tabular.name(), change.formula, tabular.color(), tabular.interpolationType())
         })
     }
 }

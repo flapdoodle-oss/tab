@@ -6,5 +6,6 @@ class FileCalculation(
     val short: String?,
     val formula: FileFormula,
     val id: String,
-    val destination: String
+    val destination: String,
+    val color: FileColor?
 )

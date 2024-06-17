@@ -19,7 +19,6 @@ import de.flapdoodle.tab.model.data.Data
 import de.flapdoodle.tab.model.data.SingleValue
 import de.flapdoodle.tab.types.Unknown
 import de.flapdoodle.tab.types.one
-import de.flapdoodle.tab.ui.ModelAdapter
 import org.jgrapht.graph.DefaultEdge
 
 object Solver {
@@ -58,7 +57,8 @@ object Solver {
         node: de.flapdoodle.tab.model.Node.Calculated<K>,
         model: Model
     ): Model {
-        return update(model, node, when (vertex) {
+        return update(
+            model, node, when (vertex) {
                 is Vertex.Column -> node.calculations.tabular(vertex.columnId)
                 is Vertex.SingleValue -> node.calculations.aggregation(vertex.valueId)
             }
@@ -90,7 +90,7 @@ object Solver {
 //        return model
     }
 
-    private fun <K: Comparable<K>> dataOf(
+    private fun <K : Comparable<K>> dataOf(
         indexType: TypeInfo<K>,
         source: Source,
         model: Model
@@ -100,9 +100,10 @@ object Solver {
             is Source.ColumnSource<*> -> {
                 when (node) {
                     is de.flapdoodle.tab.model.Node.HasColumns<*> -> {
-                        require(node.indexType==indexType) {"wrong index type: $indexType != ${node.indexType}"}
+                        require(node.indexType == indexType) { "wrong index type: $indexType != ${node.indexType}" }
                         node.column(source.columnId)
                     }
+
                     else -> {
                         throw IllegalArgumentException("mismatch")
                     }
@@ -153,11 +154,11 @@ object Solver {
         val valueMap: Map<Variable, Evaluated<*>> = variableDataMap.map { (v, data) ->
             v to when (data) {
                 is SingleValue<out Any> -> singleValueAsEvaluated(data)
-                is Column<*,*> -> columnAsEvaluated(data)
+                is Column<*, *> -> columnAsEvaluated(data)
             }
         }.toMap()
         val result = try {
-             calculation.evaluate(valueMap)
+            calculation.evaluate(valueMap)
         } catch (ex: BaseException) {
             try {
                 Evaluated.ofNull(calculation.evaluateType(valueMap))
@@ -180,11 +181,11 @@ object Solver {
         return model.copy(nodes = model.nodes().map { if (it.id == changedNode.id) changedNode else it })
     }
 
-    private fun <T: Any> singleValueAsEvaluated(data: SingleValue<T>): Evaluated<T> {
+    private fun <T : Any> singleValueAsEvaluated(data: SingleValue<T>): Evaluated<T> {
         return Evaluated.ofNullable(data.valueType, data.value)
     }
 
-    private fun <V: Any> columnAsEvaluated(data: Column<*, V>): Evaluated<out Any> {
+    private fun <V : Any> columnAsEvaluated(data: Column<*, V>): Evaluated<out Any> {
         return Evaluated.ofNullable(
             IndexMap.IndexMapTypeInfo(data.valueType),
             IndexMap.asMap(data)
@@ -198,7 +199,7 @@ object Solver {
         variableDataMap: Map<Variable, Data>
     ): Model {
         val (columns, values) = variableDataMap.entries.partition { it.value is Column<*, *> }
-        val columnsMap = columns.map {  it.key to it.value as Column<K, Any> }
+        val columnsMap = columns.map { it.key to it.value as Column<K, Any> }
         val singleValueMap = values.map { it.key to singleValueAsEvaluated(it.value as SingleValue<Any>) }
         return calculateTabular(updated, node, calculation, columnsMap, singleValueMap)
     }
@@ -238,12 +239,18 @@ object Solver {
     private fun <K : Comparable<K>> sortAndInterpolate(columns: List<Pair<Variable, Column<K, Any>>>): InterpolatorColumns<K> {
         val index = columns.flatMap { it.second.index() }.toSet()
         val map = columns.map { (variable, column) ->
-            variable to interpolatorFor(index, column) // Interpolator.valueAtOffset(column.valueType, column.values).interpolatedAt(index)
+            variable to interpolatorFor(
+                index,
+                column
+            ) // Interpolator.valueAtOffset(column.valueType, column.values).interpolatedAt(index)
         }
         return InterpolatorColumns(index, map)
     }
 
-    private fun <K: Comparable<K>, V: Any> interpolatorFor(index: Set<K>, column: Column<K, V>): Interpolator<in K, V> {
+    private fun <K : Comparable<K>, V : Any> interpolatorFor(
+        index: Set<K>,
+        column: Column<K, V>
+    ): Interpolator<in K, V> {
         val factory = DefaultInterpolatorFactoryLookup.interpolatorFactoryFor(
             column.interpolationType,
             column.indexType,
@@ -261,7 +268,7 @@ object Solver {
         }
     }
 
-    private fun <K : Comparable<K>, V: Any> setValue(
+    private fun <K : Comparable<K>, V : Any> setValue(
         node: de.flapdoodle.tab.model.Node.Calculated<K>,
         calculation: Calculation.Aggregation<K>,
         result: Evaluated<V>?
@@ -272,14 +279,14 @@ object Solver {
             } else {
                 SingleValue.ofNull(calculation.name(), Unknown::class, calculation.destination())
             }
-            node.copy(values = node.values.addValue(newSingleValue))
+            node.copy(values = node.values.addValue(newSingleValue.copy(color = calculation.color())))
         } else {
             node.copy(values = node.values.change(calculation.destination()) { old ->
                 if (result != null) {
                     SingleValue.ofNullable(old.name, result.type(), result.wrapped(), old.id)
                 } else {
                     SingleValue.ofNull(old.name, Unknown::class, old.id)
-                }
+                }.copy(color = calculation.color())
             })
         }
         return changedNode
@@ -299,23 +306,23 @@ object Solver {
     ): de.flapdoodle.tab.model.Node.Calculated<K> {
         // TODO multiple value types in result
 //        if (result.isNotEmpty()) {
-            val newColumn = column(result, calculation)
-            val existingColumn = node.columns.find(calculation.destination())
+        val newColumn = column(result, calculation)
+        val existingColumn = node.columns.find(calculation.destination())
 
-            val changedNode = if (existingColumn == null) {
-                node.copy(columns = node.columns.addColumn(newColumn))
+        val changedNode = if (existingColumn == null) {
+            node.copy(columns = node.columns.addColumn(newColumn))
+        } else {
+            if (existingColumn.valueType != newColumn.valueType) {
+                node.copy(columns = node.columns.change(calculation.destination()) { old ->
+                    newColumn
+                })
             } else {
-                if (existingColumn.valueType != newColumn.valueType) {
-                    node.copy(columns = node.columns.change(calculation.destination()) { old ->
-                        newColumn
-                    })
-                } else {
-                    node.copy(columns = node.columns.change(calculation.destination()) { old ->
-                        newColumn.copy(id = old.id, color = old.color)
-                    })
-                }
+                node.copy(columns = node.columns.change(calculation.destination()) { old ->
+                    newColumn.copy(id = old.id, color = calculation.color())
+                })
             }
-            return changedNode
+        }
+        return changedNode
 //        } else {
 //            val existingColumn = node.columns.find(calculation.destination())
 //            return if (existingColumn != null) {
@@ -351,6 +358,7 @@ object Solver {
             indexType = calculation.indexType(),
             valueType = valueType,
             values = emptyMap(),
+            color = calculation.color(),
             id = calculation.destination()
         )
         return column.set(result.mapValues { it.value.wrapped() })

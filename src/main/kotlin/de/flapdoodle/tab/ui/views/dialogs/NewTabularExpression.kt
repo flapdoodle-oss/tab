@@ -12,6 +12,7 @@ import de.flapdoodle.tab.ui.resources.RequiredFieldNotSet
 import de.flapdoodle.tab.ui.resources.ResourceBundles
 import de.flapdoodle.tab.ui.views.common.HashedColorPicker
 import javafx.beans.value.ObservableValue
+import javafx.scene.paint.Color
 
 class NewTabularExpression : DialogContent<NewTabularExpression.NamedExpression>() {
 
@@ -25,6 +26,10 @@ class NewTabularExpression : DialogContent<NewTabularExpression.NamedExpression>
     private val expressionField = ValidatingTextField(
         Converters.validatingConverter(String::class)
             .and { v -> v.mapNullable { if (it.isNullOrBlank()) throw RequiredFieldNotSet("not set") else it } })
+
+    private val color = Labels.label(ChangeColumn::class,"color","Color")
+    private val colorField = HashedColorPicker(nameField.valueProperty())
+
     private val interpolation = Labels.label(NewColumn::class, "interpolation", "Interpolation")
     private val interpolationField = ChoiceBoxes.forEnums(
         resourceBundle = ResourceBundles.enumTypes(),
@@ -43,8 +48,10 @@ class NewTabularExpression : DialogContent<NewTabularExpression.NamedExpression>
         add(shortField, 1, 1)
         add(expression, 0, 2)
         add(expressionField, 1, 2)
-        add(interpolation, 0, 3)
-        add(interpolationField, 1, 3)
+        add(color, 0, 3)
+        add(colorField, 1, 3)
+        add(interpolation, 0, 4)
+        add(interpolationField, 1, 4)
     }
 
     override fun isValidProperty(): ObservableValue<Boolean> {
@@ -52,13 +59,14 @@ class NewTabularExpression : DialogContent<NewTabularExpression.NamedExpression>
     }
 
     override fun result(): NamedExpression {
-        return NamedExpression(Name(nameField.text, shortField.text), expressionField.text, interpolationField.value)
+        return NamedExpression(Name(nameField.text, shortField.text), expressionField.text, colorField.value, interpolationField.value)
     }
 
 
     data class NamedExpression(
         val name: Name,
         val expression: String,
+        val color: Color,
         val interpolationType: InterpolationType
     )
 

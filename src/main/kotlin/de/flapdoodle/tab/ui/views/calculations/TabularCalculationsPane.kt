@@ -52,9 +52,9 @@ class TabularCalculationsPane<K : Comparable<K>>(
     }
 
     private val changeColumn = Columns.changeColumn<K, Calculation.Tabular<K>>(context) { calculation ->
-        val changedExpression = ChangeTabularExpression.open(calculation.name(), calculation.formula().expression(), calculation.interpolationType())
+        val changedExpression = ChangeTabularExpression.open(calculation.name(), calculation.formula().expression(), calculation.color(), calculation.interpolationType())
         if (changedExpression != null) {
-            changeListener.change(Change.Calculation.ChangeTabular(nodeId, calculation.id, changedExpression.name, changedExpression.expression, changedExpression.interpolationType))
+            changeListener.change(Change.Calculation.ChangeTabular(nodeId, calculation.id, changedExpression.name, changedExpression.expression, changedExpression.color, changedExpression.interpolationType))
         }
     }
 
@@ -79,6 +79,7 @@ class TabularCalculationsPane<K : Comparable<K>>(
                             nodeId,
                             newExpression.name,
                             newExpression.expression,
+                            newExpression.color,
                             newExpression.interpolationType
                         )
                     )

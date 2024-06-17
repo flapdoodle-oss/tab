@@ -84,7 +84,7 @@ sealed class Change {
     sealed class Calculation(open val id: Id<out Calculated<out Comparable<*>>>): Change() {
         data class Properties(override val id: Id<out Calculated<out Comparable<*>>>, val name: Title): Calculation(id)
         data class AddAggregation(override val id: Id<Calculated<*>>, val name: Name, val expression: String) : Calculation(id)
-        data class AddTabular(override val id: Id<Calculated<*>>, val name: Name, val expression: String, val interpolationType: InterpolationType) : Calculation(id)
+        data class AddTabular(override val id: Id<Calculated<*>>, val name: Name, val expression: String, val color: Color, val interpolationType: InterpolationType) : Calculation(id)
         data class ChangeFormula(
             override val id: Id<out Calculated<out Comparable<*>>>,
             val calculationId: Id<de.flapdoodle.tab.model.calculations.Calculation<*>>,
@@ -101,6 +101,7 @@ sealed class Change {
             val calculationId: Id<de.flapdoodle.tab.model.calculations.Calculation<*>>,
             val name: Name,
             val formula: Expression,
+            val color: Color,
             val interpolationType: InterpolationType
         ): Calculation(id)
         data class RemoveFormula(override val id: Id<Calculated<*>>, val calculationId: Id<de.flapdoodle.tab.model.calculations.Calculation<*>>) : Calculation(id)

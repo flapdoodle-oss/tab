@@ -46,10 +46,6 @@
         "x": 46.0,
         "y": 194.0
       },
-      "size": {
-        "width": 717.0,
-        "height": 482.0
-      },
       "id": "4",
       "table": {
         "indexType": "LocalDate",
@@ -173,10 +169,6 @@
       "position": {
         "x": 889.0,
         "y": 128.0
-      },
-      "size": {
-        "width": 627.0,
-        "height": 512.0
       },
       "id": "11",
       "calculated": {
