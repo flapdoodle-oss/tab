@@ -116,7 +116,7 @@ data class Calculations<K: Comparable<K>>(
                 } else {
                     val singleOldInputForAllVars = input.mapTo.mapNotNull { oldByVarId[it.id] }.toSet().firstOrNull()
                     if (singleOldInputForAllVars!=null) {
-                        input.copy(source = singleOldInputForAllVars.source)
+                        input.copy(source = singleOldInputForAllVars.source, color = singleOldInputForAllVars.color)
                     }
                     else input
                 }
