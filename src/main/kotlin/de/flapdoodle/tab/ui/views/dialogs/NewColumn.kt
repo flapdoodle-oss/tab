@@ -1,5 +1,7 @@
 package de.flapdoodle.tab.ui.views.dialogs
 
+import de.flapdoodle.kfx.bindings.ObjectBindings
+import de.flapdoodle.kfx.colors.HashedColors
 import de.flapdoodle.kfx.controls.fields.ChoiceBoxes
 import de.flapdoodle.kfx.controls.fields.ValidatingField
 import de.flapdoodle.kfx.controls.fields.ValidatingTextField
@@ -14,7 +16,9 @@ import de.flapdoodle.tab.ui.resources.Labels
 import de.flapdoodle.tab.ui.resources.RequiredFieldNotSet
 import de.flapdoodle.tab.ui.resources.ResourceBundles
 import javafx.beans.value.ObservableValue
+import javafx.event.EventHandler
 import javafx.geometry.HPos
+import javafx.scene.control.ColorPicker
 
 class NewColumn<K : Comparable<K>>(
     val indexType: TypeInfo<in K>
@@ -27,11 +31,19 @@ class NewColumn<K : Comparable<K>>(
     private val short = Labels.label(NewColumn::class,"shortName","Short")
     private val shortField = ValidatingTextField(converter = Converters.validatingConverter(String::class))
     private val type = Labels.label(NewColumn::class, "type", "Type")
-
     private val typeField = ChoiceBoxes.forTypes(
         ResourceBundles.valueTypes(),
         ValueTypes.all()
     )
+
+    private var useHashedColor = true
+    private val color = Labels.label(ChangeColumn::class,"color","Color")
+    private val colorField = ColorPicker().apply {
+        customColors.addAll(HashedColors.colors())
+        onAction = EventHandler {
+            useHashedColor = false
+        }
+    }
 
     private val interpolation = Labels.label(NewColumn::class, "interpolation", "Interpolation")
     private val interpolationField = ChoiceBoxes.forEnums(
@@ -51,8 +63,16 @@ class NewColumn<K : Comparable<K>>(
         add(shortField, 1, 1)
         add(type, 0, 2)
         add(typeField, 1, 2, HPos.LEFT)
-        add(interpolation, 0, 3)
-        add(interpolationField, 1, 3, HPos.LEFT)
+        add(color, 0, 3)
+        add(colorField, 1, 3, HPos.LEFT)
+        add(interpolation, 0, 4)
+        add(interpolationField, 1, 4, HPos.LEFT)
+
+        nameField.valueProperty().addListener { observable, oldValue, newValue ->
+            if (useHashedColor) {
+                colorField.value = HashedColors.hashedColor(newValue ?: "")
+            }
+        }
     }
 
     override fun isValidProperty(): ObservableValue<Boolean> {
@@ -64,6 +84,7 @@ class NewColumn<K : Comparable<K>>(
             name = Name(nameField.text, shortField.text),
             indexType = indexType,
             valueType = TypeInfo.of(typeField.selectionModel.selectedItem.javaObjectType),
+            color = colorField.value,
             interpolationType = interpolationField.selectionModel.selectedItem
         )
     }

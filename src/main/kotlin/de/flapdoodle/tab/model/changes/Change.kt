@@ -9,6 +9,7 @@ import de.flapdoodle.tab.model.calculations.interpolation.InterpolationType
 import de.flapdoodle.tab.model.connections.Source
 import de.flapdoodle.tab.model.data.*
 import de.flapdoodle.types.Either
+import javafx.scene.paint.Color
 
 sealed class Change {
     data class AddNode(val node: Node): Change()
@@ -51,6 +52,7 @@ sealed class Change {
             override val id: Id<out Node.Table<out Comparable<*>>>,
             val columnId: ColumnId,
             val name: Name,
+            val color: Color,
             val interpolationType: InterpolationType,
         ) : Table(id)
 

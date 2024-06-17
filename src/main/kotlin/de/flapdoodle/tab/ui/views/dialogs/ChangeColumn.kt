@@ -1,5 +1,6 @@
 package de.flapdoodle.tab.ui.views.dialogs
 
+import de.flapdoodle.kfx.colors.HashedColors
 import de.flapdoodle.kfx.controls.fields.ChoiceBoxes
 import de.flapdoodle.kfx.controls.fields.ValidatingField
 import de.flapdoodle.kfx.controls.fields.ValidatingTextField
@@ -16,6 +17,7 @@ import de.flapdoodle.tab.ui.resources.RequiredFieldNotSet
 import de.flapdoodle.tab.ui.resources.ResourceBundles
 import javafx.beans.value.ObservableValue
 import javafx.geometry.HPos
+import javafx.scene.control.ColorPicker
 
 class ChangeColumn<K : Comparable<K>>(
     private val nodeId: Id<out Table<*>>,
@@ -28,6 +30,11 @@ class ChangeColumn<K : Comparable<K>>(
             .and { v -> v.mapNullable { if (it.isNullOrBlank()) throw RequiredFieldNotSet("not set") else it } })
     private val short = Labels.label(ChangeColumn::class,"shortName","Short")
     private val shortField = ValidatingTextField(converter = Converters.validatingConverter(String::class))
+
+    private val color = Labels.label(ChangeColumn::class,"color","Color")
+    private val colorField = ColorPicker().apply {
+        customColors.addAll(HashedColors.colors())
+    }
 
     private val interpolation = Labels.label(ChangeColumn::class, "interpolation", "Interpolation")
     private val interpolationField = ChoiceBoxes.forEnums(
@@ -47,11 +54,14 @@ class ChangeColumn<K : Comparable<K>>(
         add(nameField, 1, 0)
         add(short, 0, 1)
         add(shortField, 1, 1)
-        add(interpolation, 0, 2)
-        add(interpolationField, 1, 2, HPos.LEFT)
+        add(color, 0, 2)
+        add(colorField, 1, 2, HPos.LEFT)
+        add(interpolation, 0, 3)
+        add(interpolationField, 1, 3, HPos.LEFT)
 
         nameField.set(column.name.long)
         shortField.set(column.name.short)
+        colorField.value=column.color
 //        interpolationField.value = column.interpolationType
     }
 
@@ -61,8 +71,8 @@ class ChangeColumn<K : Comparable<K>>(
 
     override fun result(): Change.Table.ColumnProperties? {
         val newName = Name(nameField.text, shortField.text)
-        return if (column.name!= newName || column.interpolationType != interpolationField.selectionModel.selectedItem) {
-            Change.Table.ColumnProperties(nodeId, column.id, newName, interpolationField.selectionModel.selectedItem)
+        return if (column.name!= newName || column.color != colorField.value || column.interpolationType != interpolationField.selectionModel.selectedItem) {
+            Change.Table.ColumnProperties(nodeId, column.id, newName, colorField.value, interpolationField.selectionModel.selectedItem)
         } else null
     }
 

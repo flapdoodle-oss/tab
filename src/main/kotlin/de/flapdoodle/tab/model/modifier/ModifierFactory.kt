@@ -38,7 +38,7 @@ object ModifierFactory {
         return when (change) {
             is Change.Table.Properties -> listOf(TableProperties(change.id, change.name))
             is Change.Table.AddColumn<out Comparable<*>> -> listOf(AddColumn(change.id, change.column))
-            is Change.Table.ColumnProperties -> listOf(ColumnProperties(change.id, change.columnId, change.name, change.interpolationType))
+            is Change.Table.ColumnProperties -> listOf(ColumnProperties(change.id, change.columnId, change.name, change.color, change.interpolationType))
             is Change.Table.SetColumns<out Comparable<*>> -> listOf(SetColumnValues.asModifier(change))
             is Change.Table.MoveValues<out Comparable<*>>  -> listOf(MoveColumnValues.asModifier(change))
             is Change.Table.RemoveValues<out Comparable<*>> -> listOf(RemoveColumnValues.asModifier(change))
