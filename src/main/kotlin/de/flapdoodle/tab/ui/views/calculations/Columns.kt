@@ -12,12 +12,14 @@ import de.flapdoodle.tab.ui.resources.Buttons
 import de.flapdoodle.tab.ui.resources.Labels
 import de.flapdoodle.tab.ui.views.colors.ColorDot
 import javafx.event.EventHandler
+import javafx.geometry.HPos
 import javafx.scene.paint.Color
 
 object Columns {
 
     fun <K : Comparable<K>, C : Calculation<K>> nameColumn(weight: Double = 1.0) = WeightGridTable.Column<C>(
         weight = weight,
+        horizontalPosition = HPos.RIGHT,
         cellFactory = { c -> Labels.tableCell(c) { it.name().long } }
     )
 
