@@ -50,9 +50,9 @@ object ModifierFactory {
     internal fun calculationChanges(nodes: List<Node>, change: Change.Calculation): List<Modifier> {
         return when (change) {
             is Change.Calculation.Properties -> listOf(CalculationProperties(change.id, change.name))
-            is Change.Calculation.AddAggregation -> listOf(AddAggregation(change.id, change.name, change.expression))
+            is Change.Calculation.AddAggregation -> listOf(AddAggregation(change.id, change.name, change.expression, change.color))
             is Change.Calculation.AddTabular -> listOf(AddTabular(change.id, change.name, change.expression, change.color, change.interpolationType))
-            is Change.Calculation.ChangeAggregation -> listOf(ChangeAggregation(change.id,change.calculationId, change.name, change.formula))
+            is Change.Calculation.ChangeAggregation -> listOf(ChangeAggregation(change.id,change.calculationId, change.name, change.formula, change.color))
             is Change.Calculation.ChangeTabular -> listOf(ChangeTabular(change.id,change.calculationId, change.name, change.formula, change.color, change.interpolationType))
             is Change.Calculation.ChangeFormula -> changeFormula(nodes, change)
             is Change.Calculation.RemoveFormula -> Disconnect.removeCalculation(nodes, change.id, change.calculationId) + RemoveFormula(change.id, change.calculationId)
@@ -66,7 +66,7 @@ object ModifierFactory {
         val tabular = calculated.calculations.tabular().oneOrNull { it.id == change.calculationId }
 
         return listOf(if (aggregation != null) {
-            ChangeAggregation(change.id, change.calculationId, aggregation.name(), change.formula)
+            ChangeAggregation(change.id, change.calculationId, aggregation.name(), change.formula, aggregation.color())
         } else {
             requireNotNull(tabular) {"calculation ${change.calculationId} not found in $calculated"}
             ChangeTabular(change.id, change.calculationId, tabular.name(), change.formula, tabular.color(), tabular.interpolationType())

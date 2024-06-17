@@ -69,8 +69,8 @@ data class Calculations<K: Comparable<K>>(
         return copy(aggregations = changedAggregations, tabular = changedTabular, inputs = merge(inputs, mergedInputSlots(changedAggregations + changedTabular)))
     }
 
-    fun changeAggregation(id: Id<Calculation<*>>, name: Name, newExpression: Expression): Calculations<K> {
-        val changedAggregations = aggregations.change(Calculation.Aggregation<K>::id, id) { it.changeFormula(name, newExpression) }
+    fun changeAggregation(id: Id<Calculation<*>>, name: Name, newExpression: Expression, color: Color): Calculations<K> {
+        val changedAggregations = aggregations.change(Calculation.Aggregation<K>::id, id) { it.changeFormula(name, newExpression, color) }
         return copy(aggregations = changedAggregations, inputs = merge(inputs, mergedInputSlots(changedAggregations + tabular)))
     }
 

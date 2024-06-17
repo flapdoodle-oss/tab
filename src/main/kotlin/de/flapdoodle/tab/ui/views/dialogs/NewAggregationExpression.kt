@@ -7,7 +7,9 @@ import de.flapdoodle.tab.model.Name
 import de.flapdoodle.tab.ui.Converters
 import de.flapdoodle.tab.ui.resources.Labels
 import de.flapdoodle.tab.ui.resources.RequiredFieldNotSet
+import de.flapdoodle.tab.ui.views.common.HashedColorPicker
 import javafx.beans.value.ObservableValue
+import javafx.scene.paint.Color
 
 class NewAggregationExpression : DialogContent<NewAggregationExpression.NamedExpression>() {
 
@@ -22,6 +24,9 @@ class NewAggregationExpression : DialogContent<NewAggregationExpression.NamedExp
         Converters.validatingConverter(String::class)
             .and { v -> v.mapNullable { if (it.isNullOrBlank()) throw RequiredFieldNotSet("not set") else it } })
 
+    private val color = Labels.label(ChangeColumn::class,"color","Color")
+    private val colorField = HashedColorPicker(nameField.valueProperty())
+
     init {
         bindCss("new-aggregation-expression")
         
@@ -33,6 +38,8 @@ class NewAggregationExpression : DialogContent<NewAggregationExpression.NamedExp
         add(shortField, 1, 1)
         add(expression, 0, 2)
         add(expressionField, 1, 2)
+        add(color, 0, 3)
+        add(colorField, 1, 3)
     }
 
     override fun isValidProperty(): ObservableValue<Boolean> {
@@ -40,13 +47,14 @@ class NewAggregationExpression : DialogContent<NewAggregationExpression.NamedExp
     }
 
     override fun result(): NamedExpression {
-        return NamedExpression(Name(nameField.text, shortField.text), expressionField.text)
+        return NamedExpression(Name(nameField.text, shortField.text), expressionField.text, colorField.value)
     }
 
 
     data class NamedExpression(
         val name: Name,
-        val expression: String
+        val expression: String,
+        val color: Color
     )
 
     companion object {

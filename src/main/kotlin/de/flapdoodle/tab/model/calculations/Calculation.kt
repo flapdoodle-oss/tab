@@ -46,6 +46,10 @@ sealed class Calculation<K: Comparable<K>>(
         override fun changeFormula(name: Name, newExpression: Expression): Aggregation<K> {
             return copy(name = name, formula = formula.change(newExpression))
         }
+
+        fun changeFormula(name: Name, newExpression: Expression, color: Color): Aggregation<K> {
+            return copy(name = name, formula = formula.change(newExpression), color = color)
+        }
     }
 
     data class Tabular<K: Comparable<K>>(

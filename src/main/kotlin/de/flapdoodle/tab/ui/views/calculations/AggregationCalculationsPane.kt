@@ -45,9 +45,9 @@ class AggregationCalculationsPane<K : Comparable<K>>(
     }
 
     private val changeColumn = Columns.changeColumn<K, Calculation.Aggregation<K>>(context) { calculation ->
-        val changedExpression = ChangeAggregationExpression.open(calculation.name(), calculation.formula().expression())
+        val changedExpression = ChangeAggregationExpression.open(calculation.name(), calculation.formula().expression(), calculation.color())
         if (changedExpression != null) {
-            changeListener.change(Change.Calculation.ChangeAggregation(nodeId, calculation.id, changedExpression.name, changedExpression.expression))
+            changeListener.change(Change.Calculation.ChangeAggregation(nodeId, calculation.id, changedExpression.name, changedExpression.expression, changedExpression.color))
         }
     }
 
@@ -70,7 +70,8 @@ class AggregationCalculationsPane<K : Comparable<K>>(
                         Change.Calculation.AddAggregation(
                             nodeId,
                             newExpression.name,
-                            newExpression.expression
+                            newExpression.expression,
+                            newExpression.color
                         )
                     )
                 }
