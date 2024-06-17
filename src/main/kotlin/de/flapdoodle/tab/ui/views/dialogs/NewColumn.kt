@@ -15,6 +15,7 @@ import de.flapdoodle.tab.ui.Converters
 import de.flapdoodle.tab.ui.resources.Labels
 import de.flapdoodle.tab.ui.resources.RequiredFieldNotSet
 import de.flapdoodle.tab.ui.resources.ResourceBundles
+import de.flapdoodle.tab.ui.views.common.HashedColorPicker
 import javafx.beans.value.ObservableValue
 import javafx.event.EventHandler
 import javafx.geometry.HPos
@@ -36,14 +37,8 @@ class NewColumn<K : Comparable<K>>(
         ValueTypes.all()
     )
 
-    private var useHashedColor = true
     private val color = Labels.label(ChangeColumn::class,"color","Color")
-    private val colorField = ColorPicker().apply {
-        customColors.addAll(HashedColors.colors())
-        onAction = EventHandler {
-            useHashedColor = false
-        }
-    }
+    private val colorField = HashedColorPicker(nameField.valueProperty())
 
     private val interpolation = Labels.label(NewColumn::class, "interpolation", "Interpolation")
     private val interpolationField = ChoiceBoxes.forEnums(
@@ -67,12 +62,6 @@ class NewColumn<K : Comparable<K>>(
         add(colorField, 1, 3, HPos.LEFT)
         add(interpolation, 0, 4)
         add(interpolationField, 1, 4, HPos.LEFT)
-
-        nameField.valueProperty().addListener { observable, oldValue, newValue ->
-            if (useHashedColor) {
-                colorField.value = HashedColors.hashedColor(newValue ?: "")
-            }
-        }
     }
 
     override fun isValidProperty(): ObservableValue<Boolean> {

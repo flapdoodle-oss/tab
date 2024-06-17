@@ -10,8 +10,10 @@ import de.flapdoodle.tab.ui.Converters
 import de.flapdoodle.tab.ui.resources.Labels
 import de.flapdoodle.tab.ui.resources.RequiredFieldNotSet
 import de.flapdoodle.tab.ui.resources.ResourceBundles
+import de.flapdoodle.tab.ui.views.common.HashedColorPicker
 import javafx.beans.value.ObservableValue
 import javafx.geometry.HPos
+import javafx.scene.paint.Color
 import kotlin.reflect.KClass
 
 class NewValue : DialogContent<NewValue.NewValue>() {
@@ -26,6 +28,9 @@ class NewValue : DialogContent<NewValue.NewValue>() {
         resourceBundle = ResourceBundles.valueTypes(),
         classes = ValueTypes.all(),
     )
+    private val color = Labels.label(ChangeColumn::class,"color","Color")
+    private val colorField = HashedColorPicker(nameField.valueProperty())
+
 
     init {
         bindCss("new-value")
@@ -38,6 +43,8 @@ class NewValue : DialogContent<NewValue.NewValue>() {
         add(shortField, 1, 1)
         add(type, 0, 2)
         add(typeField, 1, 2, HPos.LEFT)
+        add(color, 0, 3)
+        add(colorField, 1, 3, HPos.LEFT)
     }
 
     override fun isValidProperty(): ObservableValue<Boolean> {
@@ -45,12 +52,13 @@ class NewValue : DialogContent<NewValue.NewValue>() {
     }
 
     override fun result(): NewValue? {
-        return NewValue(Name(nameField.text, shortField.text), typeField.selectionModel.selectedItem)
+        return NewValue(Name(nameField.text, shortField.text), typeField.selectionModel.selectedItem, colorField.value)
     }
 
     data class NewValue(
         val name: Name,
-        val type: KClass<out Any>
+        val type: KClass<out Any>,
+        val color: Color
     )
 
     companion object {

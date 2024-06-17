@@ -90,7 +90,7 @@ class ConstantUIAdapter(
                     changeListener.change(
                         Change.Constants.AddValue(
                             nodeId,
-                            SingleValue(newValue.name, TypeInfo.of(newValue.type.javaObjectType))
+                            SingleValue(newValue.name, TypeInfo.of(newValue.type.javaObjectType), color = newValue.color)
                         )
                     )
                 }

@@ -10,6 +10,7 @@ import de.flapdoodle.tab.ui.Converters
 import de.flapdoodle.tab.ui.resources.Labels
 import de.flapdoodle.tab.ui.resources.RequiredFieldNotSet
 import de.flapdoodle.tab.ui.resources.ResourceBundles
+import de.flapdoodle.tab.ui.views.common.HashedColorPicker
 import javafx.beans.value.ObservableValue
 
 class NewTabularExpression : DialogContent<NewTabularExpression.NamedExpression>() {

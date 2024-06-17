@@ -36,7 +36,7 @@ sealed class Change {
         data class AddValue(override val id: Id<out Node.Constants>, val value: SingleValue<out Any>): Constants(id)
         data class ChangeValue(override val id: Id<out Node.Constants>, val valueId: SingleValueId, val value: Any?): Constants(id)
         data class RemoveValue(override val id: Id<out Node.Constants>, val valueId: SingleValueId): Constants(id)
-        data class ValueProperties(override val id: Id<out Node.Constants>, val valueId: SingleValueId, val name: Name): Constants(id)
+        data class ValueProperties(override val id: Id<out Node.Constants>, val valueId: SingleValueId, val name: Name, val color: Color): Constants(id)
     }
 
     sealed class Table(open val id: Id<out Node.Table<out Comparable<*>>>) : Change() {

@@ -1,5 +1,6 @@
 package de.flapdoodle.tab.ui.views.dialogs
 
+import de.flapdoodle.kfx.colors.HashedColors
 import de.flapdoodle.kfx.controls.fields.ValidatingField
 import de.flapdoodle.kfx.controls.fields.ValidatingTextField
 import de.flapdoodle.kfx.extensions.bindCss
@@ -11,6 +12,7 @@ import de.flapdoodle.tab.ui.Converters
 import de.flapdoodle.tab.ui.resources.Labels
 import de.flapdoodle.tab.ui.resources.RequiredFieldNotSet
 import javafx.beans.value.ObservableValue
+import javafx.scene.control.ColorPicker
 
 class ChangeValue<T: Any>(
     private val nodeId: Id<out de.flapdoodle.tab.model.Node.Constants>,
@@ -22,6 +24,11 @@ class ChangeValue<T: Any>(
         .and { v -> v.mapNullable { if (it.isNullOrBlank()) throw RequiredFieldNotSet("not set") else it } })
     private val short = Labels.label(NewValues::class,"shortName","Short")
     private val shortField = ValidatingTextField(converter = Converters.validatingConverter(String::class))
+    private val color = Labels.label(ChangeColumn::class,"color","Color")
+    private val colorField = ColorPicker().apply {
+        customColors.addAll(HashedColors.colors())
+    }
+
 
     init {
         bindCss("change-value")
@@ -32,9 +39,12 @@ class ChangeValue<T: Any>(
         add(nameField, 1, 0)
         add(short, 0, 1)
         add(shortField, 1, 1)
+        add(color, 0, 2)
+        add(colorField, 1, 2)
 
         nameField.set(value.name.long)
         shortField.set(value.name.short)
+        colorField.value=value.color
     }
 
     override fun isValidProperty(): ObservableValue<Boolean> {
@@ -42,7 +52,7 @@ class ChangeValue<T: Any>(
     }
 
     override fun result(): Change.Constants.ValueProperties {
-        return Change.Constants.ValueProperties(nodeId, value.id, Name(nameField.text, shortField.text))
+        return Change.Constants.ValueProperties(nodeId, value.id, Name(nameField.text, shortField.text), colorField.value)
     }
 
     companion object {
