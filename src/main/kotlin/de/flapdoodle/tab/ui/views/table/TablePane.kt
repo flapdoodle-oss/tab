@@ -11,10 +11,12 @@ import de.flapdoodle.tab.model.data.Column
 import de.flapdoodle.tab.model.data.Columns
 import de.flapdoodle.tab.model.diff.Diff
 import de.flapdoodle.tab.ui.ChangeListener
+import de.flapdoodle.tab.ui.Converters
 import de.flapdoodle.tab.ui.resources.Labels
 import javafx.beans.property.SimpleObjectProperty
 import javafx.scene.layout.Background
 import javafx.scene.layout.StackPane
+import java.util.*
 
 class TablePane<K : Comparable<K>>(
     node: Node.Table<K>,
@@ -132,7 +134,7 @@ class TablePane<K : Comparable<K>>(
     data class IndexColumn<K: Comparable<K>>(override val label: String, val indexType: TypeInfo<K>):
         de.flapdoodle.kfx.controls.bettertable.Column<Row<K>, K>(
             label = label,
-            property = ColumnProperty(indexType,{ row -> row.index }),
+            property = ColumnProperty(indexType,{ row -> row.index }, Converters.validatingConverter(indexType, Locale.getDefault())),
             editable = true
     ), TableColumn<K, K> {
         override fun applyChange(row: Row<K>, change: TableChangeListener.CellChange<Row<K>, out Any>): Row<K> {
@@ -143,7 +145,7 @@ class TablePane<K : Comparable<K>>(
     data class NormalColumn<K: Comparable<K>, V: Any>(val column: Column<K, V>) :
         de.flapdoodle.kfx.controls.bettertable.Column<Row<K>, V>(
             label = column.name.shortest(),
-            property = ColumnProperty(column.valueType, { row -> row.get(column) }),
+            property = ColumnProperty(column.valueType, { row -> row.get(column) }, Converters.validatingConverter(column.valueType, Locale.getDefault())),
             editable = true
         ), TableColumn<K, V> {
             init {

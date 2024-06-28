@@ -12,6 +12,7 @@ import javafx.scene.layout.StackPane
 import java.math.BigDecimal
 import java.math.BigInteger
 import java.time.LocalDate
+import java.time.Month
 import java.util.*
 
 class SmallChartPane<K : Comparable<K>>(
@@ -51,6 +52,7 @@ class SmallChartPane<K : Comparable<K>>(
             TypeInfo.of(Double::class.javaObjectType) -> RangeFactories.number(Double::class) as RangeFactory<K>
             TypeInfo.of(Int::class.javaObjectType) -> RangeFactories.number(Int::class) as RangeFactory<K>
             TypeInfo.of(String::class.java) -> RangeFactories.category()
+            TypeInfo.of(Month::class.java) -> RangeFactories.category()
             else -> throw IllegalArgumentException("not implemented: $indexType")
         }
     }
