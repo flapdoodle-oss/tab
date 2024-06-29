@@ -6,9 +6,16 @@ import java.time.Month
 import java.util.Locale
 
 class MonthConverter(val locale: Locale) : ValidatingConverter<Month> {
+    private val byName = Month.values().associateBy { it.name }
+
     override fun fromString(value: String?): ValueOrError<Month> {
         return if (!value.isNullOrBlank()) {
-            ValueOrError.value(Month.valueOf(value))
+            val month: Month? = byName.get(value)
+            if (month!=null) {
+                ValueOrError.value(month)
+            } else {
+                ValueOrError.error(InvalidMonthException(value, byName.keys))
+            }
         } else {
             ValueOrError.noValue()
         }

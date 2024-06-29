@@ -1,14 +1,13 @@
 package de.flapdoodle.tab.ui.views.table
 
-import de.flapdoodle.kfx.controls.bettertable.ColumnProperty
-import de.flapdoodle.kfx.controls.bettertable.HeaderColumnFactory
-import de.flapdoodle.kfx.controls.bettertable.Table
-import de.flapdoodle.kfx.controls.bettertable.TableChangeListener
+import de.flapdoodle.kfx.controls.bettertable.*
 import de.flapdoodle.kfx.controls.bettertable.events.ReadOnlyState
 import de.flapdoodle.reflection.TypeInfo
 import de.flapdoodle.tab.model.data.Column
 import de.flapdoodle.tab.model.data.Columns
 import de.flapdoodle.tab.types.Unknown
+import de.flapdoodle.tab.ui.CellFactories
+import de.flapdoodle.tab.ui.Converters
 import de.flapdoodle.tab.ui.resources.Labels
 import javafx.beans.property.SimpleObjectProperty
 import javafx.scene.layout.Background
@@ -56,6 +55,8 @@ class TableViewPane<K : Comparable<K>>(
         rows = tableRows,
         columns = tableColumns,
         changeListener = tableChangeListener,
+        cellFactory = CellFactories.defaultCellFactory(),
+        fieldFactoryLookup = CellFactories.fieldFactoryLookup,
         stateFactory = { ReadOnlyState(it) },
         headerColumnFactory = HeaderColumnFactory.Default<Row<K>>().andThen { column, headerColumn ->
             if (column is NormalColumn<K, out Any>) {
