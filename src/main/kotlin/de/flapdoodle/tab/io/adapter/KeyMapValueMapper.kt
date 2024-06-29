@@ -4,6 +4,7 @@ import de.flapdoodle.reflection.TypeInfo
 import java.math.BigDecimal
 import java.math.BigInteger
 import java.time.LocalDate
+import java.time.Month
 import java.time.format.DateTimeFormatter
 import kotlin.reflect.KClass
 
@@ -37,6 +38,7 @@ class KeyMapValueMapper(
                 TypedValueMapper(BigInteger::class, { it.toString() }, { BigInteger(it) }),
                 TypedValueMapper(BigDecimal::class, { it.toString() }, { BigDecimal(it) }),
                 TypedValueMapper(Int::class, { it.toString() }, { Integer.valueOf(it) }),
+                TypedValueMapper(Month::class, { it.name}, { Month.valueOf(it) }),
                 TypedValueMapper(LocalDate::class, { DateTimeFormatter.ISO_LOCAL_DATE.format(it) }, { LocalDate.parse(it, DateTimeFormatter.ISO_LOCAL_DATE) }),
             )
         )

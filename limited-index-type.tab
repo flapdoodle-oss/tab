@@ -1,0 +1,40 @@
+{
+  "nodes": [
+    {
+      "name": "MonthIndex",
+      "description": "Sample of Table with Month as Index",
+      "position": {
+        "x": 145.0,
+        "y": 81.0
+      },
+      "size": {
+        "width": 530.0,
+        "height": 332.0
+      },
+      "id": "1",
+      "table": {
+        "indexType": "Month",
+        "columns": {
+          "values": [
+            {
+              "name": "Value",
+              "valueType": "Double",
+              "values": {
+                "JANUARY": "1.0",
+                "DECEMBER": "12.0",
+                "JUNE": "0.1234"
+              },
+              "id": "2",
+              "color": {
+                "red": 0.9450980424880981,
+                "green": 0.2078431397676468,
+                "blue": 0.003921568859368563,
+                "opacity": 1.0
+              }
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

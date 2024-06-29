@@ -2,15 +2,21 @@ package de.flapdoodle.tab.ui.converter
 
 import de.flapdoodle.kfx.converters.ValidatingConverter
 import de.flapdoodle.kfx.converters.ValueOrError
+import de.flapdoodle.kfx.i18n.I18NEnumStringConverter
+import de.flapdoodle.kfx.i18n.I18NTypeStringConverter
+import de.flapdoodle.kfx.i18n.ResourceBundleWrapper
 import java.time.Month
 import java.util.Locale
 
-class MonthConverter(val locale: Locale) : ValidatingConverter<Month> {
-    private val byName = Month.values().associateBy { it.name }
+class MonthConverter(resourceBundle: ResourceBundleWrapper) : ValidatingConverter<Month> {
+    private val converter =  I18NEnumStringConverter(resourceBundle, Month::class)
+    private val mapping = Month.values().map { it to converter.toString(it) }
+    private val byName = mapping.associate { (m,name) -> name to m }
+    private val byMonth = mapping.associate { it }
 
     override fun fromString(value: String?): ValueOrError<Month> {
         return if (!value.isNullOrBlank()) {
-            val month: Month? = byName.get(value)
+            val month: Month? = byName[value]
             if (month!=null) {
                 ValueOrError.value(month)
             } else {
@@ -22,6 +28,6 @@ class MonthConverter(val locale: Locale) : ValidatingConverter<Month> {
     }
 
     override fun toString(value: Month): String {
-        return value.name
+        return byMonth[value] ?: throw IllegalArgumentException("month not found: $value")
     }
 }

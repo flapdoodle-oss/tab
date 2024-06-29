@@ -2,6 +2,7 @@ package de.flapdoodle.tab.io.adapter
 
 import de.flapdoodle.reflection.TypeInfo
 import java.time.LocalDate
+import java.time.Month
 import kotlin.reflect.KClass
 
 data class KeyMapIndexTypeMapper(
@@ -28,7 +29,8 @@ data class KeyMapIndexTypeMapper(
         fun defaultMapper() = KeyMapIndexTypeMapper(listOf(
             fix(String::class) to "String",
             fix(Int::class) to "Int",
-            fix(LocalDate::class) to "LocalDate"
+            fix(LocalDate::class) to "LocalDate",
+            fix(Month::class) to "Month"
         ))
 
         fun <T: Comparable<T>> fix(type: KClass<T>): TypeInfo<out Comparable<Any>> {
