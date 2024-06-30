@@ -4,12 +4,12 @@
       "name": "MonthIndex",
       "description": "Sample of Table with Month as Index",
       "position": {
-        "x": 145.0,
-        "y": 81.0
+        "x": 86.0,
+        "y": 348.0
       },
       "size": {
-        "width": 530.0,
-        "height": 332.0
+        "width": 425.0,
+        "height": 418.0
       },
       "id": "1",
       "table": {
@@ -33,6 +33,66 @@
               }
             }
           ]
+        }
+      }
+    },
+    {
+      "name": "Dateindex",
+      "short": "",
+      "description": "Sample of Table with Date as Index",
+      "position": {
+        "x": 620.0,
+        "y": 63.0
+      },
+      "size": {
+        "width": 391.0,
+        "height": 407.0
+      },
+      "id": "3",
+      "table": {
+        "indexType": "LocalDate",
+        "columns": {
+          "values": [
+            {
+              "name": "Value",
+              "valueType": "Double",
+              "values": {
+                "2024-06-01": "12.0",
+                "2024-07-01": "2.0"
+              },
+              "id": "4",
+              "color": {
+                "red": 0.9450980424880981,
+                "green": 0.2078431397676468,
+                "blue": 0.003921568859368563,
+                "opacity": 1.0
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Mix",
+      "short": "",
+      "description": "Try to use Values from Monthindex",
+      "position": {
+        "x": 1156.0,
+        "y": 307.0
+      },
+      "id": "5",
+      "calculated": {
+        "indexType": "LocalDate",
+        "calculations": {
+          "aggregations": [],
+          "tabular": [],
+          "inputs": []
+        },
+        "columns": {
+          "values": []
+        },
+        "values": {
+          "values": []
         }
       }
     }
