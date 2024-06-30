@@ -52,7 +52,7 @@ class SmallChartPane<K : Comparable<K>>(
             TypeInfo.of(Double::class.javaObjectType) -> RangeFactories.number(Double::class) as RangeFactory<K>
             TypeInfo.of(Int::class.javaObjectType) -> RangeFactories.number(Int::class) as RangeFactory<K>
             TypeInfo.of(String::class.java) -> RangeFactories.category()
-            TypeInfo.of(Month::class.java) -> RangeFactories.category()
+            TypeInfo.of(Month::class.java) -> RangeFactories.enum(Month::class) as RangeFactory<K>
             else -> throw IllegalArgumentException("not implemented: $indexType")
         }
     }
