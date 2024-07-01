@@ -23,6 +23,7 @@ import org.jgrapht.graph.DefaultEdge
 
 object Solver {
     private val logger = Logging.logger(Solver::class)
+    private val interpolatorFactoryLookup = DefaultInterpolatorFactoryLookup
 
     fun solve(model: Model): Model {
         val roots = verticesAndEdges(model)
@@ -185,10 +186,15 @@ object Solver {
         return Evaluated.ofNullable(data.valueType, data.value)
     }
 
+    private fun <K: Comparable<K>, V : Any> columnReferencesAsEvaluated(data: Column<K, V>): Evaluated<IndexMap<K, V>> {
+        return Evaluated.value(IndexMap.asMap(data, interpolatorFactoryLookup))
+    }
+
+
     private fun <V : Any> columnAsEvaluated(data: Column<*, V>): Evaluated<out Any> {
         return Evaluated.ofNullable(
             IndexMap.IndexMapTypeInfo(data.valueType),
-            IndexMap.asMap(data)
+            IndexMap.asMap(data, interpolatorFactoryLookup)
         )
     }
 
@@ -198,9 +204,14 @@ object Solver {
         calculation: Calculation.Tabular<K>,
         variableDataMap: Map<Variable, Data>
     ): Model {
-        val (columns, values) = variableDataMap.entries.partition { it.value is Column<*, *> }
+        val columns = variableDataMap.entries.filter { it.value is Column<*, *> && !it.key.isColumnReference }
+        val columnReferences = variableDataMap.entries.filter { it.value is Column<*, *> && it.key.isColumnReference }
+        val values = variableDataMap.entries.filter { it.value is SingleValue<*> }
+
         val columnsMap = columns.map { it.key to it.value as Column<K, Any> }
-        val singleValueMap = values.map { it.key to singleValueAsEvaluated(it.value as SingleValue<Any>) }
+        val singleValueMap = values.map { it.key to singleValueAsEvaluated(it.value as SingleValue<Any>) } +
+                columnReferences.map { it.key to columnReferencesAsEvaluated(it.value as Column<*, Any>) }
+
         return calculateTabular(updated, node, calculation, columnsMap, singleValueMap)
     }
 
@@ -209,7 +220,7 @@ object Solver {
         node: de.flapdoodle.tab.model.Node.Calculated<K>,
         calculation: Calculation.Tabular<K>,
         columnsMap: List<Pair<Variable, Column<K, Any>>>,
-        singleValueMap: List<Pair<Variable, Evaluated<Any>>>
+        singleValueMap: List<Pair<Variable, Evaluated<out Any>>>
     ): Model {
         val interpolated = sortAndInterpolate(columnsMap)
         val result = interpolated.index.mapNotNull {
@@ -251,7 +262,7 @@ object Solver {
         index: Set<K>,
         column: Column<K, V>
     ): Interpolator<in K, V> {
-        val factory = DefaultInterpolatorFactoryLookup.interpolatorFactoryFor(
+        val factory = interpolatorFactoryLookup.interpolatorFactoryFor(
             column.interpolationType,
             column.indexType,
             column.valueType

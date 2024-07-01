@@ -9,6 +9,9 @@ fun interface FactorMultiplicator<V: Any, F: Any> {
         val IntDoubleMultiplicator: FactorMultiplicator<Int, Double> = FactorMultiplicator { start, end, factor ->
             start + ((end - start) * factor).toInt()
         }
+        val DoubleMultiplicator: FactorMultiplicator<Double, Double> = FactorMultiplicator { start, end, factor ->
+            start + (end - start) * factor
+        }
         val BigDecimalDoubleMultiplicator: FactorMultiplicator<BigDecimal, Double> = FactorMultiplicator { start, end, factor ->
             start + (end - start).multiply(factor.toBigDecimal())
         }

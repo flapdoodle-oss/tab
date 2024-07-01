@@ -25,6 +25,7 @@ fun interface LinearInterpolation<K : Any, V : Any> {
 
         private val interpolations = listOf(
             InterpolationEntry(TypeInfo.of(Int::class.javaObjectType), TypeInfo.of(Int::class.javaObjectType), asInterpolation(LinearFactor.IntFactor, FactorMultiplicator.IntDoubleMultiplicator)),
+            InterpolationEntry(TypeInfo.of(Int::class.javaObjectType), TypeInfo.of(Double::class.javaObjectType), asInterpolation(LinearFactor.IntFactor, FactorMultiplicator.DoubleMultiplicator)),
             InterpolationEntry(TypeInfo.of(Int::class.javaObjectType), TypeInfo.of(BigDecimal::class.javaObjectType), asInterpolation(LinearFactor.IntFactor, FactorMultiplicator.BigDecimalDoubleMultiplicator)),
         )
 

@@ -48,6 +48,7 @@ object Eval {
     private val expressionFactory = ExpressionFactory.builder()
         .constants(constants)
         .arrayAccess(ArrayAccess)
+        .associateAccess(ArrayAccess)
         .propertyAccess(PropertyAccess)
         .numberAsValue { value: String, mathContext: MathContext? -> numFromString(value, mathContext) }
         .stringAsValue { it }

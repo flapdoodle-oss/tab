@@ -1,7 +1,13 @@
 package de.flapdoodle.tab.model.calculations.adapter
 
 import de.flapdoodle.eval.core.evaluables.Evaluated
+import de.flapdoodle.reflection.TypeInfo
+import de.flapdoodle.tab.model.Name
 import de.flapdoodle.tab.model.calculations.Variable
+import de.flapdoodle.tab.model.calculations.interpolation.DefaultInterpolatorFactoryLookup
+import de.flapdoodle.tab.model.calculations.interpolation.InterpolationType
+import de.flapdoodle.tab.model.calculations.types.IndexMap
+import de.flapdoodle.tab.model.data.Column
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -54,17 +60,29 @@ class EvalFormulaAdapterTest {
 
     @Test
     fun arrayAccesWithIndexPropertyExample() {
-        val testee = EvalFormulaAdapter("b[a.index]")
+        val testee = EvalFormulaAdapter("#b[a.index]")
 
         assertThat(testee.variables())
             .hasSize(2)
         val (b, a) = testee.variables().toList()
-        assertThat(b.name).isEqualTo("b")
+        assertThat(b.name).isEqualTo("#b")
+        assertThat(b.isColumnReference).isTrue()
         assertThat(a.name).isEqualTo("a")
 
         val result = testee.evaluate(mapOf(
+            Variable("index") to Evaluated.value(1),
             Variable("a") to Evaluated.value("blub"),
-            Variable("b") to Evaluated.value("FooBar")
+            Variable("#b") to Evaluated.value(IndexMap.asMap(
+                column = Column(
+                    name = Name("b"),
+                    indexType = TypeInfo.of(Int::class.javaObjectType),
+                    valueType = TypeInfo.of(Double::class.javaObjectType),
+                    values = mapOf(0 to 0.0, 2 to 10.0),
+                ),
+                interpolatorFactoryLookup = DefaultInterpolatorFactoryLookup
+            ))
         ))
+
+        assertThat(result.wrapped()).isEqualTo(5.0)
     }
 }

@@ -1,6 +1,7 @@
 package de.flapdoodle.tab.io.adapter
 
 import de.flapdoodle.reflection.TypeInfo
+import de.flapdoodle.tab.types.Unknown
 import java.math.BigDecimal
 import java.math.BigInteger
 
@@ -30,7 +31,8 @@ data class KeyMapTypeMapper(
             TypeInfo.of(Double::class.javaObjectType) to "Double",
             TypeInfo.of(BigDecimal::class.java) to "BigDecimal",
             TypeInfo.of(BigInteger::class.java) to "BigInteger",
-            TypeInfo.of(Int::class.javaObjectType) to "Int"
+            TypeInfo.of(Int::class.javaObjectType) to "Int",
+            TypeInfo.of(Unknown::class.java) to "Unknown",
         ))
     }
 }

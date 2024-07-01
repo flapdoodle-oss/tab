@@ -7,10 +7,6 @@
         "x": 86.0,
         "y": 348.0
       },
-      "size": {
-        "width": 425.0,
-        "height": 418.0
-      },
       "id": "1",
       "table": {
         "indexType": "Month",
@@ -44,10 +40,6 @@
         "x": 620.0,
         "y": 63.0
       },
-      "size": {
-        "width": 391.0,
-        "height": 407.0
-      },
       "id": "3",
       "table": {
         "indexType": "LocalDate",
@@ -77,19 +69,100 @@
       "short": "",
       "description": "Try to use Values from Monthindex",
       "position": {
-        "x": 1156.0,
-        "y": 307.0
+        "x": 1030.0,
+        "y": 308.0
       },
       "id": "5",
       "calculated": {
         "indexType": "LocalDate",
         "calculations": {
           "aggregations": [],
-          "tabular": [],
-          "inputs": []
+          "tabular": [
+            {
+              "name": "month value",
+              "short": "mv",
+              "formula": {
+                "expression": "#mv[a.index]",
+                "variables": [
+                  {
+                    "name": "#mv",
+                    "id": "7"
+                  },
+                  {
+                    "name": "a",
+                    "id": "8"
+                  }
+                ]
+              },
+              "id": "6",
+              "destination": "9",
+              "color": {
+                "red": 0.9607843160629272,
+                "green": 0.054901961237192154,
+                "blue": 0.7450980544090271,
+                "opacity": 1.0
+              }
+            }
+          ],
+          "inputs": [
+            {
+              "name": "#mv",
+              "mapTo": [
+                {
+                  "name": "#mv",
+                  "id": "7"
+                }
+              ],
+              "id": "10",
+              "color": {
+                "red": 0.01568627543747425,
+                "green": 0.6274510025978088,
+                "blue": 0.8941176533699036,
+                "opacity": 1.0
+              }
+            },
+            {
+              "name": "a",
+              "mapTo": [
+                {
+                  "name": "a",
+                  "id": "8"
+                }
+              ],
+              "source": {
+                "node": "3",
+                "nodeType": "Table",
+                "id": "11",
+                "dataId": {
+                  "columnId": "4"
+                }
+              },
+              "id": "12",
+              "color": {
+                "red": 1.0,
+                "green": 0.886274516582489,
+                "blue": 0.003921568859368563,
+                "opacity": 1.0
+              }
+            }
+          ]
         },
         "columns": {
-          "values": []
+          "values": [
+            {
+              "name": "month value",
+              "short": "mv",
+              "valueType": "Unknown",
+              "values": {},
+              "id": "9",
+              "color": {
+                "red": 0.9607843160629272,
+                "green": 0.054901961237192154,
+                "blue": 0.7450980544090271,
+                "opacity": 1.0
+              }
+            }
+          ]
         },
         "values": {
           "values": []
