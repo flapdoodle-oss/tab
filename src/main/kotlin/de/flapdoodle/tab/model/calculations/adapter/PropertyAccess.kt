@@ -7,9 +7,11 @@ import de.flapdoodle.eval.core.evaluables.TypedEvaluable.Arg2
 import de.flapdoodle.eval.core.evaluables.TypedEvaluables
 import de.flapdoodle.eval.core.exceptions.EvaluationException
 import de.flapdoodle.eval.core.parser.Token
+import de.flapdoodle.tab.model.calculations.adapter.index.IndexTypedEvaluableAdapter
 
 object PropertyAccess : TypedEvaluables.Wrapper(TypedEvaluables.builder()
     .addList(TypedEvaluable.of(Any::class.java, Map::class.java, String::class.java, MapAccess()))
+    .addList(IndexTypedEvaluableAdapter)
     .build()) {
 
     class MapAccess : Arg2<Map<*,*>, String, Any?> {
