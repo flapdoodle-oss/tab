@@ -36,8 +36,9 @@ object IndexTypedEvaluableAdapter : TypedEvaluable<Any> {
         require(arguments.size==2) {"invalid arguments: $arguments"}
         val second = arguments[1]
         require(second.type()==TypeInfo.of(String::class.java)) { "wrong type: $second"}
+        require(second.wrapped()=="index") { "invalid argument: $second"}
 
-        require(variableResolver.has("index")) {"no variable 'index'"}
-        return variableResolver.get("index") as Evaluated<Any>
+        require(variableResolver.has("__index__")) {"no variable 'index'"}
+        return variableResolver.get("__index__") as Evaluated<Any>
     }
 }

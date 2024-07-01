@@ -82,7 +82,7 @@
               "name": "month value",
               "short": "mv",
               "formula": {
-                "expression": "#mv[a.index]",
+                "expression": "#mv[a.index.month]",
                 "variables": [
                   {
                     "name": "#mv",
@@ -129,15 +129,7 @@
                   "id": "8"
                 }
               ],
-              "source": {
-                "node": "3",
-                "nodeType": "Table",
-                "id": "11",
-                "dataId": {
-                  "columnId": "4"
-                }
-              },
-              "id": "12",
+              "id": "11",
               "color": {
                 "red": 1.0,
                 "green": 0.886274516582489,

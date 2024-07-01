@@ -77,7 +77,7 @@ object Solver {
         if (missingSources.isEmpty()) {
             val sources = neededInputs.associateBy { it.source!! }
             val input2data = sources.map { (source, input) ->
-                input to dataOf(calculation.indexType(), source, model)
+                input to dataOf(calculation.indexType(), source, model, input.isColumnReference)
             }
             val variableDataMap = input2data.flatMap { (input, data) ->
                 input.mapTo.map { v -> v to data }
@@ -94,14 +94,15 @@ object Solver {
     private fun <K : Comparable<K>> dataOf(
         indexType: TypeInfo<K>,
         source: Source,
-        model: Model
+        model: Model,
+        isColumnReference: Boolean
     ): Data {
         val node = model.node(source.node)
         val data = when (source) {
             is Source.ColumnSource<*> -> {
                 when (node) {
                     is de.flapdoodle.tab.model.Node.HasColumns<*> -> {
-                        require(node.indexType == indexType) { "wrong index type: $indexType != ${node.indexType}" }
+                        require(isColumnReference || node.indexType == indexType) { "wrong index type: $indexType != ${node.indexType}" }
                         node.column(source.columnId)
                     }
 
@@ -225,7 +226,11 @@ object Solver {
         val interpolated = sortAndInterpolate(columnsMap)
         val result = interpolated.index.mapNotNull {
             try {
-                val result = calculation.evaluate(interpolated.variablesAt(it) + singleValueMap.toMap())
+                val result = calculation.evaluate(
+                    interpolated.variablesAt(it) +
+                            singleValueMap.toMap()      +
+                    mapOf(Variable("__index__") to Evaluated.value(it))
+                )
                 if (result != null) it to result else null
             } catch (ex: BaseException) {
                 ex.printStackTrace()

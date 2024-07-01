@@ -62,7 +62,8 @@ data class Connect(
             val source = when (dataId) {
                 is ColumnId -> {
                     require(start is Node.HasColumns<out Comparable<*>>) { "wrong source node type: $start" }
-                    require(start.indexType == end.indexType) { "index type mismatch: ${start.indexType} != ${end.indexType}" }
+                    val inputSlot = end.calculations.inputSlot(inputId)
+                    require(inputSlot.isColumnReference || start.indexType == end.indexType) { "index type mismatch: ${start.indexType} != ${end.indexType}" }
                     val startWithIndexType = start as Node.HasColumns<K>
                     Source.ColumnSource(start.id, dataId, startWithIndexType.indexType)
                 }

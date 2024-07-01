@@ -30,6 +30,11 @@ data class Calculations<K: Comparable<K>>(
     fun tabular() = tabular
     fun inputs() = inputs
 
+    fun inputSlot(id: Id<InputSlot<*>>): InputSlot<K> {
+        return inputs.one { it.id == id }
+    }
+
+
     fun addAggregation(aggregation: Calculation.Aggregation<K>): Calculations<K> {
         return copy(
             aggregations = aggregations + aggregation,

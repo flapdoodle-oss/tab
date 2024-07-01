@@ -8,9 +8,11 @@ import de.flapdoodle.eval.core.evaluables.TypedEvaluables
 import de.flapdoodle.eval.core.exceptions.EvaluationException
 import de.flapdoodle.eval.core.parser.Token
 import de.flapdoodle.tab.model.calculations.adapter.index.IndexTypedEvaluableAdapter
+import java.time.LocalDate
 
 object PropertyAccess : TypedEvaluables.Wrapper(TypedEvaluables.builder()
     .addList(TypedEvaluable.of(Any::class.java, Map::class.java, String::class.java, MapAccess()))
+    .addList(TypedEvaluable.of(Any::class.java, LocalDate::class.java, String::class.java, LocalDateAccess()))
     .addList(IndexTypedEvaluableAdapter)
     .build()) {
 
@@ -31,5 +33,23 @@ object PropertyAccess : TypedEvaluables.Wrapper(TypedEvaluables.builder()
 
             return first[second]
         }
+    }
+
+    class LocalDateAccess : Arg2<LocalDate, String, Any?> {
+        override fun evaluate(
+            variableResolver: VariableResolver,
+            evaluationContext: EvaluationContext,
+            token: Token,
+            first: LocalDate,
+            property: String
+        ): Any? {
+            return when (property) {
+                "day" -> first.dayOfMonth
+                "month" -> first.month
+                "year" -> first.year
+                else -> throw EvaluationException(token,"unknown property: $property")
+            }
+        }
+
     }
 }

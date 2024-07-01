@@ -5,11 +5,13 @@ import de.flapdoodle.reflection.TypeInfo
 import de.flapdoodle.tab.model.Name
 import de.flapdoodle.tab.model.calculations.Variable
 import de.flapdoodle.tab.model.calculations.interpolation.DefaultInterpolatorFactoryLookup
-import de.flapdoodle.tab.model.calculations.interpolation.InterpolationType
 import de.flapdoodle.tab.model.calculations.types.IndexMap
 import de.flapdoodle.tab.model.data.Column
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.Month
 
 class EvalFormulaAdapterTest {
 
@@ -43,7 +45,8 @@ class EvalFormulaAdapterTest {
 
     @Test
     fun indexPropertyExample() {
-        val testee = EvalFormulaAdapter("a.index")
+        val testee = EvalFormulaAdapter("a.index.month")
+        val now = LocalDate.of(2023, Month.FEBRUARY, 3)
 
         assertThat(testee.variables())
             .hasSize(1)
@@ -51,16 +54,17 @@ class EvalFormulaAdapterTest {
         assertThat(a.name).isEqualTo("a")
 
         val result = testee.evaluate(mapOf(
-            Variable("index") to Evaluated.value(1),
+            Variable("__index__") to Evaluated.value(now),
             Variable("a") to Evaluated.value("blub"),
         ))
 
-        assertThat(result.wrapped()).isEqualTo(1)
+        assertThat(result.wrapped()).isEqualTo(Month.FEBRUARY)
     }
 
     @Test
     fun arrayAccesWithIndexPropertyExample() {
-        val testee = EvalFormulaAdapter("#b[a.index]")
+        val testee = EvalFormulaAdapter("#b[a.index.month]")
+        val now = LocalDate.of(2023, Month.FEBRUARY, 3)
 
         assertThat(testee.variables())
             .hasSize(2)
@@ -69,18 +73,22 @@ class EvalFormulaAdapterTest {
         assertThat(b.isColumnReference).isTrue()
         assertThat(a.name).isEqualTo("a")
 
-        val result = testee.evaluate(mapOf(
-            Variable("index") to Evaluated.value(1),
-            Variable("a") to Evaluated.value("blub"),
-            Variable("#b") to Evaluated.value(IndexMap.asMap(
+        val columnWithInterpolator: Evaluated<*> = Evaluated.value(
+            IndexMap.asMap(
                 column = Column(
                     name = Name("b"),
-                    indexType = TypeInfo.of(Int::class.javaObjectType),
+                    indexType = TypeInfo.of(Month::class.javaObjectType),
                     valueType = TypeInfo.of(Double::class.javaObjectType),
-                    values = mapOf(0 to 0.0, 2 to 10.0),
+                    values = mapOf(Month.JANUARY to 0.0, /*Month.FEBRUARY to 5.0,*/ Month.MARCH to 10.0),
                 ),
                 interpolatorFactoryLookup = DefaultInterpolatorFactoryLookup
-            ))
+            )
+        )
+
+        val result = testee.evaluate(mapOf(
+            Variable("__index__") to Evaluated.value(now),
+            Variable("a") to Evaluated.value("blub"),
+            Variable("#b") to columnWithInterpolator
         ))
 
         assertThat(result.wrapped()).isEqualTo(5.0)
