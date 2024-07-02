@@ -20,6 +20,7 @@ data class IndexMap<K : Comparable<K>, V : Any>(
     fun values() = orderedValues
     fun interpolator() = interpolator
     fun indexType() = indexType
+    fun valueType() = valueType
 
     fun <R : Any> foldValuesIfNotEmpty(initial: R, operation: (acc: R, V) -> R): R? {
         return if (values().isNotEmpty()) {

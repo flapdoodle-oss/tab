@@ -7,6 +7,9 @@ import org.assertj.core.data.Percentage
 import org.junit.jupiter.api.Test
 import java.math.BigDecimal
 import java.math.MathContext
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.Month
 
 class LinearInterpolatorTest {
 
@@ -70,5 +73,43 @@ class LinearInterpolatorTest {
             .isEqualByComparingTo(BigDecimal.valueOf(60.0))
         assertThat(testee.interpolated(15).wrapped())
             .isEqualByComparingTo(BigDecimal.valueOf(80.0))
+    }
+
+    @Test
+    fun dateInterpolation() {
+        val now = LocalDate.of(2023, Month.MAY, 2)
+
+        val testee = LinearInterpolator(
+            values =  mapOf(
+                now to BigDecimal.valueOf(10.0),
+                now.plusDays(2) to BigDecimal.valueOf(20.0)
+            ),
+            valueType = TypeInfo.of(BigDecimal::class.javaObjectType),
+            interpolation = LinearInterpolation.interpolation(
+                TypeInfo.of(LocalDate::class.java),
+                TypeInfo.of(BigDecimal::class.javaObjectType),
+            )!!
+        )
+
+        assertThat(testee.interpolated(now.plusDays(1)).wrapped())
+            .isEqualByComparingTo(BigDecimal.valueOf(15.0))
+    }
+
+    @Test
+    fun enumInterpolation() {
+        val testee = LinearInterpolator(
+            values =  mapOf(
+                Month.FEBRUARY to BigDecimal.valueOf(10.0),
+                Month.APRIL to BigDecimal.valueOf(20.0)
+            ),
+            valueType = TypeInfo.of(BigDecimal::class.javaObjectType),
+            interpolation = LinearInterpolation.interpolation(
+                TypeInfo.of(Month::class.java),
+                TypeInfo.of(BigDecimal::class.javaObjectType),
+            )!!
+        )
+
+        assertThat(testee.interpolated(Month.MARCH).wrapped())
+            .isEqualByComparingTo(BigDecimal.valueOf(15.0))
     }
 }
