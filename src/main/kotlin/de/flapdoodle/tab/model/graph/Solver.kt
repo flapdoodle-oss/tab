@@ -10,6 +10,7 @@ import de.flapdoodle.reflection.TypeInfo
 import de.flapdoodle.tab.model.Model
 import de.flapdoodle.tab.model.calculations.Calculation
 import de.flapdoodle.tab.model.calculations.Variable
+import de.flapdoodle.tab.model.calculations.Variables
 import de.flapdoodle.tab.model.calculations.interpolation.DefaultInterpolatorFactoryLookup
 import de.flapdoodle.tab.model.calculations.interpolation.Interpolator
 import de.flapdoodle.tab.model.calculations.types.IndexMap
@@ -229,7 +230,7 @@ object Solver {
                 val result = calculation.evaluate(
                     interpolated.variablesAt(it) +
                             singleValueMap.toMap()      +
-                    mapOf(Variable("__index__") to Evaluated.value(it))
+                    mapOf(Variable(Variables.INDEX_NAME) to Evaluated.value(it))
                 )
                 if (result != null) it to result else null
             } catch (ex: BaseException) {

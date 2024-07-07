@@ -72,10 +72,6 @@
         "x": 667.0,
         "y": 174.0
       },
-      "size": {
-        "width": 678.0,
-        "height": 396.0
-      },
       "id": "5",
       "calculated": {
         "indexType": "LocalDate",
@@ -86,11 +82,15 @@
               "name": "month value",
               "short": "mv",
               "formula": {
-                "expression": "#mv[a.index.month]*a",
+                "expression": "#mv[index.month]*a",
                 "variables": [
                   {
                     "name": "#mv",
                     "id": "7"
+                  },
+                  {
+                    "name": "index",
+                    "id": "8"
                   },
                   {
                     "name": "a",

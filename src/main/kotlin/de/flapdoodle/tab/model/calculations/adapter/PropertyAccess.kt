@@ -13,9 +13,10 @@ import java.time.LocalDate
 object PropertyAccess : TypedEvaluables.Wrapper(TypedEvaluables.builder()
     .addList(TypedEvaluable.of(Any::class.java, Map::class.java, String::class.java, MapAccess()))
     .addList(TypedEvaluable.of(Any::class.java, LocalDate::class.java, String::class.java, LocalDateAccess()))
-    .addList(IndexTypedEvaluableAdapter)
+//    .addList(IndexTypedEvaluableAdapter)
     .build()) {
 
+    // TODO see ArrayAccess-TODO
     class MapAccess : Arg2<Map<*,*>, String, Any?> {
         @Throws(EvaluationException::class)
         override fun evaluate(

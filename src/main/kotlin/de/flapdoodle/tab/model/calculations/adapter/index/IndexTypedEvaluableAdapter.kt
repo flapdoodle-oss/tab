@@ -10,8 +10,10 @@ import de.flapdoodle.eval.core.exceptions.EvaluableException
 import de.flapdoodle.eval.core.parser.Token
 import de.flapdoodle.eval.core.validation.ParameterValidator
 import de.flapdoodle.reflection.TypeInfo
+import de.flapdoodle.tab.model.calculations.Variables
 import java.util.*
 
+@Deprecated("don't use")
 object IndexTypedEvaluableAdapter : TypedEvaluable<Any> {
     private val signature = Signature.of(
         TypeInfo.of(Any::class.java),
@@ -38,7 +40,7 @@ object IndexTypedEvaluableAdapter : TypedEvaluable<Any> {
         require(second.type()==TypeInfo.of(String::class.java)) { "wrong type: $second"}
         require(second.wrapped()=="index") { "invalid argument: $second"}
 
-        require(variableResolver.has("__index__")) {"no variable 'index'"}
-        return variableResolver.get("__index__") as Evaluated<Any>
+        require(variableResolver.has(Variables.INDEX_NAME)) {"no variable 'index'"}
+        return variableResolver.get(Variables.INDEX_NAME) as Evaluated<Any>
     }
 }

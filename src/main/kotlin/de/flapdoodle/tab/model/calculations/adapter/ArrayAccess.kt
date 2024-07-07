@@ -44,34 +44,12 @@ object ArrayAccess : TypedEvaluables.Wrapper(TypedEvaluables.builder()
             signature.validateArguments(arguments)
             val unwrapped = Evaluated.unwrap(arguments)
             val indexMap = unwrapped[0] as IndexMap<*, *>
-            return interpolatedV(indexMap, unwrapped[1]) as Evaluated<Any>
+            return interpolated(indexMap, unwrapped[1]) as Evaluated<Any>
         }
 
     }
 
-    class IndexMapInterpolatedAccess : TypedEvaluable.Arg2<IndexMap<*,*>, Any, Any?> {
-        override fun evaluate(
-            variableResolver: VariableResolver,
-            evaluationContext: EvaluationContext,
-            token: Token,
-            first: IndexMap<*, *>,
-            second: Any?
-        ): Any? {
-            return interpolated(first, second)
-        }
-
-    }
-
-    private fun <K: Comparable<K>, V: Any> interpolated(first: IndexMap<K, V>, second: Any?): Any? {
-        require(first.indexType().isInstance(second)) {"index $second does not match ${first.indexType()}"}
-        val index = second as K
-//        println("interpolate $first with $index")
-        val evaluated = first.interpolator().interpolated(index)
-//        println("interpolate $first with $index -> $evaluated")
-        return evaluated.wrapped()
-    }
-
-    private fun <K: Comparable<K>, V: Any> interpolatedV(first: IndexMap<K, V>, second: Any?): Evaluated<V> {
+    private fun <K: Comparable<K>, V: Any> interpolated(first: IndexMap<K, V>, second: Any?): Evaluated<V> {
         require(first.indexType().isInstance(second)) {"index $second does not match ${first.indexType()}"}
         val index = second as K
 //        println("interpolate $first with $index")

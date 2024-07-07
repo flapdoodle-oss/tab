@@ -4,6 +4,7 @@ import de.flapdoodle.eval.core.evaluables.Evaluated
 import de.flapdoodle.reflection.TypeInfo
 import de.flapdoodle.tab.model.Name
 import de.flapdoodle.tab.model.calculations.Variable
+import de.flapdoodle.tab.model.calculations.Variables
 import de.flapdoodle.tab.model.calculations.interpolation.DefaultInterpolatorFactoryLookup
 import de.flapdoodle.tab.model.calculations.types.IndexMap
 import de.flapdoodle.tab.model.data.Column
@@ -45,33 +46,32 @@ class EvalFormulaAdapterTest {
 
     @Test
     fun indexPropertyExample() {
-        val testee = EvalFormulaAdapter("a.index.month")
+        val testee = EvalFormulaAdapter("index.month")
         val now = LocalDate.of(2023, Month.FEBRUARY, 3)
 
         assertThat(testee.variables())
             .hasSize(1)
-        val (a) = testee.variables().toList()
-        assertThat(a.name).isEqualTo("a")
+        val (index) = testee.variables().toList()
+        assertThat(index.name).isEqualTo("index")
 
         val result = testee.evaluate(mapOf(
-            Variable("__index__") to Evaluated.value(now),
-            Variable("a") to Evaluated.value("blub"),
+            Variable(Variables.INDEX_NAME) to Evaluated.value(now),
         ))
 
         assertThat(result.wrapped()).isEqualTo(Month.FEBRUARY)
     }
 
     @Test
-    fun arrayAccesWithIndexPropertyExample() {
-        val testee = EvalFormulaAdapter("#b[a.index.month]")
+    fun arrayAccessWithIndexExample() {
+        val testee = EvalFormulaAdapter("#b[index.month]")
         val now = LocalDate.of(2023, Month.FEBRUARY, 3)
 
         assertThat(testee.variables())
             .hasSize(2)
-        val (b, a) = testee.variables().toList()
+        val (b, index) = testee.variables().toList()
         assertThat(b.name).isEqualTo("#b")
         assertThat(b.isColumnReference).isTrue()
-        assertThat(a.name).isEqualTo("a")
+        assertThat(index.name).isEqualTo("index")
 
         val columnWithInterpolator: Evaluated<*> = Evaluated.value(
             IndexMap.asMap(
@@ -86,8 +86,7 @@ class EvalFormulaAdapterTest {
         )
 
         val result = testee.evaluate(mapOf(
-            Variable("__index__") to Evaluated.value(now),
-            Variable("a") to Evaluated.value("blub"),
+            Variable(Variables.INDEX_NAME) to Evaluated.value(now),
             Variable("#b") to columnWithInterpolator
         ))
 

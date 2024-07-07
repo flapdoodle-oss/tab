@@ -137,7 +137,7 @@ data class Calculations<K: Comparable<K>>(
         }
 
         private fun groupByName(list: List<Calculation<*>>) =
-            list.flatMap { it.variables() }.groupBy { it.name }
+            list.flatMap { it.variables() }.filter { it.name != Variables.INDEX_NAME }.groupBy { it.name }
     }
 }
 
