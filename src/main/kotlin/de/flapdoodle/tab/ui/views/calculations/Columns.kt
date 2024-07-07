@@ -1,6 +1,7 @@
 package de.flapdoodle.tab.ui.views.calculations
 
 import de.flapdoodle.eval.core.Expression
+import de.flapdoodle.eval.core.exceptions.BaseException
 import de.flapdoodle.kfx.controls.fields.ValidatingColoredTextField
 import de.flapdoodle.kfx.controls.labels.ColoredLabel
 import de.flapdoodle.kfx.layout.grid.TableCell
@@ -82,7 +83,15 @@ object Columns {
                 .updateWith { validatingColoredTextField, value ->
                     validatingColoredTextField.onAction = EventHandler {
                         if (value != null) {
-                            onChange(value, requireNotNull(validatingColoredTextField.get()) { "expression not set" })
+                            try {
+                                onChange(value, requireNotNull(validatingColoredTextField.get()) { "expression not set" })
+                            } catch (ex: Throwable) {
+                                println(" something went wrong")
+                                println("----------------------------")
+//                                ex.printStackTrace()
+                                println(ex.localizedMessage)
+                                println("----------------------------")
+                            }
                         }
                     }
                     // HACK to force a change for color mapping

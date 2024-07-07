@@ -234,7 +234,8 @@ object Solver {
                 )
                 if (result != null) it to result else null
             } catch (ex: BaseException) {
-                ex.printStackTrace()
+                // TODO exception muss irgendwie nach oben oder nicht gefangen werden..
+                logger.warning("could not calculate ${calculation.formula().expression().source()}", ex)
                 null
             }
         }.toMap()
