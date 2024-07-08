@@ -9,6 +9,7 @@ import de.flapdoodle.tab.model.calculations.interpolation.InterpolationType
 import de.flapdoodle.tab.model.connections.Source
 import de.flapdoodle.tab.model.data.ColumnId
 import de.flapdoodle.tab.model.data.SingleValueId
+import de.flapdoodle.tab.model.errors.Error
 import de.flapdoodle.tab.types.change
 import de.flapdoodle.tab.types.one
 import javafx.scene.paint.Color
@@ -79,9 +80,19 @@ data class Calculations<K: Comparable<K>>(
         return copy(aggregations = changedAggregations, inputs = merge(inputs, mergedInputSlots(changedAggregations + tabular)))
     }
 
+    fun changeAggregationError(id: Id<Calculation<*>>, error: Error?): Calculations<K> {
+        val changedAggregations = aggregations.change(Calculation.Aggregation<K>::id, id) { it.copy(error = error) }
+        return copy(aggregations = changedAggregations)
+    }
+
     fun changeTabular(id: Id<Calculation<*>>, name: Name, newExpression: Expression, color: Color, interpolationType: InterpolationType): Calculations<K> {
         val changedTabular = tabular.change(Calculation.Tabular<K>::id, id) { it.changeFormula(name, newExpression, color, interpolationType) }
         return copy(tabular = changedTabular, inputs = merge(inputs, mergedInputSlots(aggregations + changedTabular)))
+    }
+
+    fun changeTabularError(id: Id<Calculation<*>>, error: Error?): Calculations<K> {
+        val changedTabular = tabular.change(Calculation.Tabular<K>::id, id) { it.copy(error = error) }
+        return copy(tabular = changedTabular)
     }
 
     fun connect(input: Id<InputSlot<*>>, source: Source): Calculations<K> {

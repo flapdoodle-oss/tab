@@ -151,7 +151,12 @@ class CalculationsTest {
     }
 
     private fun <K: Comparable<K>> aggregate(indexType: KClass<K>, name: String, formula: String): Calculation.Aggregation<K> {
-        return Calculation.Aggregation(TypeInfo.of(indexType.javaObjectType), Name(name), EvalFormulaAdapter(formula), SingleValueId())
+        return Calculation.Aggregation(
+            TypeInfo.of(indexType.javaObjectType),
+            Name(name),
+            EvalFormulaAdapter(formula),
+            destination = SingleValueId()
+        )
     }
 
     private fun <K: Comparable<K>> tabular(
@@ -160,6 +165,12 @@ class CalculationsTest {
         formula: String,
         columnId: ColumnId
     ): Calculation.Tabular<K> {
-        return Calculation.Tabular(TypeInfo.of(indexType.javaObjectType), Name(name), EvalFormulaAdapter(formula), InterpolationType.Linear, columnId)
+        return Calculation.Tabular(
+            TypeInfo.of(indexType.javaObjectType),
+            Name(name),
+            EvalFormulaAdapter(formula),
+            interpolationType = InterpolationType.Linear,
+            destination = columnId
+        )
     }
 }

@@ -31,8 +31,8 @@ data class AddTabular(
                     indexType = node.indexType,
                     name = name,
                     formula = EvalFormulaAdapter(expression),
-                    color = color,
-                    interpolationType = interpolationType
+                    interpolationType = interpolationType,
+                    color = color
                 )
             )
         }

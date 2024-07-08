@@ -23,8 +23,8 @@ class DefaultAggregationMapperTest {
         val memorizingMapping = MemorizingMapping()
 
         val src = Calculation.Aggregation(
-            name = Name("name"),
             indexType = TypeInfo.of(Int::class.javaObjectType),
+            name = Name("name"),
             formula = EvalFormulaAdapter("x+2")
         )
 

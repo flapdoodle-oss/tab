@@ -63,11 +63,11 @@ class CalculatedUIAdapter<K: Comparable<K>>(
         })
     }
 
-    override fun update(node: de.flapdoodle.tab.model.Node) {
-        require(node is de.flapdoodle.tab.model.Node.Calculated<out Comparable<*>>) { "wrong type $node" }
+    override fun update(node: Node) {
+        require(node is Node.Calculated<out Comparable<*>>) { "wrong type $node" }
         require(node.id == nodeId) {"wrong node: ${node.id} != $nodeId"}
 
-        calculationsPane.update(node as de.flapdoodle.tab.model.Node.Calculated<K>)
+        calculationsPane.update(node as Node.Calculated<K>)
         valuesPane.update(node)
         tableViewPane.update(node)
         chartPane.update(node)

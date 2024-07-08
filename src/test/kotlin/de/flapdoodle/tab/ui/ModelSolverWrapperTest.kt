@@ -44,8 +44,8 @@ class ModelSolverWrapperTest {
                         TypeInfo.of(Int::class.javaObjectType),
                         Name("y"),
                         EvalFormulaAdapter("x+2"),
-                        InterpolationType.Linear,
-                        destination
+                        interpolationType = InterpolationType.Linear,
+                        destination = destination
                     )
                 )
             ).let { c -> c.connect(c.inputs()[0].id, Source.ColumnSource(

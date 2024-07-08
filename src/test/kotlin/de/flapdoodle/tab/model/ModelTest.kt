@@ -48,7 +48,13 @@ class ModelTest {
         val destination = ColumnId()
         val formula = Node.Calculated(Title("calc"), TypeInfo.of(Int::class.javaObjectType), Calculations(
             TypeInfo.of(Int::class.javaObjectType),
-            tabular = listOf(Calculation.Tabular(TypeInfo.of(Int::class.javaObjectType),Name("y"), EvalFormulaAdapter("x+2"), InterpolationType.Linear, destination))
+            tabular = listOf(Calculation.Tabular(
+                TypeInfo.of(Int::class.javaObjectType),
+                Name("y"),
+                EvalFormulaAdapter("x+2"),
+                interpolationType = InterpolationType.Linear,
+                destination = destination
+            ))
         ).let { c -> c.connect(c.inputs()[0].id, Source.ColumnSource(table.id, x.id, TypeInfo.of(Int::class.javaObjectType))) })
 
         val testee = Model(listOf(table, formula))

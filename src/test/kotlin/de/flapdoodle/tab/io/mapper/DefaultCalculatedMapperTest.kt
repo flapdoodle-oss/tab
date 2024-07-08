@@ -47,15 +47,15 @@ class DefaultCalculatedMapperTest {
                 indexType = TypeInfo.of(Int::class.javaObjectType),
                 aggregations = listOf(
                     Calculation.Aggregation(
-                        name = Name("x+2"),
                         indexType = TypeInfo.of(Int::class.javaObjectType),
+                        name = Name("x+2"),
                         formula = EvalFormulaAdapter("x+2")
                     )
                 ),
                 tabular = listOf(
                     Calculation.Tabular(
-                        name = Name("x+y"),
                         indexType = TypeInfo.of(Int::class.javaObjectType),
+                        name = Name("x+y"),
                         formula = EvalFormulaAdapter("x+y")
                     )
                 ),
@@ -63,12 +63,12 @@ class DefaultCalculatedMapperTest {
                     InputSlot(
                         name = "x",
                         mapTo = (Calculation.Aggregation(
-                            name = Name("x+2"),
                             indexType = TypeInfo.of(Int::class.javaObjectType),
+                            name = Name("x+2"),
                             formula = EvalFormulaAdapter("x+2")
                         ).variables() + Calculation.Tabular(
-                            name = Name("x+y"),
                             indexType = TypeInfo.of(Int::class.javaObjectType),
+                            name = Name("x+y"),
                             formula = EvalFormulaAdapter("x+y")
                         ).variables()).filter {
                             it.name=="x"
@@ -78,8 +78,8 @@ class DefaultCalculatedMapperTest {
                     InputSlot(
                         name = "y",
                         mapTo = Calculation.Tabular(
-                            name = Name("x+y"),
                             indexType = TypeInfo.of(Int::class.javaObjectType),
+                            name = Name("x+y"),
                             formula = EvalFormulaAdapter("x+y")
                         ).variables().filter { it.name == "y" }.toSet(),
                         source = Source.ColumnSource(Id.nextId(de.flapdoodle.tab.model.Node.Table::class), ColumnId(), TypeInfo.of(Int::class.javaObjectType))

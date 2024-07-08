@@ -18,8 +18,10 @@ import de.flapdoodle.tab.model.connections.Source
 import de.flapdoodle.tab.model.data.Column
 import de.flapdoodle.tab.model.data.Data
 import de.flapdoodle.tab.model.data.SingleValue
+import de.flapdoodle.tab.model.errors.Error
 import de.flapdoodle.tab.types.Unknown
 import de.flapdoodle.tab.types.one
+import de.flapdoodle.types.Either
 import org.jgrapht.graph.DefaultEdge
 
 object Solver {
@@ -160,18 +162,27 @@ object Solver {
                 is Column<*, *> -> columnAsEvaluated(data)
             }
         }.toMap()
-        val result = try {
-            calculation.evaluate(valueMap)
+        val (result,error) = try {
+            calculation.evaluate(valueMap) to null
         } catch (ex: BaseException) {
             try {
-                Evaluated.ofNull(calculation.evaluateType(valueMap))
+                Evaluated.ofNull(calculation.evaluateType(valueMap)) to mapError(ex)
             } catch (ex: BaseException) {
                 logger.warning("null type evaluation failed", ex)
-                null
+                null to mapError(ex)
             }
         }
-        val changedNode: de.flapdoodle.tab.model.Node.Calculated<K> = setValue(node, calculation, result)
+        val changedNode: de.flapdoodle.tab.model.Node.Calculated<K> = setValue(node, calculation, result, error)
         return model.copy(nodes = model.nodes().map { if (it.id == changedNode.id) changedNode else it })
+    }
+
+    private fun mapError(ex: BaseException): Error {
+        return Error(
+            startPosition = ex.startPosition,
+            endPosition = ex.endPosition,
+            tokenString = ex.tokenString,
+            message = ex.message!!
+        )
     }
 
     private fun <K : Comparable<K>> clearAggregate(
@@ -179,7 +190,7 @@ object Solver {
         node: de.flapdoodle.tab.model.Node.Calculated<K>,
         calculation: Calculation.Aggregation<K>
     ): Model {
-        val changedNode: de.flapdoodle.tab.model.Node.Calculated<K> = setValue<K, Unit>(node, calculation, null)
+        val changedNode: de.flapdoodle.tab.model.Node.Calculated<K> = setValue<K, Unit>(node, calculation, null, null)
 //        val changedNode: de.flapdoodle.tab.model.Node.Calculated<K> = clearValue(node, calculation)
         return model.copy(nodes = model.nodes().map { if (it.id == changedNode.id) changedNode else it })
     }
@@ -225,22 +236,22 @@ object Solver {
         singleValueMap: List<Pair<Variable, Evaluated<out Any>>>
     ): Model {
         val interpolated = sortAndInterpolate(columnsMap)
-        val result = interpolated.index.mapNotNull {
+        val resultMap: Map<K, Either<Evaluated<out Any>,Error>> = interpolated.index.mapNotNull {
             try {
                 val result = calculation.evaluate(
                     interpolated.variablesAt(it) +
                             singleValueMap.toMap()      +
                     mapOf(Variable(Variables.INDEX_NAME) to Evaluated.value(it))
                 )
-                if (result != null) it to result else null
+                it to Either.left<Evaluated<out Any>, Error>(result)
             } catch (ex: BaseException) {
                 // TODO exception muss irgendwie nach oben oder nicht gefangen werden..
                 logger.warning("could not calculate ${calculation.formula().expression().source()}", ex)
-                null
+                it to Either.right(mapError(ex))
             }
         }.toMap()
 
-        val changedNode: de.flapdoodle.tab.model.Node.Calculated<K> = setTable(node, calculation, result)
+        val changedNode: de.flapdoodle.tab.model.Node.Calculated<K> = setTable(node, calculation, resultMap)
         return updated.copy(nodes = updated.nodes().map { if (it.id == changedNode.id) changedNode else it })
     }
 
@@ -289,7 +300,8 @@ object Solver {
     private fun <K : Comparable<K>, V : Any> setValue(
         node: de.flapdoodle.tab.model.Node.Calculated<K>,
         calculation: Calculation.Aggregation<K>,
-        result: Evaluated<V>?
+        result: Evaluated<V>?,
+        error: Error?
     ): de.flapdoodle.tab.model.Node.Calculated<K> {
         val changedNode = if (node.values.find(calculation.destination()) == null) {
             val newSingleValue = if (result != null) {
@@ -307,21 +319,22 @@ object Solver {
                 }.copy(color = calculation.color())
             })
         }
-        return changedNode
-    }
 
-    private fun <K : Comparable<K>> clearValue(
-        node: de.flapdoodle.tab.model.Node.Calculated<K>,
-        calculation: Calculation.Aggregation<K>
-    ): de.flapdoodle.tab.model.Node.Calculated<K> {
-        return node.copy(values = node.values.remove(calculation.destination()))
+        return changedNode.copy(calculations = changedNode.calculations.changeAggregationError(calculation.id,error))
     }
 
     private fun <K : Comparable<K>> setTable(
         node: de.flapdoodle.tab.model.Node.Calculated<K>,
         calculation: Calculation.Tabular<K>,
-        result: Map<K, Evaluated<out Any>>
+        resultWithErrors: Map<K, Either<Evaluated<out Any>,Error>>
     ): de.flapdoodle.tab.model.Node.Calculated<K> {
+
+        val result = resultWithErrors
+            .filter { it.value.isLeft }
+            .mapValues { entry -> entry.value.left() }
+
+        val firstError = resultWithErrors.filter { !it.value.isLeft }.map { it.value.right() }.firstOrNull()
+        
         // TODO multiple value types in result
 //        if (result.isNotEmpty()) {
         val newColumn = column(result, calculation)
@@ -340,15 +353,8 @@ object Solver {
                 })
             }
         }
-        return changedNode
-//        } else {
-//            val existingColumn = node.columns.find(calculation.destination())
-//            return if (existingColumn != null) {
-//                node.copy(columns = node.columns.remove(calculation.destination()))
-//            } else {
-//                node
-//            }
-//        }
+        
+        return changedNode.copy(calculations = changedNode.calculations.changeTabularError(calculation.id, firstError))
     }
 
     private fun <K : Comparable<K>> clearTable(

@@ -12,7 +12,6 @@ import de.flapdoodle.tab.ui.resources.Labels
 import de.flapdoodle.tab.ui.views.dialogs.ChangeAggregationExpression
 import de.flapdoodle.tab.ui.views.dialogs.NewAggregationExpression
 import javafx.beans.property.ReadOnlyObjectProperty
-import javafx.beans.property.SimpleObjectProperty
 import javafx.scene.control.Label
 import javafx.scene.layout.VBox
 import javafx.scene.paint.Color

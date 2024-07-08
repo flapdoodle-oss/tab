@@ -7,15 +7,12 @@ import de.flapdoodle.tab.model.Node
 import de.flapdoodle.tab.model.calculations.Calculation
 import de.flapdoodle.tab.model.calculations.interpolation.InterpolationType
 import de.flapdoodle.tab.model.changes.Change
-import de.flapdoodle.tab.model.data.Column
 import de.flapdoodle.tab.ui.ChangeListener
 import de.flapdoodle.tab.ui.resources.Buttons
 import de.flapdoodle.tab.ui.resources.Labels
 import de.flapdoodle.tab.ui.views.dialogs.ChangeTabularExpression
 import de.flapdoodle.tab.ui.views.dialogs.NewTabularExpression
 import javafx.beans.property.ReadOnlyObjectProperty
-import javafx.beans.property.ReadOnlyProperty
-import javafx.beans.property.SimpleObjectProperty
 import javafx.scene.control.Label
 import javafx.scene.layout.VBox
 import javafx.scene.paint.Color

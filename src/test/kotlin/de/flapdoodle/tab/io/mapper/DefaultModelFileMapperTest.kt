@@ -81,13 +81,13 @@ class DefaultModelFileMapperTest {
         )
 
         val aggregation = Calculation.Aggregation(
-            name = Name("x+2"),
             indexType = TypeInfo.of(Int::class.javaObjectType),
+            name = Name("x+2"),
             formula = EvalFormulaAdapter("x+2")
         )
         val tabular = Calculation.Tabular(
-            name = Name("x+y"),
             indexType = TypeInfo.of(Int::class.javaObjectType),
+            name = Name("x+y"),
             formula = EvalFormulaAdapter("x+y")
         )
 
