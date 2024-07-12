@@ -43,6 +43,12 @@ class AppMenu(
                 }
             })
             files.items.add(SeparatorMenuItem())
+            files.items.add(menuItem("importCSV","Import CSV").also { item ->
+                item.onAction = EventHandler {
+                    IO.importCSV(scene.window)
+                }
+            })
+            files.items.add(SeparatorMenuItem())
             files.items.add(menuItem("Quit").also { quit ->
                 quit.onAction = EventHandler {
                     println("clicked...")

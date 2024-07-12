@@ -54,9 +54,20 @@ object IO {
         return null
     }
 
+    fun importCSV(window: Window) {
+        val fileChooser = FileChooser()
+        fileChooser.title = "Open CSV"
+        fileChooser.extensionFilters.addAll(FileChooser.ExtensionFilter("csv","*.csv"))
+        TabPref.fileDirectory()?.let {
+            fileChooser.initialDirectory = it.toFile()
+        }
+        val file = fileChooser.showOpenDialog(window)
+    }
+
     private fun fileChooser(): FileChooser {
         return FileChooser().apply {
             extensionFilters.addAll(
+                // TODO i18n
                 FileChooser.ExtensionFilter("All Files", "*.*"),
                 FileChooser.ExtensionFilter("Tab File", "*.tab")
             )
