@@ -4,6 +4,7 @@ import de.flapdoodle.tab.model.Model
 import de.flapdoodle.tab.prefs.TabPref
 import javafx.stage.FileChooser
 import javafx.stage.Window
+import java.io.File
 import java.nio.file.Files
 import java.nio.file.StandardOpenOption
 
@@ -61,7 +62,7 @@ object IO {
         TabPref.fileDirectory()?.let {
             fileChooser.initialDirectory = it.toFile()
         }
-        val file = fileChooser.showOpenDialog(window)
+        val file: File = fileChooser.showOpenDialog(window)
     }
 
     private fun fileChooser(): FileChooser {
