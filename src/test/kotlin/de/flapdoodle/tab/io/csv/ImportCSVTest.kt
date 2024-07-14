@@ -1,8 +1,13 @@
 package de.flapdoodle.tab.io.csv
 
+import de.flapdoodle.reflection.TypeInfo
 import de.flapdoodle.tab.io.csv.CSV.with
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
+import java.math.BigDecimal
+import java.time.Instant
+import java.time.LocalDateTime
+import java.time.ZoneId
 
 class ImportCSVTest {
 
@@ -19,6 +24,29 @@ class ImportCSVTest {
 
         assertThat(allLines[0][0]).isEqualTo("entity_id")
         assertThat(allLines[11][9]).isEqualTo("0")
+    }
+
+    @Test
+    fun readTransposedHomeassistSample() {
+//        val iso8601 = DateTimeFormatter.ISO_INSTANT
+        val bigDecimalConverter = CsvConverter(TypeInfo.of(BigDecimal::class.java)) { it ->
+            BigDecimal(it)
+        }
+
+        with("homeassist_energie_export_transposed.csv") { reader ->
+            val config = ColumnConfig(
+                headerRows = 3,
+                indexColumn = 0,
+                converter = mapOf(
+                    0 to CsvConverter(TypeInfo.of(LocalDateTime::class.java)) {
+                        LocalDateTime.ofInstant(Instant.parse(it), ZoneId.systemDefault())
+                    },
+                    1 to bigDecimalConverter
+                )
+            )
+            ImportCSV.read(reader, config, Format(Format.COMMA,Format.SINGLE_QUOTE))
+        }
+
     }
 
     @Test
