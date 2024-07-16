@@ -1,13 +1,13 @@
 package de.flapdoodle.tab.io.csv
 
-data class ColumnConfig(
+data class ColumnConfig<K: Comparable<K>>(
     val headerRows: Int = 1,
-    val indexColumn: Int,
+    val indexConverter: Pair<Int, CsvConverter<K>>,
     val converter: Map<Int, CsvConverter<out Any>>
 ) {
     init {
         require(headerRows >= 0) { "headerRows must be positive." }
         require(converter.isNotEmpty()) { "no converter" }
-        require(converter.containsKey(indexColumn)) { "no converter for index column $indexColumn" }
+        require(!converter.containsKey(indexConverter.first)) { "column collision" }
     }
 }

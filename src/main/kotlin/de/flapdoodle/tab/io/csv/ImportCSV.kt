@@ -29,9 +29,9 @@ object ImportCSV {
             }
     }
 
-    fun read(
+    fun <K: Comparable<K>> read(
         reader: Reader,
-        config: ColumnConfig,
+        config: ColumnConfig<K>,
         format: Format = Format()
     ) {
         CSVReaderBuilder(reader)
@@ -51,6 +51,9 @@ object ImportCSV {
                         println("header: ${row.toList()}")
                     } else {
 //                        println("row: ${row.toList()}")
+                        val indexValue = config.indexConverter.second.converter(row[config.indexConverter.first])
+                        print("$indexValue -> ")
+                        
                         config.converter.forEach { index, converter ->
                             val value = row[index]
 //                            println("convert $value")
@@ -64,32 +67,10 @@ object ImportCSV {
             }
     }
 
-    private fun columnsOf(config: ColumnConfig) {
-        val indexType = indexTypeOf(config)
-        if (indexType != null) {
-            columnsOf(config, indexType)
-        }
-    }
-
-    private fun columnsOf(config: ColumnConfig, indexType: TypeInfo<out Comparable<*>>) {
-        // TODO HACK
-//        val table = tableOf(indexType)
-    }
-
-    private fun <K: Comparable<K>> tableOf(indexType: TypeInfo<K>): Node.Table<K> {
+    private fun <K: Comparable<K>> columnsOf(config: ColumnConfig<K>): Node.Table<K> {
         return Node.Table(
             name = Title("foo"),
-            indexType = indexType
+            indexType = config.indexConverter.second.type
         )
     }
-
-    private fun indexTypeOf(config: ColumnConfig): TypeInfo<out Comparable<*>>? {
-        val indexConverter = requireNotNull(config.converter[config.indexColumn]) { "no converter for index ${config.indexColumn}" }
-        val indexType = indexConverter.type
-        if (TypeInfo.of(Comparable::class.java).isAssignable(indexType)) {
-            return indexType as TypeInfo<Comparable<*>>
-        }
-        return null
-    }
-
 }

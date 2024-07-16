@@ -34,13 +34,12 @@ class ImportCSVTest {
         }
 
         with("homeassist_energie_export_transposed.csv") { reader ->
-            val config = ColumnConfig(
+            val config = ColumnConfig<LocalDateTime>(
                 headerRows = 3,
-                indexColumn = 0,
+                indexConverter = 0 to CsvConverter(TypeInfo.of(LocalDateTime::class.java)) {
+                    LocalDateTime.ofInstant(Instant.parse(it), ZoneId.systemDefault())
+                },
                 converter = mapOf(
-                    0 to CsvConverter(TypeInfo.of(LocalDateTime::class.java)) {
-                        LocalDateTime.ofInstant(Instant.parse(it), ZoneId.systemDefault())
-                    },
                     1 to bigDecimalConverter
                 )
             )
