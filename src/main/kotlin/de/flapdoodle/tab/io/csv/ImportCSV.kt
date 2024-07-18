@@ -2,10 +2,8 @@ package de.flapdoodle.tab.io.csv
 
 import com.opencsv.CSVParserBuilder
 import com.opencsv.CSVReaderBuilder
-import de.flapdoodle.reflection.TypeInfo
 import de.flapdoodle.tab.model.Node
 import de.flapdoodle.tab.model.Title
-import de.flapdoodle.tab.ui.views.calculations.Columns
 import java.io.Reader
 import java.util.*
 
@@ -43,7 +41,7 @@ object ImportCSV {
                     .build()
             )
             .build().use { csvReader ->
-                columnsOf(config)
+                val table = tableOf(config)
 
                 val rows = csvReader.readAll()
                 rows.forEachIndexed { index, row ->
@@ -67,7 +65,7 @@ object ImportCSV {
             }
     }
 
-    private fun <K: Comparable<K>> columnsOf(config: ColumnConfig<K>): Node.Table<K> {
+    private fun <K: Comparable<K>> tableOf(config: ColumnConfig<K>): Node.Table<K> {
         return Node.Table(
             name = Title("foo"),
             indexType = config.indexConverter.second.type
