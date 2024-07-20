@@ -4,9 +4,9 @@ import de.flapdoodle.tab.model.Title
 
 data class ColumnConfig<K: Comparable<K>>(
     val name: Title,
-    val headerRows: Int = 1,
     val indexConverter: Pair<Int, CsvConverter<K>>,
-    val converter: Map<Int, CsvConverter<out Any>>
+    val converter: Map<Int, CsvConverter<out Any>>,
+    val headerRows: Int = 1
 ) {
     init {
         require(headerRows >= 0) { "headerRows must be positive." }

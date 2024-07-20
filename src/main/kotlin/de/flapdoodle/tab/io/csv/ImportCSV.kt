@@ -2,17 +2,19 @@ package de.flapdoodle.tab.io.csv
 
 import com.opencsv.CSVParserBuilder
 import com.opencsv.CSVReaderBuilder
+import de.flapdoodle.kfx.logging.Logging
 import de.flapdoodle.reflection.TypeInfo
 import de.flapdoodle.tab.model.Name
 import de.flapdoodle.tab.model.Node
-import de.flapdoodle.tab.model.Title
 import de.flapdoodle.tab.model.data.Column
+import de.flapdoodle.tab.model.data.ColumnId
 import de.flapdoodle.tab.model.data.Columns
 import java.io.Reader
 import java.util.*
 
 
 object ImportCSV {
+    private val logger = Logging.logger(ImportCSV::class)
 
     fun read(
         reader: Reader,
@@ -31,49 +33,67 @@ object ImportCSV {
             }
     }
 
-    fun <K: Comparable<K>> read(
+    fun <K : Comparable<K>> read(
         reader: Reader,
         config: ColumnConfig<K>,
         format: Format = Format()
-    ) {
-        CSVReaderBuilder(reader)
+    ): Node.Table<K> {
+        val table = tableOf(config)
+        val (indexColumn, indexConverter) = config.indexConverter
+
+        return CSVReaderBuilder(reader)
             .withCSVParser(
                 CSVParserBuilder()
                     .withErrorLocale(Locale.getDefault())
                     .withQuoteChar(format.quote)
                     .withSeparator(format.separator)
                     .build()
-            )
-            .build().use { csvReader ->
-                val table = tableOf(config)
-
+            ).build().use { csvReader ->
                 val rows = csvReader.readAll()
 
                 val headers = rows.subList(0, rows.size.coerceAtMost(config.headerRows))
-                val headerMap = headerNamesByColumnIndex(headers)
-                println("headers: $headerMap")
+                val columnsMap = columns(config, headerNamesByColumnIndex(headers))
+                logger.debug { "columns: $columnsMap" }
+                val columnToColumnIdMap = columnsMap.mapValues { (_, v) -> v.id }
 
-                val columnsMap = columns(config,headerMap)
-                println("columns: $columnsMap")
-
-
+                var tableWithColumns = table.copy(columns = Columns(columnsMap.values.toList()))
                 val data = rows.subList(headers.size, rows.size)
 
-                data.forEachIndexed { index, row ->
-//                        println("row: ${row.toList()}")
-                    val indexValue = config.indexConverter.second.converter(row[config.indexConverter.first])
-                    print("$indexValue -> ")
+                data.forEach { row ->
+                    logger.debug { "row: ${row.toList()}" }
 
-                    config.converter.forEach { index, converter ->
-                        val value = row[index]
-//                            println("convert $value")
-                        val converted = converter.converter(value)
-//                            println("--> $converted")
-                        print("$converted,")
+                    val indexValue =
+                        requireNotNull(indexConverter.converter(row[indexColumn])) { "could not convert index" }
+
+                    logger.debug { "index: $indexValue" }
+
+                    config.converter.forEach { (columnIndex, converter) ->
+                        val value = row[columnIndex]
+                        logger.debug { "column[$columnIndex#${converter.type}]=$value" }
+                        tableWithColumns = addValue(
+                            tableWithColumns,
+                            requireNotNull(columnToColumnIdMap[columnIndex]),
+                            indexValue,
+                            converter,
+                            value
+                        )
                     }
-                    println()
                 }
+
+                tableWithColumns
             }
+    }
+
+    private fun <K : Comparable<K>, V : Any> addValue(
+        table: Node.Table<K>,
+        columnId: ColumnId,
+        key: K,
+        converter: CsvConverter<V>,
+        value: String?
+    ): Node.Table<K> {
+        val converted: V? = if (value != null) converter.converter.invoke(value) else null
+        val typeInfo: TypeInfo<V> = converter.type
+        return table.copy(columns = table.columns.add(columnId, key, typeInfo, converted))
     }
 
     private fun headerNamesByColumnIndex(headers: List<Array<String>>): Map<Int, Name> {
@@ -83,7 +103,10 @@ object ImportCSV {
             headers.subList(1, headers.size).forEach { row ->
                 row.forEachIndexed { index, s ->
                     val current = requireNotNull(map[index])
-                    val changed = if (current.short==null) Name(current.long + " - " + s, current.long) else current.copy(long = current.long + " - " +s)
+                    val changed = if (current.short == null) Name(
+                        current.long + " - " + s,
+                        current.long
+                    ) else current.copy(long = current.long + " - " + s)
                     map = map + (index to changed)
                 }
             }
@@ -91,18 +114,30 @@ object ImportCSV {
         return map
     }
 
-    private fun <K: Comparable<K>> tableOf(config: ColumnConfig<K>): Node.Table<K> {
+    private fun <K : Comparable<K>> tableOf(config: ColumnConfig<K>): Node.Table<K> {
         return Node.Table(
             name = config.name,
             indexType = config.indexConverter.second.type
         )
     }
 
-    private fun <K: Comparable<K>> columns(config: ColumnConfig<K>, headerMap: Map<Int, Name>): Map<Int, Column<K, out Any>> {
-        return config.converter.map { it.key to column<K>(config.indexConverter.second.type, it.value, requireNotNull(headerMap[it.key]) {"no entry for ${it.key}"}) }.toMap()
+    private fun <K : Comparable<K>> columns(
+        config: ColumnConfig<K>,
+        headerMap: Map<Int, Name>
+    ): Map<Int, Column<K, out Any>> {
+        return config.converter.map {
+            it.key to column<K>(
+                config.indexConverter.second.type,
+                it.value,
+                requireNotNull(headerMap[it.key]) { "no entry for ${it.key}" })
+        }.toMap()
     }
 
-    private fun <K: Comparable<K>> column(indexType: TypeInfo<in K>, converter: CsvConverter<out Any>, name: Name): Column<K, out Any> {
+    private fun <K : Comparable<K>> column(
+        indexType: TypeInfo<in K>,
+        converter: CsvConverter<out Any>,
+        name: Name
+    ): Column<K, out Any> {
         return Column(
             name = name,
             indexType = indexType,
