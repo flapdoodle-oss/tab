@@ -2,6 +2,7 @@ package de.flapdoodle.tab.io.csv
 
 import de.flapdoodle.reflection.TypeInfo
 import de.flapdoodle.tab.io.csv.CSV.with
+import de.flapdoodle.tab.model.Title
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import java.math.BigDecimal
@@ -35,6 +36,7 @@ class ImportCSVTest {
 
         with("homeassist_energie_export_transposed.csv") { reader ->
             val config = ColumnConfig<LocalDateTime>(
+                name = Title("Energy"),
                 headerRows = 3,
                 indexConverter = 0 to CsvConverter(TypeInfo.of(LocalDateTime::class.java)) {
                     LocalDateTime.ofInstant(Instant.parse(it), ZoneId.systemDefault())
