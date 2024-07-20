@@ -9,6 +9,8 @@ import de.flapdoodle.tab.config.IndexTypes
 import de.flapdoodle.tab.model.Node
 import de.flapdoodle.tab.model.Title
 import de.flapdoodle.tab.ui.Converters
+import de.flapdoodle.tab.ui.dialogs.DialogContent
+import de.flapdoodle.tab.ui.dialogs.DialogWrapper
 import de.flapdoodle.tab.ui.resources.Labels
 import de.flapdoodle.tab.ui.resources.RequiredFieldNotSet
 import de.flapdoodle.tab.ui.resources.ResourceBundles

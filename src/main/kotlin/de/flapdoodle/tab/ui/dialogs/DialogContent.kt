@@ -1,4 +1,4 @@
-package de.flapdoodle.tab.ui.views.dialogs
+package de.flapdoodle.tab.ui.dialogs
 
 import de.flapdoodle.kfx.layout.grid.WeightGridPane
 import javafx.beans.value.ObservableValue

@@ -1,4 +1,4 @@
-package de.flapdoodle.tab.ui.views.dialogs
+package de.flapdoodle.tab.ui.dialogs
 
 import de.flapdoodle.tab.ui.resources.Labels
 import javafx.scene.control.ButtonBar.ButtonData

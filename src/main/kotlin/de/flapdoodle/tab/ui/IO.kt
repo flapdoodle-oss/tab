@@ -1,7 +1,9 @@
 package de.flapdoodle.tab.ui
 
 import de.flapdoodle.tab.model.Model
+import de.flapdoodle.tab.model.changes.Change
 import de.flapdoodle.tab.prefs.TabPref
+import de.flapdoodle.tab.ui.views.csv.ImportCsvTable
 import javafx.stage.FileChooser
 import javafx.stage.Window
 import java.io.File
@@ -55,7 +57,7 @@ object IO {
         return null
     }
 
-    fun importCSV(window: Window) {
+    fun importCSV(model: Model, window: Window): Model? {
         val fileChooser = FileChooser()
         fileChooser.title = "Open CSV"
         fileChooser.extensionFilters.addAll(FileChooser.ExtensionFilter("csv","*.csv"))
@@ -63,6 +65,11 @@ object IO {
             fileChooser.initialDirectory = it.toFile()
         }
         val file: File = fileChooser.showOpenDialog(window)
+        val newTable = ImportCsvTable.open(file)
+        if (newTable!=null) {
+            return model.apply(Change.AddNode(newTable))
+        }
+        return null
     }
 
     private fun fileChooser(): FileChooser {

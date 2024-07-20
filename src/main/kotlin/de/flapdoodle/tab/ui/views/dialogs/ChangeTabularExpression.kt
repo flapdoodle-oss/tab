@@ -10,6 +10,8 @@ import de.flapdoodle.tab.model.Name
 import de.flapdoodle.tab.model.calculations.interpolation.InterpolationType
 import de.flapdoodle.tab.ui.Converters
 import de.flapdoodle.tab.ui.converter.ValidatingExpressionConverter
+import de.flapdoodle.tab.ui.dialogs.DialogContent
+import de.flapdoodle.tab.ui.dialogs.DialogWrapper
 import de.flapdoodle.tab.ui.resources.Labels
 import de.flapdoodle.tab.ui.resources.RequiredFieldNotSet
 import de.flapdoodle.tab.ui.resources.ResourceBundles

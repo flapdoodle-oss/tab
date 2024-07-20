@@ -2,6 +2,7 @@ package de.flapdoodle.tab.ui.views.dialogs
 
 import de.flapdoodle.tab.model.Node
 import de.flapdoodle.tab.model.changes.Change
+import de.flapdoodle.tab.ui.dialogs.DialogWrapper
 
 class ChangeNode {
 

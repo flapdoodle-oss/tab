@@ -45,7 +45,10 @@ class AppMenu(
             files.items.add(SeparatorMenuItem())
             files.items.add(menuItem("importCSV","Import CSV").also { item ->
                 item.onAction = EventHandler {
-                    IO.importCSV(scene.window)
+                    val newModel = IO.importCSV(modelWrapper.model().value, scene.window)
+                    if (newModel!=null) {
+                        modelWrapper.changeModel { newModel }
+                    }
                 }
             })
             files.items.add(SeparatorMenuItem())

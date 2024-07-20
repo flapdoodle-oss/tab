@@ -1,7 +1,5 @@
 package de.flapdoodle.tab.ui.views.dialogs
 
-import de.flapdoodle.kfx.bindings.ObjectBindings
-import de.flapdoodle.kfx.colors.HashedColors
 import de.flapdoodle.kfx.controls.fields.ChoiceBoxes
 import de.flapdoodle.kfx.controls.fields.ValidatingField
 import de.flapdoodle.kfx.controls.fields.ValidatingTextField
@@ -12,14 +10,14 @@ import de.flapdoodle.tab.model.Name
 import de.flapdoodle.tab.model.calculations.interpolation.InterpolationType
 import de.flapdoodle.tab.model.data.Column
 import de.flapdoodle.tab.ui.Converters
+import de.flapdoodle.tab.ui.dialogs.DialogContent
+import de.flapdoodle.tab.ui.dialogs.DialogWrapper
 import de.flapdoodle.tab.ui.resources.Labels
 import de.flapdoodle.tab.ui.resources.RequiredFieldNotSet
 import de.flapdoodle.tab.ui.resources.ResourceBundles
 import de.flapdoodle.tab.ui.views.common.HashedColorPicker
 import javafx.beans.value.ObservableValue
-import javafx.event.EventHandler
 import javafx.geometry.HPos
-import javafx.scene.control.ColorPicker
 
 class NewColumn<K : Comparable<K>>(
     val indexType: TypeInfo<in K>
