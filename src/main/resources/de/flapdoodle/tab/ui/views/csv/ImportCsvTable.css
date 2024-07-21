@@ -7,3 +7,8 @@
     -fx-pref-column-count: 15;
     -fx-pref-row-count: 5;
 }
+
+.import-csv .csv-format {
+    horizontal-space: inherit;
+    vertical-space: inherit;
+}

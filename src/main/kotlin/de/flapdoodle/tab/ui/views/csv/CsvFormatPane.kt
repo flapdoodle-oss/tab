@@ -1,6 +1,7 @@
 package de.flapdoodle.tab.ui.views.csv
 
 import de.flapdoodle.kfx.controls.fields.ValidatingChoiceBox
+import de.flapdoodle.kfx.css.cssClassName
 import de.flapdoodle.kfx.layout.grid.WeightGridPane
 import de.flapdoodle.tab.ui.resources.Labels
 import javafx.util.StringConverter
@@ -29,6 +30,7 @@ class CsvFormatPane(val path: Path) : WeightGridPane() {
 
 
     init {
+        cssClassName("csv-format")
         columnWeights(0.0, 1.0)
         
         add(encodingLabel, 0, 0)
