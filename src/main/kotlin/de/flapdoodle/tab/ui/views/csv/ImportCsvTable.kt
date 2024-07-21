@@ -1,20 +1,25 @@
 package de.flapdoodle.tab.ui.views.csv
 
-import de.flapdoodle.kfx.extensions.bindCss
+import de.flapdoodle.kfx.css.bindCss
 import de.flapdoodle.tab.model.Node
 import de.flapdoodle.tab.ui.dialogs.DialogContent
 import de.flapdoodle.tab.ui.dialogs.DialogWrapper
 import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.value.ObservableValue
-import java.io.File
+import javafx.stage.Window
+import java.nio.file.Path
 
 class ImportCsvTable(
-    val file: File
+    val path: Path
 ) : DialogContent<Node.Table<out Comparable<*>>>() {
     private val isValid = SimpleObjectProperty<Boolean>(false)
 
     init {
         bindCss("import-csv")
+        columnWeights(1.0)
+        rowWeights(1.0)
+
+        add(CsvFormatPane(path), 0, 0)
     }
 
     override fun isValidProperty(): ObservableValue<Boolean> {
@@ -26,8 +31,8 @@ class ImportCsvTable(
     }
 
     companion object {
-        fun open(file: File): Node.Table<out Comparable<*>>? {
-            return DialogWrapper.open { ImportCsvTable(file) }
+        fun open(window: Window, path: Path): Node.Table<out Comparable<*>>? {
+            return DialogWrapper.open(window) { ImportCsvTable(path) }
         }
     }
 

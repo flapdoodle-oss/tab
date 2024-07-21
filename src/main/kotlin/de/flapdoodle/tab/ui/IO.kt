@@ -64,10 +64,12 @@ object IO {
         TabPref.fileDirectory()?.let {
             fileChooser.initialDirectory = it.toFile()
         }
-        val file: File = fileChooser.showOpenDialog(window)
-        val newTable = ImportCsvTable.open(file)
-        if (newTable!=null) {
-            return model.apply(Change.AddNode(newTable))
+        val file = fileChooser.showOpenDialog(window)
+        if (file != null) {
+            val newTable = ImportCsvTable.open(window, file.toPath())
+            if (newTable != null) {
+                return model.apply(Change.AddNode(newTable))
+            }
         }
         return null
     }

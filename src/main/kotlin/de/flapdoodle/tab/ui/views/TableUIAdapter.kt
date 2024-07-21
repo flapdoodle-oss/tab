@@ -1,6 +1,6 @@
 package de.flapdoodle.tab.ui.views
 
-import de.flapdoodle.kfx.extensions.bindCss
+import de.flapdoodle.kfx.css.bindCss
 import de.flapdoodle.kfx.layout.grid.WeightGridPane
 import de.flapdoodle.tab.model.Node
 import de.flapdoodle.tab.ui.ChangeListener

@@ -1,6 +1,6 @@
 package de.flapdoodle.tab
 
-import de.flapdoodle.kfx.extensions.cssClassName
+import de.flapdoodle.kfx.css.cssClassName
 import de.flapdoodle.kfx.types.Id
 import de.flapdoodle.tab.model.Model
 import de.flapdoodle.tab.model.Node

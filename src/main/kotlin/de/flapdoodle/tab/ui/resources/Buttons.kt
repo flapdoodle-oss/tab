@@ -1,6 +1,6 @@
 package de.flapdoodle.tab.ui.resources
 
-import de.flapdoodle.kfx.extensions.cssClassName
+import de.flapdoodle.kfx.css.cssClassName
 import de.flapdoodle.kfx.layout.grid.TableCell
 import javafx.event.EventHandler
 import javafx.scene.control.Button

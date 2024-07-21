@@ -1,8 +1,8 @@
 package de.flapdoodle.tab.ui.views
 
 import de.flapdoodle.kfx.controls.fields.ValidatingTextField
-import de.flapdoodle.kfx.extensions.bindCss
-import de.flapdoodle.kfx.extensions.cssClassName
+import de.flapdoodle.kfx.css.bindCss
+import de.flapdoodle.kfx.css.cssClassName
 import de.flapdoodle.kfx.layout.grid.TableCell
 import de.flapdoodle.kfx.layout.grid.WeightGridTable
 import de.flapdoodle.kfx.types.Id

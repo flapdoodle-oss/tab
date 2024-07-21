@@ -4,7 +4,7 @@ import de.flapdoodle.eval.core.Expression
 import de.flapdoodle.kfx.colors.HashedColors
 import de.flapdoodle.kfx.controls.fields.ValidatingField
 import de.flapdoodle.kfx.controls.fields.ValidatingTextField
-import de.flapdoodle.kfx.extensions.bindCss
+import de.flapdoodle.kfx.css.bindCss
 import de.flapdoodle.tab.model.Name
 import de.flapdoodle.tab.ui.Converters
 import de.flapdoodle.tab.ui.converter.ValidatingExpressionConverter

@@ -1,6 +1,6 @@
 package de.flapdoodle.tab.ui.views.calculations
 
-import de.flapdoodle.kfx.extensions.bindCss
+import de.flapdoodle.kfx.css.bindCss
 import de.flapdoodle.kfx.logging.Logging
 import de.flapdoodle.tab.model.Node
 import de.flapdoodle.tab.model.calculations.Calculation

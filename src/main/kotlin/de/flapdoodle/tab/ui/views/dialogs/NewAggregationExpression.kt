@@ -2,7 +2,7 @@ package de.flapdoodle.tab.ui.views.dialogs
 
 import de.flapdoodle.kfx.controls.fields.ValidatingField
 import de.flapdoodle.kfx.controls.fields.ValidatingTextField
-import de.flapdoodle.kfx.extensions.bindCss
+import de.flapdoodle.kfx.css.bindCss
 import de.flapdoodle.tab.model.Name
 import de.flapdoodle.tab.ui.Converters
 import de.flapdoodle.tab.ui.dialogs.DialogContent

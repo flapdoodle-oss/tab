@@ -1,7 +1,7 @@
 package de.flapdoodle.tab.ui.views.table
 
 import de.flapdoodle.kfx.controls.labels.ValidatedLabel
-import de.flapdoodle.kfx.extensions.cssClassName
+import de.flapdoodle.kfx.css.cssClassName
 import de.flapdoodle.kfx.layout.grid.TableCell
 import de.flapdoodle.kfx.layout.grid.WeightGridTable
 import de.flapdoodle.tab.model.Node
