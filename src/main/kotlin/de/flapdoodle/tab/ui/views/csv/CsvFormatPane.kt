@@ -12,6 +12,7 @@ import de.flapdoodle.kfx.css.cssClassName
 import de.flapdoodle.kfx.layout.grid.GridPane
 import de.flapdoodle.kfx.layout.grid.Pos
 import de.flapdoodle.reflection.TypeInfo
+import de.flapdoodle.tab.io.csv.CommonCSV
 import de.flapdoodle.tab.io.csv.Format
 import de.flapdoodle.tab.io.csv.ImportCSV
 import de.flapdoodle.tab.ui.Converters
@@ -19,6 +20,8 @@ import de.flapdoodle.tab.ui.resources.Labels
 import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.property.SimpleStringProperty
 import javafx.geometry.HPos
+import javafx.scene.control.TextArea
+import javafx.scene.text.Text
 import javafx.util.StringConverter
 import javafx.util.converter.IntegerStringConverter
 import java.io.IOException
@@ -65,6 +68,14 @@ class CsvFormatPane(val path: Path) : GridPane() {
         validate = { null }
     )
 
+    private val quoteLabel = Labels.label(CsvFormatPane::class, "quote", "Quote")
+    private val quote = ValidatingChoiceBox(
+        values = listOf(Format.SINGLE_QUOTE, Format.DOUBLE_QUOTE),
+        default = Format.DOUBLE_QUOTE,
+        initialConverter = charConverter,
+        validate = { null }
+    )
+
     private val headerRowsLabel = Labels.label(CsvFormatPane::class, "header_rows", "Header Rows")
     private val headerRows = ValidatingChoiceBox(
         values = listOf(1, 2, 3, 4),
@@ -99,8 +110,17 @@ class CsvFormatPane(val path: Path) : GridPane() {
         add(Labels.label(csvFileReadError), Pos(0, row, columnSpan = 2))
 
         row++
+        add(TextArea().apply {
+            textProperty().bind(csvFileContent)
+        }, Pos(0, row, columnSpan = 2))
+
+        row++
         add(formatLabel, Pos(0, row))
         add(separator, Pos(1, row), HPos.LEFT)
+
+        row++
+        add(quoteLabel, Pos(0, row))
+        add(quote, Pos(1, row), HPos.LEFT)
 
         row++
         add(headerRowsLabel, Pos(0, row))
@@ -116,19 +136,27 @@ class CsvFormatPane(val path: Path) : GridPane() {
             readCsvFile(path, newValue)
         }
 
-        csvFile.bind(ObjectBindings.merge(csvFileContent, separator.valueProperty()) { csv, separatorValue ->
-            val read = ImportCSV.read(StringReader(csv), Format(separator = separatorValue))
-            read
+        csvFile.bind(ObjectBindings.merge(csvFileContent, separator.valueProperty(), quote.valueProperty()) { csv, separatorValue, quoteValue ->
+            if (csv!=null) {
+                val read = ImportCSV.read(StringReader(csv), Format(separator = separatorValue, quote = quoteValue))
+                read
+            } else emptyList()
         })
         csvFile.addListener { observable, oldValue, csv ->
             
         }
         csvColumns.bind(ObjectBindings.merge(csvFile, headerRows.valueProperty()) { file, rowSize ->
+            println("------------------")
+            file.forEach {
+                println(it)
+            }
+            println("------------------")
+
             if (file.size >= rowSize) {
                 val headers = file.subList(0, rowSize)
                 val columns = headers.maxOf { it.size }
 
-                (1..columns).map { column ->
+                (0..columns).map { column ->
                     val label = headers.map { if (it.size > column) it[column] else "" }.joinToString(" + ")
                     Column(label, ColumnProperty<List<String>, String>(
                         type = TypeInfo.of(String::class.java),
@@ -150,6 +178,10 @@ class CsvFormatPane(val path: Path) : GridPane() {
             val csvAsString = Files.readString(path, encoding)
             csvFileContent.value = csvAsString
             csvFileReadError.value = null
+
+            val guessedFormat = CommonCSV.guessFormat(StringReader(csvAsString))
+            separator.set(guessedFormat.separator)
+            quote.set(guessedFormat.quote)
         } catch (ex: IOException) {
             csvFileContent.value = null
             csvFileReadError.value =  ex.localizedMessage // I18N.exceptionMessage(ResourceBundles.exceptions(), IOException::class, ex.)
