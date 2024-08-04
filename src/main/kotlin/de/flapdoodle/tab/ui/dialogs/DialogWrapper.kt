@@ -19,6 +19,7 @@ class DialogWrapper<T: Any>(
 
         dialogPane.buttonTypes.addAll(ButtonType.OK, ButtonType.CANCEL)
         dialogPane.content = content
+        isResizable = true
 
         val okButton = dialogPane.lookupButton(ButtonType.OK)
         okButton.disableProperty().bind(content.isValidProperty())

@@ -3,6 +3,9 @@ package de.flapdoodle.tab.ui.resources
 import de.flapdoodle.kfx.controls.labels.ValidatedLabel
 import de.flapdoodle.kfx.i18n.I18NEnumStringConverter
 import de.flapdoodle.kfx.layout.grid.TableCell
+import javafx.beans.property.SimpleStringProperty
+import javafx.beans.value.ObservableValue
+import javafx.scene.Node
 import javafx.scene.control.Label
 import javafx.scene.control.PopupControl.USE_PREF_SIZE
 import kotlin.reflect.KClass
@@ -10,6 +13,12 @@ import kotlin.reflect.KClass
 object Labels {
     fun label(text: String): Label {
         return Label(text).apply { minWidth = USE_PREF_SIZE }
+    }
+
+    fun label(property: ObservableValue<String>): Node {
+        return Label().apply {
+            textProperty().bind(property)
+        }
     }
 
     fun label(context: KClass<out Any>, key: String, fallback: String): Label {
