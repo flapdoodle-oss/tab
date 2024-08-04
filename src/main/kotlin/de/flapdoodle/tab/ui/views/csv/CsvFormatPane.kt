@@ -103,16 +103,18 @@ class CsvFormatPane(val path: Path) : GridPane() {
         columnWeights(0.0, 1.0)
 
         var row=0
+        var allColumns = 2
+
         add(encodingLabel, Pos(0, row))
         add(encoding, Pos(1, row), HPos.LEFT)
 
         row++
-        add(Labels.label(csvFileReadError), Pos(0, row, columnSpan = 2))
+        add(Labels.label(csvFileReadError), Pos(0, row, columnSpan = allColumns))
 
         row++
-        add(TextArea().apply {
+        add(TextArea("foo").apply {
             textProperty().bind(csvFileContent)
-        }, Pos(0, row, columnSpan = 2))
+        }, Pos(0, row, columnSpan = allColumns))
 
         row++
         add(formatLabel, Pos(0, row))
@@ -129,7 +131,7 @@ class CsvFormatPane(val path: Path) : GridPane() {
         row++
         csvTable.prefWidth = 800.0
         csvTable.prefHeight = 200.0
-        add(csvTable, Pos(0, row, columnSpan = 3))
+        add(csvTable, Pos(0, row, columnSpan = allColumns))
 
         readCsvFile(path, encoding.value)
         encoding.valueProperty().addListener { observable, oldValue, newValue ->
@@ -146,12 +148,6 @@ class CsvFormatPane(val path: Path) : GridPane() {
             
         }
         csvColumns.bind(ObjectBindings.merge(csvFile, headerRows.valueProperty()) { file, rowSize ->
-            println("------------------")
-            file.forEach {
-                println(it)
-            }
-            println("------------------")
-
             if (file.size >= rowSize) {
                 val headers = file.subList(0, rowSize)
                 val columns = headers.maxOf { it.size }

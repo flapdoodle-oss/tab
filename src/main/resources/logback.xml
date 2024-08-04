@@ -34,5 +34,6 @@
     <logger name="de.flapdoodle.tab" level="DEBUG" />
     <logger name="de.flapdoodle.tab.ui.ModelAdapter" level="WARN" />
     <logger name="de.flapdoodle.tab.model.graph.Solver" level="WARN" />
+<!--    <logger name="de.flapdoodle.kfx.layout.grid.GridPane" level="DEBUG" />-->
 
 </configuration>
