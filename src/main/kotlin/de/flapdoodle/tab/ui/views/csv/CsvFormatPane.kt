@@ -7,16 +7,20 @@ import de.flapdoodle.kfx.controls.bettertable.Table
 import de.flapdoodle.kfx.controls.bettertable.TableChangeListener
 import de.flapdoodle.kfx.controls.bettertable.events.ReadOnlyState
 import de.flapdoodle.kfx.controls.fields.ValidatingChoiceBox
+import de.flapdoodle.kfx.controls.fields.ValidatingTextField
 import de.flapdoodle.kfx.css.cssClassName
 import de.flapdoodle.kfx.layout.grid.GridPane
 import de.flapdoodle.kfx.layout.grid.Pos
 import de.flapdoodle.reflection.TypeInfo
 import de.flapdoodle.tab.io.csv.Format
 import de.flapdoodle.tab.io.csv.ImportCSV
+import de.flapdoodle.tab.ui.Converters
 import de.flapdoodle.tab.ui.resources.Labels
 import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.property.SimpleStringProperty
+import javafx.geometry.HPos
 import javafx.util.StringConverter
+import javafx.util.converter.IntegerStringConverter
 import java.io.IOException
 import java.io.StringReader
 import java.nio.charset.Charset
@@ -46,7 +50,7 @@ class CsvFormatPane(val path: Path) : GridPane() {
     }
 
     private val encodingLabel = Labels.label(CsvFormatPane::class, "encoding", "Encoding")
-    private val encoding = ValidatingChoiceBox<Charset>(
+    private val encoding = ValidatingChoiceBox(
         values = listOf(StandardCharsets.UTF_8, StandardCharsets.ISO_8859_1),
         default = StandardCharsets.UTF_8,
         initialConverter = charsetStringConverter,
@@ -61,61 +65,50 @@ class CsvFormatPane(val path: Path) : GridPane() {
         validate = { null }
     )
 
+    private val headerRowsLabel = Labels.label(CsvFormatPane::class, "header_rows", "Header Rows")
+    private val headerRows = ValidatingChoiceBox(
+        values = listOf(1, 2, 3, 4),
+        default = 1,
+        initialConverter = IntegerStringConverter(),
+        validate = { null }
+    )
+
     private val csvFileContent = SimpleObjectProperty<String>(null)
     private val csvFileReadError = SimpleStringProperty(null)
     
     private val csvFile = SimpleObjectProperty<List<List<String>>>(emptyList())
     private val csvColumns =  SimpleObjectProperty<List<Column<List<String>, out Any>>>(emptyList())
+    private val csvRows = SimpleObjectProperty<List<List<String>>>(emptyList())
 
     private val csvTable = Table(
-        rows = csvFile,
+        rows = csvRows,
         columns = csvColumns,
         stateFactory = { ReadOnlyState(it) },
-        changeListener = object : TableChangeListener<List<String>> {
-            override fun changeCell(
-                row: List<String>,
-                change: TableChangeListener.CellChange<List<String>, out Any>
-            ): TableChangeListener.ChangedRow<List<String>> {
-                TODO("Not yet implemented")
-            }
-
-            override fun emptyRow(index: Int): List<String> {
-                TODO("Not yet implemented")
-            }
-
-            override fun updateRow(
-                row: List<String>,
-                changed: List<String>,
-                errors: List<TableChangeListener.CellError<List<String>, out Any>>
-            ) {
-                TODO("Not yet implemented")
-            }
-
-            override fun removeRow(row: List<String>) {
-                TODO("Not yet implemented")
-            }
-
-            override fun insertRow(index: Int, row: List<String>): Boolean {
-                TODO("Not yet implemented")
-            }
-        }
+        changeListener = TableChangeListener.readOnly()
     )
 
     init {
         cssClassName("csv-format")
-        columnWeights(0.0, 1.0, 1.0)
+        columnWeights(0.0, 1.0)
 
         var row=0
         add(encodingLabel, Pos(0, row))
-        add(encoding, Pos(1, row))
+        add(encoding, Pos(1, row), HPos.LEFT)
+
         row++
         add(Labels.label(csvFileReadError), Pos(0, row, columnSpan = 2))
+
         row++
         add(formatLabel, Pos(0, row))
-        add(separator, Pos(1, row))
-        row++
+        add(separator, Pos(1, row), HPos.LEFT)
 
-        csvTable.maxWidth = 400.0
+        row++
+        add(headerRowsLabel, Pos(0, row))
+        add(headerRows, Pos(1, row), HPos.LEFT)
+
+        row++
+        csvTable.prefWidth = 800.0
+        csvTable.prefHeight = 200.0
         add(csvTable, Pos(0, row, columnSpan = 3))
 
         readCsvFile(path, encoding.value)
@@ -130,14 +123,25 @@ class CsvFormatPane(val path: Path) : GridPane() {
         csvFile.addListener { observable, oldValue, csv ->
             
         }
-        csvColumns.bind(ObjectBindings.map(csvFile) { file ->
-            if (file.size > 0) {
-                val header = file.get(0)
-                header.mapIndexed { index, label -> Column(label, ColumnProperty<List<String>, String>(
-                    type = TypeInfo.of(String::class.java),
-                    getter = { row -> row.get(index)}
-                ), false) }
+        csvColumns.bind(ObjectBindings.merge(csvFile, headerRows.valueProperty()) { file, rowSize ->
+            if (file.size >= rowSize) {
+                val headers = file.subList(0, rowSize)
+                val columns = headers.maxOf { it.size }
+
+                (1..columns).map { column ->
+                    val label = headers.map { if (it.size > column) it[column] else "" }.joinToString(" + ")
+                    Column(label, ColumnProperty<List<String>, String>(
+                        type = TypeInfo.of(String::class.java),
+                        getter = { row -> if (row.size > column) row[column] else null }
+                    ), false)
+                }
             } else emptyList<Column<List<String>, out Any>>()
+        })
+        
+        csvRows.bind(ObjectBindings.merge(csvFile, headerRows.valueProperty()) { file, rowSize ->
+            if (file.size >= rowSize) {
+                file.subList(rowSize, file.size)
+            } else emptyList()
         })
     }
 
