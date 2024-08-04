@@ -7,7 +7,6 @@ import de.flapdoodle.kfx.controls.bettertable.Table
 import de.flapdoodle.kfx.controls.bettertable.TableChangeListener
 import de.flapdoodle.kfx.controls.bettertable.events.ReadOnlyState
 import de.flapdoodle.kfx.controls.fields.ValidatingChoiceBox
-import de.flapdoodle.kfx.controls.fields.ValidatingTextField
 import de.flapdoodle.kfx.css.cssClassName
 import de.flapdoodle.kfx.layout.grid.GridPane
 import de.flapdoodle.kfx.layout.grid.Pos
@@ -15,13 +14,11 @@ import de.flapdoodle.reflection.TypeInfo
 import de.flapdoodle.tab.io.csv.CommonCSV
 import de.flapdoodle.tab.io.csv.Format
 import de.flapdoodle.tab.io.csv.ImportCSV
-import de.flapdoodle.tab.ui.Converters
 import de.flapdoodle.tab.ui.resources.Labels
 import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.property.SimpleStringProperty
 import javafx.geometry.HPos
 import javafx.scene.control.TextArea
-import javafx.scene.text.Text
 import javafx.util.StringConverter
 import javafx.util.converter.IntegerStringConverter
 import java.io.IOException

@@ -1,14 +1,14 @@
-.import-csv {
+.csv-source-config {
     horizontal-space: 10px;
     vertical-space: 10px;
 }
 
-.import-csv .text-area {
+.csv-source-config .text-area {
     -fx-pref-column-count: 15;
     -fx-pref-row-count: 5;
 }
 
-.import-csv .csv-format {
+.csv-source-config .csv-format {
     horizontal-space: inherit;
     vertical-space: inherit;
 }

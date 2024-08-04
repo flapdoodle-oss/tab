@@ -1,0 +1,14 @@
+.csv-column-config {
+    horizontal-space: 10px;
+    vertical-space: 10px;
+}
+
+.csv-column-config .text-area {
+    -fx-pref-column-count: 15;
+    -fx-pref-row-count: 5;
+}
+
+.csv-column-config .csv-format {
+    horizontal-space: inherit;
+    vertical-space: inherit;
+}
