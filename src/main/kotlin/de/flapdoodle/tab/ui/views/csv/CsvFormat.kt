@@ -7,7 +7,9 @@ import de.flapdoodle.kfx.controls.bettertable.Table
 import de.flapdoodle.kfx.controls.bettertable.TableChangeListener
 import de.flapdoodle.kfx.controls.bettertable.events.ReadOnlyState
 import de.flapdoodle.kfx.controls.fields.ValidatingChoiceBox
+import de.flapdoodle.kfx.css.bindCss
 import de.flapdoodle.kfx.css.cssClassName
+import de.flapdoodle.kfx.dialogs.DialogContent
 import de.flapdoodle.kfx.layout.grid.GridPane
 import de.flapdoodle.kfx.layout.grid.Pos
 import de.flapdoodle.reflection.TypeInfo
@@ -17,6 +19,7 @@ import de.flapdoodle.tab.io.csv.ImportCSV
 import de.flapdoodle.tab.ui.resources.Labels
 import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.property.SimpleStringProperty
+import javafx.beans.value.ObservableValue
 import javafx.geometry.HPos
 import javafx.scene.control.TextArea
 import javafx.util.StringConverter
@@ -28,7 +31,11 @@ import java.nio.charset.StandardCharsets
 import java.nio.file.Files
 import java.nio.file.Path
 
-class CsvFormatPane(val path: Path) : GridPane() {
+class CsvFormat(
+    val config: ImportCsvState?
+) : AbstractCsvDialogStep<ImportCsvState>() {
+
+    private var current = requireNotNull(config) { "config is null" }
     private val charsetStringConverter: StringConverter<Charset> = object : StringConverter<Charset>() {
         override fun toString(value: Charset?): String? {
             return value?.displayName()
@@ -49,7 +56,7 @@ class CsvFormatPane(val path: Path) : GridPane() {
         }
     }
 
-    private val encodingLabel = Labels.label(CsvFormatPane::class, "encoding", "Encoding")
+    private val encodingLabel = Labels.label(CsvFormat::class, "encoding", "Encoding")
     private val encoding = ValidatingChoiceBox(
         values = listOf(StandardCharsets.UTF_8, StandardCharsets.ISO_8859_1),
         default = StandardCharsets.UTF_8,
@@ -57,7 +64,7 @@ class CsvFormatPane(val path: Path) : GridPane() {
         validate = { null }
     )
 
-    private val formatLabel = Labels.label(CsvFormatPane::class, "format", "Format")
+    private val formatLabel = Labels.label(CsvFormat::class, "format", "Format")
     private val separator = ValidatingChoiceBox(
         values = listOf(Format.COMMA, Format.TAB, Format.COLON, Format.SEMICOLON),
         default = Format.COMMA,
@@ -65,7 +72,7 @@ class CsvFormatPane(val path: Path) : GridPane() {
         validate = { null }
     )
 
-    private val quoteLabel = Labels.label(CsvFormatPane::class, "quote", "Quote")
+    private val quoteLabel = Labels.label(CsvFormat::class, "quote", "Quote")
     private val quote = ValidatingChoiceBox(
         values = listOf(Format.SINGLE_QUOTE, Format.DOUBLE_QUOTE),
         default = Format.DOUBLE_QUOTE,
@@ -73,7 +80,7 @@ class CsvFormatPane(val path: Path) : GridPane() {
         validate = { null }
     )
 
-    private val headerRowsLabel = Labels.label(CsvFormatPane::class, "header_rows", "Header Rows")
+    private val headerRowsLabel = Labels.label(CsvFormat::class, "header_rows", "Header Rows")
     private val headerRows = ValidatingChoiceBox(
         values = listOf(1, 2, 3, 4),
         default = 1,
@@ -88,6 +95,8 @@ class CsvFormatPane(val path: Path) : GridPane() {
     private val csvColumns =  SimpleObjectProperty<List<Column<List<String>, out Any>>>(emptyList())
     private val csvRows = SimpleObjectProperty<List<List<String>>>(emptyList())
 
+    private val isValid = SimpleObjectProperty<Boolean>(false)
+
     private val csvTable = Table(
         rows = csvRows,
         columns = csvColumns,
@@ -96,7 +105,7 @@ class CsvFormatPane(val path: Path) : GridPane() {
     )
 
     init {
-        cssClassName("csv-format")
+        bindCss("csv-format")
         columnWeights(0.0, 1.0)
 
         var row=0
@@ -130,9 +139,9 @@ class CsvFormatPane(val path: Path) : GridPane() {
         csvTable.prefHeight = 200.0
         add(csvTable, Pos(0, row, columnSpan = allColumns))
 
-        readCsvFile(path, encoding.value)
+        readCsvFile(current.path, encoding.value)
         encoding.valueProperty().addListener { observable, oldValue, newValue ->
-            readCsvFile(path, newValue)
+            readCsvFile(current.path, newValue)
         }
 
         csvFile.bind(ObjectBindings.merge(csvFileContent, separator.valueProperty(), quote.valueProperty()) { csv, separatorValue, quoteValue ->
@@ -164,6 +173,10 @@ class CsvFormatPane(val path: Path) : GridPane() {
                 file.subList(rowSize, file.size)
             } else emptyList()
         })
+
+        isValid.bind(ObjectBindings.merge(csvRows, csvColumns) { row, columns ->
+            row.isNotEmpty() && columns.isNotEmpty()
+        })
     }
 
     private fun readCsvFile(path: Path, encoding: Charset) {
@@ -179,5 +192,17 @@ class CsvFormatPane(val path: Path) : GridPane() {
             csvFileContent.value = null
             csvFileReadError.value =  ex.localizedMessage // I18N.exceptionMessage(ResourceBundles.exceptions(), IOException::class, ex.)
         }
+    }
+
+    override fun enter() {
+
+    }
+
+    override fun isValidProperty(): ObservableValue<Boolean> {
+        return isValid
+    }
+
+    override fun result(): ImportCsvState {
+        return current
     }
 }
