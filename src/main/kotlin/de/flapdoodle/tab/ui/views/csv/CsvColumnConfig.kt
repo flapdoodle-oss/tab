@@ -5,7 +5,6 @@ import de.flapdoodle.kfx.dialogs.DialogContent
 import de.flapdoodle.kfx.layout.grid.GridPane
 import de.flapdoodle.kfx.layout.grid.WeightGridPane
 import de.flapdoodle.tab.model.Node
-import de.flapdoodle.tab.ui.dialogs.WizardContent
 import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.value.ObservableValue
 import java.nio.file.Path
