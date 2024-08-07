@@ -6,12 +6,12 @@ import de.flapdoodle.kfx.controls.fields.ChoiceBoxes
 import de.flapdoodle.kfx.controls.fields.ValidatingField
 import de.flapdoodle.kfx.controls.fields.ValidatingTextField
 import de.flapdoodle.kfx.css.bindCss
+import de.flapdoodle.kfx.dialogs.Dialogs
 import de.flapdoodle.tab.model.Name
 import de.flapdoodle.tab.model.calculations.interpolation.InterpolationType
 import de.flapdoodle.tab.ui.Converters
 import de.flapdoodle.tab.ui.converter.ValidatingExpressionConverter
-import de.flapdoodle.tab.ui.dialogs.DialogContent
-import de.flapdoodle.tab.ui.dialogs.DialogWrapper
+import de.flapdoodle.tab.ui.dialogs.AbstractDialogContent
 import de.flapdoodle.tab.ui.resources.Labels
 import de.flapdoodle.tab.ui.resources.RequiredFieldNotSet
 import de.flapdoodle.tab.ui.resources.ResourceBundles
@@ -24,7 +24,7 @@ class ChangeTabularExpression(
     oldExpression: Expression?,
     oldColor: Color,
     oldInterpolationType: InterpolationType
-) : DialogContent<ChangeTabularExpression.NamedExpression>() {
+) : AbstractDialogContent<ChangeTabularExpression.NamedExpression>() {
 
     private val name = Labels.label(ChangeTabularExpression::class,"name","Name")
     private val nameField = ValidatingTextField(
@@ -70,7 +70,7 @@ class ChangeTabularExpression(
     }
 
     override fun isValidProperty(): ObservableValue<Boolean> {
-        return ValidatingField.invalidInputs(nameField, expressionField)
+        return ValidatingField.validInputs(nameField, expressionField)
     }
 
     override fun result(): NamedExpression {
@@ -87,7 +87,7 @@ class ChangeTabularExpression(
 
     companion object {
         fun open(name: Name, expression: Expression?, color: Color, interpolationType: InterpolationType): NamedExpression? {
-            return DialogWrapper.open { ChangeTabularExpression(name, expression, color, interpolationType) }
+            return Dialogs.open { ChangeTabularExpression(name, expression, color, interpolationType) }
         }
     }
 }

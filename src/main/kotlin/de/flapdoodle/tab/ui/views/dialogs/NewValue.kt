@@ -4,11 +4,11 @@ import de.flapdoodle.kfx.controls.fields.ChoiceBoxes
 import de.flapdoodle.kfx.controls.fields.ValidatingField
 import de.flapdoodle.kfx.controls.fields.ValidatingTextField
 import de.flapdoodle.kfx.css.bindCss
+import de.flapdoodle.kfx.dialogs.Dialogs
 import de.flapdoodle.tab.config.ValueTypes
 import de.flapdoodle.tab.model.Name
 import de.flapdoodle.tab.ui.Converters
-import de.flapdoodle.tab.ui.dialogs.DialogContent
-import de.flapdoodle.tab.ui.dialogs.DialogWrapper
+import de.flapdoodle.tab.ui.dialogs.AbstractDialogContent
 import de.flapdoodle.tab.ui.resources.Labels
 import de.flapdoodle.tab.ui.resources.RequiredFieldNotSet
 import de.flapdoodle.tab.ui.resources.ResourceBundles
@@ -18,7 +18,7 @@ import javafx.geometry.HPos
 import javafx.scene.paint.Color
 import kotlin.reflect.KClass
 
-class NewValue : DialogContent<NewValue.NewValue>() {
+class NewValue : AbstractDialogContent<NewValue.NewValue>() {
 
     private val name = Labels.label(NewValue::class,"name","Name")
     private val nameField = ValidatingTextField(Converters.validatingConverter(String::class)
@@ -50,10 +50,10 @@ class NewValue : DialogContent<NewValue.NewValue>() {
     }
 
     override fun isValidProperty(): ObservableValue<Boolean> {
-        return ValidatingField.invalidInputs(nameField, typeField)
+        return ValidatingField.validInputs(nameField, typeField)
     }
 
-    override fun result(): NewValue? {
+    override fun result(): NewValue {
         return NewValue(Name(nameField.text, shortField.text), typeField.selectionModel.selectedItem, colorField.value)
     }
 
@@ -65,7 +65,7 @@ class NewValue : DialogContent<NewValue.NewValue>() {
 
     companion object {
         fun open(): NewValue? {
-            return DialogWrapper.open { NewValue() }
+            return Dialogs.open(::NewValue)
         }
     }
 }

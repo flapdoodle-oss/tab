@@ -3,17 +3,17 @@ package de.flapdoodle.tab.ui.views.dialogs
 import de.flapdoodle.kfx.controls.fields.ValidatingField
 import de.flapdoodle.kfx.controls.fields.ValidatingTextField
 import de.flapdoodle.kfx.css.bindCss
+import de.flapdoodle.kfx.dialogs.Dialogs
 import de.flapdoodle.tab.model.Node
 import de.flapdoodle.tab.model.Title
 import de.flapdoodle.tab.ui.Converters
-import de.flapdoodle.tab.ui.dialogs.DialogContent
-import de.flapdoodle.tab.ui.dialogs.DialogWrapper
+import de.flapdoodle.tab.ui.dialogs.AbstractDialogContent
 import de.flapdoodle.tab.ui.resources.Labels
 import de.flapdoodle.tab.ui.resources.RequiredFieldNotSet
 import javafx.beans.value.ObservableValue
 import javafx.scene.control.TextArea
 
-class NewValues() : DialogContent<Node.Constants>() {
+class NewValues() : AbstractDialogContent<Node.Constants>() {
 
     private val name = Labels.label(NewValues::class,"name","Name")
     private val nameField = ValidatingTextField(converter = Converters.validatingConverter(String::class)
@@ -37,7 +37,7 @@ class NewValues() : DialogContent<Node.Constants>() {
 
 
     override fun isValidProperty(): ObservableValue<Boolean> {
-        return ValidatingField.invalidInputs(nameField)
+        return ValidatingField.validInputs(nameField)
     }
 
     override fun result(): Node.Constants {
@@ -53,7 +53,7 @@ class NewValues() : DialogContent<Node.Constants>() {
 
     companion object {
         fun open(): Node.Constants? {
-            return DialogWrapper.open { NewValues() }
+            return Dialogs.open(::NewValues)
         }
     }
 }

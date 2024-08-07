@@ -4,14 +4,14 @@ import de.flapdoodle.kfx.controls.fields.ChoiceBoxes
 import de.flapdoodle.kfx.controls.fields.ValidatingField
 import de.flapdoodle.kfx.controls.fields.ValidatingTextField
 import de.flapdoodle.kfx.css.bindCss
+import de.flapdoodle.kfx.dialogs.Dialogs
 import de.flapdoodle.reflection.TypeInfo
 import de.flapdoodle.tab.config.ValueTypes
 import de.flapdoodle.tab.model.Name
 import de.flapdoodle.tab.model.calculations.interpolation.InterpolationType
 import de.flapdoodle.tab.model.data.Column
 import de.flapdoodle.tab.ui.Converters
-import de.flapdoodle.tab.ui.dialogs.DialogContent
-import de.flapdoodle.tab.ui.dialogs.DialogWrapper
+import de.flapdoodle.tab.ui.dialogs.AbstractDialogContent
 import de.flapdoodle.tab.ui.resources.Labels
 import de.flapdoodle.tab.ui.resources.RequiredFieldNotSet
 import de.flapdoodle.tab.ui.resources.ResourceBundles
@@ -21,7 +21,7 @@ import javafx.geometry.HPos
 
 class NewColumn<K : Comparable<K>>(
     val indexType: TypeInfo<in K>
-) : DialogContent<Column<K, out Any>>() {
+) : AbstractDialogContent<Column<K, out Any>>() {
 
     private val name = Labels.label(NewColumn::class, "name", "Name")
     private val nameField = ValidatingTextField(
@@ -63,10 +63,10 @@ class NewColumn<K : Comparable<K>>(
     }
 
     override fun isValidProperty(): ObservableValue<Boolean> {
-        return ValidatingField.invalidInputs(nameField, typeField, interpolationField)
+        return ValidatingField.validInputs(nameField, typeField, interpolationField)
     }
 
-    override fun result(): Column<K, out Any>? {
+    override fun result(): Column<K, out Any> {
         return Column(
             name = Name(nameField.text, shortField.text),
             indexType = indexType,
@@ -78,7 +78,7 @@ class NewColumn<K : Comparable<K>>(
 
     companion object {
         fun <K : Comparable<K>> open(indexType: TypeInfo<in K>): Column<K, out Any>? {
-            return DialogWrapper.open { NewColumn(indexType) }
+            return Dialogs.open { NewColumn(indexType) }
         }
     }
 }

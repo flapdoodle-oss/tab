@@ -4,13 +4,13 @@ import de.flapdoodle.kfx.colors.HashedColors
 import de.flapdoodle.kfx.controls.fields.ValidatingField
 import de.flapdoodle.kfx.controls.fields.ValidatingTextField
 import de.flapdoodle.kfx.css.bindCss
+import de.flapdoodle.kfx.dialogs.Dialogs
 import de.flapdoodle.kfx.types.Id
 import de.flapdoodle.tab.model.Name
 import de.flapdoodle.tab.model.changes.Change
 import de.flapdoodle.tab.model.data.SingleValue
 import de.flapdoodle.tab.ui.Converters
-import de.flapdoodle.tab.ui.dialogs.DialogContent
-import de.flapdoodle.tab.ui.dialogs.DialogWrapper
+import de.flapdoodle.tab.ui.dialogs.AbstractDialogContent
 import de.flapdoodle.tab.ui.resources.Labels
 import de.flapdoodle.tab.ui.resources.RequiredFieldNotSet
 import javafx.beans.value.ObservableValue
@@ -19,7 +19,7 @@ import javafx.scene.control.ColorPicker
 class ChangeValue<T: Any>(
     private val nodeId: Id<out de.flapdoodle.tab.model.Node.Constants>,
     private val value: SingleValue<T>
-) : DialogContent<Change.Constants.ValueProperties>() {
+) : AbstractDialogContent<Change.Constants.ValueProperties>() {
 
     private val name = Labels.label(ChangeValue::class,"name","Name")
     private val nameField = ValidatingTextField(Converters.validatingConverter(String::class)
@@ -50,7 +50,7 @@ class ChangeValue<T: Any>(
     }
 
     override fun isValidProperty(): ObservableValue<Boolean> {
-        return ValidatingField.invalidInputs(nameField)
+        return ValidatingField.validInputs(nameField)
     }
 
     override fun result(): Change.Constants.ValueProperties {
@@ -60,7 +60,7 @@ class ChangeValue<T: Any>(
     companion object {
 
         fun openWith(nodeId: Id<out de.flapdoodle.tab.model.Node.Constants>, value: SingleValue<out Any>): Change.Constants.ValueProperties? {
-            return DialogWrapper.open { ChangeValue(nodeId, value) }
+            return Dialogs.open { ChangeValue(nodeId, value) }
         }
     }
 }

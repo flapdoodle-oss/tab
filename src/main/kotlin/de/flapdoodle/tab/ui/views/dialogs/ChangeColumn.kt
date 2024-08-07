@@ -5,6 +5,7 @@ import de.flapdoodle.kfx.controls.fields.ChoiceBoxes
 import de.flapdoodle.kfx.controls.fields.ValidatingField
 import de.flapdoodle.kfx.controls.fields.ValidatingTextField
 import de.flapdoodle.kfx.css.bindCss
+import de.flapdoodle.kfx.dialogs.Dialogs
 import de.flapdoodle.kfx.types.Id
 import de.flapdoodle.tab.model.Name
 import de.flapdoodle.tab.model.Node.Table
@@ -12,8 +13,7 @@ import de.flapdoodle.tab.model.calculations.interpolation.InterpolationType
 import de.flapdoodle.tab.model.changes.Change
 import de.flapdoodle.tab.model.data.Column
 import de.flapdoodle.tab.ui.Converters
-import de.flapdoodle.tab.ui.dialogs.DialogContent
-import de.flapdoodle.tab.ui.dialogs.DialogWrapper
+import de.flapdoodle.tab.ui.dialogs.AbstractDialogContent
 import de.flapdoodle.tab.ui.resources.Labels
 import de.flapdoodle.tab.ui.resources.RequiredFieldNotSet
 import de.flapdoodle.tab.ui.resources.ResourceBundles
@@ -24,7 +24,7 @@ import javafx.scene.control.ColorPicker
 class ChangeColumn<K : Comparable<K>>(
     private val nodeId: Id<out Table<*>>,
     private val column: Column<K, out Any>
-) : DialogContent<Change.Table.ColumnProperties>() {
+) : AbstractDialogContent<Change.Table.ColumnProperties>() {
 
     private val name = Labels.name(ChangeColumn::class)
     private val nameField = ValidatingTextField(
@@ -68,19 +68,19 @@ class ChangeColumn<K : Comparable<K>>(
     }
 
     override fun isValidProperty(): ObservableValue<Boolean> {
-        return ValidatingField.invalidInputs(nameField, interpolationField)
+        return ValidatingField.validInputs(nameField, interpolationField)
     }
 
-    override fun result(): Change.Table.ColumnProperties? {
+    override fun result(): Change.Table.ColumnProperties {
         val newName = Name(nameField.text, shortField.text)
-        return if (column.name!= newName || column.color != colorField.value || column.interpolationType != interpolationField.selectionModel.selectedItem) {
-            Change.Table.ColumnProperties(nodeId, column.id, newName, colorField.value, interpolationField.selectionModel.selectedItem)
-        } else null
+        return Change.Table.ColumnProperties(nodeId, column.id, newName, colorField.value, interpolationField.selectionModel.selectedItem)
     }
 
     companion object {
         fun <K : Comparable<K>> open(nodeId: Id<out Table<*>>, column: Column<K, out Any>): Change.Table.ColumnProperties? {
-            return DialogWrapper.open { ChangeColumn(nodeId, column) }
+            val result = Dialogs.open { ChangeColumn(nodeId, column) }
+            val hasChanged = result!=null && (column.name != result.name || column.color != result.color || column.interpolationType != result.interpolationType)
+            return if (hasChanged) result else null
         }
     }
 }

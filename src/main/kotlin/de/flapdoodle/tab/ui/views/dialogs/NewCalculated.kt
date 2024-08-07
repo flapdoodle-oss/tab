@@ -4,13 +4,13 @@ import de.flapdoodle.kfx.controls.fields.ChoiceBoxes
 import de.flapdoodle.kfx.controls.fields.ValidatingField
 import de.flapdoodle.kfx.controls.fields.ValidatingTextField
 import de.flapdoodle.kfx.css.bindCss
+import de.flapdoodle.kfx.dialogs.Dialogs
 import de.flapdoodle.reflection.TypeInfo
 import de.flapdoodle.tab.config.IndexTypes
 import de.flapdoodle.tab.model.Node
 import de.flapdoodle.tab.model.Title
 import de.flapdoodle.tab.ui.Converters
-import de.flapdoodle.tab.ui.dialogs.DialogContent
-import de.flapdoodle.tab.ui.dialogs.DialogWrapper
+import de.flapdoodle.tab.ui.dialogs.AbstractDialogContent
 import de.flapdoodle.tab.ui.resources.Labels
 import de.flapdoodle.tab.ui.resources.RequiredFieldNotSet
 import de.flapdoodle.tab.ui.resources.ResourceBundles
@@ -18,7 +18,7 @@ import javafx.beans.value.ObservableValue
 import javafx.geometry.HPos
 import javafx.scene.control.TextArea
 
-class NewCalculated : DialogContent<Node.Calculated<out Comparable<*>>>() {
+class NewCalculated : AbstractDialogContent<Node.Calculated<out Comparable<*>>>() {
 
     private val name = Labels.label(NewCalculated::class,"name","Name")
     private val nameField = ValidatingTextField(
@@ -52,25 +52,22 @@ class NewCalculated : DialogContent<Node.Calculated<out Comparable<*>>>() {
     }
 
     override fun isValidProperty(): ObservableValue<Boolean> {
-        return ValidatingField.invalidInputs(nameField, typeField)
+        return ValidatingField.validInputs(nameField, typeField)
     }
 
-    override fun result(): Node.Calculated<out Comparable<*>>? {
+    override fun result(): Node.Calculated<out Comparable<*>> {
         val type = TypeInfo.of(typeField.selectionModel.selectedItem.javaObjectType)
         return nodeOf(Title(nameField.text, shortField.text, descriptionField.text), type as TypeInfo<out Comparable<Any>>)
     }
 
-    private fun <K: Comparable<K>> nodeOf(name: Title, type: TypeInfo<K>?): Node.Calculated<K>? {
-        if (type!=null) {
-            return Node.Calculated(name, type)
-        }
-        return null
+    private fun <K: Comparable<K>> nodeOf(name: Title, type: TypeInfo<K>): Node.Calculated<K> {
+        return Node.Calculated(name, type)
     }
 
 
     companion object {
         fun open(): Node.Calculated<out Comparable<*>>? {
-            return DialogWrapper.open { NewCalculated() }
+            return Dialogs.open(::NewCalculated)
         }
     }
 }

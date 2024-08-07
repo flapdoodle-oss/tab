@@ -5,11 +5,11 @@ import de.flapdoodle.kfx.colors.HashedColors
 import de.flapdoodle.kfx.controls.fields.ValidatingField
 import de.flapdoodle.kfx.controls.fields.ValidatingTextField
 import de.flapdoodle.kfx.css.bindCss
+import de.flapdoodle.kfx.dialogs.Dialogs
 import de.flapdoodle.tab.model.Name
 import de.flapdoodle.tab.ui.Converters
 import de.flapdoodle.tab.ui.converter.ValidatingExpressionConverter
-import de.flapdoodle.tab.ui.dialogs.DialogContent
-import de.flapdoodle.tab.ui.dialogs.DialogWrapper
+import de.flapdoodle.tab.ui.dialogs.AbstractDialogContent
 import de.flapdoodle.tab.ui.resources.Labels
 import de.flapdoodle.tab.ui.resources.RequiredFieldNotSet
 import javafx.beans.value.ObservableValue
@@ -20,7 +20,7 @@ class ChangeAggregationExpression(
     oldName: Name,
     oldExpression: Expression?,
     oldColor: Color,
-) : DialogContent<ChangeAggregationExpression.NamedExpression>() {
+) : AbstractDialogContent<ChangeAggregationExpression.NamedExpression>() {
 
     private val name = Labels.label(ChangeAggregationExpression::class,"name","Name")
     private val nameField = ValidatingTextField(
@@ -56,7 +56,7 @@ class ChangeAggregationExpression(
     }
 
     override fun isValidProperty(): ObservableValue<Boolean> {
-        return ValidatingField.invalidInputs(nameField, expressionField)
+        return ValidatingField.validInputs(nameField, expressionField)
     }
 
     override fun result(): NamedExpression {
@@ -72,7 +72,7 @@ class ChangeAggregationExpression(
 
     companion object {
         fun open(name: Name, expression: Expression?,color: Color): NamedExpression? {
-            return DialogWrapper.open { ChangeAggregationExpression(name, expression, color) }
+            return Dialogs.open { ChangeAggregationExpression(name, expression, color) }
         }
     }
 }
