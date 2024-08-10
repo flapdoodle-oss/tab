@@ -11,7 +11,7 @@ import java.nio.file.Path
 
 class CsvColumnConfig(
     val state: ImportCsvState?
-) : GridPane(), DialogContent<ImportCsvState> {
+) : AbstractCsvDialogStep<ImportCsvState>() {
     private val isValid = SimpleObjectProperty<Boolean>(false)
     private var current = requireNotNull(state) { "state is null"}
 
@@ -33,9 +33,5 @@ class CsvColumnConfig(
 
     override fun result(): ImportCsvState {
         return current
-    }
-
-    override fun title(): String {
-        return "TODO"
     }
 }

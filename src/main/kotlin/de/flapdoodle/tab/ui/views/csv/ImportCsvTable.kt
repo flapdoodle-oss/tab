@@ -8,7 +8,7 @@ import java.nio.file.Path
 object ImportCsvTable {
     fun open(window: Window, path: Path): Node.Table<out Comparable<*>>? {
         val result = Wizard.open(window, ImportCsvState(path),
-            ::CsvFormat,
+            ::CsvFormatConfig,
             ::CsvColumnConfig)
         
         return result?.table

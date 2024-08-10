@@ -8,9 +8,6 @@ import de.flapdoodle.kfx.controls.bettertable.TableChangeListener
 import de.flapdoodle.kfx.controls.bettertable.events.ReadOnlyState
 import de.flapdoodle.kfx.controls.fields.ValidatingChoiceBox
 import de.flapdoodle.kfx.css.bindCss
-import de.flapdoodle.kfx.css.cssClassName
-import de.flapdoodle.kfx.dialogs.DialogContent
-import de.flapdoodle.kfx.layout.grid.GridPane
 import de.flapdoodle.kfx.layout.grid.Pos
 import de.flapdoodle.reflection.TypeInfo
 import de.flapdoodle.tab.io.csv.CommonCSV
@@ -31,7 +28,7 @@ import java.nio.charset.StandardCharsets
 import java.nio.file.Files
 import java.nio.file.Path
 
-class CsvFormat(
+class CsvFormatConfig(
     val config: ImportCsvState?
 ) : AbstractCsvDialogStep<ImportCsvState>() {
 
@@ -56,7 +53,7 @@ class CsvFormat(
         }
     }
 
-    private val encodingLabel = Labels.label(CsvFormat::class, "encoding", "Encoding")
+    private val encodingLabel = Labels.label(CsvFormatConfig::class, "encoding", "Encoding")
     private val encoding = ValidatingChoiceBox(
         values = listOf(StandardCharsets.UTF_8, StandardCharsets.ISO_8859_1),
         default = StandardCharsets.UTF_8,
@@ -64,7 +61,7 @@ class CsvFormat(
         validate = { null }
     )
 
-    private val formatLabel = Labels.label(CsvFormat::class, "format", "Format")
+    private val formatLabel = Labels.label(CsvFormatConfig::class, "format", "Format")
     private val separator = ValidatingChoiceBox(
         values = listOf(Format.COMMA, Format.TAB, Format.COLON, Format.SEMICOLON),
         default = Format.COMMA,
@@ -72,7 +69,7 @@ class CsvFormat(
         validate = { null }
     )
 
-    private val quoteLabel = Labels.label(CsvFormat::class, "quote", "Quote")
+    private val quoteLabel = Labels.label(CsvFormatConfig::class, "quote", "Quote")
     private val quote = ValidatingChoiceBox(
         values = listOf(Format.SINGLE_QUOTE, Format.DOUBLE_QUOTE),
         default = Format.DOUBLE_QUOTE,
@@ -80,7 +77,7 @@ class CsvFormat(
         validate = { null }
     )
 
-    private val headerRowsLabel = Labels.label(CsvFormat::class, "header_rows", "Header Rows")
+    private val headerRowsLabel = Labels.label(CsvFormatConfig::class, "header_rows", "Header Rows")
     private val headerRows = ValidatingChoiceBox(
         values = listOf(1, 2, 3, 4),
         default = 1,
@@ -109,7 +106,7 @@ class CsvFormat(
         columnWeights(0.0, 1.0)
 
         var row=0
-        var allColumns = 2
+        val allColumns = 2
 
         add(encodingLabel, Pos(0, row))
         add(encoding, Pos(1, row), HPos.LEFT)
