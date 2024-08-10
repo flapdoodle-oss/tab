@@ -6,15 +6,14 @@ import de.flapdoodle.kfx.controls.bettertable.Table
 import de.flapdoodle.kfx.controls.bettertable.TableChangeListener
 import de.flapdoodle.kfx.controls.bettertable.events.ReadOnlyState
 import de.flapdoodle.kfx.css.bindCss
-import de.flapdoodle.kfx.dialogs.DialogContent
-import de.flapdoodle.kfx.layout.grid.GridPane
-import de.flapdoodle.kfx.layout.grid.Pos
-import de.flapdoodle.kfx.layout.grid.WeightGridPane
+import de.flapdoodle.kfx.layout.grid.*
+import de.flapdoodle.kfx.types.Id
 import de.flapdoodle.reflection.TypeInfo
-import de.flapdoodle.tab.model.Node
+import de.flapdoodle.tab.ui.resources.Buttons
+import de.flapdoodle.tab.ui.resources.Labels
 import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.value.ObservableValue
-import java.nio.file.Path
+import javafx.scene.control.Label
 
 class CsvColumnConfig(
     val state: ImportCsvState?
@@ -30,11 +29,37 @@ class CsvColumnConfig(
     })
     private val csvRows = SimpleObjectProperty(current.csvRows)
 
+    private val columnMappings = SimpleObjectProperty<List<ColumnMapping>>(emptyList())
+
     private val csvTable = Table(
         rows = csvRows,
         columns = csvColumns,
         stateFactory = { ReadOnlyState(it) },
         changeListener = TableChangeListener.readOnly()
+    )
+
+    val nameColumn = GridTable.Column<ColumnMapping>(weight = 1.0, cellFactory = {
+        TableCell(
+            node = Label(it.name)
+        )
+    })
+    val typeColumn = GridTable.Column<ColumnMapping>(weight = 0.0, cellFactory = {
+        TableCell(
+            node = Label(it.name)
+        )
+    })
+
+    private val columnMappingTable = GridTable<ColumnMapping, Id<ColumnMapping>>(
+        model = columnMappings,
+        indexOf = ColumnMapping::id,
+        footerFactories = listOf(GridTable.HeaderFooterFactory { values, columns ->
+            val newColumnMapping = Buttons.add(Labels.with(CsvColumnConfig::class))
+            mapOf(newColumnMapping to GridTable.Span(nameColumn))
+        }),
+        columns = listOf(
+            nameColumn,
+            typeColumn
+        )
     )
 
     init {
@@ -49,6 +74,7 @@ class CsvColumnConfig(
         add(csvTable, Pos(0, row, columnSpan = allColumns))
 
         row++
+        add(columnMappingTable, Pos(0, row, columnSpan = allColumns))
 //        add(CsvFormatPane(state.path), 0, 0)
     }
 
@@ -63,4 +89,11 @@ class CsvColumnConfig(
     override fun result(): ImportCsvState {
         return current
     }
+
+    data class ColumnMapping(
+        val name: String,
+        val id: Id<ColumnMapping> = Id.nextId(ColumnMapping::class),
+    )
+
+//    class ColumnsPane : GridTable
 }
