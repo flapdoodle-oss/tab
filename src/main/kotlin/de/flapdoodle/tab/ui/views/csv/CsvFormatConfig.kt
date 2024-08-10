@@ -89,6 +89,7 @@ class CsvFormatConfig(
     private val csvFileReadError = SimpleStringProperty(null)
     
     private val csvFile = SimpleObjectProperty<List<List<String>>>(emptyList())
+    private val csvColumnNames =  SimpleObjectProperty<List<String>>(emptyList())
     private val csvColumns =  SimpleObjectProperty<List<Column<List<String>, out Any>>>(emptyList())
     private val csvRows = SimpleObjectProperty<List<List<String>>>(emptyList())
 
@@ -150,21 +151,27 @@ class CsvFormatConfig(
         csvFile.addListener { observable, oldValue, csv ->
             
         }
-        csvColumns.bind(ObjectBindings.merge(csvFile, headerRows.valueProperty()) { file, rowSize ->
+        csvColumnNames.bind(ObjectBindings.merge(csvFile, headerRows.valueProperty()) { file, rowSize ->
             if (file.size >= rowSize) {
                 val headers = file.subList(0, rowSize)
                 val columns = headers.maxOf { it.size }
 
                 (0..columns).map { column ->
                     val label = headers.map { if (it.size > column) it[column] else "" }.joinToString(" + ")
-                    Column(label, ColumnProperty<List<String>, String>(
-                        type = TypeInfo.of(String::class.java),
-                        getter = { row -> if (row.size > column) row[column] else null }
-                    ), false)
+                    label
                 }
-            } else emptyList<Column<List<String>, out Any>>()
+            } else emptyList()
         })
-        
+
+        csvColumns.bind(ObjectBindings.map(csvColumnNames) { labels ->
+            labels.mapIndexed { column, label ->
+                Column(label, ColumnProperty<List<String>, String>(
+                    type = TypeInfo.of(String::class.java),
+                    getter = { row -> if (row.size > column) row[column] else null }
+                ), false)
+            }
+        })
+
         csvRows.bind(ObjectBindings.merge(csvFile, headerRows.valueProperty()) { file, rowSize ->
             if (file.size >= rowSize) {
                 file.subList(rowSize, file.size)
@@ -200,6 +207,6 @@ class CsvFormatConfig(
     }
 
     override fun result(): ImportCsvState {
-        return current
+        return current.copy(csvColumnNames = csvColumnNames.value, csvRows = csvRows.value)
     }
 }
