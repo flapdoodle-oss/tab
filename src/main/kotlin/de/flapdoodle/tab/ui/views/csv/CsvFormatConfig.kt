@@ -156,7 +156,7 @@ class CsvFormatConfig(
                 val headers = file.subList(0, rowSize)
                 val columns = headers.maxOf { it.size }
 
-                (0..columns).map { column ->
+                (0..<columns).map { column ->
                     val label = headers.map { if (it.size > column) it[column] else "" }.joinToString(" + ")
                     label
                 }
