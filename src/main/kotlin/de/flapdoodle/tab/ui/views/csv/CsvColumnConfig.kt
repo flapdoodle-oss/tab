@@ -9,6 +9,7 @@ import de.flapdoodle.kfx.controls.bettertable.events.ReadOnlyState
 import de.flapdoodle.kfx.controls.fields.ValidatingChoiceBox
 import de.flapdoodle.kfx.controls.fields.ValidatingField
 import de.flapdoodle.kfx.controls.fields.ValidatingTextField
+import de.flapdoodle.kfx.converters.ValueOrError
 import de.flapdoodle.kfx.css.bindCss
 import de.flapdoodle.kfx.layout.grid.*
 import de.flapdoodle.kfx.types.Id
@@ -44,33 +45,34 @@ class CsvColumnConfig(
         changeListener = TableChangeListener.readOnly()
     )
 
-    private val mappedCsvColumns = SimpleObjectProperty<List<Column<List<Any?>, out Any>>>(emptyList())
-    private val mappedCsvRows = SimpleObjectProperty<List<List<Any?>>>(emptyList())
+    private val mappedCsvColumns = SimpleObjectProperty<List<Column<Map<Int, Any?>, out Any>>>(emptyList())
+    private val mappedCsvRows = SimpleObjectProperty<List<Map<Int, Any?>>>(emptyList())
 
     private fun <T: Any> mappedColumn(
         index: Int,
         mapping: ColumnMapping,
         converter: ColumnConverter<T>
-    ): Column<List<Any?>, T> {
+    ): Column<Map<Int, Any?>, T> {
         return Column(
             label = mapping.name,
             property = ColumnProperty(
                 type = converter.type,
-                getter = { row -> converter.type.ifInstance(row[index]).orElse(null) }
+                getter = { row -> row[index] as T? }
             ),
             editable = false
         )
     }
 
-    private fun mappingsAsConverter(mappings: List<ColumnMapping>): (List<String>) -> List<Any?> {
+    private fun mappingsAsConverter(mappings: List<ColumnMapping>): (List<String>) -> Map<Int, Any?> {
         val converterMap = mappings.map {
             it.index to it.format.converter
         }
         return { row ->
-            converterMap.map { (sourceIndex, converter) ->
+            converterMap.mapIndexed { index, (sourceIndex, converter) ->
                 val sourceValue = row[sourceIndex]
-                converter.converter(sourceValue, converter.format)
-            }
+                val converted: ValueOrError<out Any> = converter.validatingConverter.fromString(sourceValue)
+                index to converted.valueOrNull()
+            }.toMap()
         }
     }
 
@@ -80,7 +82,7 @@ class CsvColumnConfig(
         })
 
         mappedCsvRows.bind(ObjectBindings.merge(csvRows, columnMappings) { rows, mappings ->
-            val converter: (List<String>) -> List<Any?> = mappingsAsConverter(mappings)
+            val converter: (List<String>) -> Map<Int, Any?> = mappingsAsConverter(mappings)
             rows.map { converter(it) }
         })
     }

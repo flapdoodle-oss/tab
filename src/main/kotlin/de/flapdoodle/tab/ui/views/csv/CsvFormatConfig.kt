@@ -7,12 +7,14 @@ import de.flapdoodle.kfx.controls.bettertable.Table
 import de.flapdoodle.kfx.controls.bettertable.TableChangeListener
 import de.flapdoodle.kfx.controls.bettertable.events.ReadOnlyState
 import de.flapdoodle.kfx.controls.fields.ValidatingChoiceBox
+import de.flapdoodle.kfx.controls.fields.ValidatingTextField
 import de.flapdoodle.kfx.css.bindCss
 import de.flapdoodle.kfx.layout.grid.Pos
 import de.flapdoodle.reflection.TypeInfo
 import de.flapdoodle.tab.io.csv.CommonCSV
 import de.flapdoodle.tab.io.csv.Format
 import de.flapdoodle.tab.io.csv.ImportCSV
+import de.flapdoodle.tab.ui.Converters
 import de.flapdoodle.tab.ui.resources.Labels
 import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.property.SimpleStringProperty
@@ -20,7 +22,6 @@ import javafx.beans.value.ObservableValue
 import javafx.geometry.HPos
 import javafx.scene.control.TextArea
 import javafx.util.StringConverter
-import javafx.util.converter.IntegerStringConverter
 import java.io.IOException
 import java.io.StringReader
 import java.nio.charset.Charset
@@ -78,11 +79,9 @@ class CsvFormatConfig(
     )
 
     private val headerRowsLabel = Labels.label(CsvFormatConfig::class, "header_rows", "Header Rows")
-    private val headerRows = ValidatingChoiceBox(
-        values = listOf(1, 2, 3, 4),
+    private val headerRows = ValidatingTextField<Int>(
         default = 1,
-        initialConverter = IntegerStringConverter(),
-        validate = { null }
+        converter = Converters.validatingConverter(Int::class),
     )
 
     private val csvFileContent = SimpleObjectProperty<String>(null)
@@ -152,7 +151,7 @@ class CsvFormatConfig(
             
         }
         csvColumnNames.bind(ObjectBindings.merge(csvFile, headerRows.valueProperty()) { file, rowSize ->
-            if (file.size >= rowSize) {
+            if (rowSize != null && file.size >= rowSize) {
                 val headers = file.subList(0, rowSize)
                 val columns = headers.maxOf { it.size }
 
@@ -173,7 +172,7 @@ class CsvFormatConfig(
         })
 
         csvRows.bind(ObjectBindings.merge(csvFile, headerRows.valueProperty()) { file, rowSize ->
-            if (file.size >= rowSize) {
+            if (rowSize != null && file.size >= rowSize) {
                 file.subList(rowSize, file.size)
             } else emptyList()
         })
