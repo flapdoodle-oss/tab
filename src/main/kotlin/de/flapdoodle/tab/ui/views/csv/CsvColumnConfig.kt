@@ -9,10 +9,8 @@ import de.flapdoodle.kfx.controls.bettertable.events.ReadOnlyState
 import de.flapdoodle.kfx.controls.fields.ValidatingChoiceBox
 import de.flapdoodle.kfx.controls.fields.ValidatingField
 import de.flapdoodle.kfx.controls.fields.ValidatingTextField
-import de.flapdoodle.kfx.converters.ValueOrError
 import de.flapdoodle.kfx.css.bindCss
 import de.flapdoodle.kfx.layout.grid.*
-import de.flapdoodle.kfx.types.Id
 import de.flapdoodle.reflection.TypeInfo
 import de.flapdoodle.tab.types.Strings
 import de.flapdoodle.tab.ui.Converters
@@ -51,7 +49,7 @@ class CsvColumnConfig(
     private fun <T: Any> mappedColumn(
         index: Int,
         mapping: ColumnMapping,
-        converter: ColumnConverter<T>
+        converter: CsvCellConverter<T>
     ): Column<Map<Int, Any?>, T> {
         return Column(
             label = mapping.name,
@@ -65,20 +63,20 @@ class CsvColumnConfig(
 
     private fun mappingsAsConverter(mappings: List<ColumnMapping>): (List<String>) -> Map<Int, Any?> {
         val converterMap = mappings.map {
-            it.index to it.format.converter
+            it.index to it.converter
         }
         return { row ->
             converterMap.mapIndexed { index, (sourceIndex, converter) ->
                 val sourceValue = row[sourceIndex]
-                val converted: ValueOrError<out Any> = converter.validatingConverter.fromString(sourceValue)
-                index to converted.valueOrNull()
+                val converted = converter.conversion(sourceValue, null)
+                index to converted
             }.toMap()
         }
     }
 
     init {
         mappedCsvColumns.bind(ObjectBindings.map(columnMappings) { mappings ->
-            mappings.mapIndexed { index, it -> mappedColumn(index, it, it.format.converter) }
+            mappings.mapIndexed { index, it -> mappedColumn(index, it, it.converter) }
         })
 
         mappedCsvRows.bind(ObjectBindings.merge(csvRows, columnMappings) { rows, mappings ->
@@ -111,7 +109,16 @@ class CsvColumnConfig(
 
     private val typeColumn = GridTable.Column<ColumnMapping>(weight = 0.0, cellFactory = {
         TableCell(
-            node = columnFormat(it.format)
+            node = Labels.label(it.converter.name)
+        )
+    })
+
+    private val formatColumn = GridTable.Column<ColumnMapping>(weight = 0.0, cellFactory = {
+        TableCell(
+            node = ValidatingTextField(
+                converter = Converters.validatingConverter(String::class),
+                default = "TODO"
+            )
         )
     })
 
@@ -130,7 +137,8 @@ class CsvColumnConfig(
             mapOf(
                 Labels.label("Index") to GridTable.Span(indexColumn),
                 Labels.label("Name") to GridTable.Span(nameColumn),
-                Labels.label("Typ") to GridTable.Span(typeColumn),
+                Labels.label("Type") to GridTable.Span(typeColumn),
+                Labels.label("Format") to GridTable.Span(formatColumn),
 
             )
         },
@@ -141,19 +149,19 @@ class CsvColumnConfig(
                 initialConverter = { if (it!=null) "${it.first}: ${Strings.abbreviate(it.second, 20)}" else "" },
                 validate = { null }
             )
-            val columnFormat = columnFormat()
+            val csvCellConverters = csvCellConverters()
             val newColumnMapping = Buttons.add(Labels.with(CsvColumnConfig::class)) {
                 columnMappings.value += ColumnMapping(
                     index = selectColumn.value.first,
                     name = selectColumn.value.second,
-                    format = columnFormat.value
+                    converter = csvCellConverters.value
                 )
             }
-            newColumnMapping.disableProperty().bind(ValidatingField.invalidInputs(selectColumn,columnFormat))
+            newColumnMapping.disableProperty().bind(ValidatingField.invalidInputs(selectColumn,csvCellConverters))
             
             mapOf(
                 selectColumn to GridTable.Span(nameColumn),
-                columnFormat to GridTable.Span(typeColumn),
+                csvCellConverters to GridTable.Span(typeColumn),
                 newColumnMapping to GridTable.Span(actionColumn)
             )
         },
@@ -161,6 +169,7 @@ class CsvColumnConfig(
             indexColumn,
             nameColumn,
             typeColumn,
+            formatColumn,
             actionColumn
         )
     )
@@ -195,17 +204,10 @@ class CsvColumnConfig(
         return current
     }
 
-    data class ColumnMapping(
-        val index: Int,
-        val name: String,
-        val format: ColumnFormat,
-        val id: Id<ColumnMapping> = Id.nextId(ColumnMapping::class),
-    )
-
-    private fun columnFormat(default: ColumnFormat? = null): ValidatingChoiceBox<ColumnFormat> {
+    private fun csvCellConverters(): ValidatingChoiceBox<CsvCellConverter<*>> {
         return ValidatingChoiceBox(
-            values = ColumnFormats.all(),
-            default = default,
+            values = CsvCellConverters.all,
+            default = null,
             initialConverter = { it?.name ?: "" },
             validate = { null }
         )
