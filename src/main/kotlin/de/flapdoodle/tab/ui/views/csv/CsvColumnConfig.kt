@@ -6,6 +6,7 @@ import de.flapdoodle.kfx.controls.bettertable.ColumnProperty
 import de.flapdoodle.kfx.controls.bettertable.Table
 import de.flapdoodle.kfx.controls.bettertable.TableChangeListener
 import de.flapdoodle.kfx.controls.bettertable.events.ReadOnlyState
+import de.flapdoodle.kfx.controls.fields.ChoiceBoxes
 import de.flapdoodle.kfx.controls.fields.ValidatingChoiceBox
 import de.flapdoodle.kfx.controls.fields.ValidatingField
 import de.flapdoodle.kfx.controls.fields.ValidatingTextField
@@ -19,6 +20,7 @@ import de.flapdoodle.tab.ui.resources.Labels
 import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.value.ObservableValue
 import javafx.scene.control.Label
+import java.util.*
 
 class CsvColumnConfig(
     val state: ImportCsvState?
@@ -68,7 +70,7 @@ class CsvColumnConfig(
         return { row ->
             converterMap.mapIndexed { index, (sourceIndex, converter) ->
                 val sourceValue = row[sourceIndex]
-                val converted = converter.conversion(sourceValue, null)
+                val converted = converter.conversion(sourceValue, Locale.getDefault())
                 index to converted
             }.toMap()
         }
@@ -185,6 +187,12 @@ class CsvColumnConfig(
         csvTable.prefHeight = 200.0
         add(csvTable, Pos(0, row, columnSpan = allColumns))
 
+        row++
+        add(ValidatingChoiceBox(
+            values = listOf(*Locale.getAvailableLocales()),
+            default = Locale.getDefault(),
+            initialConverter = { it?.displayName ?: "--" },
+            validate = { null }), Pos(0, row, columnSpan = allColumns))
         row++
         add(columnMappingTable, Pos(0, row, columnSpan = allColumns))
 
