@@ -5,6 +5,7 @@ import de.flapdoodle.kfx.controls.charts.SmallChart
 import de.flapdoodle.kfx.types.ranges.RangeFactories
 import de.flapdoodle.kfx.types.ranges.RangeFactory
 import de.flapdoodle.reflection.TypeInfo
+import de.flapdoodle.tab.model.calculations.interpolation.InterpolationType
 import de.flapdoodle.tab.model.data.Column
 import de.flapdoodle.tab.model.data.Columns
 import javafx.beans.property.SimpleObjectProperty
@@ -75,8 +76,23 @@ class SmallChartPane<K : Comparable<K>>(
         ): Serie<K, BigDecimal> {
             val values = index.map { it to c[it] }
                 .filter { it.second != null }
-                .map { it.first to bigDecimalOf(it.second!!) }
-            return Serie<K, BigDecimal>(c.name.long, c.color, values)
+
+            val points = values
+                .map { Serie.Point(it.first , bigDecimalOf(it.second!!)) }
+
+            val lines = when (c.interpolationType) {
+                InterpolationType.Linear -> listOf(Serie.Line(points))
+                InterpolationType.LastValue -> points.mapIndexed { index, p ->
+                    if (index + 1 < points.size) {
+                        Serie.Line(listOf(p, Serie.Point(points[index + 1].x, p.y)))
+                    } else {
+                        Serie.Line(listOf(p))
+                    }
+                }
+                else -> emptyList<Serie.Line<K, BigDecimal>>()
+            }
+
+            return Serie<K, BigDecimal>(c.name.long, c.color, points, lines)
         }
 
         private fun bigDecimalOf(number: Number): BigDecimal {

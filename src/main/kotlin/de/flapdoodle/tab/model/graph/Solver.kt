@@ -380,6 +380,7 @@ object Solver {
         val column = Column(
             name = calculation.name(),
             indexType = calculation.indexType(),
+            interpolationType = calculation.interpolationType(),
             valueType = valueType,
             values = emptyMap(),
             color = calculation.color(),
