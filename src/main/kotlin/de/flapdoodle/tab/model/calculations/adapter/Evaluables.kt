@@ -32,6 +32,13 @@ open class Evaluables(
     }
 
     companion object {
+        val javaAny = Any::class.javaObjectType
+        val javaAnyParameterLazy = Parameter.lazyWith(javaAny)
+
+        val boolean = Boolean::class.java
+        val booleanParameter = Parameter.of(boolean)
+        val javaBoolean = Boolean::class.javaObjectType
+
         val bigDecimal = BigDecimal::class.java
         val bigInt = BigInteger::class.java
         val javaInt = Int::class.javaObjectType

@@ -88,10 +88,6 @@
         "x": 246.0,
         "y": 443.0
       },
-      "size": {
-        "width": 584.0,
-        "height": 320.0
-      },
       "id": "7",
       "table": {
         "indexType": "String",
@@ -139,12 +135,8 @@
       "name": "Ergebnisse",
       "description": "",
       "position": {
-        "x": 1167.0,
-        "y": 280.0
-      },
-      "size": {
-        "width": 659.0,
-        "height": 486.0
+        "x": 1188.0,
+        "y": 320.0
       },
       "id": "10",
       "calculated": {
@@ -514,23 +506,90 @@
       "name": "Zyklen",
       "description": "",
       "position": {
-        "x": 1533.0,
-        "y": 16.0
-      },
-      "size": {
-        "width": 412.0,
-        "height": 337.0
+        "x": 1276.0,
+        "y": 12.0
       },
       "id": "41",
       "calculated": {
         "indexType": "String",
         "calculations": {
           "aggregations": [],
-          "tabular": [],
-          "inputs": []
+          "tabular": [
+            {
+              "name": "Faktor Strecke1",
+              "formula": {
+                "expression": "if(strecke<strecke1,strecke/strecke1,1)",
+                "variables": [
+                  {
+                    "name": "strecke",
+                    "id": "43"
+                  },
+                  {
+                    "name": "strecke1",
+                    "id": "44"
+                  }
+                ]
+              },
+              "id": "42",
+              "destination": "45",
+              "color": {
+                "red": 0.9607843160629272,
+                "green": 0.054901961237192154,
+                "blue": 0.7450980544090271,
+                "opacity": 1.0
+              }
+            }
+          ],
+          "inputs": [
+            {
+              "name": "strecke",
+              "mapTo": [
+                {
+                  "name": "strecke",
+                  "id": "43"
+                }
+              ],
+              "id": "46",
+              "color": {
+                "red": 0.01568627543747425,
+                "green": 0.14901961386203766,
+                "blue": 0.9058823585510254,
+                "opacity": 1.0
+              }
+            },
+            {
+              "name": "strecke1",
+              "mapTo": [
+                {
+                  "name": "strecke1",
+                  "id": "44"
+                }
+              ],
+              "id": "47",
+              "color": {
+                "red": 0.01568627543747425,
+                "green": 0.14901961386203766,
+                "blue": 0.9058823585510254,
+                "opacity": 1.0
+              }
+            }
+          ]
         },
         "columns": {
-          "values": []
+          "values": [
+            {
+              "name": "Faktor Strecke1",
+              "valueType": "Unknown",
+              "values": {},
+              "id": "45",
+              "color": {
+                "red": 0.9607843160629272,
+                "green": 0.054901961237192154,
+                "blue": 0.7450980544090271,
+                "opacity": 1.0
+              }
+            }
+          ]
         },
         "values": {
           "values": []

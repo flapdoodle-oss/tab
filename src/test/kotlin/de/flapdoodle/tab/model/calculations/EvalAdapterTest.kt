@@ -34,4 +34,15 @@ class EvalAdapterTest {
         assertThat(d.name).isEqualTo("d")
         assertThat(d.id).isNotEqualTo(c.id)
     }
+
+    @Test
+    fun conditions() {
+        val testee = EvalFormulaAdapter("if(a<2,b,1)")
+
+        assertThat(testee.variables())
+            .hasSize(2)
+        val (a, b) = testee.variables().toList()
+        assertThat(a.name).isEqualTo("a")
+        assertThat(b.name).isEqualTo("b")
+    }
 }

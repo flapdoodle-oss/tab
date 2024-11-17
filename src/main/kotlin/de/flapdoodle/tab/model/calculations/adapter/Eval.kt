@@ -6,6 +6,8 @@ import de.flapdoodle.eval.core.VariableResolver
 import de.flapdoodle.eval.core.evaluables.*
 import de.flapdoodle.tab.model.calculations.Variable
 import de.flapdoodle.tab.model.calculations.adapter.arithmetic.*
+import de.flapdoodle.tab.model.calculations.adapter.basic.Comparables
+import de.flapdoodle.tab.model.calculations.adapter.basic.Conditional
 import java.math.BigDecimal
 import java.math.BigInteger
 import java.math.MathContext
@@ -45,7 +47,6 @@ object Eval {
         .putPrefix("!", OperatorMapping.of(Precedence.OPERATOR_PRECEDENCE_UNARY, "not"))
         .build();
 
-    // TODO add if and compareables
     private val expressionFactory = ExpressionFactory.builder()
         .constants(constants)
         .arrayAccess(ArrayAccess)
@@ -61,6 +62,12 @@ object Eval {
             .putMap("minus", Minus)
             .putMap("divide", Divide)
             .putMap("avg", Avg)
+            .putMap("if", Conditional)
+            .putMap("equal", Comparables.Equals)
+            .putMap("less", Comparables.Less)
+            .putMap("lessOrEqual", Comparables.LessOrEquals)
+            .putMap("greater", Comparables.Greater)
+            .putMap("greaterOrEqual", Comparables.GreaterOrEquals)
             .build())
         .build()
 
