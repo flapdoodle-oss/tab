@@ -8,6 +8,8 @@ class Usecase {
 
     @Test
     fun ex30range() {
+        val energyPrice = 0.57
+
         val ex30 = Properties(
             battery = 66.0,
             firstSOC = 0.9,
@@ -30,11 +32,14 @@ class Usecase {
             val stopps = waypoints.size - 1
             val timeUsed = waypoints.sumOf { it.time } + stopps *ex30.loadingTime
             val distance = waypoints.sumOf { it.distance }
+            val energyUsed = waypoints.sumOf { consumption.kw * it.distance / 100.0 }
 
             println(consumption)
             println("stopps: $stopps")
             println("distance: $distance")
             println("time used: $timeUsed")
+            println("energy used: $energyUsed")
+            println("costs: ${energyUsed*energyPrice}")
             println()
         }
 
