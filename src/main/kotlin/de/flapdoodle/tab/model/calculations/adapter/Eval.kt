@@ -45,6 +45,7 @@ object Eval {
         .putPrefix("!", OperatorMapping.of(Precedence.OPERATOR_PRECEDENCE_UNARY, "not"))
         .build();
 
+    // TODO add if and compareables
     private val expressionFactory = ExpressionFactory.builder()
         .constants(constants)
         .arrayAccess(ArrayAccess)

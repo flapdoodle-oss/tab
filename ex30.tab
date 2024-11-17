@@ -143,7 +143,7 @@
         "y": 280.0
       },
       "size": {
-        "width": 706.0,
+        "width": 659.0,
         "height": 486.0
       },
       "id": "10",
@@ -507,6 +507,33 @@
               }
             }
           ]
+        }
+      }
+    },
+    {
+      "name": "Zyklen",
+      "description": "",
+      "position": {
+        "x": 1533.0,
+        "y": 16.0
+      },
+      "size": {
+        "width": 412.0,
+        "height": 337.0
+      },
+      "id": "41",
+      "calculated": {
+        "indexType": "String",
+        "calculations": {
+          "aggregations": [],
+          "tabular": [],
+          "inputs": []
+        },
+        "columns": {
+          "values": []
+        },
+        "values": {
+          "values": []
         }
       }
     }
