@@ -27,9 +27,11 @@ class ComparablesTest {
             return listOf(
                 CompareNullablesSet(Comparables.Less, Evaluated.value(1.0), Evaluated.value(1.0), false),
                 CompareNullablesSet(Comparables.Less, Evaluated.value(0.9), Evaluated.value(1.0), true),
+                CompareNullablesSet(Comparables.Less, Evaluated.value(0.9), Evaluated.value(BigDecimal.valueOf(1.0)), true),
                 CompareNullablesSet(Comparables.Less, Evaluated.value(1.0), Evaluated.ofNull(Evaluables.javaDouble), false),
                 CompareNullablesSet(Comparables.Less, Evaluated.ofNull(Evaluables.javaDouble), Evaluated.value(1.0), true),
                 CompareNullablesSet(Comparables.Less, Evaluated.ofNull(Evaluables.javaDouble), Evaluated.ofNull(Evaluables.javaDouble), false),
+                CompareNullablesSet(Comparables.Less, Evaluated.value(BigDecimal.valueOf(0.9)), Evaluated.value(BigInteger.ONE), true),
 
                 CompareNullablesSet(Comparables.Greater, Evaluated.value(1.0), Evaluated.value(1.0), false),
                 CompareNullablesSet(Comparables.Greater, Evaluated.value(0.9), Evaluated.value(1.0), false),

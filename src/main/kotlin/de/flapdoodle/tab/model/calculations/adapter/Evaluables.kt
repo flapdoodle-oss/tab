@@ -38,6 +38,7 @@ open class Evaluables(
         val boolean = Boolean::class.java
         val booleanParameter = Parameter.of(boolean)
         val javaBoolean = Boolean::class.javaObjectType
+        val javaBooleanParameter = Parameter.of(javaBoolean)
 
         val bigDecimal = BigDecimal::class.java
         val bigInt = BigInteger::class.java
@@ -82,6 +83,10 @@ open class Evaluables(
                     return delegate.evaluate(variableResolver,evaluationContext,token, if (first!=null) mapA(first) else null, if (second!=null) mapB(second) else null)
                 }
             }
+        }
+
+        fun <SOURCE_A, SOURCE_B, MAPPED: Comparable<MAPPED>, T> mapped(type: Class<T>, delegate: TypedEvaluable.Arg2<MAPPED, MAPPED, T>, mapping: TypeMapping<SOURCE_A,SOURCE_B,MAPPED>): TypedEvaluable<T> {
+            return TypedEvaluable.of(type, mapping.left, mapping.right, map<SOURCE_A, MAPPED, SOURCE_B, MAPPED, T>(delegate,mapping.mapLeft, mapping.mapRight))
         }
     }
 
