@@ -59,12 +59,28 @@ open class Evaluables(
         val javaIntNotZero = javaIntParameter.withValidators(isNot(0,"division by zero"))!!
         val javaDoubleNotZero = javaDoubleParameter.withValidators(isNot(0.0,"division by zero"))!!
 
+        val unmappedBigDecimal: (BigDecimal) -> BigDecimal = { it }
+
         fun <T : Any> isNot(match: T, text: String): ParameterValidator<T> {
             return ParameterValidator { value ->
                 if (match == value) {
                     Optional.of(EvaluableException.of(text, match, value))
                 } else
                     Optional.empty()
+            }
+        }
+
+        fun <SOURCE_A, A, SOURCE_B, B, T> map(delegate: TypedEvaluable.Arg2<A, B, T>, mapA: (SOURCE_A) -> A, mapB: (SOURCE_B) -> B): TypedEvaluable.Arg2<SOURCE_A, SOURCE_B, T> {
+            return object : TypedEvaluable.Arg2<SOURCE_A, SOURCE_B, T> {
+                override fun evaluate(
+                    variableResolver: VariableResolver,
+                    evaluationContext: EvaluationContext,
+                    token: Token,
+                    first: SOURCE_A?,
+                    second: SOURCE_B?
+                ): T? {
+                    return delegate.evaluate(variableResolver,evaluationContext,token, if (first!=null) mapA(first) else null, if (second!=null) mapB(second) else null)
+                }
             }
         }
     }
