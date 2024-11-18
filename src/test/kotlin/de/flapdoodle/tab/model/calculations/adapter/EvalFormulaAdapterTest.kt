@@ -9,7 +9,10 @@ import de.flapdoodle.tab.model.calculations.interpolation.DefaultInterpolatorFac
 import de.flapdoodle.tab.model.calculations.types.IndexMap
 import de.flapdoodle.tab.model.data.Column
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.InstanceOfAssertFactories
+import org.assertj.core.data.Percentage
 import org.junit.jupiter.api.Test
+import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.Month
@@ -91,5 +94,35 @@ class EvalFormulaAdapterTest {
         ))
 
         assertThat(result.wrapped()).isEqualTo(5.0)
+    }
+
+    @Test
+    fun conditionalExample() {
+        val testee = EvalFormulaAdapter("if (a<b,a/b,1)")
+
+        assertThat(testee.variables())
+            .hasSize(2)
+        val (a,b) = testee.variables().toList()
+        assertThat(a.name).isEqualTo("a")
+        assertThat(b.name).isEqualTo("b")
+
+        val result = testee.evaluate(mapOf(
+            a to Evaluated.value(90),
+            b to Evaluated.value(100.0),
+        ))
+
+        assertThat(result.wrapped())
+            .isInstanceOf(BigDecimal::class.java)
+            .asInstanceOf(InstanceOfAssertFactories.BIG_DECIMAL)
+            .isCloseTo(BigDecimal.valueOf(0.9), Percentage.withPercentage(0.1))
+
+        // TODO conditional gives some trouble
+        val type = testee.evaluateType(mapOf(
+            a to Evaluated.value(90),
+            b to Evaluated.value(100.0),
+        ))
+
+        assertThat(type)
+            .isEqualTo("")
     }
 }
