@@ -55,7 +55,7 @@ object Comparables {
             of(boolean, javaDoubleNullable, javaDoubleNullable, Compare.CompareLess<Double>()),
             of(boolean, javaIntNullable, javaIntNullable, Compare.CompareLess<Int>()),
         ) + CommonTypeMappings.mappings.map {
-            mapped(boolean, Compare.CompareLess(), it)
+            mapped2(boolean, Compare.CompareLess(), it)
         }
     ) {
         override fun toString(): String {
@@ -70,7 +70,7 @@ object Comparables {
             of(boolean, javaDoubleNullable, javaDoubleNullable, Compare.CompareLessOrEqual<Double>()),
             of(boolean, javaIntNullable, javaIntNullable, Compare.CompareLessOrEqual<Int>())
         ) + CommonTypeMappings.mappings.map {
-            mapped(boolean, Compare.CompareLessOrEqual(), it)
+            mapped2(boolean, Compare.CompareLessOrEqual(), it)
         }
     ) {
         override fun toString(): String {
@@ -85,7 +85,7 @@ object Comparables {
             of(boolean, javaDoubleNullable, javaDoubleNullable, Compare.CompareGreater<Double>()),
             of(boolean, javaIntNullable, javaIntNullable, Compare.CompareGreater<Int>())
         ) + CommonTypeMappings.mappings.map {
-            mapped(boolean, Compare.CompareGreater(), it)
+            mapped2(boolean, Compare.CompareGreater(), it)
         }
     ) {
         override fun toString(): String {
@@ -100,7 +100,7 @@ object Comparables {
             of(boolean, javaDoubleNullable, javaDoubleNullable, Compare.CompareGreaterOrEqual<Double>()),
             of(boolean, javaIntNullable, javaIntNullable, Compare.CompareGreaterOrEqual<Int>())
         ) + CommonTypeMappings.mappings.map {
-            mapped(boolean, Compare.CompareGreaterOrEqual(), it)
+            mapped2(boolean, Compare.CompareGreaterOrEqual(), it)
         }
     ) {
         override fun toString(): String {

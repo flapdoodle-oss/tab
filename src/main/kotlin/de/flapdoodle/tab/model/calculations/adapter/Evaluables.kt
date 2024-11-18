@@ -71,7 +71,7 @@ open class Evaluables(
             }
         }
 
-        fun <SOURCE_A, A, SOURCE_B, B, T> map(delegate: TypedEvaluable.Arg2<A, B, T>, mapA: (SOURCE_A) -> A, mapB: (SOURCE_B) -> B): TypedEvaluable.Arg2<SOURCE_A, SOURCE_B, T> {
+        fun <SOURCE_A, A, SOURCE_B, B, T> map2(delegate: TypedEvaluable.Arg2<A, B, T>, mapA: (SOURCE_A) -> A, mapB: (SOURCE_B) -> B): TypedEvaluable.Arg2<SOURCE_A, SOURCE_B, T> {
             return object : TypedEvaluable.Arg2<SOURCE_A, SOURCE_B, T> {
                 override fun evaluate(
                     variableResolver: VariableResolver,
@@ -85,8 +85,26 @@ open class Evaluables(
             }
         }
 
-        fun <SOURCE_A, SOURCE_B, MAPPED: Comparable<MAPPED>, T> mapped(type: Class<T>, delegate: TypedEvaluable.Arg2<MAPPED, MAPPED, T>, mapping: TypeMapping<SOURCE_A,SOURCE_B,MAPPED>): TypedEvaluable<T> {
-            return TypedEvaluable.of(type, mapping.left, mapping.right, map<SOURCE_A, MAPPED, SOURCE_B, MAPPED, T>(delegate,mapping.mapLeft, mapping.mapRight))
+        fun <SOURCE_A, SOURCE_B, MAPPED: Comparable<MAPPED>, T> mapped2(type: Class<T>, delegate: TypedEvaluable.Arg2<MAPPED, MAPPED, T>, mapping: TypeMapping<SOURCE_A,SOURCE_B,MAPPED>): TypedEvaluable<T> {
+            return TypedEvaluable.of(type, mapping.left, mapping.right, map2<SOURCE_A, MAPPED, SOURCE_B, MAPPED, T>(delegate,mapping.mapLeft, mapping.mapRight))
+        }
+
+        fun <SOURCE_A, A, SOURCE_B, B, SOURCE_C, C, T> map3(delegate: TypedEvaluable.Arg3<A, B, C, T>, mapA: (SOURCE_A) -> A, mapB: (SOURCE_B) -> B, mapC: (SOURCE_C) -> C): TypedEvaluable.Arg3<SOURCE_A, SOURCE_B, SOURCE_C, T> {
+            return object : TypedEvaluable.Arg3<SOURCE_A, SOURCE_B, SOURCE_C, T> {
+                override fun evaluate(
+                    variableResolver: VariableResolver,
+                    evaluationContext: EvaluationContext,
+                    token: Token,
+                    first: SOURCE_A?,
+                    second: SOURCE_B?,
+                    third: SOURCE_C?
+                ): T? {
+                    return delegate.evaluate(variableResolver,evaluationContext,token,
+                        if (first!=null) mapA(first) else null,
+                        if (second!=null) mapB(second) else null,
+                        if (third!=null) mapC(third) else null)
+                }
+            }
         }
     }
 

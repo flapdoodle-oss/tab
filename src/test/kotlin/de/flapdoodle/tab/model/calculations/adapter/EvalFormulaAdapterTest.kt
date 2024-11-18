@@ -117,12 +117,12 @@ class EvalFormulaAdapterTest {
             .isCloseTo(BigDecimal.valueOf(0.9), Percentage.withPercentage(0.1))
 
         // TODO conditional gives some trouble
-        val type = testee.evaluateType(mapOf(
+        val type: TypeInfo<out Any> = testee.evaluateType(mapOf(
             a to Evaluated.value(90),
             b to Evaluated.value(100.0),
         ))
 
         assertThat(type)
-            .isEqualTo("")
+            .isEqualTo(TypeInfo.of(BigDecimal::class.java))
     }
 }
