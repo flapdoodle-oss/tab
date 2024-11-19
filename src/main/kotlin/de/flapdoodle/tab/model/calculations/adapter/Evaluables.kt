@@ -49,6 +49,10 @@ open class Evaluables(
         val bigIntParameter = Parameter.of(BigInteger::class.java)!!
         val javaIntParameter = Parameter.of(javaInt)!!
         val javaDoubleParameter = Parameter.of(javaDouble)!!
+        val bigDecimalParameterLazy = Parameter.lazyWith(BigDecimal::class.java)!!
+        val bigIntParameterLazy = Parameter.lazyWith(BigInteger::class.java)!!
+        val javaIntParameterLazy = Parameter.lazyWith(javaInt)!!
+        val javaDoubleParameterLazy = Parameter.lazyWith(javaDouble)!!
 
         val bigDecimalNullable = Parameter.nullableWith(BigDecimal::class.java)!! as Parameter<BigDecimal?>
         val bigIntNullable = Parameter.nullableWith(BigInteger::class.java)!! as Parameter<BigInteger?>

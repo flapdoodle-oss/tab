@@ -81,12 +81,24 @@
               "name": "Preis pro kWh",
               "short": "Preis",
               "valueType": "Double",
-              "value": "0.49",
+              "value": "0.57",
               "id": "7",
               "color": {
                 "red": 0.0,
                 "green": 0.0,
                 "blue": 1.0,
+                "opacity": 1.0
+              }
+            },
+            {
+              "name": "Preis pro kWh (daheim)",
+              "valueType": "Double",
+              "value": "0.33",
+              "id": "8",
+              "color": {
+                "red": 0.3686274588108063,
+                "green": 0.019607843831181526,
+                "blue": 0.929411768913269,
                 "opacity": 1.0
               }
             }
@@ -101,11 +113,7 @@
         "x": 7.88232421875,
         "y": 275.5294189453125
       },
-      "size": {
-        "width": 444.7646484375,
-        "height": 356.2352294921875
-      },
-      "id": "8",
+      "id": "9",
       "table": {
         "indexType": "String",
         "columns": {
@@ -121,7 +129,7 @@
                 "140km/h": "140.0",
                 "bekloppt": "180.0"
               },
-              "id": "9",
+              "id": "10",
               "color": {
                 "red": 0.0,
                 "green": 0.0,
@@ -140,7 +148,7 @@
                 "140km/h": "27.1",
                 "bekloppt": "42.9"
               },
-              "id": "10",
+              "id": "11",
               "color": {
                 "red": 1.0,
                 "green": 0.0,
@@ -159,11 +167,7 @@
         "x": 517.11767578125,
         "y": 261.5882568359375
       },
-      "size": {
-        "width": 550.0,
-        "height": 445.29412841796875
-      },
-      "id": "11",
+      "id": "12",
       "calculated": {
         "indexType": "String",
         "calculations": {
@@ -176,16 +180,16 @@
                 "variables": [
                   {
                     "name": "kapazität1",
-                    "id": "13"
+                    "id": "14"
                   },
                   {
                     "name": "verbrauch",
-                    "id": "14"
+                    "id": "15"
                   }
                 ]
               },
-              "id": "12",
-              "destination": "15",
+              "id": "13",
+              "destination": "16",
               "color": {
                 "red": 0.0,
                 "green": 1.0,
@@ -200,16 +204,16 @@
                 "variables": [
                   {
                     "name": "kapazität2",
-                    "id": "17"
+                    "id": "18"
                   },
                   {
                     "name": "verbrauch",
-                    "id": "18"
+                    "id": "19"
                   }
                 ]
               },
-              "id": "16",
-              "destination": "19",
+              "id": "17",
+              "destination": "20",
               "color": {
                 "red": 0.729411780834198,
                 "green": 0.9411764740943909,
@@ -224,18 +228,18 @@
               "mapTo": [
                 {
                   "name": "kapazität1",
-                  "id": "13"
+                  "id": "14"
                 }
               ],
               "source": {
-                "node": "20",
+                "node": "21",
                 "nodeType": "Calculated",
-                "id": "21",
+                "id": "22",
                 "dataId": {
-                  "valueId": "22"
+                  "valueId": "23"
                 }
               },
-              "id": "23",
+              "id": "24",
               "color": {
                 "red": 0.01568627543747425,
                 "green": 0.6274510025978088,
@@ -248,18 +252,18 @@
               "mapTo": [
                 {
                   "name": "kapazität2",
-                  "id": "17"
+                  "id": "18"
                 }
               ],
               "source": {
-                "node": "20",
+                "node": "21",
                 "nodeType": "Calculated",
-                "id": "24",
+                "id": "25",
                 "dataId": {
-                  "valueId": "25"
+                  "valueId": "26"
                 }
               },
-              "id": "26",
+              "id": "27",
               "color": {
                 "red": 0.04313725605607033,
                 "green": 0.9450980424880981,
@@ -272,22 +276,22 @@
               "mapTo": [
                 {
                   "name": "verbrauch",
-                  "id": "14"
+                  "id": "15"
                 },
                 {
                   "name": "verbrauch",
-                  "id": "18"
+                  "id": "19"
                 }
               ],
               "source": {
-                "node": "8",
+                "node": "9",
                 "nodeType": "Table",
-                "id": "27",
+                "id": "28",
                 "dataId": {
-                  "columnId": "10"
+                  "columnId": "11"
                 }
               },
-              "id": "28",
+              "id": "29",
               "color": {
                 "red": 0.04313725605607033,
                 "green": 0.9450980424880981,
@@ -309,7 +313,7 @@
                 "140km/h": "219.1881918819188191881918819188192",
                 "bekloppt": "138.4615384615384615384615384615385"
               },
-              "id": "15",
+              "id": "16",
               "color": {
                 "red": 0.0,
                 "green": 1.0,
@@ -327,7 +331,7 @@
                 "140km/h": "170.4797047970479704797047970479705",
                 "bekloppt": "107.6923076923076923076923076923077"
               },
-              "id": "19",
+              "id": "20",
               "color": {
                 "red": 0.729411780834198,
                 "green": 0.9411764740943909,
@@ -343,7 +347,7 @@
               "name": "Kapazität erste Ladung",
               "valueType": "BigDecimal",
               "value": "59.40",
-              "id": "29",
+              "id": "30",
               "color": {
                 "red": 0.03529411926865578,
                 "green": 0.6549019813537598,
@@ -362,11 +366,7 @@
         "x": 573.117919921875,
         "y": -69.88250732421875
       },
-      "size": {
-        "width": 466.705810546875,
-        "height": 234.35293579101562
-      },
-      "id": "20",
+      "id": "21",
       "calculated": {
         "indexType": "String",
         "calculations": {
@@ -378,16 +378,16 @@
                 "variables": [
                   {
                     "name": "ladung1",
-                    "id": "31"
+                    "id": "32"
                   },
                   {
                     "name": "batterie",
-                    "id": "32"
+                    "id": "33"
                   }
                 ]
               },
-              "id": "30",
-              "destination": "22",
+              "id": "31",
+              "destination": "23",
               "color": {
                 "red": 0.9019607901573181,
                 "green": 0.3019607961177826,
@@ -402,16 +402,16 @@
                 "variables": [
                   {
                     "name": "ladung2",
-                    "id": "34"
+                    "id": "35"
                   },
                   {
                     "name": "batterie",
-                    "id": "35"
+                    "id": "36"
                   }
                 ]
               },
-              "id": "33",
-              "destination": "25",
+              "id": "34",
+              "destination": "26",
               "color": {
                 "red": 0.3686274588108063,
                 "green": 0.019607843831181526,
@@ -427,22 +427,22 @@
               "mapTo": [
                 {
                   "name": "batterie",
-                  "id": "32"
+                  "id": "33"
                 },
                 {
                   "name": "batterie",
-                  "id": "35"
+                  "id": "36"
                 }
               ],
               "source": {
                 "node": "1",
                 "nodeType": "Constants",
-                "id": "36",
+                "id": "37",
                 "dataId": {
                   "valueId": "2"
                 }
               },
-              "id": "37",
+              "id": "38",
               "color": {
                 "red": 0.04313725605607033,
                 "green": 0.9450980424880981,
@@ -455,18 +455,18 @@
               "mapTo": [
                 {
                   "name": "ladung1",
-                  "id": "31"
+                  "id": "32"
                 }
               ],
               "source": {
                 "node": "1",
                 "nodeType": "Constants",
-                "id": "38",
+                "id": "39",
                 "dataId": {
                   "valueId": "3"
                 }
               },
-              "id": "39",
+              "id": "40",
               "color": {
                 "red": 0.6705882549285889,
                 "green": 0.03921568766236305,
@@ -479,18 +479,18 @@
               "mapTo": [
                 {
                   "name": "ladung2",
-                  "id": "34"
+                  "id": "35"
                 }
               ],
               "source": {
                 "node": "1",
                 "nodeType": "Constants",
-                "id": "40",
+                "id": "41",
                 "dataId": {
                   "valueId": "4"
                 }
               },
-              "id": "41",
+              "id": "42",
               "color": {
                 "red": 0.01568627543747425,
                 "green": 0.6274510025978088,
@@ -509,7 +509,7 @@
               "name": "erste Ladung",
               "valueType": "BigDecimal",
               "value": "59.40",
-              "id": "22",
+              "id": "23",
               "color": {
                 "red": 0.9019607901573181,
                 "green": 0.3019607961177826,
@@ -521,7 +521,7 @@
               "name": "zweite Ladung",
               "valueType": "BigDecimal",
               "value": "46.20",
-              "id": "25",
+              "id": "26",
               "color": {
                 "red": 0.3686274588108063,
                 "green": 0.019607843831181526,
@@ -540,11 +540,7 @@
         "x": 1111.2939453125,
         "y": -58.705902099609375
       },
-      "size": {
-        "width": 393.0,
-        "height": 399.0
-      },
-      "id": "42",
+      "id": "43",
       "calculated": {
         "indexType": "String",
         "calculations": {
@@ -557,16 +553,16 @@
                 "variables": [
                   {
                     "name": "strecke",
-                    "id": "44"
+                    "id": "45"
                   },
                   {
                     "name": "strecke1",
-                    "id": "45"
+                    "id": "46"
                   }
                 ]
               },
-              "id": "43",
-              "destination": "46",
+              "id": "44",
+              "destination": "47",
               "color": {
                 "red": 0.9607843160629272,
                 "green": 0.054901961237192154,
@@ -581,20 +577,20 @@
                 "variables": [
                   {
                     "name": "strecke",
-                    "id": "48"
-                  },
-                  {
-                    "name": "strecke1",
                     "id": "49"
                   },
                   {
-                    "name": "strecke2",
+                    "name": "strecke1",
                     "id": "50"
+                  },
+                  {
+                    "name": "strecke2",
+                    "id": "51"
                   }
                 ]
               },
-              "id": "47",
-              "destination": "51",
+              "id": "48",
+              "destination": "52",
               "color": {
                 "red": 0.6705882549285889,
                 "green": 0.03921568766236305,
@@ -609,22 +605,22 @@
               "mapTo": [
                 {
                   "name": "strecke",
-                  "id": "44"
+                  "id": "45"
                 },
                 {
                   "name": "strecke",
-                  "id": "48"
+                  "id": "49"
                 }
               ],
               "source": {
                 "node": "1",
                 "nodeType": "Constants",
-                "id": "52",
+                "id": "53",
                 "dataId": {
                   "valueId": "6"
                 }
               },
-              "id": "53",
+              "id": "54",
               "color": {
                 "red": 0.01568627543747425,
                 "green": 0.14901961386203766,
@@ -637,22 +633,22 @@
               "mapTo": [
                 {
                   "name": "strecke1",
-                  "id": "45"
+                  "id": "46"
                 },
                 {
                   "name": "strecke1",
-                  "id": "49"
+                  "id": "50"
                 }
               ],
               "source": {
-                "node": "11",
+                "node": "12",
                 "nodeType": "Calculated",
-                "id": "54",
+                "id": "55",
                 "dataId": {
-                  "columnId": "15"
+                  "columnId": "16"
                 }
               },
-              "id": "55",
+              "id": "56",
               "color": {
                 "red": 0.01568627543747425,
                 "green": 0.14901961386203766,
@@ -665,18 +661,18 @@
               "mapTo": [
                 {
                   "name": "strecke2",
-                  "id": "50"
+                  "id": "51"
                 }
               ],
               "source": {
-                "node": "11",
+                "node": "12",
                 "nodeType": "Calculated",
-                "id": "56",
+                "id": "57",
                 "dataId": {
-                  "columnId": "19"
+                  "columnId": "20"
                 }
               },
-              "id": "57",
+              "id": "58",
               "color": {
                 "red": 0.01568627543747425,
                 "green": 0.0941176488995552,
@@ -698,7 +694,7 @@
                 "140km/h": "1",
                 "bekloppt": "1"
               },
-              "id": "46",
+              "id": "47",
               "color": {
                 "red": 0.9607843160629272,
                 "green": 0.054901961237192154,
@@ -716,7 +712,7 @@
                 "140km/h": "3.406926406926406926406926406926406",
                 "bekloppt": "6.142857142857142857142857142857142"
               },
-              "id": "51",
+              "id": "52",
               "color": {
                 "red": 0.6705882549285889,
                 "green": 0.03921568766236305,
@@ -735,14 +731,14 @@
       "name": "Zyklen",
       "description": "",
       "position": {
-        "x": 1577.05810546875,
-        "y": -46.23529052734375
+        "x": 1729.102783203125,
+        "y": -25.784942626953125
       },
       "size": {
-        "width": 618.0,
-        "height": 421.0
+        "width": 471.5712890625,
+        "height": 494.0
       },
-      "id": "58",
+      "id": "59",
       "calculated": {
         "indexType": "String",
         "calculations": {
@@ -756,16 +752,16 @@
                 "variables": [
                   {
                     "name": "faktor1",
-                    "id": "60"
+                    "id": "61"
                   },
                   {
                     "name": "faktor2",
-                    "id": "61"
+                    "id": "62"
                   }
                 ]
               },
-              "id": "59",
-              "destination": "62",
+              "id": "60",
+              "destination": "63",
               "color": {
                 "red": 0.01568627543747425,
                 "green": 0.0941176488995552,
@@ -780,20 +776,45 @@
                 "variables": [
                   {
                     "name": "faktor1",
-                    "id": "64"
-                  },
-                  {
-                    "name": "faktor2",
                     "id": "65"
                   },
                   {
-                    "name": "ladezeit",
+                    "name": "faktor2",
                     "id": "66"
+                  },
+                  {
+                    "name": "ladezeit",
+                    "id": "67"
                   }
                 ]
               },
-              "id": "63",
-              "destination": "67",
+              "id": "64",
+              "destination": "68",
+              "color": {
+                "red": 0.49803921580314636,
+                "green": 0.6509804129600525,
+                "blue": 0.007843137718737125,
+                "opacity": 1.0
+              }
+            },
+            {
+              "name": "Restkapazität",
+              "short": "",
+              "formula": {
+                "expression": "if (faktor1>=1, (1-(faktor2-round(faktor2,\"down\"))),(1-(faktor1-round(faktor1,\"down\"))))",
+                "variables": [
+                  {
+                    "name": "faktor1",
+                    "id": "70"
+                  },
+                  {
+                    "name": "faktor2",
+                    "id": "71"
+                  }
+                ]
+              },
+              "id": "69",
+              "destination": "72",
               "color": {
                 "red": 0.49803921580314636,
                 "green": 0.6509804129600525,
@@ -808,22 +829,26 @@
               "mapTo": [
                 {
                   "name": "faktor1",
-                  "id": "60"
+                  "id": "61"
                 },
                 {
                   "name": "faktor1",
-                  "id": "64"
+                  "id": "65"
+                },
+                {
+                  "name": "faktor1",
+                  "id": "70"
                 }
               ],
               "source": {
-                "node": "42",
+                "node": "43",
                 "nodeType": "Calculated",
-                "id": "68",
+                "id": "73",
                 "dataId": {
-                  "columnId": "46"
+                  "columnId": "47"
                 }
               },
-              "id": "69",
+              "id": "74",
               "color": {
                 "red": 0.9450980424880981,
                 "green": 0.2078431397676468,
@@ -836,22 +861,26 @@
               "mapTo": [
                 {
                   "name": "faktor2",
-                  "id": "61"
+                  "id": "62"
                 },
                 {
                   "name": "faktor2",
-                  "id": "65"
+                  "id": "66"
+                },
+                {
+                  "name": "faktor2",
+                  "id": "71"
                 }
               ],
               "source": {
-                "node": "42",
+                "node": "43",
                 "nodeType": "Calculated",
-                "id": "70",
+                "id": "75",
                 "dataId": {
-                  "columnId": "51"
+                  "columnId": "52"
                 }
               },
-              "id": "71",
+              "id": "76",
               "color": {
                 "red": 0.49803921580314636,
                 "green": 0.6509804129600525,
@@ -864,18 +893,18 @@
               "mapTo": [
                 {
                   "name": "ladezeit",
-                  "id": "66"
+                  "id": "67"
                 }
               ],
               "source": {
                 "node": "1",
                 "nodeType": "Constants",
-                "id": "72",
+                "id": "77",
                 "dataId": {
                   "valueId": "5"
                 }
               },
-              "id": "73",
+              "id": "78",
               "color": {
                 "red": 0.729411780834198,
                 "green": 0.9411764740943909,
@@ -898,7 +927,7 @@
                 "140km/h": "4",
                 "bekloppt": "7"
               },
-              "id": "62",
+              "id": "63",
               "color": {
                 "red": 0.01568627543747425,
                 "green": 0.0941176488995552,
@@ -916,7 +945,26 @@
                 "140km/h": "1.00",
                 "bekloppt": "1.75"
               },
-              "id": "67",
+              "id": "68",
+              "color": {
+                "red": 0.49803921580314636,
+                "green": 0.6509804129600525,
+                "blue": 0.007843137718737125,
+                "opacity": 1.0
+              }
+            },
+            {
+              "name": "Restkapazität",
+              "short": "",
+              "valueType": "BigDecimal",
+              "values": {
+                "110km/h": "0.064935064935064935064935064935065",
+                "100km/h": "0.601731601731601731601731601731602",
+                "130km/h": "0.939393939393939393939393939393940",
+                "140km/h": "0.593073593073593073593073593073594",
+                "bekloppt": "0.857142857142857142857142857142858"
+              },
+              "id": "72",
               "color": {
                 "red": 0.49803921580314636,
                 "green": 0.6509804129600525,
@@ -935,14 +983,14 @@
       "name": "Geschwindigkeit",
       "description": "",
       "position": {
-        "x": 1171.37890625,
-        "y": 410.5731201171875
+        "x": 1231.09375,
+        "y": 504.5731201171875
       },
       "size": {
-        "width": 806.0,
-        "height": 673.0968017578125
+        "width": 836.0,
+        "height": 510.14288330078125
       },
-      "id": "74",
+      "id": "79",
       "calculated": {
         "indexType": "String",
         "calculations": {
@@ -953,35 +1001,6 @@
               "short": "Reisezeit (Stunden)",
               "formula": {
                 "expression": "strecke/geschwindigkeit+ladezeit",
-                "variables": [
-                  {
-                    "name": "strecke",
-                    "id": "76"
-                  },
-                  {
-                    "name": "geschwindigkeit",
-                    "id": "77"
-                  },
-                  {
-                    "name": "ladezeit",
-                    "id": "78"
-                  }
-                ]
-              },
-              "id": "75",
-              "destination": "79",
-              "color": {
-                "red": 0.9019607901573181,
-                "green": 0.501960813999176,
-                "blue": 0.3019607961177826,
-                "opacity": 1.0
-              }
-            },
-            {
-              "name": "Durchschnitt",
-              "short": "km/h",
-              "formula": {
-                "expression": "strecke/(strecke/geschwindigkeit+ladezeit)",
                 "variables": [
                   {
                     "name": "strecke",
@@ -1000,6 +1019,35 @@
               "id": "80",
               "destination": "84",
               "color": {
+                "red": 0.9019607901573181,
+                "green": 0.501960813999176,
+                "blue": 0.3019607961177826,
+                "opacity": 1.0
+              }
+            },
+            {
+              "name": "Durchschnitt",
+              "short": "km/h",
+              "formula": {
+                "expression": "strecke/(strecke/geschwindigkeit+ladezeit)",
+                "variables": [
+                  {
+                    "name": "strecke",
+                    "id": "86"
+                  },
+                  {
+                    "name": "geschwindigkeit",
+                    "id": "87"
+                  },
+                  {
+                    "name": "ladezeit",
+                    "id": "88"
+                  }
+                ]
+              },
+              "id": "85",
+              "destination": "89",
+              "color": {
                 "red": 1.0,
                 "green": 0.886274516582489,
                 "blue": 0.003921568859368563,
@@ -1007,26 +1055,87 @@
               }
             },
             {
-              "name": "Kosten",
-              "short": "€",
+              "name": "Ladekosten",
+              "short": "Laden in €",
               "formula": {
                 "expression": "zyklen*preis",
                 "variables": [
                   {
                     "name": "zyklen",
-                    "id": "86"
+                    "id": "91"
                   },
                   {
                     "name": "preis",
-                    "id": "87"
+                    "id": "92"
                   }
                 ]
               },
-              "id": "85",
-              "destination": "88",
+              "id": "90",
+              "destination": "93",
               "color": {
                 "red": 0.0,
                 "green": 0.501960813999176,
+                "blue": 0.0,
+                "opacity": 1.0
+              }
+            },
+            {
+              "name": "Rest",
+              "short": "Rest in €",
+              "formula": {
+                "expression": "if (zyklen>0,rest*preis,rest*preisErsteLadung)",
+                "variables": [
+                  {
+                    "name": "zyklen",
+                    "id": "95"
+                  },
+                  {
+                    "name": "rest",
+                    "id": "96"
+                  },
+                  {
+                    "name": "preis",
+                    "id": "97"
+                  },
+                  {
+                    "name": "preisErsteLadung",
+                    "id": "98"
+                  }
+                ]
+              },
+              "id": "94",
+              "destination": "99",
+              "color": {
+                "red": 0.49803921580314636,
+                "green": 0.6509804129600525,
+                "blue": 0.007843137718737125,
+                "opacity": 1.0
+              }
+            },
+            {
+              "name": "Kosten Daheim",
+              "formula": {
+                "expression": "if (zyklen>0,preisErsteLadung,preisErsteLadung*(1-rest))",
+                "variables": [
+                  {
+                    "name": "zyklen",
+                    "id": "101"
+                  },
+                  {
+                    "name": "preisErsteLadung",
+                    "id": "102"
+                  },
+                  {
+                    "name": "rest",
+                    "id": "103"
+                  }
+                ]
+              },
+              "id": "100",
+              "destination": "104",
+              "color": {
+                "red": 0.658823549747467,
+                "green": 0.1568627506494522,
                 "blue": 0.0,
                 "opacity": 1.0
               }
@@ -1038,22 +1147,22 @@
               "mapTo": [
                 {
                   "name": "geschwindigkeit",
-                  "id": "77"
+                  "id": "82"
                 },
                 {
                   "name": "geschwindigkeit",
-                  "id": "82"
+                  "id": "87"
                 }
               ],
               "source": {
-                "node": "8",
+                "node": "9",
                 "nodeType": "Table",
-                "id": "89",
+                "id": "105",
                 "dataId": {
-                  "columnId": "9"
+                  "columnId": "10"
                 }
               },
-              "id": "90",
+              "id": "106",
               "color": {
                 "red": 0.658823549747467,
                 "green": 0.1568627506494522,
@@ -1066,22 +1175,22 @@
               "mapTo": [
                 {
                   "name": "ladezeit",
-                  "id": "78"
+                  "id": "83"
                 },
                 {
                   "name": "ladezeit",
-                  "id": "83"
+                  "id": "88"
                 }
               ],
               "source": {
-                "node": "58",
+                "node": "59",
                 "nodeType": "Calculated",
-                "id": "91",
+                "id": "107",
                 "dataId": {
-                  "columnId": "67"
+                  "columnId": "68"
                 }
               },
-              "id": "92",
+              "id": "108",
               "color": {
                 "red": 0.01568627543747425,
                 "green": 0.0941176488995552,
@@ -1094,18 +1203,22 @@
               "mapTo": [
                 {
                   "name": "preis",
-                  "id": "87"
+                  "id": "92"
+                },
+                {
+                  "name": "preis",
+                  "id": "97"
                 }
               ],
               "source": {
-                "node": "93",
+                "node": "109",
                 "nodeType": "Calculated",
-                "id": "94",
+                "id": "110",
                 "dataId": {
-                  "valueId": "95"
+                  "valueId": "111"
                 }
               },
-              "id": "96",
+              "id": "112",
               "color": {
                 "red": 0.01568627543747425,
                 "green": 0.0941176488995552,
@@ -1114,26 +1227,82 @@
               }
             },
             {
+              "name": "preisErsteLadung",
+              "mapTo": [
+                {
+                  "name": "preisErsteLadung",
+                  "id": "98"
+                },
+                {
+                  "name": "preisErsteLadung",
+                  "id": "102"
+                }
+              ],
+              "source": {
+                "node": "109",
+                "nodeType": "Calculated",
+                "id": "113",
+                "dataId": {
+                  "valueId": "114"
+                }
+              },
+              "id": "115",
+              "color": {
+                "red": 0.6470588445663452,
+                "green": 0.4941176474094391,
+                "blue": 0.0,
+                "opacity": 1.0
+              }
+            },
+            {
+              "name": "rest",
+              "mapTo": [
+                {
+                  "name": "rest",
+                  "id": "96"
+                },
+                {
+                  "name": "rest",
+                  "id": "103"
+                }
+              ],
+              "source": {
+                "node": "59",
+                "nodeType": "Calculated",
+                "id": "116",
+                "dataId": {
+                  "columnId": "72"
+                }
+              },
+              "id": "117",
+              "color": {
+                "red": 0.658823549747467,
+                "green": 0.1568627506494522,
+                "blue": 0.0,
+                "opacity": 1.0
+              }
+            },
+            {
               "name": "strecke",
               "mapTo": [
                 {
                   "name": "strecke",
-                  "id": "76"
+                  "id": "81"
                 },
                 {
                   "name": "strecke",
-                  "id": "81"
+                  "id": "86"
                 }
               ],
               "source": {
                 "node": "1",
                 "nodeType": "Constants",
-                "id": "97",
+                "id": "118",
                 "dataId": {
                   "valueId": "6"
                 }
               },
-              "id": "98",
+              "id": "119",
               "color": {
                 "red": 1.0,
                 "green": 0.886274516582489,
@@ -1146,18 +1315,26 @@
               "mapTo": [
                 {
                   "name": "zyklen",
-                  "id": "86"
+                  "id": "91"
+                },
+                {
+                  "name": "zyklen",
+                  "id": "95"
+                },
+                {
+                  "name": "zyklen",
+                  "id": "101"
                 }
               ],
               "source": {
-                "node": "58",
+                "node": "59",
                 "nodeType": "Calculated",
-                "id": "99",
+                "id": "120",
                 "dataId": {
-                  "columnId": "62"
+                  "columnId": "63"
                 }
               },
-              "id": "100",
+              "id": "121",
               "color": {
                 "red": 0.9607843160629272,
                 "green": 0.054901961237192154,
@@ -1180,7 +1357,7 @@
                 "140km/h": "6.714285714285714285714285714285714",
                 "bekloppt": "6.194444444444444444444444444444444"
               },
-              "id": "79",
+              "id": "84",
               "color": {
                 "red": 0.9019607901573181,
                 "green": 0.501960813999176,
@@ -1199,7 +1376,7 @@
                 "140km/h": "119.1489361702127659574468085106383",
                 "bekloppt": "129.1479820627802690582959641255605"
               },
-              "id": "84",
+              "id": "89",
               "color": {
                 "red": 1.0,
                 "green": 0.886274516582489,
@@ -1208,20 +1385,57 @@
               }
             },
             {
-              "name": "Kosten",
-              "short": "€",
+              "name": "Ladekosten",
+              "short": "Laden in €",
               "valueType": "BigDecimal",
               "values": {
-                "110km/h": "45.2760",
-                "100km/h": "45.2760",
-                "130km/h": "90.5520",
-                "140km/h": "90.5520",
-                "bekloppt": "158.4660"
+                "110km/h": "52.6680",
+                "100km/h": "52.6680",
+                "130km/h": "105.3360",
+                "140km/h": "105.3360",
+                "bekloppt": "184.3380"
               },
-              "id": "88",
+              "id": "93",
               "color": {
                 "red": 0.0,
                 "green": 0.501960813999176,
+                "blue": 0.0,
+                "opacity": 1.0
+              }
+            },
+            {
+              "name": "Rest",
+              "short": "Rest in €",
+              "valueType": "BigDecimal",
+              "values": {
+                "110km/h": "1.710000000000000000000000000000002",
+                "100km/h": "15.84600000000000000000000000000001",
+                "130km/h": "24.73800000000000000000000000000002",
+                "140km/h": "15.61800000000000000000000000000002",
+                "bekloppt": "22.57200000000000000000000000000002"
+              },
+              "id": "99",
+              "color": {
+                "red": 0.49803921580314636,
+                "green": 0.6509804129600525,
+                "blue": 0.007843137718737125,
+                "opacity": 1.0
+              }
+            },
+            {
+              "name": "Kosten Daheim",
+              "valueType": "BigDecimal",
+              "values": {
+                "110km/h": "19.6020",
+                "100km/h": "19.6020",
+                "130km/h": "19.6020",
+                "140km/h": "19.6020",
+                "bekloppt": "19.6020"
+              },
+              "id": "104",
+              "color": {
+                "red": 0.658823549747467,
+                "green": 0.1568627506494522,
                 "blue": 0.0,
                 "opacity": 1.0
               }
@@ -1237,40 +1451,73 @@
       "name": "Preise",
       "description": "",
       "position": {
-        "x": 550.647216796875,
-        "y": 740.5294189453125
+        "x": 529.21875,
+        "y": 753.3865966796875
       },
-      "id": "93",
+      "size": {
+        "width": 653.714599609375,
+        "height": 438.4285888671875
+      },
+      "id": "109",
       "calculated": {
         "indexType": "String",
         "calculations": {
           "aggregations": [
             {
               "name": "Preis 2. Ladung",
-              "short": "Preis",
+              "short": "Preis 2. Ladung",
               "formula": {
                 "expression": "batterie*zweiteLadung*preisProKWh",
                 "variables": [
                   {
                     "name": "batterie",
-                    "id": "102"
+                    "id": "123"
                   },
                   {
                     "name": "zweiteLadung",
-                    "id": "103"
+                    "id": "124"
                   },
                   {
                     "name": "preisProKWh",
-                    "id": "104"
+                    "id": "125"
                   }
                 ]
               },
-              "id": "101",
-              "destination": "95",
+              "id": "122",
+              "destination": "111",
               "color": {
-                "red": 0.658823549747467,
-                "green": 0.1568627506494522,
+                "red": 0.0,
+                "green": 0.501960813999176,
                 "blue": 0.0,
+                "opacity": 1.0
+              }
+            },
+            {
+              "name": "Preis 1. Ladung",
+              "short": "Preis 1. Ladung",
+              "formula": {
+                "expression": "batterie*ersteLadung*preisDaheim",
+                "variables": [
+                  {
+                    "name": "batterie",
+                    "id": "127"
+                  },
+                  {
+                    "name": "ersteLadung",
+                    "id": "128"
+                  },
+                  {
+                    "name": "preisDaheim",
+                    "id": "129"
+                  }
+                ]
+              },
+              "id": "126",
+              "destination": "114",
+              "color": {
+                "red": 0.9450980424880981,
+                "green": 0.2078431397676468,
+                "blue": 0.003921568859368563,
                 "opacity": 1.0
               }
             }
@@ -1282,18 +1529,22 @@
               "mapTo": [
                 {
                   "name": "batterie",
-                  "id": "102"
+                  "id": "123"
+                },
+                {
+                  "name": "batterie",
+                  "id": "127"
                 }
               ],
               "source": {
                 "node": "1",
                 "nodeType": "Constants",
-                "id": "105",
+                "id": "130",
                 "dataId": {
                   "valueId": "2"
                 }
               },
-              "id": "106",
+              "id": "131",
               "color": {
                 "red": 0.04313725605607033,
                 "green": 0.9450980424880981,
@@ -1302,22 +1553,70 @@
               }
             },
             {
-              "name": "preisProKWh",
+              "name": "ersteLadung",
               "mapTo": [
                 {
-                  "name": "preisProKWh",
-                  "id": "104"
+                  "name": "ersteLadung",
+                  "id": "128"
                 }
               ],
               "source": {
                 "node": "1",
                 "nodeType": "Constants",
-                "id": "107",
+                "id": "132",
+                "dataId": {
+                  "valueId": "3"
+                }
+              },
+              "id": "133",
+              "color": {
+                "red": 0.9450980424880981,
+                "green": 0.2078431397676468,
+                "blue": 0.003921568859368563,
+                "opacity": 1.0
+              }
+            },
+            {
+              "name": "preisDaheim",
+              "mapTo": [
+                {
+                  "name": "preisDaheim",
+                  "id": "129"
+                }
+              ],
+              "source": {
+                "node": "1",
+                "nodeType": "Constants",
+                "id": "134",
+                "dataId": {
+                  "valueId": "8"
+                }
+              },
+              "id": "135",
+              "color": {
+                "red": 0.01568627543747425,
+                "green": 0.6274510025978088,
+                "blue": 0.8941176533699036,
+                "opacity": 1.0
+              }
+            },
+            {
+              "name": "preisProKWh",
+              "mapTo": [
+                {
+                  "name": "preisProKWh",
+                  "id": "125"
+                }
+              ],
+              "source": {
+                "node": "1",
+                "nodeType": "Constants",
+                "id": "136",
                 "dataId": {
                   "valueId": "4"
                 }
               },
-              "id": "108",
+              "id": "137",
               "color": {
                 "red": 0.3686274588108063,
                 "green": 0.019607843831181526,
@@ -1330,18 +1629,18 @@
               "mapTo": [
                 {
                   "name": "zweiteLadung",
-                  "id": "103"
+                  "id": "124"
                 }
               ],
               "source": {
                 "node": "1",
                 "nodeType": "Constants",
-                "id": "109",
+                "id": "138",
                 "dataId": {
                   "valueId": "7"
                 }
               },
-              "id": "110",
+              "id": "139",
               "color": {
                 "red": 0.9450980424880981,
                 "green": 0.2078431397676468,
@@ -1360,12 +1659,24 @@
               "name": "Preis 2. Ladung",
               "short": "Preis",
               "valueType": "BigDecimal",
-              "value": "22.6380",
-              "id": "95",
+              "value": "26.3340",
+              "id": "111",
               "color": {
-                "red": 0.658823549747467,
-                "green": 0.1568627506494522,
+                "red": 0.0,
+                "green": 0.501960813999176,
                 "blue": 0.0,
+                "opacity": 1.0
+              }
+            },
+            {
+              "name": "Preis 1. Ladung",
+              "valueType": "BigDecimal",
+              "value": "19.6020",
+              "id": "114",
+              "color": {
+                "red": 0.9450980424880981,
+                "green": 0.2078431397676468,
+                "blue": 0.003921568859368563,
                 "opacity": 1.0
               }
             }

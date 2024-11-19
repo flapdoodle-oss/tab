@@ -10,7 +10,12 @@ import de.flapdoodle.tab.model.calculations.adapter.Evaluables
 import de.flapdoodle.tab.model.calculations.adapter.TypeMapping
 
 object Conditional : Evaluables(
-    // TODO hmmm..
+    listOf(
+        of(javaDouble, javaBooleanParameter, javaDoubleNullable, javaDoubleNullable, Condition()),
+        of(javaInt, javaBooleanParameter, javaIntNullable, javaIntNullable, Condition()),
+        of(bigInt, javaBooleanParameter, bigIntNullable, bigIntNullable, Condition()),
+        of(bigDecimal, javaBooleanParameter, bigDecimalNullable, bigDecimalNullable, Condition()),
+    ) +
     CommonTypeMappings.mappings.map {
         Helper.condition(it)
     } +
@@ -28,6 +33,7 @@ object Conditional : Evaluables(
             left: T?,
             right: T?
         ): T? {
+            //println("check: $check -> $left(${left?.javaClass}) | $right(${right?.javaClass})")
             return if (check) left else right
         }
 
