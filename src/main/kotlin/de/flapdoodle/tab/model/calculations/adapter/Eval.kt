@@ -8,6 +8,8 @@ import de.flapdoodle.tab.model.calculations.Variable
 import de.flapdoodle.tab.model.calculations.adapter.arithmetic.*
 import de.flapdoodle.tab.model.calculations.adapter.basic.Comparables
 import de.flapdoodle.tab.model.calculations.adapter.basic.Conditional
+import de.flapdoodle.tab.model.calculations.adapter.basic.Round
+import de.flapdoodle.tab.model.calculations.adapter.booleans.Combine
 import java.math.BigDecimal
 import java.math.BigInteger
 import java.math.MathContext
@@ -62,12 +64,16 @@ object Eval {
             .putMap("minus", Minus)
             .putMap("divide", Divide)
             .putMap("avg", Avg)
+            .putMap("round", Round.Numbers)
             .putMap("if", Conditional)
             .putMap("equal", Comparables.Equals)
             .putMap("less", Comparables.Less)
             .putMap("lessOrEqual", Comparables.LessOrEquals)
             .putMap("greater", Comparables.Greater)
             .putMap("greaterOrEqual", Comparables.GreaterOrEquals)
+            .putMap("and", Combine.And)
+            .putMap("or", Combine.Or)
+            .putMap("not", Combine.Not)
             .build())
         .build()
 
