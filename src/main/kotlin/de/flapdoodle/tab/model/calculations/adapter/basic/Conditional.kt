@@ -41,7 +41,7 @@ object Conditional : Evaluables(
         fun <SOURCE_A, SOURCE_B, MAPPED: Comparable<MAPPED>, T> mapped3(type: Class<T>, delegate: TypedEvaluable.Arg3<Boolean, MAPPED, MAPPED, T>, mapping: TypeMapping<SOURCE_A,SOURCE_B,MAPPED>): TypedEvaluable<T> {
             return of(
                 type,
-                booleanParameter,
+                javaBooleanParameter,
                 mapping.left,
                 mapping.right,
                 map3<Boolean, Boolean, SOURCE_A, MAPPED, SOURCE_B, MAPPED, T>(

@@ -135,8 +135,8 @@
       "name": "Ergebnisse",
       "description": "",
       "position": {
-        "x": 1188.0,
-        "y": 320.0
+        "x": 914.0,
+        "y": 455.0
       },
       "id": "10",
       "calculated": {
@@ -506,8 +506,12 @@
       "name": "Zyklen",
       "description": "",
       "position": {
-        "x": 1276.0,
-        "y": 12.0
+        "x": 1495.0,
+        "y": 32.0
+      },
+      "size": {
+        "width": 604.0,
+        "height": 436.0
       },
       "id": "41",
       "calculated": {
@@ -549,7 +553,15 @@
                   "id": "43"
                 }
               ],
-              "id": "46",
+              "source": {
+                "node": "1",
+                "nodeType": "Constants",
+                "id": "46",
+                "dataId": {
+                  "valueId": "6"
+                }
+              },
+              "id": "47",
               "color": {
                 "red": 0.01568627543747425,
                 "green": 0.14901961386203766,
@@ -565,7 +577,15 @@
                   "id": "44"
                 }
               ],
-              "id": "47",
+              "source": {
+                "node": "10",
+                "nodeType": "Calculated",
+                "id": "48",
+                "dataId": {
+                  "columnId": "14"
+                }
+              },
+              "id": "49",
               "color": {
                 "red": 0.01568627543747425,
                 "green": 0.14901961386203766,
@@ -579,8 +599,13 @@
           "values": [
             {
               "name": "Faktor Strecke1",
-              "valueType": "Unknown",
-              "values": {},
+              "valueType": "BigDecimal",
+              "values": {
+                "110km/h": "1",
+                "100km/h": "1",
+                "130km/h": "1",
+                "140km/h": "1"
+              },
               "id": "45",
               "color": {
                 "red": 0.9607843160629272,
